@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MiIndustryDetailMapper">
+    <!--    查询市场洞察行业详情表-->
+    <select id="selectMiIndustryDetailByMiIndustryDetailId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryDetailDTO">
+        SELECT
+        mi_industry_detail_id,market_insight_industry_id,industry_id,industry_type,plan_period,overall_space,participate_space,target_market_space,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_detail
+        WHERE  mi_industry_detail_id=#{miIndustryDetailId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察行业详情表-->
+    <select id="selectMiIndustryDetailByMiIndustryDetailIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryDetailDTO">
+        SELECT
+        mi_industry_detail_id,market_insight_industry_id,industry_id,industry_type,plan_period,overall_space,participate_space,target_market_space,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_detail
+        WHERE  mi_industry_detail_id in
+            <foreach item="item"
+                     collection="miIndustryDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察行业详情表列表-->
+    <select id="selectMiIndustryDetailList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryDetailDTO">
+        SELECT
+        mi_industry_detail_id,market_insight_industry_id,industry_id,industry_type,plan_period,overall_space,participate_space,target_market_space,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_detail
+        WHERE delete_flag=0
+                        <if test="miIndustryDetail.miIndustryDetailId != null">
+                            and mi_industry_detail_id=#{miIndustryDetail.miIndustryDetailId}
+                        </if>
+                        <if test="miIndustryDetail.marketInsightIndustryId != null">
+                            and market_insight_industry_id=#{miIndustryDetail.marketInsightIndustryId}
+                        </if>
+                        <if test="miIndustryDetail.industryId != null">
+                            and industry_id=#{miIndustryDetail.industryId}
+                        </if>
+                        <if test="miIndustryDetail.industryType != null">
+                            and industry_type=#{miIndustryDetail.industryType}
+                        </if>
+                        <if test="miIndustryDetail.planPeriod != null">
+                            and plan_period=#{miIndustryDetail.planPeriod}
+                        </if>
+                        <if test="miIndustryDetail.overallSpace != null">
+                            and overall_space=#{miIndustryDetail.overallSpace}
+                        </if>
+                        <if test="miIndustryDetail.participateSpace != null">
+                            and participate_space=#{miIndustryDetail.participateSpace}
+                        </if>
+                        <if test="miIndustryDetail.targetMarketSpace != null">
+                            and target_market_space=#{miIndustryDetail.targetMarketSpace}
+                        </if>
+                        <if test="miIndustryDetail.sort != null">
+                            and sort=#{miIndustryDetail.sort}
+                        </if>
+                        <if test="miIndustryDetail.deleteFlag != null">
+                            and delete_flag=#{miIndustryDetail.deleteFlag}
+                        </if>
+                        <if test="miIndustryDetail.createBy != null">
+                            and create_by=#{miIndustryDetail.createBy}
+                        </if>
+                        <if test="miIndustryDetail.createTime != null">
+                            and create_time=#{miIndustryDetail.createTime}
+                        </if>
+                        <if test="miIndustryDetail.updateBy != null">
+                            and update_by=#{miIndustryDetail.updateBy}
+                        </if>
+                        <if test="miIndustryDetail.updateTime != null">
+                            and update_time=#{miIndustryDetail.updateTime}
+                        </if>
+    </select>
+    <!--新增市场洞察行业详情表-->
+    <insert id="insertMiIndustryDetail" useGeneratedKeys="true" keyProperty="miIndustryDetailId">
+        INSERT INTO mi_industry_detail (market_insight_industry_id,industry_id,industry_type,plan_period,overall_space,participate_space,target_market_space,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{miIndustryDetail.marketInsightIndustryId},#{miIndustryDetail.industryId},#{miIndustryDetail.industryType},#{miIndustryDetail.planPeriod},#{miIndustryDetail.overallSpace},#{miIndustryDetail.participateSpace},#{miIndustryDetail.targetMarketSpace},#{miIndustryDetail.sort},#{miIndustryDetail.deleteFlag},#{miIndustryDetail.createBy},#{miIndustryDetail.createTime},#{miIndustryDetail.updateBy},#{miIndustryDetail.updateTime})
+    </insert>
+    <!--修改市场洞察行业详情表-->
+    <update id="updateMiIndustryDetail">
+        UPDATE mi_industry_detail
+        SET
+                    <if test="miIndustryDetail.marketInsightIndustryId != null">
+                        market_insight_industry_id=#{miIndustryDetail.marketInsightIndustryId},
+                    </if>
+                    <if test="miIndustryDetail.industryId != null">
+                        industry_id=#{miIndustryDetail.industryId},
+                    </if>
+                    <if test="miIndustryDetail.industryType != null">
+                        industry_type=#{miIndustryDetail.industryType},
+                    </if>
+                    <if test="miIndustryDetail.planPeriod != null">
+                        plan_period=#{miIndustryDetail.planPeriod},
+                    </if>
+                    <if test="miIndustryDetail.overallSpace != null">
+                        overall_space=#{miIndustryDetail.overallSpace},
+                    </if>
+                    <if test="miIndustryDetail.participateSpace != null">
+                        participate_space=#{miIndustryDetail.participateSpace},
+                    </if>
+                    <if test="miIndustryDetail.targetMarketSpace != null">
+                        target_market_space=#{miIndustryDetail.targetMarketSpace},
+                    </if>
+                    <if test="miIndustryDetail.sort != null">
+                        sort=#{miIndustryDetail.sort},
+                    </if>
+                    <if test="miIndustryDetail.deleteFlag != null">
+                        delete_flag=#{miIndustryDetail.deleteFlag},
+                    </if>
+                    <if test="miIndustryDetail.createBy != null">
+                        create_by=#{miIndustryDetail.createBy},
+                    </if>
+                    <if test="miIndustryDetail.createTime != null">
+                        create_time=#{miIndustryDetail.createTime},
+                    </if>
+                    <if test="miIndustryDetail.updateBy != null">
+                        update_by=#{miIndustryDetail.updateBy},
+                    </if>
+                    <if test="miIndustryDetail.updateTime != null">
+                        update_time=#{miIndustryDetail.updateTime}
+                    </if>
+        WHERE
+                 mi_industry_detail_id=#{miIndustryDetail.miIndustryDetailId}
+    </update>
+    <!--逻辑删除市场洞察行业详情表-->
+    <update id="logicDeleteMiIndustryDetailByMiIndustryDetailId">
+        UPDATE mi_industry_detail
+        SET     delete_flag= 1,
+                update_by=#{miIndustryDetail.updateBy},
+                update_time=#{miIndustryDetail.updateTime}
+        WHERE
+                mi_industry_detail_id=#{miIndustryDetail.miIndustryDetailId}
+    </update>
+    <!--逻辑批量删除市场洞察行业详情表-->
+    <update id="logicDeleteMiIndustryDetailByMiIndustryDetailIds">
+        UPDATE mi_industry_detail
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         mi_industry_detail_id IN
+            <foreach item="item"
+                     collection="miIndustryDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察行业详情表-->
+    <insert id="batchMiIndustryDetail">
+        INSERT INTO mi_industry_detail (market_insight_industry_id,industry_id,industry_type,plan_period,overall_space,participate_space,target_market_space,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="miIndustryDetails"
+                 separator=",">
+            (#{item.marketInsightIndustryId},#{item.industryId},#{item.industryType},#{item.planPeriod},#{item.overallSpace},#{item.participateSpace},#{item.targetMarketSpace},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察行业详情表-->
+    <delete id="deleteMiIndustryDetailByMiIndustryDetailId">
+        DELETE FROM mi_industry_detail
+        WHERE  mi_industry_detail_id=#{miIndustryDetail}
+
+    </delete>
+    <!--物理批量删除市场洞察行业详情表-->
+    <delete id="deleteMiIndustryDetailByMiIndustryDetailIds">
+        DELETE FROM mi_industry_detail
+        WHERE  mi_industry_detail_id IN
+            <foreach item="item"
+                     collection="miIndustryDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察行业详情表-->
+    <update id="updateMiIndustryDetails">
+        update mi_industry_detail
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="market_insight_industry_id=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.marketInsightIndustryId != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.marketInsightIndustryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="industry_id=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.industryId != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.industryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="industry_type=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.industryType != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.industryType}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="plan_period=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.planPeriod != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.planPeriod}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="overall_space=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.overallSpace != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.overallSpace}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="participate_space=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.participateSpace != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.participateSpace}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="target_market_space=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.targetMarketSpace != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.targetMarketSpace}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="miIndustryDetailList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when mi_industry_detail_id=#{item.miIndustryDetailId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="miIndustryDetailList" separator="or" item="item" index="index">
+                    mi_industry_detail_id=#{item.miIndustryDetailId}
+        </foreach>
+    </update>
+</mapper>
+
+
