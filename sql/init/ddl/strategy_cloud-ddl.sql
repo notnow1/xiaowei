@@ -591,3 +591,23 @@ CREATE TABLE mi_self_ability_access(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (mi_self_ability_access_id)
 )  COMMENT = '市场洞察自身能力评估表';
+
+
+CREATE TABLE strategy_index_dimension(
+    strategy_index_dimension_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    parent_index_dimension_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '父级战略指标维度ID' ,
+    ancestors VARCHAR(256)   DEFAULT '' COMMENT '祖级列表ID，按层级用英文逗号隔开' ,
+    index_dimension_code VARCHAR(32)    COMMENT '战略指标维度编码' ,
+    index_dimension_name VARCHAR(64)    COMMENT '战略指标维度名称' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    level TINYINT UNSIGNED    COMMENT '层级' ,
+    status TINYINT UNSIGNED NOT NULL   COMMENT '状态:0失效;1生效' ,
+    remark VARCHAR(256)    COMMENT '备注' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (strategy_index_dimension_id)
+)  COMMENT = '战略指标维度表';
