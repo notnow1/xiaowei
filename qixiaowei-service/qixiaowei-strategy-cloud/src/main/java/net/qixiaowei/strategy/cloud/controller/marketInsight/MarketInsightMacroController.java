@@ -23,12 +23,14 @@ import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
 import net.qixiaowei.strategy.cloud.excel.marketInsight.MarketInsightMacroExcel;
 import net.qixiaowei.strategy.cloud.excel.marketInsight.MarketInsightMacroImportListener;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightMacroService;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -55,7 +57,7 @@ public class MarketInsightMacroController extends BaseController {
     /**
      * 查询市场洞察宏观表详情
      */
-    //@RequiresPermissions("strategy:cloud:marketInsightMacro:info")
+    @RequiresPermissions("strategy:cloud:marketInsightMacro:info")
     @GetMapping("/info/{marketInsightMacroId}")
     public AjaxResult info(@PathVariable Long marketInsightMacroId) {
         MarketInsightMacroDTO marketInsightMacroDTO = marketInsightMacroService.selectMarketInsightMacroByMarketInsightMacroId(marketInsightMacroId);
@@ -65,7 +67,7 @@ public class MarketInsightMacroController extends BaseController {
     /**
      * 分页查询市场洞察宏观表列表
      */
-    //@RequiresPermissions("strategy:cloud:marketInsightMacro:pageList")
+    @RequiresPermissions("strategy:cloud:marketInsightMacro:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(MarketInsightMacroDTO marketInsightMacroDTO) {
         startPage();
@@ -76,7 +78,7 @@ public class MarketInsightMacroController extends BaseController {
     /**
      * 查询市场洞察宏观表列表
      */
-    //@RequiresPermissions("strategy:cloud:marketInsightMacro:list")
+    @RequiresPermissions("strategy:cloud:marketInsightMacro:list")
     @GetMapping("/list")
     public AjaxResult list(MarketInsightMacroDTO marketInsightMacroDTO) {
         List<MarketInsightMacroDTO> list = marketInsightMacroService.selectMarketInsightMacroList(marketInsightMacroDTO);
@@ -87,10 +89,10 @@ public class MarketInsightMacroController extends BaseController {
     /**
      * 新增市场洞察宏观表
      */
-    //@RequiresPermissions("strategy:cloud:marketInsightMacro:add")
+    @RequiresPermissions("strategy:cloud:marketInsightMacro:add")
     @Log(title = "新增市场洞察宏观表", businessType = BusinessType.MARKET_INSIGHT_MACRO, businessId = "marketInsightMacroId", operationType = OperationType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody MarketInsightMacroDTO marketInsightMacroDTO) {
+    public AjaxResult addSave(@RequestBody @Validated({StrategyIntentDTO.DeleteStrategyIntentDTO.class}) MarketInsightMacroDTO marketInsightMacroDTO) {
         return AjaxResult.success(marketInsightMacroService.insertMarketInsightMacro(marketInsightMacroDTO));
     }
 
@@ -98,26 +100,26 @@ public class MarketInsightMacroController extends BaseController {
     /**
      * 修改市场洞察宏观表
      */
-    //@RequiresPermissions("strategy:cloud:marketInsightMacro:edit")
+    @RequiresPermissions("strategy:cloud:marketInsightMacro:edit")
     @Log(title = "修改市场洞察宏观表", businessType = BusinessType.MARKET_INSIGHT_MACRO, businessId = "marketInsightMacroId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody MarketInsightMacroDTO marketInsightMacroDTO) {
+    public AjaxResult editSave(@RequestBody @Validated({StrategyIntentDTO.UpdateStrategyIntentDTO.class}) MarketInsightMacroDTO marketInsightMacroDTO) {
         return toAjax(marketInsightMacroService.updateMarketInsightMacro(marketInsightMacroDTO));
     }
 
     /**
      * 逻辑删除市场洞察宏观表
      */
-    //@RequiresPermissions("strategy:cloud:marketInsightMacro:remove")
+    @RequiresPermissions("strategy:cloud:marketInsightMacro:remove")
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody MarketInsightMacroDTO marketInsightMacroDTO) {
+    public AjaxResult remove(@RequestBody  @Validated({StrategyIntentDTO.DeleteStrategyIntentDTO.class}) MarketInsightMacroDTO marketInsightMacroDTO) {
         return toAjax(marketInsightMacroService.logicDeleteMarketInsightMacroByMarketInsightMacroId(marketInsightMacroDTO));
     }
 
     /**
      * 逻辑批量删除市场洞察宏观表
      */
-    //@RequiresPermissions("strategy:cloud:marketInsightMacro:removes")
+    @RequiresPermissions("strategy:cloud:marketInsightMacro:removes")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> marketInsightMacroIds) {
         return toAjax(marketInsightMacroService.logicDeleteMarketInsightMacroByMarketInsightMacroIds(marketInsightMacroIds));
