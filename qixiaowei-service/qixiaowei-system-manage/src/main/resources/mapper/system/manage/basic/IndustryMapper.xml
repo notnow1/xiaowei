@@ -265,9 +265,6 @@
         <if test="industry.parentIndustryId != null">
             parent_industry_id=#{industry.parentIndustryId},
         </if>
-        <if test="industry.ancestors != null and industry.ancestors != ''">
-            ancestors=#{industry.ancestors},
-        </if>
         <if test="industry.industryCode != null and industry.industryCode != ''">
             industry_code=#{industry.industryCode},
         </if>
@@ -293,8 +290,9 @@
             update_by=#{industry.updateBy},
         </if>
         <if test="industry.updateTime != null">
-            update_time=#{industry.updateTime}
+            update_time=#{industry.updateTime},
         </if>
+        ancestors=#{industry.ancestors}
         WHERE
         industry_id=#{industry.industryId}
     </update>

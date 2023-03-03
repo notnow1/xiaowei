@@ -305,7 +305,7 @@ public class IndustryServiceImpl implements IIndustryService {
             industry.setAncestors("");
             industry.setParentIndustryId(Constants.TOP_PARENT_ID);
         } else {
-            IndustryDTO industryDTO1 = industryMapper.selectIndustryByIndustryId(industry.getParentIndustryId());
+            IndustryDTO industryDTO1 = industryMapper.selectIndustryByIndustryId(parentIndustryId);
             BeanUtils.copyProperties(industryDTO, industry);
             if (StringUtils.isBlank(industryDTO1.getAncestors())) {
                 industry.setAncestors(industryDTO1.getParentIndustryId() + "," + industryDTO1.getIndustryId());
@@ -349,7 +349,7 @@ public class IndustryServiceImpl implements IIndustryService {
                 if (i1 == 1) {
                     Industry industry2 = new Industry();
                     if (StringUtils.isBlank(industry.getAncestors())) {
-                        industryDTOList.get(i1).setAncestors(industry.getParentIndustryId() + "," + industry.getIndustryId());
+                        industryDTOList.get(i1).setAncestors(industry.getIndustryId().toString());
                     } else {
                         industryDTOList.get(i1).setAncestors(industry.getAncestors() + "," + industry.getIndustryId());
                     }
@@ -368,7 +368,7 @@ public class IndustryServiceImpl implements IIndustryService {
                         //父级
                         IndustryDTO industryDTO2 = industryDTOList.get(i1 - 1);
                         if (StringUtils.isBlank(industryDTO2.getAncestors())) {
-                            industryDTOList.get(i1).setAncestors(industryDTO2.getParentIndustryId() + "," + industryDTO2.getIndustryId());
+                            industryDTOList.get(i1).setAncestors(industryDTO2.getIndustryId().toString());
                         } else {
                             industryDTOList.get(i1).setAncestors(industryDTO2.getAncestors() + "," + industryDTO2.getIndustryId());
                         }
@@ -386,7 +386,7 @@ public class IndustryServiceImpl implements IIndustryService {
                         //父级
                         IndustryDTO industryDTO2 = industryDTOList.get(map.get(industryDTOList.get(i1).getParentIndustryId()));
                         if (StringUtils.isBlank(industryDTO2.getAncestors())) {
-                            industryDTOList.get(i1).setAncestors(industryDTO2.getParentIndustryId() + "," + industryDTO2.getIndustryId());
+                            industryDTOList.get(i1).setAncestors(industryDTO2.getIndustryId().toString());
                         } else {
                             industryDTOList.get(i1).setAncestors(industryDTO2.getAncestors() + "," + industryDTO2.getIndustryId());
                         }

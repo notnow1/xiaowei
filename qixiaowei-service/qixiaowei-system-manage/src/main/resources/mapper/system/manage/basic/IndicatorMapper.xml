@@ -496,9 +496,6 @@
         <if test="indicator.parentIndicatorId != null">
             parent_indicator_id=#{indicator.parentIndicatorId},
         </if>
-        <if test="indicator.ancestors != null and indicator.ancestors != ''">
-            ancestors=#{indicator.ancestors},
-        </if>
         <if test="indicator.indicatorType != null">
             indicator_type=#{indicator.indicatorType},
         </if>
@@ -551,8 +548,9 @@
             update_by=#{indicator.updateBy},
         </if>
         <if test="indicator.updateTime != null">
-            update_time=#{indicator.updateTime}
+            update_time=#{indicator.updateTime},
         </if>
+        ancestors=#{indicator.ancestors}
         WHERE
         indicator_id=#{indicator.indicatorId}
         AND delete_flag = 0
