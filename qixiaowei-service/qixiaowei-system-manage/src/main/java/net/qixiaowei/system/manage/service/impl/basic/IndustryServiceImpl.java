@@ -288,7 +288,11 @@ public class IndustryServiceImpl implements IIndustryService {
             if (StringUtils.isNotNull(parentIndustry) && BusinessConstants.DISABLE.equals(parentIndustry.getStatus())) {
                 throw new ServiceException("上级行业失效，不允许编辑子节点");
             }
-            parentLevel = parentIndustry.getLevel() + 1;
+            if (parentIndustryId.equals(0L)) {
+                parentLevel = 0;
+            } else {
+                parentLevel = parentIndustry.getLevel() + 1;
+            }
             // 路径修改
             if (!industryById.getParentIndustryId().equals(parentIndustryId) && !parentIndustryId.equals(0L)) {
                 ancestors = parentIndustry.getAncestors();

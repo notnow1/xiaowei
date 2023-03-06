@@ -309,6 +309,11 @@ public class IndicatorServiceImpl implements IIndicatorService {
             if (parentIndicator == null && !parentIndicatorId.equals(0L)) {
                 throw new ServiceException("上级指标不存在");
             }
+            if (parentIndicatorId.equals(0L)) {
+                parentLevel = 0;
+            } else {
+                parentLevel = parentIndicator.getLevel() + 1;
+            }
             if (!indicatorById.getParentIndicatorId().equals(parentIndicatorId) && !parentIndicatorId.equals(0L)) {
                 // 路径修改
                 ancestors = parentIndicator.getAncestors();
@@ -316,7 +321,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
                     ancestors = ancestors + ",";
                 }
                 ancestors = ancestors + parentIndicatorId;
-                parentLevel = parentIndicator.getLevel() + 1;
             }
         }
         Indicator indicator = new Indicator();
@@ -328,14 +332,14 @@ public class IndicatorServiceImpl implements IIndicatorService {
             IndicatorDTO indicatorDTO1 = indicatorMapper.selectIndicatorByIndicatorId(indicator.getParentIndicatorId());
             BeanUtils.copyProperties(indicatorDTO, indicator);
             if (StringUtils.isBlank(indicatorDTO1.getAncestors())) {
-                indicator.setAncestors(indicatorDTO1.getParentIndicatorId() + "," + indicatorDTO1.getIndicatorId());
+                indicator.setAncestors(indicatorDTO1.getIndicatorId().toString());
             } else {
                 indicator.setAncestors(indicatorDTO1.getAncestors() + "," + indicatorDTO1.getParentIndicatorId());
             }
         }
-        BeanUtils.copyProperties(indicatorDTO, indicator);
         indicator.setAncestors(ancestors);
         indicator.setLevel(parentLevel);
+        indicator.setParentIndicatorId(parentIndicatorId);
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());
         int num = indicatorMapper.updateIndicator(indicator);
