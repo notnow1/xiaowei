@@ -309,6 +309,16 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         Long businessDesignId = businessDesign.getBusinessDesignId();
         // 业务设计参数表
         List<BusinessDesignParamDTO> businessDesignParamDTOS = businessDesignDTO.getBusinessDesignParamDTOS();
+        // 校验业务设计参数是否匹配坐标轴
+        List<Map<String, Object>> businessDesignAxisConfigMap = businessDesignDTO.getBusinessDesignAxisConfigMap();
+        Set<Integer> paramDimensionTop = businessDesignParamDTOS.stream().map(BusinessDesignParamDTO::getParamDimension).collect(Collectors.toSet());
+        for (int i = businessDesignAxisConfigMap.size() - 1; i >= 0; i--) {
+            Map<String, Object> map = businessDesignAxisConfigMap.get(i);
+            Integer paramDimension = Integer.valueOf(map.get("paramDimension").toString());
+            if (!paramDimensionTop.contains(paramDimension)) {
+                businessDesignAxisConfigMap.remove(map);
+            }
+        }
         if (StringUtils.isNotEmpty(businessDesignParamDTOS)) {
             // 普通校验
             int sort = 0;
@@ -324,16 +334,6 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
                     .map(BusinessDesignParamDTO::getParamRelationId).filter(Objects::isNull).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(nullParamRelationIds)) {
                 throw new ServiceException("请选择产品或者区域");
-            }
-            // 校验业务设计参数是否匹配坐标轴
-            List<Map<String, Object>> businessDesignAxisConfigMap = businessDesignDTO.getBusinessDesignAxisConfigMap();
-            Set<Integer> paramDimensionTop = businessDesignParamDTOS.stream().map(BusinessDesignParamDTO::getParamDimension).collect(Collectors.toSet());
-            for (int i = businessDesignAxisConfigMap.size() - 1; i >= 0; i--) {
-                Map<String, Object> map = businessDesignAxisConfigMap.get(i);
-                Integer paramDimension = Integer.valueOf(map.get("paramDimension").toString());
-                if (!paramDimensionTop.contains(paramDimension)) {
-                    businessDesignAxisConfigMap.remove(map);
-                }
             }
             // 产品的关联ID
             List<Long> productIds = businessDesignParamDTOS.stream().filter(b -> b.getParamDimension() == 1).map(BusinessDesignParamDTO::getParamRelationId).collect(Collectors.toList());
@@ -384,7 +384,6 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
             businessDesignParamService.insertBusinessDesignParams(businessDesignParamDTOS);
         }
         // 业务设计轴配置表
-        List<Map<String, Object>> businessDesignAxisConfigMap = businessDesignDTO.getBusinessDesignAxisConfigMap();
         if (StringUtils.isNotEmpty(businessDesignAxisConfigMap)) {
             List<BusinessDesignAxisConfigDTO> businessDesignAxisConfigDTOS = new ArrayList<>();
             BusinessDesignAxisConfigDTO businessDesignAxisConfigDTO;

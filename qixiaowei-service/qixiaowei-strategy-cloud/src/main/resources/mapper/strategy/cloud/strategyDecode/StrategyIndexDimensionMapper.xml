@@ -153,14 +153,16 @@
         </foreach>
     </update>
     <!--批量新增战略指标维度表-->
-    <insert id="batchStrategyIndexDimension">
+    <insert id="batchStrategyIndexDimension" useGeneratedKeys="true" keyProperty="strategyIndexDimensionId">
         INSERT INTO strategy_index_dimension
         (parent_index_dimension_id,ancestors,index_dimension_code,index_dimension_name,sort,LEVEL,STATUS,remark,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="strategyIndexDimensions"
                  separator=",">
-            (#{item.parentIndexDimensionId},#{item.ancestors},#{item.indexDimensionCode},#{item.indexDimensionName},#{item.sort},#{item.level},#{item.status},#{item.remark},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            <if test="item.strategyIndexDimensionId == null">
+                (#{item.parentIndexDimensionId},#{item.ancestors},#{item.indexDimensionCode},#{item.indexDimensionName},#{item.sort},#{item.level},#{item.status},#{item.remark},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            </if>
         </foreach>
     </insert>
 

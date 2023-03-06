@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.service.strategyDecode;
 
 import cn.hutool.core.lang.tree.Tree;
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyIndexDimension;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO;
 
 import java.util.List;
@@ -40,10 +41,10 @@ public interface IStrategyIndexDimensionService {
     /**
      * 修改战略指标维度表
      *
-     * @param strategyIndexDimensionDTO 战略指标维度表
+     * @param strategyIndexDimensionDTOS 战略指标维度表
      * @return 结果
      */
-    int updateStrategyIndexDimension(StrategyIndexDimensionDTO strategyIndexDimensionDTO);
+    int updateStrategyIndexDimension(List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS);
 
     /**
      * 批量修改战略指标维度表
@@ -59,7 +60,7 @@ public interface IStrategyIndexDimensionService {
      * @param strategyIndexDimensionDtos 战略指标维度表
      * @return 结果
      */
-    int insertStrategyIndexDimensions(List<StrategyIndexDimensionDTO> strategyIndexDimensionDtos);
+    List<StrategyIndexDimension> insertStrategyIndexDimensions(List<StrategyIndexDimensionDTO> strategyIndexDimensionDtos);
 
     /**
      * 逻辑批量删除战略指标维度表
