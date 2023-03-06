@@ -288,6 +288,7 @@ public class IndustryServiceImpl implements IIndustryService {
             if (StringUtils.isNotNull(parentIndustry) && BusinessConstants.DISABLE.equals(parentIndustry.getStatus())) {
                 throw new ServiceException("上级行业失效，不允许编辑子节点");
             }
+            parentLevel = parentIndustry.getLevel() + 1;
             // 路径修改
             if (!industryById.getParentIndustryId().equals(parentIndustryId) && !parentIndustryId.equals(0L)) {
                 ancestors = parentIndustry.getAncestors();
@@ -295,7 +296,6 @@ public class IndustryServiceImpl implements IIndustryService {
                     ancestors = ancestors + ",";
                 }
                 ancestors = ancestors + parentIndustryId;
-                parentLevel = parentIndustry.getLevel() + 1;
             }
             this.changeSonStatus(industryId, status);
         }
@@ -308,13 +308,13 @@ public class IndustryServiceImpl implements IIndustryService {
             IndustryDTO industryDTO1 = industryMapper.selectIndustryByIndustryId(parentIndustryId);
             BeanUtils.copyProperties(industryDTO, industry);
             if (StringUtils.isBlank(industryDTO1.getAncestors())) {
-                industry.setAncestors(industryDTO1.getParentIndustryId() + "," + industryDTO1.getIndustryId());
+                ancestors = industryDTO1.getIndustryId().toString();
             } else {
-                industry.setAncestors(industryDTO1.getAncestors() + "," + industryDTO1.getParentIndustryId());
+                ancestors = industryDTO1.getAncestors() + "," + industryDTO1.getParentIndustryId();
             }
         }
-        BeanUtils.copyProperties(industryDTO, industry);
         industry.setAncestors(ancestors);
+        industry.setStatus(industryDTO.getStatus());
         industry.setLevel(parentLevel);
         industry.setParentIndustryId(parentIndustryId);
         industry.setUpdateTime(DateUtils.getNowDate());
