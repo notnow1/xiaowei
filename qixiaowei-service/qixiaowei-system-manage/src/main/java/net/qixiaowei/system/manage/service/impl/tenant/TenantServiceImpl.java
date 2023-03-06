@@ -2,6 +2,8 @@ package net.qixiaowei.system.manage.service.impl.tenant;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.ReUtil;
+import cn.hutool.core.util.StrUtil;
 import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.CacheConstants;
@@ -200,7 +202,7 @@ public class TenantServiceImpl implements ITenantService {
     @Transactional
     @Override
     public TenantDTO insertTenant(TenantDTO tenantDTO) {
-        String domain = tenantDTO.getDomain();
+        String domain = getDomain(tenantDTO);
         String tenantCode = tenantDTO.getTenantCode();
         this.checkDomain(domain);
         TenantDTO selectTenantByTenantCode = tenantMapper.selectTenantByTenantCode(tenantCode);
@@ -212,6 +214,7 @@ public class TenantServiceImpl implements ITenantService {
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         BeanUtils.copyProperties(tenantDTO, tenant);
+        tenant.setDomain(domain);
         tenant.setSupportStaff(tenant.getSupportStaff());
         tenant.setCreateBy(userId);
         tenant.setUpdateBy(userId);
@@ -320,7 +323,7 @@ public class TenantServiceImpl implements ITenantService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateTenant(TenantDTO tenantDTO) {
-        String domain = tenantDTO.getDomain();
+        String domain = getDomain(tenantDTO);;
         Long tenantId = tenantDTO.getTenantId();
         TenantDTO tenantOfDB = tenantMapper.selectTenantByTenantId(tenantId);
         if (StringUtils.isNull(tenantOfDB)) {
@@ -355,6 +358,7 @@ public class TenantServiceImpl implements ITenantService {
         if (TenantStatus.OVERDUE.getCode().equals(tenantOfDB.getTenantStatus()) && null != initMenuIds) {
             updateTenant.setTenantStatus(TenantStatus.NORMAL.getCode());
         }
+        updateTenant.setDomain(domain);
         //管理员修改租户，不更改：租户登录背景图片URL、租户logo图片URL
         updateTenant.setLoginBackground(null);
         updateTenant.setTenantLogo(null);
@@ -667,7 +671,7 @@ public class TenantServiceImpl implements ITenantService {
         if (!BusinessConstants.NORMAL.equals(tenantByDB.getTenantStatus())) {
             throw new ServiceException("修改企业信息失败:企业状态异常");
         }
-        String domain = tenantDTO.getDomain();
+        String domain = getDomain(tenantDTO);;
         Long userId = SecurityUtils.getUserId();
         String userAccount = SecurityUtils.getUserAccount();
         Date nowDate = DateUtils.getNowDate();
@@ -1045,7 +1049,12 @@ public class TenantServiceImpl implements ITenantService {
      * @return: void
      **/
     private void checkDomain(String domain) {
-        if (tenantConfig.getExistedDomains().contains(domain.toLowerCase())) {
+        // 正则条件
+        String canonical = "^[0-9a-zA-Z-]{3,30}$";
+        if (domain.startsWith(StrUtil.DASHED) || !ReUtil.isMatch(canonical, domain)) {
+            throw new ServiceException("域名由字母，数字，和中划线组成,3-30位，不能以中划线开头");
+        }
+        if (tenantConfig.getExistedDomains().contains(domain)) {
             throw new ServiceException("域名[" + domain + "]已经被占用!");
         }
         TenantDTO tenantByDomain = tenantMapper.selectTenantByDomain(domain);
@@ -1068,6 +1077,21 @@ public class TenantServiceImpl implements ITenantService {
         if (StringUtils.isNull(industryDefaultDTO)) {
             throw new ServiceException("行业不存在。");
         }
+    }
+
+    /**
+     * @description: 域名获取-转为小写
+     * @Author: hzk
+     * @date: 2023/3/6 16:12
+     * @param: [tenantDTO]
+     * @return: java.lang.String
+     **/
+    private static String getDomain(TenantDTO tenantDTO) {
+        String domain = tenantDTO.getDomain();
+        if (StringUtils.isNotEmpty(domain)) {
+            domain = domain.toLowerCase();
+        }
+        return domain;
     }
 }
 
