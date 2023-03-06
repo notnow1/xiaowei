@@ -21,7 +21,13 @@ public interface MiIndustryAttractionMapper{
     */
     MiIndustryAttractionDTO selectMiIndustryAttractionByMiIndustryAttractionId(@Param("miIndustryAttractionId")Long miIndustryAttractionId);
 
-
+    /**
+     * 根据市场洞察行业主表主键查询市场洞察行业吸引力表
+     *
+     * @param marketInsightIndustryId 市场洞察行业主表主键
+     * @return 市场洞察行业吸引力表
+     */
+    List<MiIndustryAttractionDTO> selectMiIndustryAttractionByMarketInsightIndustryId(@Param("marketInsightIndustryId")Long marketInsightIndustryId);
     /**
     * 批量查询市场洞察行业吸引力表
     *
@@ -29,6 +35,14 @@ public interface MiIndustryAttractionMapper{
     * @return 市场洞察行业吸引力表
     */
     List<MiIndustryAttractionDTO> selectMiIndustryAttractionByMiIndustryAttractionIds(@Param("miIndustryAttractionIds") List<Long> miIndustryAttractionIds);
+
+    /**
+     * 根据市场洞察行业主表主键集合批量查询市场洞察行业吸引力表
+     *
+     * @param marketInsightIndustryIds 市场洞察行业主表主键集合
+     * @return 市场洞察行业吸引力表
+     */
+    List<MiIndustryAttractionDTO> selectMiIndustryAttractionByMarketInsightIndustryIds(@Param("marketInsightIndustryIds") List<Long> marketInsightIndustryIds);
 
     /**
     * 查询市场洞察行业吸引力表列表

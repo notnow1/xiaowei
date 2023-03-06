@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -40,14 +42,17 @@ public class MarketInsightIndustryDTO {
     /**
     * ID
     */
+    @NotNull(message = "ID不能为空", groups = {MarketInsightIndustryDTO.DeleteMarketInsightIndustryDTO.class,MarketInsightIndustryDTO.UpdateMarketInsightIndustryDTO.class})
     private  Long marketInsightIndustryId;
     /**
     * 规划年度
     */
+    @NotNull(message = "规划年度不能为空", groups = {MarketInsightIndustryDTO.AddMarketInsightIndustryDTO.class,MarketInsightIndustryDTO.UpdateMarketInsightIndustryDTO.class})
     private  Integer planYear;
     /**
     * 规划业务单元ID
     */
+    @NotNull(message = "规划业务单元ID不能为空", groups = {MarketInsightIndustryDTO.AddMarketInsightIndustryDTO.class,MarketInsightIndustryDTO.UpdateMarketInsightIndustryDTO.class})
     private  Long planBusinessUnitId;
     /**
      * 规划业务单元名称
@@ -56,6 +61,7 @@ public class MarketInsightIndustryDTO {
     /**
     * 规划业务单元维度(region,department,product,industry)
     */
+    @NotBlank(message = "规划业务单元维度不能为空", groups = {MarketInsightIndustryDTO.AddMarketInsightIndustryDTO.class,MarketInsightIndustryDTO.UpdateMarketInsightIndustryDTO.class})
     private  String businessUnitDecompose;
     /**
     * 区域ID
@@ -123,7 +129,10 @@ public class MarketInsightIndustryDTO {
     * 租户ID
     */
     private  Long tenantId;
-
+    /**
+     * 规划业务单元维度列表
+     */
+    List<Map<String, Object>> businessUnitDecomposes;
     /**
     * 请求参数
     */

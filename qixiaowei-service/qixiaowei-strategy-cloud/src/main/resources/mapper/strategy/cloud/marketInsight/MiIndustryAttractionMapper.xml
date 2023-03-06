@@ -60,6 +60,40 @@
                             and update_time=#{miIndustryAttraction.updateTime}
                         </if>
     </select>
+<!--    根据市场洞察行业主表主键查询市场洞察行业吸引力表-->
+    <select id="selectMiIndustryAttractionByMarketInsightIndustryId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDTO">
+        SELECT mia.mi_industry_attraction_id,
+               mia.market_insight_industry_id,
+               mia.industry_attraction_id,
+               ia.attraction_element_name,
+               mia.sort,
+               mia.delete_flag,
+               mia.create_by,
+               mia.create_time,
+               mia.update_by,
+               mia.update_time
+        FROM mi_industry_attraction mia
+                 left join industry_attraction ia
+                           on ia.industry_attraction_id = mia .industry_attraction_id
+                               and ia.delete_flag =0
+        WHERE mia.market_insight_industry_id = #{marketInsightIndustryId}
+          and mia.delete_flag = 0
+    </select>
+<!--    根据市场洞察行业主表主键集合批量查询市场洞察行业吸引力表-->
+    <select id="selectMiIndustryAttractionByMarketInsightIndustryIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDTO">
+        SELECT
+        mi_industry_attraction_id,market_insight_industry_id,industry_attraction_id,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_attraction
+        WHERE  market_insight_industry_id in
+        <foreach item="item"
+                 collection="marketInsightIndustryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增市场洞察行业吸引力表-->
     <insert id="insertMiIndustryAttraction" useGeneratedKeys="true" keyProperty="miIndustryAttractionId">
         INSERT INTO mi_industry_attraction (market_insight_industry_id,industry_attraction_id,sort,delete_flag,create_by,create_time,update_by,update_time)
@@ -121,7 +155,7 @@
             </foreach>
     </update>
     <!--批量新增市场洞察行业吸引力表-->
-    <insert id="batchMiIndustryAttraction">
+    <insert id="batchMiIndustryAttraction" useGeneratedKeys="true" keyProperty="miIndustryAttractionId">
         INSERT INTO mi_industry_attraction (market_insight_industry_id,industry_attraction_id,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"

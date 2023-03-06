@@ -56,6 +56,18 @@ public class MiIndustryAttractionDataDTO {
     */
     private  Long industryAttractionElementId;
     /**
+     * 评估标准名称
+     */
+    private  String assessStandardName;
+    /**
+     * 评估标准说明
+     */
+    private  String  assessStandardDescription;
+    /**
+     * 显示颜色
+     */
+    private  String  displayColor;
+    /**
     * 删除标记:0未删除;1已删除
     */
     private  Integer deleteFlag;

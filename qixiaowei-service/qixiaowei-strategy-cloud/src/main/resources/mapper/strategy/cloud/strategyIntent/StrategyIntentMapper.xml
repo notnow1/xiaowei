@@ -249,10 +249,10 @@
         <if test="strategyIntent.updateTime != null">
             and si.update_time=#{strategyIntent.updateTime}
         </if>
-        <if test="bonusBudget.createBys != null and bonusBudget.createBys.size() >0">
+        <if test="strategyIntent.createBys != null and strategyIntent.createBys.size() >0">
             and create_by in
             <foreach item="item"
-                     collection="bonusBudget.createBys"
+                     collection="strategyIntent.createBys"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>

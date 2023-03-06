@@ -23,12 +23,28 @@ public interface MiIndustryDetailMapper{
 
 
     /**
+     * 根据市场洞察行业主表主键查询市场洞察行业详情表
+     *
+     * @param marketInsightIndustryId 市场洞察行业主表主键
+     * @return 市场洞察行业详情表
+     */
+    List<MiIndustryDetailDTO> selectMiIndustryDetailByMarketInsightIndustryId(@Param("marketInsightIndustryId")Long marketInsightIndustryId);
+    /**
     * 批量查询市场洞察行业详情表
     *
     * @param miIndustryDetailIds 市场洞察行业详情表主键集合
     * @return 市场洞察行业详情表
     */
     List<MiIndustryDetailDTO> selectMiIndustryDetailByMiIndustryDetailIds(@Param("miIndustryDetailIds") List<Long> miIndustryDetailIds);
+
+    /**
+     * 根据市场洞察行业主表主键集合批量查询市场洞察行业详情表
+     *
+     * @param marketInsightIndustryIds 市场洞察行业主表主键集合
+     * @return 市场洞察行业详情表
+     */
+    List<MiIndustryDetailDTO> selectMiIndustryDetailByMarketInsightIndustryIds(@Param("marketInsightIndustryIds") List<Long> marketInsightIndustryIds);
+
 
     /**
     * 查询市场洞察行业详情表列表
