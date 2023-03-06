@@ -138,7 +138,11 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
             }
             BigDecimal adjustmentPercentage = deptSalaryAdjustItemDTO.getAdjustmentPercentage();//调幅
             BigDecimal coveragePercentage = deptSalaryAdjustItemDTO.getCoveragePercentage();// 覆盖比例
-            LocalDate adjustmentTime = DateUtils.toLocalDate(deptSalaryAdjustItemDTO.getAdjustmentTime());//调整时间
+            Date adjustmentTime1 = deptSalaryAdjustItemDTO.getAdjustmentTime();
+            if (StringUtils.isNull(adjustmentTime1)) {
+                throw new ServiceException("数据异常 调整时间为空");
+            }
+            LocalDate adjustmentTime = DateUtils.toLocalDate(adjustmentTime1);//调整时间
             int month;
             if (StringUtils.isNull(adjustmentTime)) {
                 month = DateUtils.getMonth();
@@ -273,6 +277,9 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
             if (StringUtils.isNull(deptSalaryAdjustItemDTO.getDepartmentId())) {
                 throw new ServiceException("部门不可以为空");
             }
+            if (StringUtils.isNull(deptSalaryAdjustItemDTO.getAdjustmentTime())) {
+                throw new ServiceException("调整时间不可以为空");
+            }
             deptSalaryAdjustItemDTO.setDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);
             for (DeptSalaryAdjustItemDTO salaryAdjustItemDTO : deptSalaryAdjustItemDTOSBefore) {
                 if (salaryAdjustItemDTO.getDepartmentId().equals(deptSalaryAdjustItemDTO.getDepartmentId())) {
@@ -316,6 +323,9 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         for (DeptSalaryAdjustItemDTO deptSalaryAdjustItemDTO : deptSalaryAdjustItemDTOSAfter) {
             if (StringUtils.isNull(deptSalaryAdjustItemDTO.getDepartmentId())) {
                 throw new ServiceException("部门不可以为空");
+            }
+            if (StringUtils.isNull(deptSalaryAdjustItemDTO.getAdjustmentTime())) {
+                throw new ServiceException("调整时间不可以为空");
             }
             deptSalaryAdjustItemDTO.setDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);
             for (DeptSalaryAdjustItemDTO salaryAdjustItemDTO : deptSalaryAdjustItemDTOSBefore) {
