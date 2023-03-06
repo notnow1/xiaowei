@@ -612,3 +612,61 @@ CREATE TABLE strategy_index_dimension(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (strategy_index_dimension_id)
 )  COMMENT = '战略指标维度表';
+
+
+CREATE TABLE strategy_measure(
+    strategy_measure_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    plan_business_unit_id BIGINT UNSIGNED NOT NULL   COMMENT '规划业务单元ID' ,
+    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry)' ,
+    area_id BIGINT UNSIGNED    COMMENT '区域ID' ,
+    department_id BIGINT UNSIGNED    COMMENT '部门ID' ,
+    product_id BIGINT UNSIGNED    COMMENT '产品ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (strategy_measure_id)
+)  COMMENT = '战略举措清单表';
+
+
+CREATE TABLE strategy_measure_detail(
+    strategy_measure_detail_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    strategy_measure_id BIGINT UNSIGNED NOT NULL   COMMENT '战略举措清单ID' ,
+    strategy_index_dimension_id BIGINT UNSIGNED NOT NULL   COMMENT '战略指标维度ID' ,
+    serial_number SMALLINT UNSIGNED NOT NULL   COMMENT '序列号' ,
+    strategy_measure_name VARCHAR(128)    COMMENT '战略举措名称' ,
+    strategy_measure_source BIGINT UNSIGNED    COMMENT '战略举措来源' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (strategy_measure_detail_id)
+)  COMMENT = '战略举措清单详情表';
+
+
+CREATE TABLE strategy_measure_task(
+    strategy_measure_task_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    strategy_measure_id BIGINT UNSIGNED NOT NULL   COMMENT '战略举措清单ID' ,
+    strategy_measure_detail_id BIGINT UNSIGNED NOT NULL   COMMENT '战略举措清单详情ID' ,
+    key_task VARCHAR(1024)    COMMENT '关键任务' ,
+    close_standard VARCHAR(1024)    COMMENT '闭环标准' ,
+    duty_department_id BIGINT UNSIGNED    COMMENT '责任部门' ,
+    duty_employee_id BIGINT UNSIGNED    COMMENT '责任人员ID' ,
+    duty_employee_name VARCHAR(64)    COMMENT '责任人员姓名' ,
+    duty_employee_code VARCHAR(32)    COMMENT '责任人员编码' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (strategy_measure_task_id)
+)  COMMENT = '战略举措清单任务表';
