@@ -355,6 +355,9 @@ public class TenantServiceImpl implements ITenantService {
         if (TenantStatus.OVERDUE.getCode().equals(tenantOfDB.getTenantStatus()) && null != initMenuIds) {
             updateTenant.setTenantStatus(TenantStatus.NORMAL.getCode());
         }
+        //管理员修改租户，不更改：租户登录背景图片URL、租户logo图片URL
+        updateTenant.setLoginBackground(null);
+        updateTenant.setTenantLogo(null);
         updateTenant.setUpdateBy(userId);
         updateTenant.setUpdateTime(nowDate);
         i = tenantMapper.updateTenant(updateTenant);

@@ -410,6 +410,8 @@ public class UserServiceImpl implements IUserService {
         }
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
+        //头像修改放到用户自己编辑
+        user.setAvatar(null);
         user.setUpdateTime(DateUtils.getNowDate());
         user.setUpdateBy(SecurityUtils.getUserId());
         return userMapper.updateUser(user);
