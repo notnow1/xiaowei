@@ -363,43 +363,29 @@ public class IndustryServiceImpl implements IIndustryService {
                     BeanUtils.copyProperties(industryDTOList.get(i1), industry2);
                     industryUpdateList.add(industry2);
                 } else {
+                    Industry industry2 = new Industry();
+                    IndustryDTO industryDTO2;
                     if (industryDTOList.get(i1 - 1).getIndustryId().equals(industryDTOList.get(i1).getParentIndustryId())) {
-                        Industry industry2 = new Industry();
                         //父级
-                        IndustryDTO industryDTO2 = industryDTOList.get(i1 - 1);
-                        if (StringUtils.isBlank(industryDTO2.getAncestors())) {
-                            industryDTOList.get(i1).setAncestors(industryDTO2.getIndustryId().toString());
-                        } else {
-                            industryDTOList.get(i1).setAncestors(industryDTO2.getAncestors() + "," + industryDTO2.getIndustryId());
-                        }
-                        industryDTOList.get(i1).setLevel(industryDTO2.getLevel() + 1);
-                        if (null != industry.getStatus() && industry.getStatus() == 0) {
-                            industryDTOList.get(i1).setParentIndustryId(industry.getIndustryId());
-                        }
-                        industryDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
-                        industryDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
-                        industryDTOList.get(i1).setParentIndustryId(industryDTO2.getIndustryId());
-                        BeanUtils.copyProperties(industryDTOList.get(i1), industry2);
-                        industryUpdateList.add(industry2);
+                        industryDTO2 = industryDTOList.get(i1 - 1);
                     } else {
-                        Industry industry2 = new Industry();
                         //父级
-                        IndustryDTO industryDTO2 = industryDTOList.get(map.get(industryDTOList.get(i1).getParentIndustryId()));
-                        if (StringUtils.isBlank(industryDTO2.getAncestors())) {
-                            industryDTOList.get(i1).setAncestors(industryDTO2.getIndustryId().toString());
-                        } else {
-                            industryDTOList.get(i1).setAncestors(industryDTO2.getAncestors() + "," + industryDTO2.getIndustryId());
-                        }
-                        industryDTOList.get(i1).setLevel(industryDTO2.getLevel() + 1);
-                        if (null != industry.getStatus() && industry.getStatus() == 0) {
-                            industryDTOList.get(i1).setParentIndustryId(industry.getIndustryId());
-                        }
-                        industryDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
-                        industryDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
-                        industryDTOList.get(i1).setParentIndustryId(industryDTO2.getIndustryId());
-                        BeanUtils.copyProperties(industryDTOList.get(i1), industry2);
-                        industryUpdateList.add(industry2);
+                        industryDTO2 = industryDTOList.get(map.get(industryDTOList.get(i1).getParentIndustryId()));
                     }
+                    if (StringUtils.isBlank(industryDTO2.getAncestors())) {
+                        industryDTOList.get(i1).setAncestors(industryDTO2.getIndustryId().toString());
+                    } else {
+                        industryDTOList.get(i1).setAncestors(industryDTO2.getAncestors() + "," + industryDTO2.getIndustryId());
+                    }
+                    industryDTOList.get(i1).setLevel(industryDTO2.getLevel() + 1);
+                    if (null != industry.getStatus() && industry.getStatus() == 0) {
+                        industryDTOList.get(i1).setParentIndustryId(industry.getIndustryId());
+                    }
+                    industryDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                    industryDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                    industryDTOList.get(i1).setParentIndustryId(industryDTO2.getIndustryId());
+                    BeanUtils.copyProperties(industryDTOList.get(i1), industry2);
+                    industryUpdateList.add(industry2);
                 }
             }
         }
@@ -696,21 +682,24 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public List<IndustryDTO> selectCodeList(List<String> industryCodes) {
         Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
-        List<IndustryDTO> industryDTOS = new ArrayList<>();
-        if (enableType == 1) {
-            List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultService.selectDefaultByCodes(industryCodes);
-            if (StringUtils.isEmpty(industryDefaultDTOS)) {
-                return new ArrayList<>();
-            }
+        List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultService.selectDefaultByCodes(industryCodes);
+        List<IndustryDTO> industryDTOList = industryMapper.selectCodeList(industryCodes);
+        if (StringUtils.isEmpty(industryDefaultDTOS) && StringUtils.isEmpty(industryDTOList)) {
+            return new ArrayList<>();
+        } else if (StringUtils.isNotEmpty(industryDefaultDTOS) && StringUtils.isEmpty(industryDTOList)) {
+            List<IndustryDTO> industryDTOArrayList = new ArrayList<>();
             for (IndustryDefaultDTO industryDefaultDTO : industryDefaultDTOS) {
                 IndustryDTO industryDTO = new IndustryDTO();
                 BeanUtils.copyProperties(industryDefaultDTO, industryDTO);
-                industryDTOS.add(industryDTO);
+                industryDTOArrayList.add(industryDTO);
             }
+            industryDTOList.addAll(industryDTOArrayList);
+            return industryDTOArrayList;
+        } else if (StringUtils.isEmpty(industryDefaultDTOS) && StringUtils.isNotEmpty(industryDTOList)) {
+            return industryDTOList;
         } else {
-            industryDTOS = industryMapper.selectCodeList(industryCodes);
+            return new ArrayList<>();
         }
-        return industryDTOS;
     }
 
     /**

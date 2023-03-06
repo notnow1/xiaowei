@@ -368,7 +368,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                 if (i1 == 1) {
                     Indicator indicator2 = new Indicator();
                     if (StringUtils.isBlank(indicator.getAncestors())) {
-                        indicatorDTOList.get(i1).setAncestors(indicator.getParentIndicatorId() + "," + indicator.getIndicatorId());
+                        indicatorDTOList.get(i1).setAncestors(indicator.getParentIndicatorId().toString());
                     } else {
                         indicatorDTOList.get(i1).setAncestors(indicator.getAncestors() + "," + indicator.getIndicatorId());
                     }
@@ -379,37 +379,26 @@ public class IndicatorServiceImpl implements IIndicatorService {
                     BeanUtils.copyProperties(indicatorDTOList.get(i1), indicator2);
                     indicatorUpdateList.add(indicator2);
                 } else {
+                    Indicator indicator2 = new Indicator();
+                    IndicatorDTO indicatorDTO2;
                     if (indicatorDTOList.get(i1 - 1).getIndicatorId().equals(indicatorDTOList.get(i1).getParentIndicatorId())) {
-                        Indicator indicator2 = new Indicator();
                         //父级
-                        IndicatorDTO indicatorDTO2 = indicatorDTOList.get(i1 - 1);
-                        if (StringUtils.isBlank(indicatorDTO2.getAncestors())) {
-                            indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getParentIndicatorId() + "," + indicatorDTO2.getIndicatorId());
-                        } else {
-                            indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getAncestors() + "," + indicatorDTO2.getIndicatorId());
-                        }
-                        indicatorDTOList.get(i1).setLevel(indicatorDTO2.getLevel() + 1);
-                        indicatorDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
-                        indicatorDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
-                        indicatorDTOList.get(i1).setParentIndicatorId(indicatorDTO2.getIndicatorId());
-                        BeanUtils.copyProperties(indicatorDTOList.get(i1), indicator2);
-                        indicatorUpdateList.add(indicator2);
+                        indicatorDTO2 = indicatorDTOList.get(i1 - 1);
                     } else {
-                        Indicator indicator2 = new Indicator();
                         //父级
-                        IndicatorDTO indicatorDTO2 = indicatorDTOList.get(map.get(indicatorDTOList.get(i1).getParentIndicatorId()));
-                        if (StringUtils.isBlank(indicatorDTO2.getAncestors())) {
-                            indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getParentIndicatorId() + "," + indicatorDTO2.getIndicatorId());
-                        } else {
-                            indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getAncestors() + "," + indicatorDTO2.getIndicatorId());
-                        }
-                        indicatorDTOList.get(i1).setLevel(indicatorDTO2.getLevel() + 1);
-                        indicatorDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
-                        indicatorDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
-                        indicatorDTOList.get(i1).setParentIndicatorId(indicatorDTO2.getIndicatorId());
-                        BeanUtils.copyProperties(indicatorDTOList.get(i1), indicator2);
-                        indicatorUpdateList.add(indicator2);
+                        indicatorDTO2 = indicatorDTOList.get(map.get(indicatorDTOList.get(i1).getParentIndicatorId()));
                     }
+                    if (StringUtils.isBlank(indicatorDTO2.getAncestors())) {
+                        indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getParentIndicatorId().toString());
+                    } else {
+                        indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getAncestors() + "," + indicatorDTO2.getIndicatorId());
+                    }
+                    indicatorDTOList.get(i1).setLevel(indicatorDTO2.getLevel() + 1);
+                    indicatorDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                    indicatorDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                    indicatorDTOList.get(i1).setParentIndicatorId(indicatorDTO2.getIndicatorId());
+                    BeanUtils.copyProperties(indicatorDTOList.get(i1), indicator2);
+                    indicatorUpdateList.add(indicator2);
                 }
             }
         }
