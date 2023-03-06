@@ -324,19 +324,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
             }
         }
         Indicator indicator = new Indicator();
-        if (indicatorDTO.getParentIndicatorId() == 0) {
-            BeanUtils.copyProperties(indicatorDTO, indicator);
-            indicator.setAncestors("");
-            indicator.setParentIndicatorId(Constants.TOP_PARENT_ID);
-        } else {
-            IndicatorDTO indicatorDTO1 = indicatorMapper.selectIndicatorByIndicatorId(indicator.getParentIndicatorId());
-            BeanUtils.copyProperties(indicatorDTO, indicator);
-            if (StringUtils.isBlank(indicatorDTO1.getAncestors())) {
-                indicator.setAncestors(indicatorDTO1.getIndicatorId().toString());
-            } else {
-                indicator.setAncestors(indicatorDTO1.getAncestors() + "," + indicatorDTO1.getParentIndicatorId());
-            }
-        }
         indicator.setAncestors(ancestors);
         indicator.setLevel(parentLevel);
         indicator.setParentIndicatorId(parentIndicatorId);

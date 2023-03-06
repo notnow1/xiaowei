@@ -208,7 +208,11 @@ public class IndustryServiceImpl implements IIndustryService {
         String parentAncestors = "";//仅在非一级行业时有用
         Integer parentLevel = 1;
         Long parentIndustryId = industryDTO.getParentIndustryId();
-        if (StringUtils.isNotNull(parentIndustryId)) {
+        IndustryDTO industryByCode = industryMapper.checkUnique(industryCode);
+        if (StringUtils.isNotNull(industryByCode)) {
+            throw new ServiceException("新增行业" + industryDTO.getIndustryName() + "失败,行业编码重复");
+        }
+        if (parentIndustryId != 0L) {
             IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(parentIndustryId);
             if (parentIndustry == null) {
                 throw new ServiceException("该上级行业不存在");
@@ -221,22 +225,13 @@ public class IndustryServiceImpl implements IIndustryService {
                 throw new ServiceException("上级行业失效，不允许新增子节点");
             }
         }
-        IndustryDTO industryByCode = industryMapper.checkUnique(industryCode);
-        if (StringUtils.isNotNull(industryByCode)) {
-            throw new ServiceException("新增行业" + industryDTO.getIndustryName() + "失败,行业编码重复");
-        }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
-        if (StringUtils.isNotNull(parentIndustryId)) {
-            String ancestors = parentAncestors;
-            if (StringUtils.isNotEmpty(ancestors)) {
-                ancestors = ancestors + ",";
-            }
-            ancestors = ancestors + parentIndustryId;
-            industry.setAncestors(ancestors);
+        if (parentIndustryId != 0L) {
+            industry.setAncestors(StringUtils.isNotEmpty(parentAncestors) ? "" : parentAncestors + "," + parentIndustryId);
             industry.setLevel(parentLevel + 1);
         } else {
-            industry.setParentIndustryId(0L);
+            industry.setParentIndustryId(Constants.TOP_PARENT_ID);
             industry.setAncestors(parentAncestors);
             industry.setLevel(parentLevel);
         }
@@ -274,49 +269,36 @@ public class IndustryServiceImpl implements IIndustryService {
                 throw new ServiceException("更新行业" + industryDTO.getIndustryName() + "失败,行业编码重复");
             }
         }
-        Long parentIndustryId = 0L;
+        Industry industry = new Industry();
+        BeanUtils.copyProperties(industryDTO, industry);
         String ancestors = "";//仅在非一级指标时有用
         int parentLevel = 1;
-        if (StringUtils.isNotNull(industryDTO.getParentIndustryId())) {
-            parentIndustryId = industryDTO.getParentIndustryId();
+        Integer status = industryDTO.getStatus();
+        Long parentIndustryId = industryDTO.getParentIndustryId();
+        if (parentIndustryId != 0L) {
             IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(parentIndustryId);
-            if (StringUtils.isNull(parentIndustry) && !parentIndustryId.equals(0L)) {
+            if (StringUtils.isNull(parentIndustry)) {
                 throw new ServiceException("该上级行业不存在");
             }
-            Integer status = industryDTO.getStatus();
             // 如果父节点不为正常状态,则不允许新增子节点
-            if (StringUtils.isNotNull(parentIndustry) && BusinessConstants.DISABLE.equals(parentIndustry.getStatus())) {
+            if (BusinessConstants.DISABLE.equals(parentIndustry.getStatus())) {
                 throw new ServiceException("上级行业失效，不允许编辑子节点");
             }
-            if (parentIndustryId.equals(0L)) {
-                parentLevel = 0;
-            } else {
-                parentLevel = parentIndustry.getLevel() + 1;
-            }
+            // 等级
+            parentLevel = parentIndustry.getLevel() + 1;
             // 路径修改
-            if (!industryById.getParentIndustryId().equals(parentIndustryId) && !parentIndustryId.equals(0L)) {
+            if (!industryById.getParentIndustryId().equals(parentIndustryId)) {
                 ancestors = parentIndustry.getAncestors();
                 if (StringUtils.isNotEmpty(ancestors)) {
                     ancestors = ancestors + ",";
                 }
                 ancestors = ancestors + parentIndustryId;
             }
-            this.changeSonStatus(industryId, status);
-        }
-        Industry industry = new Industry();
-        if (industryDTO.getParentIndustryId() == 0) {
-            BeanUtils.copyProperties(industryDTO, industry);
-            industry.setAncestors("");
-            industry.setParentIndustryId(Constants.TOP_PARENT_ID);
         } else {
-            IndustryDTO industryDTO1 = industryMapper.selectIndustryByIndustryId(parentIndustryId);
-            BeanUtils.copyProperties(industryDTO, industry);
-            if (StringUtils.isBlank(industryDTO1.getAncestors())) {
-                ancestors = industryDTO1.getIndustryId().toString();
-            } else {
-                ancestors = industryDTO1.getAncestors() + "," + industryDTO1.getParentIndustryId();
-            }
+            ancestors = "";
+            industry.setParentIndustryId(Constants.TOP_PARENT_ID);
         }
+        this.changeSonStatus(industryId, status);
         industry.setAncestors(ancestors);
         industry.setStatus(industryDTO.getStatus());
         industry.setLevel(parentLevel);
