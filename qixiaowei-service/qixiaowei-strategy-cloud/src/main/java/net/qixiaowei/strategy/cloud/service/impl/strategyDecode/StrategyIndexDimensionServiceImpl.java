@@ -16,6 +16,7 @@ import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyIndexDimension
 import net.qixiaowei.strategy.cloud.service.strategyDecode.IStrategyIndexDimensionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +116,7 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateStrategyIndexDimension(List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS) {
         if (StringUtils.isEmpty(strategyIndexDimensionDTOS)) {
             return 1;
@@ -122,7 +124,7 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         setValue(strategyIndexDimensionDTOS, 0);
         List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOSBefore = selectStrategyIndexDimensionList(new StrategyIndexDimensionDTO());
         List<Long> strategyIndexDimensionIds = strategyIndexDimensionDTOSBefore.stream().map(StrategyIndexDimensionDTO::getStrategyIndexDimensionId).collect(Collectors.toList());
-
+        // 赋值ID
         for (int i = 0; i < strategyIndexDimensionDTOS.size(); i++) {
             StrategyIndexDimensionDTO strategyIndexDimensionDTO = strategyIndexDimensionDTOS.get(0);
             Long strategyIndexDimensionId = strategyIndexDimensionDTO.getStrategyIndexDimensionId();
@@ -139,44 +141,47 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
                 strategyIndexDimensionDTO.setParentIndexDimensionId(0L);
             } else {
                 if (StringUtils.isNotEmpty(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS()))
-                    operateStrategyList(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS(), strategyIndexDimensionId, strategyIndexDimensionIds);
+                    operateStrategyList(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS(), strategyIndexDimensionDTO, strategyIndexDimensionIds);
             }
         }
-        setStrategyAncestors(strategyIndexDimensionDTOS, "", 0L);
-
-        return 1;
+        // 赋值祖籍
+        for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
+            strategyIndexDimensionDTO.setAncestors(null);
+            strategyIndexDimensionDTO.setParentIndexDimensionId(0L);
+            if (StringUtils.isNotEmpty(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS()))
+                setStrategyAncestors(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS(), strategyIndexDimensionDTO);
+        }
+        // 删除
+        List<Long> delStrategyIndexDimensionIds = strategyIndexDimensionDTOSBefore.stream().map(StrategyIndexDimensionDTO::getStrategyIndexDimensionId)
+                .filter(id -> !strategyIndexDimensionDTOS.stream().map(StrategyIndexDimensionDTO::getStrategyIndexDimensionId)
+                        .collect(Collectors.toList()).contains(id)).collect(Collectors.toList());
+        return updateStrategyIndexDimensions(strategyIndexDimensionDTOS);
     }
 
     /**
      * 赋值
      *
-     * @param strategyIndexDimensionDTOS 战略指标维度列表
-     * @param ancestors                  祖籍
-     * @param parentStrategyId           父级ID
+     * @param strategyIndexDimensionDTOS      战略指标维度列表列表
+     * @param parentStrategyIndexDimensionDTO 父级战略指标维度列表DTO
      */
-    private static void setStrategyAncestors(List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS, String ancestors, Long parentStrategyId) {
+    private static void setStrategyAncestors(List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS, StrategyIndexDimensionDTO parentStrategyIndexDimensionDTO) {
+        Long parentStrategyId = parentStrategyIndexDimensionDTO.getStrategyIndexDimensionId();
         for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
-            Integer level = strategyIndexDimensionDTO.getLevel();
-            if (level == 0) {
-                strategyIndexDimensionDTO.setAncestors(null);
-            } else {
-                ancestors = ancestors + parentStrategyId;
-                strategyIndexDimensionDTO.setAncestors(ancestors);
-            }
+            strategyIndexDimensionDTO.setAncestors((StringUtils.isNull(strategyIndexDimensionDTO.getAncestors()) ? "" : parentStrategyIndexDimensionDTO.getAncestors() + ",") + parentStrategyId);
             strategyIndexDimensionDTO.setParentIndexDimensionId(parentStrategyId);
             if (StringUtils.isNotEmpty(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS()))
-                setStrategyAncestors(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS(), ancestors, strategyIndexDimensionDTO.getStrategyIndexDimensionId());
+                setStrategyAncestors(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS(), strategyIndexDimensionDTO);
         }
     }
 
     /**
      * 处理战略指标维度表
      *
-     * @param strategyIndexDimensionDTOS 战略指标维度表
-     * @param strategyIndexDimensionIds  战略指标维度ID集合
-     * @param parentIndexDimensionId     父级战略指标维度ID
+     * @param strategyIndexDimensionDTOS      战略指标维度表
+     * @param parentStrategyIndexDimensionDTO 父级战略指标维度DTO
+     * @param strategyIndexDimensionIds       战略指标维度ID集合
      */
-    private void operateStrategyList(List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS, Long parentIndexDimensionId, List<Long> strategyIndexDimensionIds) {
+    private void operateStrategyList(List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS, StrategyIndexDimensionDTO parentStrategyIndexDimensionDTO, List<Long> strategyIndexDimensionIds) {
         for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
             Long strategyIndexDimensionId = strategyIndexDimensionDTO.getStrategyIndexDimensionId();
             if (StringUtils.isNull(strategyIndexDimensionId)) {
@@ -185,13 +190,13 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
             } else if (strategyIndexDimensionIds.contains(strategyIndexDimensionId)) {
                 editStrategyIndexDimension(strategyIndexDimensionDTO);
             } else {
-                throw new ServiceException("战略指标配置维度部分数据不存在");
+                throw new ServiceException("战略指标配置维度部分数据已不存在");
             }
             strategyIndexDimensionDTO.setStrategyIndexDimensionId(strategyIndexDimensionId);
-            strategyIndexDimensionDTO.setParentIndexDimensionId(parentIndexDimensionId);
+            strategyIndexDimensionDTO.setParentIndexDimensionId(parentStrategyIndexDimensionDTO.getStrategyIndexDimensionId());
             List<StrategyIndexDimensionDTO> sonStrategyIndexDimensionDTOS = strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS();
             if (StringUtils.isNotEmpty(sonStrategyIndexDimensionDTOS)) {
-                operateStrategyList(sonStrategyIndexDimensionDTOS, strategyIndexDimensionId, strategyIndexDimensionIds);
+                operateStrategyList(sonStrategyIndexDimensionDTOS, strategyIndexDimensionDTO, strategyIndexDimensionIds);
             }
         }
     }
@@ -218,10 +223,10 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         int sort = 0;
         level += 1;
         for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
+            strategyIndexDimensionDTO.setSort(sort + 1);
             if (StringUtils.isNotEmpty(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS())) {
                 setValue(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS(), level);
             }
-            strategyIndexDimensionDTO.setSort(sort + 1);
             strategyIndexDimensionDTO.setLevel(level);
             sort++;
         }
@@ -324,8 +329,19 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
 
     public int updateStrategyIndexDimensions(List<StrategyIndexDimensionDTO> strategyIndexDimensionDtos) {
         List<StrategyIndexDimension> strategyIndexDimensionList = new ArrayList<>();
+        setListWithDTO(strategyIndexDimensionDtos, strategyIndexDimensionList);
+        return strategyIndexDimensionMapper.updateStrategyIndexDimensions(strategyIndexDimensionList);
+    }
 
-        for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDtos) {
+
+    /**
+     * 为需要更新的list赋值
+     *
+     * @param strategyIndexDimensionDTOS dtoList
+     * @param strategyIndexDimensionList 更新list
+     */
+    private void setListWithDTO(List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS, List<StrategyIndexDimension> strategyIndexDimensionList) {
+        for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
             StrategyIndexDimension strategyIndexDimension = new StrategyIndexDimension();
             BeanUtils.copyProperties(strategyIndexDimensionDTO, strategyIndexDimension);
             strategyIndexDimension.setCreateBy(SecurityUtils.getUserId());
@@ -334,8 +350,6 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
             strategyIndexDimension.setUpdateBy(SecurityUtils.getUserId());
             strategyIndexDimensionList.add(strategyIndexDimension);
         }
-        return strategyIndexDimensionMapper.updateStrategyIndexDimensions(strategyIndexDimensionList);
     }
-
 }
 
