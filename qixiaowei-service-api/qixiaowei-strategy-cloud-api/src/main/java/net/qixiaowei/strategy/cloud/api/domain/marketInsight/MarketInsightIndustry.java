@@ -35,6 +35,11 @@ public class MarketInsightIndustry extends TenantEntity {
      * 规划业务单元ID
      */
     private Long planBusinessUnitId;
+
+    /**
+     * 规划业务单元名称
+     */
+    private String planBusinessUnitName;
     /**
      * 规划业务单元维度(region,department,product,industry)
      */

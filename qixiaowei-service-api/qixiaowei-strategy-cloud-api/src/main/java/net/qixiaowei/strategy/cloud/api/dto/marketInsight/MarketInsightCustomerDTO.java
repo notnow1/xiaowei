@@ -7,6 +7,8 @@ import java.util.Date;
 import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -89,6 +91,10 @@ public class MarketInsightCustomerDTO {
      */
     private  String industryName;
     /**
+     * 规划业务单元维度列表
+     */
+    List<Map<String, Object>> businessUnitDecomposes;
+    /**
     * 删除标记:0未删除;1已删除
     */
     private  Integer deleteFlag;
@@ -96,6 +102,10 @@ public class MarketInsightCustomerDTO {
     * 创建人
     */
     private  Long createBy;
+    /**
+     * 创建人
+     */
+    private  String createByName;
     /**
     * 创建时间
     */
