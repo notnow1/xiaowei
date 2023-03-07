@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.remote.user;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
+import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
@@ -52,6 +53,7 @@ public class RemoteUser implements RemoteUserService {
 
     @Override
     @InnerAuth
+    @IgnoreTenant
     @PostMapping("/resetPwdOfUserId")
     public R<?> resetPwdOfUserId(Long userId, String password, String source) {
         UserDTO userDTO = new UserDTO();
