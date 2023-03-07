@@ -394,9 +394,6 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isNull(userByUserId)) {
             throw new ServiceException("修改失败，当前用户不存在");
         }
-        if (userByUserId.isAdmin()) {
-            throw new ServiceException("系统管理员帐号不可操作。");
-        }
         this.checkUserUnique(userDTO);
         //数据权限 todo
         //查找当前用户角色
@@ -511,9 +508,6 @@ public class UserServiceImpl implements IUserService {
         UserDTO userByUserId = userMapper.selectUserByUserId(userId);
         if (StringUtils.isNull(userByUserId)) {
             throw new ServiceException("重置密码失败，当前用户不存在");
-        }
-        if (userByUserId.isAdmin()) {
-            throw new ServiceException("重置密码失败，系统管理员帐号不可操作。");
         }
         User user = new User();
         user.setUserId(userId);
