@@ -725,3 +725,47 @@ CREATE TABLE strategy_metrics_plan(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (strategy_metrics_plan_id)
 )  COMMENT = '战略衡量指标规划表';
+
+
+CREATE TABLE annual_key_work(
+    annual_key_work_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    plan_business_unit_id BIGINT UNSIGNED NOT NULL   COMMENT '规划业务单元ID' ,
+    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry)' ,
+    area_id BIGINT UNSIGNED    COMMENT '区域ID' ,
+    department_id BIGINT UNSIGNED    COMMENT '部门ID' ,
+    product_id BIGINT UNSIGNED    COMMENT '产品ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
+    plan_rank TINYINT UNSIGNED NOT NULL   COMMENT '规划级别:1部门;2公司' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (annual_key_work_id)
+)  COMMENT = '年度重点工作表';
+
+
+CREATE TABLE annual_key_work_detail(
+    annual_key_work_detail_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    annual_key_work_id BIGINT UNSIGNED NOT NULL   COMMENT '年度重点工作ID' ,
+    task_number VARCHAR(128)    COMMENT '任务编号' ,
+    task_name VARCHAR(128)    COMMENT '任务名称' ,
+    department_id BIGINT UNSIGNED    COMMENT '所属部门' ,
+    department_employee_id BIGINT UNSIGNED    COMMENT '部门主管' ,
+    task_description VARCHAR(1024)    COMMENT '任务描述' ,
+    close_standard VARCHAR(1024)    COMMENT '闭环标准' ,
+    task_start_time DATE    COMMENT '任务开始时间' ,
+    task_end_time DATE    COMMENT '任务结束时间' ,
+    duty_employee_id BIGINT UNSIGNED    COMMENT '责任人' ,
+    duty_employee_name VARCHAR(64)    COMMENT '责任人员姓名' ,
+    duty_employee_code VARCHAR(32)    COMMENT '责任人员编码' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (annual_key_work_detail_id)
+)  COMMENT = '年度重点工作详情表';
