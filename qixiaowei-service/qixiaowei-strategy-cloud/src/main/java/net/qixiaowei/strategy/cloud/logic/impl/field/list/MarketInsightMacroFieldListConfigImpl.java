@@ -16,10 +16,11 @@ import java.util.Map;
 
 
 /**
- * @description 总奖金包预算-字段列表配置实现类
- * @Author hzk
- * @Date 2023-02-09 19:55
- **/
+ * 市场洞察宏观表-字段列表配置实现类
+ *
+ * @author TANGMICHI
+ * @since 2023-02-28
+ */
 @Service
 @Slf4j
 public class MarketInsightMacroFieldListConfigImpl implements IFieldListConfigStrategy {
@@ -28,7 +29,7 @@ public class MarketInsightMacroFieldListConfigImpl implements IFieldListConfigSt
 
     static {
         INIT_MAP.put(MarketInsightMacroField.PLAN_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(MarketInsightMacroField.PLAN_BUSINESS_UNIT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(MarketInsightMacroField.PLAN_BUSINESS_UNIT_ID.getCode(), FieldListConfig.builder().fieldWidth(160).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(MarketInsightMacroField.AREA_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(MarketInsightMacroField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(MarketInsightMacroField.PRODUCT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());

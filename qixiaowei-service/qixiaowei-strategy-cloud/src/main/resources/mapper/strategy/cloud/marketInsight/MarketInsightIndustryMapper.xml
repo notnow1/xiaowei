@@ -4,11 +4,26 @@
     <!--    查询市场洞察行业表-->
     <select id="selectMarketInsightIndustryByMarketInsightIndustryId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO">
-        SELECT
-        market_insight_industry_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
-        FROM market_insight_industry
-        WHERE  market_insight_industry_id=#{marketInsightIndustryId}
-        and delete_flag=0
+        SELECT mii.market_insight_industry_id,
+               mii.plan_year,
+               mii.plan_business_unit_id,
+               pbu.business_unit_name as planBusinessUnitName,
+               mii.business_unit_decompose,
+               mii.area_id,
+               mii.department_id,
+               mii.product_id,
+               mii.industry_id,
+               mii.delete_flag,
+               mii.create_by,
+               mii.create_time,
+               mii.update_by,
+               mii.update_time
+        FROM market_insight_industry mii
+                 left join plan_business_unit pbu
+                           on pbu.plan_business_unit_id=mii.plan_business_unit_id
+                               and pbu.delete_flag =0
+        WHERE mii.market_insight_industry_id = #{marketInsightIndustryId}
+          and mii.delete_flag = 0
     </select>
 
     <!--    批量查询市场洞察行业表-->
@@ -32,7 +47,7 @@
         mii.market_insight_industry_id,
         mii.plan_year,
         mii.plan_business_unit_id,
-        pbu.business_unit_name,
+        pbu.business_unit_name as planBusinessUnitName,
         mii.business_unit_decompose,
         mii.area_id,
         mii.department_id,
@@ -299,6 +314,7 @@
                 #{item}
             </foreach>
         </if>
+
         <if test="marketInsightIndustry.marketInsightIndustryId != null">
             and mii.market_insight_industry_id=#{marketInsightIndustry.marketInsightIndustryId}
         </if>

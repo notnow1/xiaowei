@@ -48,6 +48,10 @@ public class MarketInsightCustomerDTO {
     */
     private  Long planBusinessUnitId;
     /**
+     * 规划业务单元名称
+     */
+    private String planBusinessUnitName;
+    /**
     * 规划业务单元维度(region,department,product,industry)
     */
     private  String businessUnitDecompose;
@@ -56,17 +60,34 @@ public class MarketInsightCustomerDTO {
     */
     private  Long areaId;
     /**
+     * 区域名称
+     */
+    private  String areaName;
+    /**
     * 部门ID
     */
     private  Long departmentId;
+
+    /**
+     * 部门名称
+     */
+    private  String departmentName;
     /**
     * 产品ID
     */
     private  Long productId;
     /**
+     * 产品名称
+     */
+    private  String productName;
+    /**
     * 行业ID
     */
     private  Long industryId;
+    /**
+     * 行业名称
+     */
+    private  String industryName;
     /**
     * 删除标记:0未删除;1已删除
     */

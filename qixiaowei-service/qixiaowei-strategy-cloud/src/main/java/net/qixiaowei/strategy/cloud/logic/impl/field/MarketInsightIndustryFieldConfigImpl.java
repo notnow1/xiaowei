@@ -16,15 +16,16 @@ import java.util.Map;
 
 
 /**
-* 市场洞察行业表-字段配置实现类
-* @author TANGMICHI
-* @since 2023-03-03
-*/
+ * 市场洞察行业表-字段配置实现类
+ *
+ * @author TANGMICHI
+ * @since 2023-03-03
+ */
 @Service
 @Slf4j
 public class MarketInsightIndustryFieldConfigImpl implements IFieldConfigStrategy {
 
-private static final Map<String, FieldConfig> INIT_MAP = new HashMap<>();
+    private static final Map<String, FieldConfig> INIT_MAP = new HashMap<>();
 
     static {
         INIT_MAP.put(MarketInsightIndustryField.PLAN_YEAR.getCode(), FieldConfig.builder().businessType(BusinessType.MARKET_INSIGHT_MACRO.getCode()).fieldName(MarketInsightIndustryField.PLAN_YEAR.getCode()).fieldLabel(MarketInsightIndustryField.PLAN_YEAR.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
@@ -37,17 +38,17 @@ private static final Map<String, FieldConfig> INIT_MAP = new HashMap<>();
     }
 
 
-@Override
-public BusinessType getBusinessType() {
-return BusinessType.MARKET_INSIGHT_INDUSTRY;
-}
+    @Override
+    public BusinessType getBusinessType() {
+        return BusinessType.MARKET_INSIGHT_INDUSTRY;
+    }
 
 
-@Override
-public List<FieldConfig> initFieldConfig() {
-    List<FieldConfig> fieldConfigList = new ArrayList<>();
+    @Override
+    public List<FieldConfig> initFieldConfig() {
+        List<FieldConfig> fieldConfigList = new ArrayList<>();
         INIT_MAP.forEach((key, fieldConfig) -> fieldConfigList.add(fieldConfig));
         return fieldConfigList;
-        }
+    }
 
-        }
+}
