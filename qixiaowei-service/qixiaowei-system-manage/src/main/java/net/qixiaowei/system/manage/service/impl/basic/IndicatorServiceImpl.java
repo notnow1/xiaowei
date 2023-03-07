@@ -328,12 +328,13 @@ public class IndicatorServiceImpl implements IIndicatorService {
             }
         }
         Indicator indicator = new Indicator();
+        BeanUtils.copyProperties(indicatorDTO, indicator);
         indicator.setAncestors(ancestors);
         indicator.setLevel(parentLevel);
         indicator.setParentIndicatorId(parentIndicatorId);
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());
-        int num = indicatorMapper.updateIndicator(indicator);
+        indicatorMapper.updateIndicator(indicator);
         List<Indicator> indicatorUpdateList = this.changeSonAncestor(indicatorId, indicator);
         if (StringUtils.isNotEmpty(indicatorUpdateList)) {
             try {
@@ -342,7 +343,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                 throw new ServiceException("批量修改指标子级信息失败");
             }
         }
-        return num;
+        return 1;
     }
 
     /**
