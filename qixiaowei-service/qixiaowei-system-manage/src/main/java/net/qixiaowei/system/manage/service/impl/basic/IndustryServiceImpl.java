@@ -18,9 +18,11 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
+import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
 import net.qixiaowei.system.manage.api.dto.basic.ConfigDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
+import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndustryMapper;
 import net.qixiaowei.system.manage.service.basic.IConfigService;
 import net.qixiaowei.system.manage.service.basic.IIndustryDefaultService;
@@ -52,6 +54,9 @@ public class IndustryServiceImpl implements IIndustryService {
 
     @Autowired
     private IIndustryDefaultService industryDefaultService;
+
+    @Autowired
+    private IndustryDefaultMapper industryDefaultMapper;
 
     @Autowired
     private RemoteDecomposeService targetDecomposeService;
@@ -571,13 +576,51 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<Tree<Long>> getEnableList(IndustryDTO industryDTO) {
-        Integer enableType = getInteger();
+        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        if (StringUtils.isNull(enableType)) {
+            throw new ServiceException("系统配置数据异常");
+        }
         if (enableType == 2) {
-            return selectIndustryTreeList(industryDTO);
+            Industry industry = new Industry();
+            industry.setStatus(1);
+            List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(industry);
+            //自定义属性名
+            TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+            treeNodeConfig.setIdKey("industryId");
+            treeNodeConfig.setNameKey("industryName");
+            treeNodeConfig.setParentIdKey("parentIndustryId");
+            return TreeUtil.build(industryDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+                tree.setId(treeNode.getIndustryId());
+                tree.setParentId(treeNode.getParentIndustryId());
+                tree.setName(treeNode.getIndustryName());
+                tree.putExtra("parentIndustryName", treeNode.getParentIndustryName());
+                tree.putExtra("level", treeNode.getLevel());
+                tree.putExtra("industryCode", treeNode.getIndustryCode());
+                tree.putExtra("status", treeNode.getStatus());
+                tree.putExtra("createBy", treeNode.getCreateBy());
+                tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
+            });
         } else {
             IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
-            BeanUtils.copyProperties(industryDTO, industryDefaultDTO);
-            return industryDefaultService.selectIndustryDefaultTreeList(industryDefaultDTO);
+            IndustryDefault industryDefault = new IndustryDefault();
+            industryDefault.setStatus(1);
+            List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultMapper.selectIndustryDefaultList(industryDefault);
+            //自定义属性名
+            TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+            treeNodeConfig.setIdKey("industryId");
+            treeNodeConfig.setNameKey("industryName");
+            treeNodeConfig.setParentIdKey("parentIndustryId");
+            return TreeUtil.build(industryDefaultDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+                tree.setId(treeNode.getIndustryId());
+                tree.setParentId(treeNode.getParentIndustryId());
+                tree.setName(treeNode.getIndustryName());
+                tree.putExtra("parentIndustryName", treeNode.getParentIndustryName());
+                tree.putExtra("level", treeNode.getLevel());
+                tree.putExtra("industryCode", treeNode.getIndustryCode());
+                tree.putExtra("status", treeNode.getStatus());
+                tree.putExtra("createBy", treeNode.getCreateBy());
+                tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
+            });
         }
     }
 
