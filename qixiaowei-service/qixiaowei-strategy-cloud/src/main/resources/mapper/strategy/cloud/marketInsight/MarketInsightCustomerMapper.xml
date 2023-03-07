@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MarketInsightCustomerMapper">
+    <!--    查询市场洞察客户表-->
+    <select id="selectMarketInsightCustomerByMarketInsightCustomerId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO">
+        SELECT
+        market_insight_customer_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_customer
+        WHERE  market_insight_customer_id=#{marketInsightCustomerId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察客户表-->
+    <select id="selectMarketInsightCustomerByMarketInsightCustomerIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO">
+        SELECT
+        market_insight_customer_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_customer
+        WHERE  market_insight_customer_id in
+            <foreach item="item"
+                     collection="marketInsightCustomerIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察客户表列表-->
+    <select id="selectMarketInsightCustomerList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO">
+        SELECT
+        market_insight_customer_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_customer
+        WHERE delete_flag=0
+                        <if test="marketInsightCustomer.marketInsightCustomerId != null">
+                            and market_insight_customer_id=#{marketInsightCustomer.marketInsightCustomerId}
+                        </if>
+                        <if test="marketInsightCustomer.planYear != null">
+                            and plan_year=#{marketInsightCustomer.planYear}
+                        </if>
+                        <if test="marketInsightCustomer.planBusinessUnitId != null">
+                            and plan_business_unit_id=#{marketInsightCustomer.planBusinessUnitId}
+                        </if>
+                        <if test="marketInsightCustomer.businessUnitDecompose != null and marketInsightCustomer.businessUnitDecompose != ''">
+                            and business_unit_decompose=#{marketInsightCustomer.businessUnitDecompose}
+                        </if>
+                        <if test="marketInsightCustomer.areaId != null">
+                            and area_id=#{marketInsightCustomer.areaId}
+                        </if>
+                        <if test="marketInsightCustomer.departmentId != null">
+                            and department_id=#{marketInsightCustomer.departmentId}
+                        </if>
+                        <if test="marketInsightCustomer.productId != null">
+                            and product_id=#{marketInsightCustomer.productId}
+                        </if>
+                        <if test="marketInsightCustomer.industryId != null">
+                            and industry_id=#{marketInsightCustomer.industryId}
+                        </if>
+                        <if test="marketInsightCustomer.deleteFlag != null">
+                            and delete_flag=#{marketInsightCustomer.deleteFlag}
+                        </if>
+                        <if test="marketInsightCustomer.createBy != null">
+                            and create_by=#{marketInsightCustomer.createBy}
+                        </if>
+                        <if test="marketInsightCustomer.createTime != null">
+                            and create_time=#{marketInsightCustomer.createTime}
+                        </if>
+                        <if test="marketInsightCustomer.updateBy != null">
+                            and update_by=#{marketInsightCustomer.updateBy}
+                        </if>
+                        <if test="marketInsightCustomer.updateTime != null">
+                            and update_time=#{marketInsightCustomer.updateTime}
+                        </if>
+    </select>
+    <!--新增市场洞察客户表-->
+    <insert id="insertMarketInsightCustomer" useGeneratedKeys="true" keyProperty="marketInsightCustomerId">
+        INSERT INTO market_insight_customer (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{marketInsightCustomer.planYear},#{marketInsightCustomer.planBusinessUnitId},#{marketInsightCustomer.businessUnitDecompose},#{marketInsightCustomer.areaId},#{marketInsightCustomer.departmentId},#{marketInsightCustomer.productId},#{marketInsightCustomer.industryId},#{marketInsightCustomer.deleteFlag},#{marketInsightCustomer.createBy},#{marketInsightCustomer.createTime},#{marketInsightCustomer.updateBy},#{marketInsightCustomer.updateTime})
+    </insert>
+    <!--修改市场洞察客户表-->
+    <update id="updateMarketInsightCustomer">
+        UPDATE market_insight_customer
+        SET
+                    <if test="marketInsightCustomer.planYear != null">
+                        plan_year=#{marketInsightCustomer.planYear},
+                    </if>
+                    <if test="marketInsightCustomer.planBusinessUnitId != null">
+                        plan_business_unit_id=#{marketInsightCustomer.planBusinessUnitId},
+                    </if>
+                    <if test="marketInsightCustomer.businessUnitDecompose != null and marketInsightCustomer.businessUnitDecompose != ''">
+                        business_unit_decompose=#{marketInsightCustomer.businessUnitDecompose},
+                    </if>
+                    <if test="marketInsightCustomer.areaId != null">
+                        area_id=#{marketInsightCustomer.areaId},
+                    </if>
+                    <if test="marketInsightCustomer.departmentId != null">
+                        department_id=#{marketInsightCustomer.departmentId},
+                    </if>
+                    <if test="marketInsightCustomer.productId != null">
+                        product_id=#{marketInsightCustomer.productId},
+                    </if>
+                    <if test="marketInsightCustomer.industryId != null">
+                        industry_id=#{marketInsightCustomer.industryId},
+                    </if>
+                    <if test="marketInsightCustomer.deleteFlag != null">
+                        delete_flag=#{marketInsightCustomer.deleteFlag},
+                    </if>
+                    <if test="marketInsightCustomer.createBy != null">
+                        create_by=#{marketInsightCustomer.createBy},
+                    </if>
+                    <if test="marketInsightCustomer.createTime != null">
+                        create_time=#{marketInsightCustomer.createTime},
+                    </if>
+                    <if test="marketInsightCustomer.updateBy != null">
+                        update_by=#{marketInsightCustomer.updateBy},
+                    </if>
+                    <if test="marketInsightCustomer.updateTime != null">
+                        update_time=#{marketInsightCustomer.updateTime}
+                    </if>
+        WHERE
+                 market_insight_customer_id=#{marketInsightCustomer.marketInsightCustomerId}
+    </update>
+    <!--逻辑删除市场洞察客户表-->
+    <update id="logicDeleteMarketInsightCustomerByMarketInsightCustomerId">
+        UPDATE market_insight_customer
+        SET     delete_flag= 1,
+                update_by=#{marketInsightCustomer.updateBy},
+                update_time=#{marketInsightCustomer.updateTime}
+        WHERE
+                market_insight_customer_id=#{marketInsightCustomer.marketInsightCustomerId}
+    </update>
+    <!--逻辑批量删除市场洞察客户表-->
+    <update id="logicDeleteMarketInsightCustomerByMarketInsightCustomerIds">
+        UPDATE market_insight_customer
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         market_insight_customer_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomerIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察客户表-->
+    <insert id="batchMarketInsightCustomer">
+        INSERT INTO market_insight_customer (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="marketInsightCustomers"
+                 separator=",">
+            (#{item.planYear},#{item.planBusinessUnitId},#{item.businessUnitDecompose},#{item.areaId},#{item.departmentId},#{item.productId},#{item.industryId},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察客户表-->
+    <delete id="deleteMarketInsightCustomerByMarketInsightCustomerId">
+        DELETE FROM market_insight_customer
+        WHERE  market_insight_customer_id=#{marketInsightCustomer}
+
+    </delete>
+    <!--物理批量删除市场洞察客户表-->
+    <delete id="deleteMarketInsightCustomerByMarketInsightCustomerIds">
+        DELETE FROM market_insight_customer
+        WHERE  market_insight_customer_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomerIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察客户表-->
+    <update id="updateMarketInsightCustomers">
+        update market_insight_customer
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="plan_year=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.planYear != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.planYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="plan_business_unit_id=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.planBusinessUnitId != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.planBusinessUnitId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="business_unit_decompose=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.businessUnitDecompose}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="area_id=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.areaId != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.areaId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_id=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.departmentId != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.departmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_id=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.productId != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.productId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="industry_id=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.industryId != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.industryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="marketInsightCustomerList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="marketInsightCustomerList" separator="or" item="item" index="index">
+                    market_insight_customer_id=#{item.marketInsightCustomerId}
+        </foreach>
+    </update>
+</mapper>
+
+
