@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.api.dto.strategyDecode;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 
 import javax.validation.groups.Default;
 import java.util.Date;
@@ -121,11 +122,7 @@ public class StrategyMeasureDTO {
     /**
      * 战略举措清单详情表
      */
-    private List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOS;
-    /**
-     * 战略举措清单任务表
-     */
-    private List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS;
+    private List<StrategyMeasureDetailVO> strategyMeasureDetailVOS;
 
 }
 

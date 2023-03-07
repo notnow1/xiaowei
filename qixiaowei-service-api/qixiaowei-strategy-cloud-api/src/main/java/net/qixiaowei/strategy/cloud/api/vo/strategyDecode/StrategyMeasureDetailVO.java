@@ -1,55 +1,52 @@
-package net.qixiaowei.strategy.cloud.api.dto.strategyDecode;
+package net.qixiaowei.strategy.cloud.api.vo.strategyDecode;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.groups.Default;
 import java.util.Date;
-import java.util.Map;
 
 /**
- * 战略举措清单任务表
- *
- * @author Graves
- * @since 2023-03-07
+ * 战略举措清单VO
  */
 @Data
 @Accessors(chain = true)
-public class StrategyMeasureTaskDTO {
+public class StrategyMeasureDetailVO {
 
-    //查询检验
-    public interface QueryStrategyMeasureTaskDTO extends Default {
-
-    }
-
-    //新增检验
-    public interface AddStrategyMeasureTaskDTO extends Default {
-
-    }
-
-    //删除检验
-    public interface DeleteStrategyMeasureTaskDTO extends Default {
-
-    }
-
-    //修改检验
-    public interface UpdateStrategyMeasureTaskDTO extends Default {
-
-    }
-
-    /**
-     * ID
-     */
-    private Long strategyMeasureTaskId;
     /**
      * 战略举措清单ID
      */
     private Long strategyMeasureId;
     /**
-     * 战略举措清单详情ID
+     * 详情ID
      */
     private Long strategyMeasureDetailId;
+    /**
+     * 任务ID
+     */
+    private Long strategyMeasureTaskId;
+    /**
+     * 战略指标维度ID
+     */
+    private Long strategyIndexDimensionId;
+    /**
+     * 序列号
+     */
+    private Integer serialNumber;
+    /**
+     * 战略举措名称
+     */
+    private String strategyMeasureName;
+    /**
+     * 战略举措来源
+     */
+    private Long strategyMeasureSource;
+    /**
+     * 排序
+     */
+    private Integer sort;
+
+
     /**
      * 关键任务
      */
@@ -74,10 +71,8 @@ public class StrategyMeasureTaskDTO {
      * 责任人员编码
      */
     private String dutyEmployeeCode;
-    /**
-     * 排序
-     */
-    private Integer sort;
+
+
     /**
      * 删除标记:0未删除;1已删除
      */
@@ -104,10 +99,4 @@ public class StrategyMeasureTaskDTO {
      * 租户ID
      */
     private Long tenantId;
-
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
 }
-

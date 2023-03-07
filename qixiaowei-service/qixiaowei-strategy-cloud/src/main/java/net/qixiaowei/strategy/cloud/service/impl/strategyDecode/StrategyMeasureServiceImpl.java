@@ -16,6 +16,7 @@ import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasure;
 import net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDetailDTO;
+import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 import net.qixiaowei.strategy.cloud.mapper.plan.PlanBusinessUnitMapper;
 import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyMeasureMapper;
 import net.qixiaowei.strategy.cloud.service.strategyDecode.*;
@@ -203,7 +204,20 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
         strategyMeasure.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         strategyMeasureMapper.insertStrategyMeasure(strategyMeasure);
         Long strategyMeasureId = strategyMeasure.getStrategyMeasureId();
-        List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOS = strategyMeasureDTO.getStrategyMeasureDetailDTOS();
+        List<StrategyMeasureDetailVO> strategyMeasureDetailVOS = strategyMeasureDTO.getStrategyMeasureDetailVOS();
+        if (StringUtils.isNotEmpty(strategyMeasureDetailVOS)) {
+            Long strategyIndexDimensionId = null;
+            List<StrategyMeasureDetailVO> strategyMeasureDetailVOList = null;
+            for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
+                if (!strategyMeasureDetailVO.getStrategyIndexDimensionId().equals(strategyIndexDimensionId)) {
+                    strategyMeasureDetailVOList = new ArrayList<>();
+                    strategyIndexDimensionId = strategyMeasureDetailVO.getStrategyIndexDimensionId();
+                } else {
+                    strategyMeasureDetailVOList.add(strategyMeasureDetailVO);
+                }
+
+            }
+        }
 
         return strategyMeasureDTO;
     }

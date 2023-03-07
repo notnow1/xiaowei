@@ -29,10 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -597,7 +594,7 @@ public class IndustryServiceImpl implements IIndustryService {
     /**
      * 修改启用行业类型
      *
-     * @return
+     * @return int
      */
     @Override
     public int updateEnableType(Integer configValue) {
