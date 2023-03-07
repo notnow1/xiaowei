@@ -895,6 +895,7 @@
         <if test="employee.emergencyMobile != null and employee.emergencyMobile != ''">
             and ei.emergency_mobile=#{employee.emergencyMobile}
         </if>
+        order by e.create_time desc
     </select>
 
     <!--    通过部门，岗位，职级集合查询员工表-->

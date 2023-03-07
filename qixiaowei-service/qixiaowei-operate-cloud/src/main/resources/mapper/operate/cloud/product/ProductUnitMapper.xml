@@ -44,6 +44,7 @@
         <if test="productUnit.updateTime != null">
             and update_time like '%${productUnit.updateTime}%'
         </if>
+    order by create_time desc
     </select>
 <!--    根据code查询产品单位表-->
     <select id="selectProductUnitByProductUnitCode"

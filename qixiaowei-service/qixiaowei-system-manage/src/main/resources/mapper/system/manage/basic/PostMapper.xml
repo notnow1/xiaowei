@@ -371,6 +371,7 @@
         <if test="post.status != null">
             and p.status =#{post.status}
         </if>
+        order by p.create_time desc
     </select>
 
     <select id="getPostCodes" resultType="java.lang.String">

@@ -83,6 +83,7 @@
                 <if test="dictionaryData.updateTime != null">
                     and update_time=#{dictionaryData.updateTime}
                 </if>
+        order by create_time desc
     </select>
     <!--    根据type Id查询数据做排序 自增-->
     <select id="selectDictionaryTypeId" resultType="java.lang.Integer">

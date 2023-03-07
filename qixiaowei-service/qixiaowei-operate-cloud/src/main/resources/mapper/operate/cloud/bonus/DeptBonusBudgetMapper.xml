@@ -94,6 +94,7 @@
         <if test="deptBonusBudget.updateTime != null">
             and dbb.update_time=#{deptBonusBudget.updateTime}
         </if>
+    order by dbb.create_time desc
     </select>
     <!--    返回部门奖金预算最大年份-->
     <select id="queryDeptBonusBudgetYear"

@@ -106,7 +106,7 @@
         <if test="emolumentPlan.updateTime != null">
             and update_time=#{emolumentPlan.updateTime}
         </if>
-        order by plan_year
+        order by plan_year desc
     </select>
 <!--    新增薪酬规划时预制数据-->
     <select id="prefabricateAddEmolumentPlan"

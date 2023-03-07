@@ -71,6 +71,7 @@
                 <if test="dictionaryType.updateTime != null">
                     and update_time=#{dictionaryType.updateTime}
                 </if>
+        order by create_time desc
     </select>
     <!--    根据type类型查询字典类型表-->
     <select id="selectDictionaryTypeByDictionaryType"

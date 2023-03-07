@@ -316,6 +316,7 @@
                 e.employee_name NOT LIKE CONCAT('%', #{item}, '%')
             </foreach>
         </if>
+    order by t.create_time desc
     </select>
 
     <select id="getTenantCodes" resultType="java.lang.String">

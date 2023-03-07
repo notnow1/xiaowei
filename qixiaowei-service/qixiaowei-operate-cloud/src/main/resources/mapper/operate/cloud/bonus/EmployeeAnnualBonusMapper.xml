@@ -221,6 +221,7 @@
         <if test="employeeAnnualBonus.updateTime != null">
             and update_time=#{employeeAnnualBonus.updateTime}
         </if>
+        order by create_time desc
     </select>
     <!--    根据个人年终奖表年份查询个人年终奖表-->
     <select id="selectEmployeeAnnualBonusByAnnualBonusYear"
