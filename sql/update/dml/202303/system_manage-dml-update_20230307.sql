@@ -17,9 +17,9 @@ INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_va
 -- update of menu
 -- ----------------------------
 UPDATE menu SET sort=11 WHERE menu_id=18;
-UPDATE menu SET parent_menu_id=7, sort=10, component='setting/basics/regional/index' WHERE menu_id=22;
-UPDATE menu SET parent_menu_id=7, sort=9, component='setting/basics/product/index' WHERE menu_id=23;
-UPDATE menu SET parent_menu_id=7, sort=8, component='setting/basics/productUnit/index' WHERE menu_id=24;
-UPDATE menu SET component='setting/basics/product/components/add' WHERE menu_id=57;
-UPDATE menu SET component='setting/basics/product/components/edit' WHERE menu_id=58;
-UPDATE menu SET component='setting/basics/product/components/detail' WHERE menu_id=59;
+UPDATE menu SET parent_menu_id=7, sort=10, component='setting/basics/regional/index', product_package_id=NULL WHERE menu_id=22;
+UPDATE menu SET parent_menu_id=7, sort=9, component='setting/basics/product/index', product_package_id=NULL WHERE menu_id=23;
+UPDATE menu SET parent_menu_id=7, sort=8, component='setting/basics/productUnit/index', product_package_id=NULL WHERE menu_id=24;
+UPDATE menu SET component='setting/basics/product/components/add', product_package_id=NULL WHERE menu_id=57;
+UPDATE menu SET component='setting/basics/product/components/edit', product_package_id=NULL WHERE menu_id=58;
+UPDATE menu SET component='setting/basics/product/components/detail', product_package_id=NULL WHERE menu_id=59;

@@ -168,7 +168,7 @@
 
         <!-- 创建日期过滤  -->
         <if test="strategyIntent.params.createTimeEqual != null and strategyIntent.params.createTimeEqual.size() > 0">
-            AND si.create_time IN
+            AND date_format(si.create_time,'%Y-%m-%d') IN
             <foreach item="item"
                      collection="strategyIntent.params.createTimeEqual"
                      index="index" open="(" separator="," close=")">
@@ -176,7 +176,7 @@
             </foreach>
         </if>
         <if test="strategyIntent.params.createTimeNotEqual != null and strategyIntent.params.createTimeNotEqual.size() > 0">
-            AND si.create_time NOT IN
+            AND  date_format(si.create_time,'%Y-%m-%d')  NOT IN
             <foreach item="item"
                      collection="strategyIntent.params.createTimeNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -184,22 +184,22 @@
             </foreach>
         </if>
         <if test="strategyIntent.params.createTimeBefore != null and strategyIntent.params.createTimeBefore != ''">
-            AND si.create_time &lt; #{strategyIntent.params.createTimeBefore}
+            AND date_format(si.create_time,'%Y-%m-%d') &lt; #{strategyIntent.params.createTimeBefore}
         </if>
         <if test="strategyIntent.params.createTimeNotBefore != null and strategyIntent.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
-            AND si.create_time &gt;= #{strategyIntent.params.createTimeNotBefore}
+            AND date_format(si.create_time,'%Y-%m-%d') &gt;= #{strategyIntent.params.createTimeNotBefore}
         </if>
         <if test="strategyIntent.params.createTimeAfter != null and strategyIntent.params.createTimeAfter != ''"><!-- 开始时间检索 -->
-            AND si.create_time &gt; #{strategyIntent.params.createTimeAfter}
+            AND date_format(si.create_time,'%Y-%m-%d') &gt; #{strategyIntent.params.createTimeAfter}
         </if>
         <if test="strategyIntent.params.createTimeNotAfter != null and strategyIntent.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
-            AND si.create_time &lt;= #{strategyIntent.params.createTimeNotAfter}
+            AND date_format(si.create_time,'%Y-%m-%d') &lt;= #{strategyIntent.params.createTimeNotAfter}
         </if>
         <if test="strategyIntent.params.createTimeStart != null and strategyIntent.params.createTimeStart != ''"><!-- 开始时间检索 -->
-            AND si.create_time &gt;= #{strategyIntent.params.createTimeStart}
+            AND date_format(si.create_time,'%Y-%m-%d') &gt;= #{strategyIntent.params.createTimeStart}
         </if>
         <if test="strategyIntent.params.createTimeEnd != null and strategyIntent.params.createTimeEnd != ''"><!-- 结束时间检索 -->
-            AND si.create_time &lt;= #{strategyIntent.params.createTimeEnd}
+            AND date_format(si.create_time,'%Y-%m-%d') &lt;= #{strategyIntent.params.createTimeEnd}
         </if>
 
         <if test="strategyIntent.createBys != null and strategyIntent.createBys.size() >0">
@@ -241,7 +241,7 @@
             and si.create_by=#{strategyIntent.createBy}
         </if>
         <if test="strategyIntent.createTime != null">
-            and si.create_time=#{strategyIntent.createTime}
+            and date_format(si.create_time,'%Y-%m-%d')=#{strategyIntent.createTime}
         </if>
         <if test="strategyIntent.updateBy != null">
             and si.update_by=#{strategyIntent.updateBy}
@@ -250,13 +250,14 @@
             and si.update_time=#{strategyIntent.updateTime}
         </if>
         <if test="strategyIntent.createBys != null and strategyIntent.createBys.size() >0">
-            and create_by in
+            and si.create_by in
             <foreach item="item"
                      collection="strategyIntent.createBys"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
+        order by  si.create_time desc
     </select>
 <!--    根据规划年度查询战略意图表-->
     <select id="selectStrategyIntentByPlanYear"

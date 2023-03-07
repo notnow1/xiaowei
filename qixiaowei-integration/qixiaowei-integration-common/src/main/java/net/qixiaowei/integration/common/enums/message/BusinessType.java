@@ -67,6 +67,7 @@ public enum BusinessType {
     STRATEGY_INDEX_DIMENSION(58, "战略指标维度"),
     STRATEGY_MEASURE(59, "战略举措清单"),
     STRATEGY_METRICS(60, "战略衡量指标"),
+    ANNUAL_KEY_WORK(61, "年度重点工作"),
     ;
 
 
