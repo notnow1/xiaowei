@@ -397,16 +397,10 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
         List<MiMacroDetail> miMacroDetailAddList = new ArrayList<>();
         //修改市场洞察宏观详情集合
         List<MiMacroDetail> miMacroDetailUpdateList = new ArrayList<>();
-
-
         MarketInsightMacro marketInsightMacro = new MarketInsightMacro();
         BeanUtils.copyProperties(marketInsightMacroDTO, marketInsightMacro);
         marketInsightMacro.setUpdateTime(DateUtils.getNowDate());
         marketInsightMacro.setUpdateBy(SecurityUtils.getUserId());
-        List<MarketInsightMacroDTO> marketInsightMacroDTOS = marketInsightMacroMapper.selectMarketInsightMacroList(marketInsightMacro);
-        if (StringUtils.isNotEmpty(marketInsightMacroDTOS)) {
-            throw new ServiceException("已存在该年份和规划业务单元数据！请重新修改！");
-        }
         try {
             i = marketInsightMacroMapper.updateMarketInsightMacro(marketInsightMacro);
         } catch (Exception e) {

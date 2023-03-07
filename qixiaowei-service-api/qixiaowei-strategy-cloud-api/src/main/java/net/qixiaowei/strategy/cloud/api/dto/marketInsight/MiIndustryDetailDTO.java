@@ -78,7 +78,7 @@ public class MiIndustryDetailDTO {
     */
     private  Integer sort;
     /**
-     * 市场洞察行业预估集
+     * 市场洞察行业预估集合
      */
     private List<MiIndustryEstimateDTO> miIndustryEstimateDTOS;
 
