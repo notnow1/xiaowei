@@ -127,8 +127,7 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOSBefore = selectStrategyIndexDimensionList(new StrategyIndexDimensionDTO());
         List<Long> strategyIndexDimensionIds = strategyIndexDimensionDTOSBefore.stream().map(StrategyIndexDimensionDTO::getStrategyIndexDimensionId).collect(Collectors.toList());
         // 赋值ID
-        for (int i = 0; i < strategyIndexDimensionDTOS.size(); i++) {
-            StrategyIndexDimensionDTO strategyIndexDimensionDTO = strategyIndexDimensionDTOS.get(0);
+        for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
             Long strategyIndexDimensionId = strategyIndexDimensionDTO.getStrategyIndexDimensionId();
             if (StringUtils.isNull(strategyIndexDimensionId)) {
                 StrategyIndexDimensionDTO insertStrategyIndexDimension = insertStrategyIndexDimension(strategyIndexDimensionDTO);
@@ -151,13 +150,15 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
             if (StringUtils.isNotEmpty(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS()))
                 this.setStrategyAncestors(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS(), strategyIndexDimensionDTO);
         }
+        // 更新
+        List<StrategyIndexDimension> strategyIndexDimensions = this.updateStrategyIndexDimensions(strategyIndexDimensionDTOS);
         // 删除
         List<Long> delStrategyIndexDimensionIds = strategyIndexDimensionDTOSBefore.stream().map(StrategyIndexDimensionDTO::getStrategyIndexDimensionId)
-                .filter(id -> !strategyIndexDimensionDTOS.stream().map(StrategyIndexDimensionDTO::getStrategyIndexDimensionId)
+                .filter(id -> !strategyIndexDimensions.stream().map(StrategyIndexDimension::getStrategyIndexDimensionId)
                         .collect(Collectors.toList()).contains(id)).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(delStrategyIndexDimensionIds))
             this.logicDeleteStrategyIndexDimensionByStrategyIndexDimensionIds(delStrategyIndexDimensionIds);
-        return this.updateStrategyIndexDimensions(strategyIndexDimensionDTOS);
+        return 1;
     }
 
     /**
@@ -169,7 +170,7 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
     private void setStrategyAncestors(List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS, StrategyIndexDimensionDTO parentStrategyIndexDimensionDTO) {
         Long parentStrategyId = parentStrategyIndexDimensionDTO.getStrategyIndexDimensionId();
         for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
-            strategyIndexDimensionDTO.setAncestors((StringUtils.isNull(strategyIndexDimensionDTO.getAncestors()) ? "" : parentStrategyIndexDimensionDTO.getAncestors() + ",") + parentStrategyId);
+            strategyIndexDimensionDTO.setAncestors((StringUtils.isNull(parentStrategyIndexDimensionDTO.getAncestors()) ? "" : parentStrategyIndexDimensionDTO.getAncestors() + ",") + parentStrategyId);
             strategyIndexDimensionDTO.setParentIndexDimensionId(parentStrategyId);
             if (StringUtils.isNotEmpty(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS()))
                 setStrategyAncestors(strategyIndexDimensionDTO.getStrategyIndexDimensionDTOS(), strategyIndexDimensionDTO);
@@ -329,10 +330,11 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
      * @param strategyIndexDimensionDtos 战略指标维度表对象
      */
 
-    public int updateStrategyIndexDimensions(List<StrategyIndexDimensionDTO> strategyIndexDimensionDtos) {
+    public List<StrategyIndexDimension> updateStrategyIndexDimensions(List<StrategyIndexDimensionDTO> strategyIndexDimensionDtos) {
         List<StrategyIndexDimension> strategyIndexDimensionList = new ArrayList<>();
         setListWithDTO(strategyIndexDimensionDtos, strategyIndexDimensionList);
-        return strategyIndexDimensionMapper.updateStrategyIndexDimensions(strategyIndexDimensionList);
+        strategyIndexDimensionMapper.updateStrategyIndexDimensions(strategyIndexDimensionList);
+        return strategyIndexDimensionList;
     }
 
 

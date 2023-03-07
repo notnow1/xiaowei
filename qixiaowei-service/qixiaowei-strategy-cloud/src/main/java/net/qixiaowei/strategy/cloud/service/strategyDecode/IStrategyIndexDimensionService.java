@@ -52,7 +52,7 @@ public interface IStrategyIndexDimensionService {
      * @param strategyIndexDimensionDtos 战略指标维度表
      * @return 结果
      */
-    int updateStrategyIndexDimensions(List<StrategyIndexDimensionDTO> strategyIndexDimensionDtos);
+    List<StrategyIndexDimension> updateStrategyIndexDimensions(List<StrategyIndexDimensionDTO> strategyIndexDimensionDtos);
 
     /**
      * 批量新增战略指标维度表
