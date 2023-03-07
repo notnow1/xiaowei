@@ -8,8 +8,11 @@ import net.qixiaowei.operate.cloud.api.dto.dashboard.TargetAchieveRateDTO;
 import net.qixiaowei.operate.cloud.api.dto.dashboard.TargetLeaderboardDTO;
 import net.qixiaowei.operate.cloud.service.dashboard.IDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +22,7 @@ import java.util.Map;
  * @since 2022-11-26
  */
 @RestController
+@Validated
 @RequestMapping("dashboard")
 public class DashboardController extends BaseController {
 
@@ -70,7 +74,7 @@ public class DashboardController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:dashboard:target")
     @GetMapping("/targetLeaderboard/getTargetList")
-    public AjaxResult getTargetList(@RequestParam("indicatorId") Long indicatorId) {
+    public AjaxResult getTargetList(@RequestParam("indicatorId") @Valid @NotNull(message = "指标ID不能为空") Long indicatorId) {
         return AjaxResult.success(dashboardService.targetDropList(indicatorId));
     }
 
@@ -79,7 +83,8 @@ public class DashboardController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:dashboard:target")
     @GetMapping("/targetLeaderboard/getTimeDropList")
-    public AjaxResult getTimeDropList(@RequestParam("indicatorId") Long indicatorId, @RequestParam("targetDecomposeDimensionId") Long targetDecomposeDimensionId) {
+    public AjaxResult getTimeDropList(@RequestParam("indicatorId") @Valid @NotNull(message = "指标ID不能为空") Long indicatorId,
+                                      @RequestParam("targetDecomposeDimensionId") @Valid @NotNull(message = "分解维度ID不能为空") Long targetDecomposeDimensionId) {
         return AjaxResult.success(dashboardService.timeDropList(indicatorId, targetDecomposeDimensionId));
     }
 
