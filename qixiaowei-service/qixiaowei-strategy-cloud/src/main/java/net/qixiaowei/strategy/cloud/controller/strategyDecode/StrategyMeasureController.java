@@ -93,7 +93,7 @@ public class StrategyMeasureController extends BaseController {
     /**
      * 逻辑批量删除战略举措清单表
      */
-    @RequiresPermissions("strategy:cloud:strategyMeasure:removes")
+    @RequiresPermissions("strategy:cloud:strategyMeasure:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> strategyMeasureIds) {
         return toAjax(strategyMeasureService.logicDeleteStrategyMeasureByStrategyMeasureIds(strategyMeasureIds));

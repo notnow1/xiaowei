@@ -93,7 +93,7 @@ public class BusinessDesignController extends BaseController {
     /**
      * 逻辑批量删除业务设计表
      */
-    @RequiresPermissions("strategy:cloud:businessDesign:removes")
+    @RequiresPermissions("strategy:cloud:businessDesign:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> businessDesignIds) {
         return toAjax(businessDesignService.logicDeleteBusinessDesignByBusinessDesignIds(businessDesignIds));

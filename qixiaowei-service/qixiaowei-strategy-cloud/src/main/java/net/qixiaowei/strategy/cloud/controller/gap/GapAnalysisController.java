@@ -116,7 +116,7 @@ public class GapAnalysisController extends BaseController {
     /**
      * 逻辑批量删除差距分析表
      */
-    @RequiresPermissions("strategy:cloud:gapAnalysis:removes")
+    @RequiresPermissions("strategy:cloud:gapAnalysis:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> gapAnalysisIds) {
         return toAjax(gapAnalysisService.logicDeleteGapAnalysisByGapAnalysisIds(gapAnalysisIds));

@@ -116,7 +116,7 @@ public class PlanBusinessUnitController extends BaseController {
     /**
      * 逻辑批量删除规划业务单元
      */
-    @RequiresPermissions("strategy:cloud:planBusinessUnit:removes")
+    @RequiresPermissions("strategy:cloud:planBusinessUnit:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> planBusinessUnitIds) {
         return toAjax(planBusinessUnitService.logicDeletePlanBusinessUnitByPlanBusinessUnitIds(planBusinessUnitIds));

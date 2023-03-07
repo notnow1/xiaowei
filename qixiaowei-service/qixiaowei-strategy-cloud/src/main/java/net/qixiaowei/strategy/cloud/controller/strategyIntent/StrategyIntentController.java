@@ -101,7 +101,7 @@ public class StrategyIntentController extends BaseController
     /**
     * 逻辑批量删除战略意图表
     */
-    @RequiresPermissions("strategy:cloud:strategyIntent:removes")
+    @RequiresPermissions("strategy:cloud:strategyIntent:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  strategyIntentIds)
     {

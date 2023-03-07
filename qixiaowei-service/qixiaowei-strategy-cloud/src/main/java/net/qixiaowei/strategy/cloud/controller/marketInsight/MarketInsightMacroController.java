@@ -119,7 +119,7 @@ public class MarketInsightMacroController extends BaseController {
     /**
      * 逻辑批量删除市场洞察宏观表
      */
-    @RequiresPermissions("strategy:cloud:marketInsightMacro:removes")
+    @RequiresPermissions("strategy:cloud:marketInsightMacro:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> marketInsightMacroIds) {
         return toAjax(marketInsightMacroService.logicDeleteMarketInsightMacroByMarketInsightMacroIds(marketInsightMacroIds));

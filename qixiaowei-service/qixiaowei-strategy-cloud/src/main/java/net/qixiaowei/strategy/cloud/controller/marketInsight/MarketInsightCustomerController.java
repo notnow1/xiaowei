@@ -98,7 +98,7 @@ public class MarketInsightCustomerController extends BaseController
     /**
     * 逻辑批量删除市场洞察客户表
     */
-    @RequiresPermissions("strategy:cloud:marketInsightCustomer:removes")
+    @RequiresPermissions("strategy:cloud:marketInsightCustomer:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  marketInsightCustomerIds)
     {

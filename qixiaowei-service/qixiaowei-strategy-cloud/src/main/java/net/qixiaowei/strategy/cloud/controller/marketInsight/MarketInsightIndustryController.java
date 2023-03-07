@@ -103,7 +103,7 @@ public class MarketInsightIndustryController extends BaseController
     /**
     * 逻辑批量删除市场洞察行业表
     */
-    @RequiresPermissions("strategy:cloud:marketInsightIndustry:removes")
+    @RequiresPermissions("strategy:cloud:marketInsightIndustry:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  marketInsightIndustryIds)
     {

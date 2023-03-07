@@ -101,7 +101,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 逻辑批量删除行业吸引力表
     */
-    @RequiresPermissions("strategy:cloud:industryAttraction:removes")
+    @RequiresPermissions("strategy:cloud:industryAttraction:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  industryAttractionIds)
     {
