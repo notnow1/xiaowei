@@ -109,6 +109,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         String indicatorCategoryCode = indicatorCategoryDTO.getIndicatorCategoryCode();
         String indicatorCategoryName = indicatorCategoryDTO.getIndicatorCategoryName();
         Long indicatorCategoryId = indicatorCategoryDTO.getIndicatorCategoryId();
+        Integer indicatorType = indicatorCategoryDTO.getIndicatorType();
         if (StringUtils.isEmpty(indicatorCategoryName)) {
             throw new ServiceException("指标类型名称不能为空");
         }
@@ -122,6 +123,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         IndicatorCategoryDTO indicatorCategoryByName = indicatorCategoryMapper.checkNameUnique(indicatorCategoryName);
         if (StringUtils.isNotNull(indicatorCategoryByName)) {
             throw new ServiceException("指标类型名称重复");
+        }
+        if (StringUtils.isNull(indicatorType)) {
+            throw new ServiceException("指标类型不可以为空");
         }
         IndicatorCategory indicatorCategory = new IndicatorCategory();
         BeanUtils.copyProperties(indicatorCategoryDTO, indicatorCategory);

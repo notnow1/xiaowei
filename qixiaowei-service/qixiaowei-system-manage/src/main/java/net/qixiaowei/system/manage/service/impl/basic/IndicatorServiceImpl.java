@@ -218,6 +218,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         Integer indicatorValueType = indicatorDTO.getIndicatorValueType();
         Integer examineDirection = indicatorDTO.getExamineDirection();
         Integer choiceFlag = indicatorDTO.getChoiceFlag();
+        Integer indicatorType = indicatorDTO.getIndicatorType();
         if (indicatorValueType != 1 && indicatorValueType != 2) {
             throw new ServiceException("指标值类型输入不正确");
         }
@@ -233,6 +234,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
         IndicatorDTO indicatorByCode = indicatorMapper.getIndicatorByCode(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             throw new ServiceException("指标编码重复");
+        }
+        if (StringUtils.isNull(indicatorType)) {
+            throw new ServiceException("指标类型不可以为空");
         }
         Long parentIndicatorId = indicatorDTO.getParentIndicatorId();
         String parentAncestors = "";//仅在非一级行业时有用
