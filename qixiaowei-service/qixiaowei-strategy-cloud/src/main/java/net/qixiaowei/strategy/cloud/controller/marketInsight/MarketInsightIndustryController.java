@@ -9,9 +9,11 @@ import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -73,7 +75,7 @@ public class MarketInsightIndustryController extends BaseController
     @RequiresPermissions("strategy:cloud:marketInsightIndustry:add")
     @Log(title = "新增市场洞察行业表", businessType = BusinessType.MARKET_INSIGHT_INDUSTRY, businessId = "marketInsightIndustryId", operationType = OperationType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody MarketInsightIndustryDTO marketInsightIndustryDTO) {
+    public AjaxResult addSave(@RequestBody @Validated({MarketInsightIndustryDTO.AddMarketInsightIndustryDTO.class}) MarketInsightIndustryDTO marketInsightIndustryDTO) {
     return AjaxResult.success(marketInsightIndustryService.insertMarketInsightIndustry(marketInsightIndustryDTO));
     }
 
@@ -84,7 +86,7 @@ public class MarketInsightIndustryController extends BaseController
     @RequiresPermissions("strategy:cloud:marketInsightIndustry:edit")
     @Log(title = "修改市场洞察行业表", businessType = BusinessType.MARKET_INSIGHT_INDUSTRY, businessId = "marketInsightIndustryId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody MarketInsightIndustryDTO marketInsightIndustryDTO)
+    public AjaxResult editSave(@RequestBody @Validated({MarketInsightIndustryDTO.UpdateMarketInsightIndustryDTO.class}) MarketInsightIndustryDTO marketInsightIndustryDTO)
     {
     return toAjax(marketInsightIndustryService.updateMarketInsightIndustry(marketInsightIndustryDTO));
     }
@@ -94,7 +96,7 @@ public class MarketInsightIndustryController extends BaseController
     */
     @RequiresPermissions("strategy:cloud:marketInsightIndustry:remove")
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody MarketInsightIndustryDTO marketInsightIndustryDTO)
+    public AjaxResult remove(@RequestBody @Validated({MarketInsightIndustryDTO.DeleteMarketInsightIndustryDTO.class}) MarketInsightIndustryDTO marketInsightIndustryDTO)
     {
     return toAjax(marketInsightIndustryService.logicDeleteMarketInsightIndustryByMarketInsightIndustryId(marketInsightIndustryDTO));
     }
@@ -113,7 +115,8 @@ public class MarketInsightIndustryController extends BaseController
      */
     @RequiresPermissions("strategy:cloud:marketInsightIndustry:prefabricateAdd")
     @GetMapping("/prefabricateAdd")
-    public AjaxResult list(IndustryAttractionDTO industryAttractionDTO){
+    public AjaxResult list(){
+        IndustryAttractionDTO industryAttractionDTO = new IndustryAttractionDTO();
         List<IndustryAttractionDTO> list = industryAttractionService.selectIndustryAttractionList(industryAttractionDTO);
         return AjaxResult.success(list);
     }

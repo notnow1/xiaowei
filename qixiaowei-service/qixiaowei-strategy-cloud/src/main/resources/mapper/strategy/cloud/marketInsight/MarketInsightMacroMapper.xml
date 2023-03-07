@@ -4,11 +4,26 @@
     <!--    查询市场洞察宏观表-->
     <select id="selectMarketInsightMacroByMarketInsightMacroId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO">
-        SELECT
-        market_insight_macro_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
-        FROM market_insight_macro
-        WHERE  market_insight_macro_id=#{marketInsightMacroId}
-        and delete_flag=0
+        SELECT mim.market_insight_macro_id,
+               mim.plan_year,
+               mim.plan_business_unit_id,
+               pbu.business_unit_name as planBusinessUnitName,
+               mim.business_unit_decompose,
+               mim.area_id,
+               mim.department_id,
+               mim.product_id,
+               mim.industry_id,
+               mim.delete_flag,
+               mim.create_by,
+               mim.create_time,
+               mim.update_by,
+               mim.update_time
+        FROM market_insight_macro mim
+                 left join plan_business_unit pbu
+                           on pbu.plan_business_unit_id=mim.plan_business_unit_id
+                               and pbu.delete_flag =0
+        WHERE mim.market_insight_macro_id = #{marketInsightMacroId}
+          and mim.delete_flag = 0
     </select>
 
     <!--    批量查询市场洞察宏观表-->
@@ -32,7 +47,7 @@
         mim.market_insight_macro_id,
         mim.plan_year,
         mim.plan_business_unit_id,
-        pbu.business_unit_name,
+        pbu.business_unit_name as planBusinessUnitName,
         mim.business_unit_decompose,
         mim.area_id,
         mim.department_id,

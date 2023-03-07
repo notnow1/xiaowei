@@ -11,20 +11,7 @@
         and delete_flag=0
     </select>
 
-    <!--    批量查询市场洞察行业吸引力数据表-->
-    <select id="selectMiIndustryAttractionDataByMiIndustryAttractionDataIds"
-            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
-        SELECT
-        mi_industry_attraction_data_id,market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time
-        FROM mi_industry_attraction_data
-        WHERE  mi_industry_attraction_data_id in
-            <foreach item="item"
-                     collection="miIndustryAttractionDataIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        and delete_flag=0
-    </select>
+
 
     <!--    查询市场洞察行业吸引力数据表列表-->
     <select id="selectMiIndustryAttractionDataList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
@@ -62,6 +49,71 @@
                         <if test="miIndustryAttractionData.updateTime != null">
                             and update_time=#{miIndustryAttractionData.updateTime}
                         </if>
+    </select>
+<!--    根据市场洞察行业详情表主键查询市场洞察行业吸引力数据表-->
+    <select id="selectMiIndustryAttractionDataByNiIndustryDetailId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
+        SELECT miad.mi_industry_attraction_data_id,
+               miad.market_insight_industry_id,
+               miad.mi_industry_detail_id,
+               miad.mi_industry_attraction_id,
+               iae.assess_standard_name ,
+               iae.assess_standard_description,
+               iae.display_color,
+               miad.industry_attraction_element_id,
+               miad.delete_flag,
+               miad.create_by,
+               miad.create_time,
+               miad.update_by,
+               miad.update_time
+        FROM mi_industry_attraction_data miad
+                 left join industry_attraction_element iae
+                           on miad.industry_attraction_element_id =iae.industry_attraction_element_id
+                               and iae.delete_flag =0
+        WHERE miad.mi_industry_detail_id = #{miIndustryDetailId}
+          and miad.delete_flag = 0
+    </select>
+<!--    根据市场洞察行业详情表主键集合批量查询市场洞察行业吸引力数据表-->
+    <select id="selectMiIndustryAttractionDataByMiIndustryDetailIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
+        SELECT miad.mi_industry_attraction_data_id,
+        miad.market_insight_industry_id,
+        miad.mi_industry_detail_id,
+        miad.mi_industry_attraction_id,
+        iae.assess_standard_name ,
+        iae.assess_standard_description,
+        iae.display_color,
+        miad.industry_attraction_element_id,
+        miad.delete_flag,
+        miad.create_by,
+        miad.create_time,
+        miad.update_by,
+        miad.update_time
+        FROM mi_industry_attraction_data miad
+        left join industry_attraction_element iae
+        on miad.industry_attraction_element_id =iae.industry_attraction_element_id
+        and iae.delete_flag =0
+        WHERE  miad.mi_industry_detail_id in
+        <foreach item="item"
+                 collection="miIndustryDetailIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and miad.delete_flag=0
+    </select>
+    <!--    批量查询市场洞察行业吸引力数据表-->
+    <select id="selectMiIndustryAttractionDataByMiIndustryAttractionDataIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
+        SELECT
+        mi_industry_attraction_data_id,market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_attraction_data
+        WHERE  mi_industry_attraction_data_id in
+        <foreach item="item"
+                 collection="miIndustryAttractionDataIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
     </select>
     <!--新增市场洞察行业吸引力数据表-->
     <insert id="insertMiIndustryAttractionData" useGeneratedKeys="true" keyProperty="miIndustryAttractionDataId">
@@ -127,7 +179,7 @@
             </foreach>
     </update>
     <!--批量新增市场洞察行业吸引力数据表-->
-    <insert id="batchMiIndustryAttractionData">
+    <insert id="batchMiIndustryAttractionData" useGeneratedKeys="true" keyProperty="miIndustryAttractionDataId">
         INSERT INTO mi_industry_attraction_data (market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"

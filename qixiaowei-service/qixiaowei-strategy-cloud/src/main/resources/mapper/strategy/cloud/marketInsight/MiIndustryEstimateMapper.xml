@@ -69,6 +69,39 @@
                             and update_time=#{miIndustryEstimate.updateTime}
                         </if>
     </select>
+<!--    根据市场洞察行业详情表主键查询市场洞察行业预估表-->
+    <select id="selectMiIndustryEstimateByMiIndustryDetailId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryEstimateDTO">
+        SELECT mi_macro_estimate_id,
+               market_insight_industry_id,
+               mi_industry_detail_id,
+               plan_year,
+               overall_space_amount,
+               participate_space_amount,
+               target_market_space_amount,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM mi_industry_estimate
+        WHERE mi_industry_detail_id = #{miIndustryDetailId}
+          and delete_flag = 0
+    </select>
+<!--    根据市场洞察行业详情表主键集合批量查询市场洞察行业预估表-->
+    <select id="selectMiIndustryEstimateByMiIndustryDetailIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryEstimateDTO">
+        SELECT
+        mi_macro_estimate_id,market_insight_industry_id,mi_industry_detail_id,plan_year,overall_space_amount,participate_space_amount,target_market_space_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_estimate
+        WHERE  mi_industry_detail_id in
+        <foreach item="item"
+                 collection="miIndustryDetailIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增市场洞察行业预估表-->
     <insert id="insertMiIndustryEstimate" useGeneratedKeys="true" keyProperty="miMacroEstimateId">
         INSERT INTO mi_industry_estimate (market_insight_industry_id,mi_industry_detail_id,plan_year,overall_space_amount,participate_space_amount,target_market_space_amount,delete_flag,create_by,create_time,update_by,update_time)
@@ -139,7 +172,7 @@
             </foreach>
     </update>
     <!--批量新增市场洞察行业预估表-->
-    <insert id="batchMiIndustryEstimate">
+    <insert id="batchMiIndustryEstimate" useGeneratedKeys="true" keyProperty="miMacroEstimateId">
         INSERT INTO mi_industry_estimate (market_insight_industry_id,mi_industry_detail_id,plan_year,overall_space_amount,participate_space_amount,target_market_space_amount,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"

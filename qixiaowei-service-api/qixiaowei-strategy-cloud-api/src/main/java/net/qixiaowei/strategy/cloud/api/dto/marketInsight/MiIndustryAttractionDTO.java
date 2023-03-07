@@ -48,6 +48,10 @@ public class MiIndustryAttractionDTO {
     */
     private  Long industryAttractionId;
     /**
+     * 行业吸引力要素名称
+     */
+    private  String  attractionElementName;
+    /**
     * 排序
     */
     private  Integer sort;

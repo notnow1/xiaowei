@@ -23,6 +23,14 @@ public interface MiIndustryEstimateMapper{
 
 
     /**
+     * 根据市场洞察行业详情表主键查询市场洞察行业预估表
+     *
+     * @param miIndustryDetailId 市场洞察行业详情表主键
+     * @return 市场洞察行业预估表
+     */
+    List<MiIndustryEstimateDTO> selectMiIndustryEstimateByMiIndustryDetailId(@Param("miIndustryDetailId")Long miIndustryDetailId);
+
+    /**
     * 批量查询市场洞察行业预估表
     *
     * @param miMacroEstimateIds 市场洞察行业预估表主键集合
@@ -30,6 +38,13 @@ public interface MiIndustryEstimateMapper{
     */
     List<MiIndustryEstimateDTO> selectMiIndustryEstimateByMiMacroEstimateIds(@Param("miMacroEstimateIds") List<Long> miMacroEstimateIds);
 
+    /**
+     * 根据市场洞察行业详情表主键集合批量查询市场洞察行业预估表
+     *
+     * @param miIndustryDetailIds 市场洞察行业详情表主键集合
+     * @return 市场洞察行业预估表
+     */
+    List<MiIndustryEstimateDTO> selectMiIndustryEstimateByMiIndustryDetailIds(@Param("miIndustryDetailIds") List<Long> miIndustryDetailIds);
     /**
     * 查询市场洞察行业预估表列表
     *
