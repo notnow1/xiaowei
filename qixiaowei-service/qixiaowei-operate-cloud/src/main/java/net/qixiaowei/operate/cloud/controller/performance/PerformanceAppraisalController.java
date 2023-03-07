@@ -234,7 +234,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 导出组织模板表
      */
     @SneakyThrows
-    @RequiresPermissions("operate:cloud:performanceAppraisal:orgImport")
+    @RequiresPermissions("operate:cloud:performanceAppraisal:orgArchive:import")
     @GetMapping("export-org-template")
     public void exportOrgTemplate(@RequestParam Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
         if (StringUtils.isNull(importType)) {
@@ -268,7 +268,7 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 导出组织模板表
+     * 导出组织表
      */
     @SneakyThrows
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgArchive:info")
