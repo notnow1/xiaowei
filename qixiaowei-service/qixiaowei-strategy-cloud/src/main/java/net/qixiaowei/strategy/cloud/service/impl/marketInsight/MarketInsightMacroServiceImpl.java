@@ -554,6 +554,15 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
                         }
 
                     }
+                }else {
+                    List<MiMacroEstimateDTO> miMacroEstimateListData2 = new ArrayList<>();
+                    miMacroEstimateListData2 = miMacroEstimateMapper.selectMiMacroEstimateByMiMacroDetailId(miMacroDetailId);
+                    if (StringUtils.isNotEmpty(miMacroEstimateListData2)) {
+                        List<Long> collect = miMacroEstimateListData2.stream().map(MiMacroEstimateDTO::getMiMacroEstimateId).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)) {
+                            miMacroEstimateMapper.logicDeleteMiMacroEstimateByMiMacroEstimateIds(collect, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                        }
+                    }
                 }
             } else {
                 if (StringUtils.isNotEmpty(miMacroEstimateDTOS) && StringUtils.isNotEmpty(miMacroDetailAddList)) {
