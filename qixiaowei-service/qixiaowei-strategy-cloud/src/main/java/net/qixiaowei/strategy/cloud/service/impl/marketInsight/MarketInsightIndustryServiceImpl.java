@@ -479,11 +479,11 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                     if (StringUtils.isNotEmpty(miIndustryAttractionDataDTOS)) {
                         for (int i1 = 0; i1 < miIndustryAttractionDataDTOS.size(); i1++) {
                             MiIndustryAttractionData miIndustryAttractionData = new MiIndustryAttractionData();
-                            BeanUtils.copyProperties(miIndustryAttractionDataDTOS.get(i), miIndustryAttractionData);
+                            BeanUtils.copyProperties(miIndustryAttractionDataDTOS.get(i1), miIndustryAttractionData);
                             //市场洞察行业ID
                             miIndustryAttractionData.setMarketInsightIndustryId(marketInsightIndustry.getMarketInsightIndustryId());
                             //市场洞察行业吸引力ID
-                            miIndustryAttractionData.setMiIndustryAttractionId(miIndustryAttractionList.get(i).getMiIndustryAttractionId());
+                            miIndustryAttractionData.setMiIndustryAttractionId(miIndustryAttractionList.get(i1).getMiIndustryAttractionId());
                             //市场洞察行业详情ID
                             miIndustryAttractionData.setMiIndustryDetailId(miIndustryDetailList.get(i).getMiIndustryDetailId());
                             miIndustryAttractionData.setCreateBy(SecurityUtils.getUserId());
