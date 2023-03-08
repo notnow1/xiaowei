@@ -75,6 +75,29 @@
                             and update_time=#{miCustomerInvestDetail.updateTime}
                         </if>
     </select>
+<!--    根据市场洞察客户投资表主键查询市场洞察客户投资详情表-->
+    <select id="selectMiCustomerInvestDetailByMiCustomerInvestPlanId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO">
+        SELECT
+            mi_customer_invest_detail_id,market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_invest_detail
+        WHERE  mi_customer_invest_plan_id=#{miCustomerInvestPlanId}
+          and delete_flag=0
+    </select>
+<!--    根据市场洞察客户投资表主键集合批量查询市场洞察客户投资详情表-->
+    <select id="selectMiCustomerInvestDetailByMiCustomerInvestPlanIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO">
+        SELECT
+        mi_customer_invest_detail_id,market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_invest_detail
+        WHERE  mi_customer_invest_plan_id in
+        <foreach item="item"
+                 collection="miCustomerInvestPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增市场洞察客户投资详情表-->
     <insert id="insertMiCustomerInvestDetail" useGeneratedKeys="true" keyProperty="miCustomerInvestDetailId">
         INSERT INTO mi_customer_invest_detail (market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time)

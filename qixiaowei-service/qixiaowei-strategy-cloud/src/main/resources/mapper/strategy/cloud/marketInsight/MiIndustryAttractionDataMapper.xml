@@ -80,9 +80,6 @@
         miad.market_insight_industry_id,
         miad.mi_industry_detail_id,
         miad.mi_industry_attraction_id,
-        iae.assess_standard_name ,
-        iae.assess_standard_description,
-        iae.display_color,
         miad.industry_attraction_element_id,
         miad.delete_flag,
         miad.create_by,
@@ -90,9 +87,6 @@
         miad.update_by,
         miad.update_time
         FROM mi_industry_attraction_data miad
-        left join industry_attraction_element iae
-        on miad.industry_attraction_element_id =iae.industry_attraction_element_id
-        and iae.delete_flag =0
         WHERE  miad.mi_industry_detail_id in
         <foreach item="item"
                  collection="miIndustryDetailIds"

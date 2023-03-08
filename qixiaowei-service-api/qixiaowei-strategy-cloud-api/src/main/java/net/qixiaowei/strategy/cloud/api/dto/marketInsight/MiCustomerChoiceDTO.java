@@ -48,6 +48,10 @@ public class MiCustomerChoiceDTO {
     */
     private  Long industryId;
     /**
+     * 行业名称
+     */
+    private  String industryName;
+    /**
     * 客户名称
     */
     private  String customerName;
@@ -59,6 +63,10 @@ public class MiCustomerChoiceDTO {
     * 客户类别
     */
     private  Long customerCategory;
+    /**
+     * 客户类别名称
+     */
+    private  String customerCategoryName;
     /**
     * 排序
     */

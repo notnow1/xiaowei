@@ -14,14 +14,18 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.*;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.*;
+import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionElementMapper;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.*;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightIndustryService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
@@ -51,6 +55,9 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
 
     @Autowired
     private MiIndustryAttractionMapper miIndustryAttractionMapper;
+    @Autowired
+    private IndustryAttractionElementMapper industryAttractionElementMapper;
+
 
     @Autowired
     private MiIndustryAttractionDataMapper miIndustryAttractionDataMapper;
@@ -67,7 +74,8 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
     private RemoteProductService remoteProductService;
     @Autowired
     private RemoteAreaService remoteAreaService;
-
+    @Autowired
+    private RemoteDictionaryDataService remoteDictionaryDataService;
     /**
      * 查询市场洞察行业表
      *
@@ -112,7 +120,47 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
             }
         }
         List<MiIndustryDetailDTO> miIndustryDetailDTOS = miIndustryDetailMapper.selectMiIndustryDetailByMarketInsightIndustryId(marketInsightIndustryId);
+        List<MiIndustryAttractionDTO> miIndustryAttractionDTOS = miIndustryAttractionMapper.selectMiIndustryAttractionByMarketInsightIndustryId(marketInsightIndustryId);
+        if (StringUtils.isNotEmpty(miIndustryAttractionDTOS)){
+            for (MiIndustryAttractionDTO miIndustryAttractionDTO : miIndustryAttractionDTOS) {
+                if (null != miIndustryAttractionDTO.getIndustryAttractionId()){
+                    miIndustryAttractionDTO.setIndustryAttractionElementDTOS(industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionId(miIndustryAttractionDTO.getIndustryAttractionId()));
+                }
+
+            }
+
+        }
         if (StringUtils.isNotEmpty(miIndustryDetailDTOS)) {
+            List<Long> industryTypes = miIndustryDetailDTOS.stream().filter(f -> null != f.getIndustryType()).map(MiIndustryDetailDTO::getIndustryType).collect(Collectors.toList());
+
+            List<Long> industryIds = miIndustryDetailDTOS.stream().filter(f -> null != f.getIndustryId()).map(MiIndustryDetailDTO::getIndustryId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(industryIds)) {
+                R<List<IndustryDTO>> industryList = remoteIndustryService.selectByIds(industryIds, SecurityConstants.INNER);
+                List<IndustryDTO> data = industryList.getData();
+                if (StringUtils.isNotNull(data)) {
+                    for (MiIndustryDetailDTO miIndustryDetailDTO : miIndustryDetailDTOS) {
+                        for (IndustryDTO datum : data) {
+                            if (miIndustryDetailDTO.getIndustryId().equals(datum.getIndustryId())) {
+                                miIndustryDetailDTO.setIndustryName(datum.getIndustryName());
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (StringUtils.isNotEmpty(industryTypes)) {
+                R<List<DictionaryDataDTO>> dataByDictionaryDataList = remoteDictionaryDataService.selectDictionaryDataByDictionaryDataIds(industryTypes, SecurityConstants.INNER);
+                List<DictionaryDataDTO> data = dataByDictionaryDataList.getData();
+                if (StringUtils.isNotNull(data)) {
+                    for (MiIndustryDetailDTO miIndustryDetailDTO : miIndustryDetailDTOS) {
+                        for (DictionaryDataDTO datum : data) {
+                            if (miIndustryDetailDTO.getIndustryType().equals(datum.getDictionaryDataId())) {
+                                miIndustryDetailDTO.setIndustryTypeName(datum.getDictionaryLabel());
+                            }
+                        }
+                    }
+                }
+            }
             List<Long> miIndustryDetailIds = miIndustryDetailDTOS.stream().map(MiIndustryDetailDTO::getMiIndustryDetailId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(miIndustryDetailIds)) {
                 //根据市场洞察行业详情表主键集合批量查询市场洞察行业预估表
@@ -121,6 +169,17 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 List<MiIndustryAttractionDataDTO> miIndustryAttractionDataDTOS = miIndustryAttractionDataMapper.selectMiIndustryAttractionDataByMiIndustryDetailIds(miIndustryDetailIds);
                 Map<Long, List<MiIndustryAttractionDataDTO>> miIndustryAttractionDataDTOMap = new HashMap<>();
                 if (StringUtils.isNotEmpty(miIndustryAttractionDataDTOS)) {
+                    for (MiIndustryAttractionDataDTO miIndustryAttractionDataDTO : miIndustryAttractionDataDTOS) {
+                        if (null != miIndustryAttractionDataDTO.getIndustryAttractionElementId()){
+                            IndustryAttractionElementDTO industryAttractionElementDTO = industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionElementId(miIndustryAttractionDataDTO.getIndustryAttractionElementId());
+                            if (StringUtils.isNotNull(industryAttractionElementDTO)){
+                                miIndustryAttractionDataDTO.setAssessStandardName(industryAttractionElementDTO.getAssessStandardName());
+                                miIndustryAttractionDataDTO.setAssessStandardDescription(industryAttractionElementDTO.getAssessStandardDescription());
+                                miIndustryAttractionDataDTO.setDisplayColor(industryAttractionElementDTO.getDisplayColor());
+                            }
+
+                        }
+                    }
                     //根据详情id分组
                     miIndustryAttractionDataDTOMap = miIndustryAttractionDataDTOS.parallelStream().collect(Collectors.groupingBy(MiIndustryAttractionDataDTO::getMiIndustryDetailId));
 
@@ -129,18 +188,17 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                     //根据详情id分组
                     Map<Long, List<MiIndustryEstimateDTO>> miIndustryEstimateDTOMap = miIndustryEstimateDTOS.parallelStream().collect(Collectors.groupingBy(MiIndustryEstimateDTO::getMiIndustryDetailId));
                     for (int i = 0; i < miIndustryDetailDTOS.size(); i++) {
-                        if (i == 0) {
-                            List<MiIndustryAttractionDTO> miIndustryAttractionDTOS = miIndustryAttractionMapper.selectMiIndustryAttractionByMarketInsightIndustryId(marketInsightIndustryId);
-                            miIndustryDetailDTOS.get(i).setMiIndustryAttractionDTOS(miIndustryAttractionDTOS);
-                        }
                         miIndustryDetailDTOS.get(i).setMiIndustryEstimateDTOS(miIndustryEstimateDTOMap.get(miIndustryDetailDTOS.get(i).getMiIndustryDetailId()));
                         if (StringUtils.isNotEmpty(miIndustryAttractionDataDTOMap)) {
+
                             miIndustryDetailDTOS.get(i).setMiIndustryAttractionDataDTOS(miIndustryAttractionDataDTOMap.get(miIndustryDetailDTOS.get(i).getMiIndustryDetailId()));
                         }
                     }
                 }
             }
         }
+        marketInsightIndustryDTO.setMiIndustryDetailDTOS(miIndustryDetailDTOS);
+        marketInsightIndustryDTO.setMiIndustryAttractionDTOS(miIndustryAttractionDTOS);
 
         return marketInsightIndustryDTO;
     }
@@ -323,6 +381,30 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
         marketInsightIndustry.setUpdateBy(SecurityUtils.getUserId());
         marketInsightIndustry.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         marketInsightIndustryMapper.insertMarketInsightIndustry(marketInsightIndustry);
+
+        //前台传入市场洞察行业吸引力集合
+        List<MiIndustryAttractionDTO> miIndustryAttractionDTOS = marketInsightIndustryDTO.getMiIndustryAttractionDTOS();
+        if (StringUtils.isNotEmpty(miIndustryAttractionDTOS)) {
+            for (int i1 = 0; i1 < miIndustryAttractionDTOS.size(); i1++) {
+                MiIndustryAttraction miIndustryAttraction = new MiIndustryAttraction();
+                BeanUtils.copyProperties(miIndustryAttractionDTOS.get(i1), miIndustryAttraction);
+                miIndustryAttraction.setMarketInsightIndustryId(marketInsightIndustry.getMarketInsightIndustryId());
+                miIndustryAttraction.setCreateBy(SecurityUtils.getUserId());
+                miIndustryAttraction.setCreateTime(DateUtils.getNowDate());
+                miIndustryAttraction.setUpdateTime(DateUtils.getNowDate());
+                miIndustryAttraction.setUpdateBy(SecurityUtils.getUserId());
+                miIndustryAttraction.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                miIndustryAttraction.setSort(i1 + 1);
+                miIndustryAttractionList.add(miIndustryAttraction);
+            }
+        }
+        if (StringUtils.isNotEmpty(miIndustryAttractionList)){
+            try {
+                miIndustryAttractionMapper.batchMiIndustryAttraction(miIndustryAttractionList);
+            } catch (Exception e) {
+                throw new ServiceException("批量新增市场洞察行业吸引力失败");
+            }
+        }
         //封装新增数据
         this.addData(miIndustryDetailDTOS, miIndustryDetailList, miIndustryAttractionList, marketInsightIndustry);
 
@@ -378,24 +460,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                         miIndustryEstimateList.add(miIndustryEstimate);
                     }
                 }
-                if (i == 0) {
-                    //前台传入市场洞察行业吸引力集合
-                    List<MiIndustryAttractionDTO> miIndustryAttractionDTOS = miIndustryDetailDTOS.get(i).getMiIndustryAttractionDTOS();
-                    if (StringUtils.isNotEmpty(miIndustryAttractionDTOS)) {
-                        for (int i1 = 0; i1 < miIndustryAttractionDTOS.size(); i1++) {
-                            MiIndustryAttraction miIndustryAttraction = new MiIndustryAttraction();
-                            BeanUtils.copyProperties(miIndustryAttractionDTOS.get(i), miIndustryAttraction);
-                            miIndustryAttraction.setMarketInsightIndustryId(marketInsightIndustry.getMarketInsightIndustryId());
-                            miIndustryAttraction.setCreateBy(SecurityUtils.getUserId());
-                            miIndustryAttraction.setCreateTime(DateUtils.getNowDate());
-                            miIndustryAttraction.setUpdateTime(DateUtils.getNowDate());
-                            miIndustryAttraction.setUpdateBy(SecurityUtils.getUserId());
-                            miIndustryAttraction.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                            miIndustryAttraction.setSort(i + 1);
-                            miIndustryAttractionList.add(miIndustryAttraction);
-                        }
-                    }
-                }
+
                 if (StringUtils.isNotEmpty(miIndustryEstimateList)) {
                     try {
                         miIndustryEstimateMapper.batchMiIndustryEstimate(miIndustryEstimateList);
@@ -406,11 +471,6 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
             }
 
             if (StringUtils.isNotEmpty(miIndustryAttractionList)) {
-                try {
-                    miIndustryAttractionMapper.batchMiIndustryAttraction(miIndustryAttractionList);
-                } catch (Exception e) {
-                    throw new ServiceException("批量新增市场洞察行业吸引力失败");
-                }
                 for (int i = 0; i < miIndustryDetailList.size(); i++) {
                     //新增市场洞察行业吸引力数据集合
                     List<MiIndustryAttractionData> miIndustryAttractionDataList = new ArrayList<>();
@@ -425,7 +485,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                             //市场洞察行业吸引力ID
                             miIndustryAttractionData.setMiIndustryAttractionId(miIndustryAttractionList.get(i).getMiIndustryAttractionId());
                             //市场洞察行业详情ID
-                            miIndustryAttractionData.setMiIndustryDetailId(miIndustryDetailDTOS.get(i).getMiIndustryDetailId());
+                            miIndustryAttractionData.setMiIndustryDetailId(miIndustryDetailList.get(i).getMiIndustryDetailId());
                             miIndustryAttractionData.setCreateBy(SecurityUtils.getUserId());
                             miIndustryAttractionData.setCreateTime(DateUtils.getNowDate());
                             miIndustryAttractionData.setUpdateTime(DateUtils.getNowDate());
@@ -479,7 +539,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 //修改市场洞察行业详情集合
                 List<MiIndustryDetail> miIndustryDetailUpdateList = new ArrayList<>();
                 //新增修改市场洞察行业详情集合
-                this.packAddAndUpdatemiIndustryDetail(i, marketInsightIndustry, miIndustryDetailDTOS, miIndustryDetailDTOList, miIndustryDetailAddList, miIndustryDetailUpdateList);
+                this.packAddAndUpdatemiIndustryDetail(marketInsightIndustry, miIndustryDetailDTOS, miIndustryDetailDTOList, miIndustryDetailAddList, miIndustryDetailUpdateList);
                 //新增修改市场洞察行业预估集合
                 this.packAddAndUpdatemiIndustryEstimateDTO(marketInsightIndustry, miIndustryDetailDTOS, miIndustryDetailAddList);
                 //新增修改市场洞察行业吸引力数据集合
@@ -714,7 +774,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
      * @param miIndustryDetailAddList
      * @param miIndustryDetailUpdateList
      */
-    private void packAddAndUpdatemiIndustryDetail(int i, MarketInsightIndustry marketInsightIndustry, List<MiIndustryDetailDTO> miIndustryDetailDTOS, List<MiIndustryDetailDTO> miIndustryDetailDTOList, List<MiIndustryDetail> miIndustryDetailAddList, List<MiIndustryDetail> miIndustryDetailUpdateList) {
+    private void packAddAndUpdatemiIndustryDetail(MarketInsightIndustry marketInsightIndustry, List<MiIndustryDetailDTO> miIndustryDetailDTOS, List<MiIndustryDetailDTO> miIndustryDetailDTOList, List<MiIndustryDetail> miIndustryDetailAddList, List<MiIndustryDetail> miIndustryDetailUpdateList) {
         List<Long> miIndustryDetailIds = new ArrayList<>();
         //sterm流求差集
         miIndustryDetailIds = miIndustryDetailDTOList.stream().filter(a ->
@@ -738,7 +798,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 miIndustryDetailAddList.add(miIndustryDetail);
             } else {
                 MiIndustryDetail miIndustryDetail = new MiIndustryDetail();
-                BeanUtils.copyProperties(miIndustryDetailDTOS.get(i), miIndustryDetail);
+                BeanUtils.copyProperties(miIndustryDetailDTOS.get(i1), miIndustryDetail);
                 miIndustryDetail.setUpdateTime(DateUtils.getNowDate());
                 miIndustryDetail.setUpdateBy(SecurityUtils.getUserId());
                 miIndustryDetail.setSort(i1 + 1);

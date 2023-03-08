@@ -56,6 +56,15 @@ public class MiCustomerInvestDetailDTO {
     */
     private  Long productId;
     /**
+     * 产品名称
+     */
+    private  String productName;
+    /**
+     * 产品单位名称
+     */
+    private  String  productUnitName;
+
+    /**
     * 年需求总量
     */
     private  String totalAnnualDemand;
@@ -67,6 +76,16 @@ public class MiCustomerInvestDetailDTO {
     * 预计市场占有率
     */
     private  BigDecimal estimateMarketShare;
+
+    /**
+     * 可参与市场空间
+     */
+    private BigDecimal partMarketSpace;
+
+    /**
+     * 合计
+     */
+    private BigDecimal amountTo;
     /**
     * 排序
     */

@@ -1,64 +1,71 @@
 package net.qixiaowei.strategy.cloud.api.domain.marketInsight;
 
 
-
 import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import lombok.Data;
+
 import java.math.BigDecimal;
+
 import lombok.experimental.Accessors;
+
 import java.util.Date;
 
 /**
-* 市场洞察客户投资计划表
-* @author TANGMICHI
-* @since 2023-03-07
-*/
+ * 市场洞察客户投资计划表
+ *
+ * @author TANGMICHI
+ * @since 2023-03-07
+ */
 @Data
 @Accessors(chain = true)
 public class MiCustomerInvestPlan extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
-     /**
+    /**
      * ID
      */
-     private  Long  miCustomerInvestPlanId;
-     /**
+    private Long miCustomerInvestPlanId;
+    /**
      * 市场洞察客户ID
      */
-     private  Long  marketInsightCustomerId;
-     /**
+    private Long marketInsightCustomerId;
+    /**
      * 行业ID
      */
-     private  Long  industryId;
-     /**
+    private Long industryId;
+    /**
+     * 行业明朝
+     */
+    private String industryName;
+    /**
      * 客户名称
      */
-     private  String  customerName;
-     /**
+    private String customerName;
+    /**
      * 客户类别
      */
-     private  Long  customerCategory;
-     /**
+    private Long customerCategory;
+    /**
      * 现有市场占有率
      */
-     private  BigDecimal  existMarketShare;
-     /**
+    private BigDecimal existMarketShare;
+    /**
      * 上年销售额
      */
-     private  BigDecimal  previousYearSales;
-     /**
+    private BigDecimal previousYearSales;
+    /**
      * 规划期
      */
-     private  Integer  planPeriod;
-     /**
+    private Integer planPeriod;
+    /**
      * 未来可参与市场空间
      */
-     private  BigDecimal  futurePartMarketSpace;
-     /**
+    private BigDecimal futurePartMarketSpace;
+    /**
      * 排序
      */
-     private  Integer  sort;
+    private Integer sort;
 
 }
 

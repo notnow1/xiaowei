@@ -69,6 +69,29 @@
                             and update_time=#{miCustomerChoice.updateTime}
                         </if>
     </select>
+<!--    根据市场洞察客户主表主键查询市场洞察客户选择表-->
+    <select id="selectMiCustomerChoiceByMarketInsightCustomerId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO">
+        SELECT
+            mi_customer_choice_id,market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_choice
+        WHERE  market_insight_customer_id=#{marketInsightCustomerId}
+          and delete_flag=0
+    </select>
+<!--    根据市场洞察客户主表主键集合批量查询市场洞察客户选择表-->
+    <select id="selectMiCustomerChoiceByMarketInsightCustomerIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO">
+        SELECT
+        mi_customer_choice_id,market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_choice
+        WHERE  market_insight_customer_id in
+        <foreach item="item"
+                 collection="marketInsightCustomerIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增市场洞察客户选择表-->
     <insert id="insertMiCustomerChoice" useGeneratedKeys="true" keyProperty="miCustomerChoiceId">
         INSERT INTO mi_customer_choice (market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time)
@@ -139,7 +162,7 @@
             </foreach>
     </update>
     <!--批量新增市场洞察客户选择表-->
-    <insert id="batchMiCustomerChoice">
+    <insert id="batchMiCustomerChoice" useGeneratedKeys="true" keyProperty="miCustomerChoiceId">
         INSERT INTO mi_customer_choice (market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
