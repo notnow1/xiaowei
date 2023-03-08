@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasureDetail;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDetailDTO;
+import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyMeasureDetailMapper;
 import net.qixiaowei.strategy.cloud.service.strategyDecode.IStrategyMeasureDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,8 +115,8 @@ public class StrategyMeasureDetailServiceImpl implements IStrategyMeasureDetailS
      * @return List
      */
     @Override
-    public List<StrategyMeasureDetailDTO> selectStrategyMeasureDetailByStrategyMeasureId(Long strategyMeasureId) {
-        return null;
+    public List<StrategyMeasureDetailVO> selectStrategyMeasureDetailVOByStrategyMeasureId(Long strategyMeasureId) {
+        return strategyMeasureDetailMapper.selectStrategyMeasureDetailVOByStrategyMeasureId(strategyMeasureId);
     }
 
     /**
