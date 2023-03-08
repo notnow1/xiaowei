@@ -53,9 +53,21 @@ public class StrategyMeasureDTO {
      */
     private Long planBusinessUnitId;
     /**
+     * 规划业务单元名称
+     */
+    private String businessUnitName;
+    /**
      * 规划业务单元维度(region,department,product,industry)
      */
     private String businessUnitDecompose;
+    /**
+     * 规划业务单元维度(region,department,product,industry)
+     */
+    private List<Map<String, Object>> BusinessUnitDecomposes;
+    /**
+     * 规划业务单元维度(region,department,product,industry)
+     */
+    private String businessUnitDecomposeName;
     /**
      * 区域ID
      */

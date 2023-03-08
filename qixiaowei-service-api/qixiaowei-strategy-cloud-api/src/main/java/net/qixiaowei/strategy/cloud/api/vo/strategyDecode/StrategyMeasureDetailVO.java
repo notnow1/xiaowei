@@ -22,10 +22,6 @@ public class StrategyMeasureDetailVO {
      */
     private Long strategyMeasureDetailId;
     /**
-     * 任务ID
-     */
-    private Long strategyMeasureTaskId;
-    /**
      * 战略指标维度ID
      */
     private Long strategyIndexDimensionId;
@@ -33,6 +29,14 @@ public class StrategyMeasureDetailVO {
      * 序列号
      */
     private Integer serialNumber;
+    /**
+     * 战略指标维度编码
+     */
+    private Integer indexDimensionCode;
+    /**
+     * 编码名称
+     */
+    private Integer serialNumberName;
     /**
      * 战略举措名称
      */
@@ -42,11 +46,19 @@ public class StrategyMeasureDetailVO {
      */
     private Long strategyMeasureSource;
     /**
+     * 战略举措来源
+     */
+    private String strategyMeasureSourceName;
+    /**
      * 排序
      */
     private Integer sort;
 
 
+    /**
+     * 任务ID
+     */
+    private Long strategyMeasureTaskId;
     /**
      * 关键任务
      */
@@ -71,6 +83,10 @@ public class StrategyMeasureDetailVO {
      * 责任人员编码
      */
     private String dutyEmployeeCode;
+    /**
+     * 任务排序
+     */
+    private Integer taskSort;
 
 
     /**

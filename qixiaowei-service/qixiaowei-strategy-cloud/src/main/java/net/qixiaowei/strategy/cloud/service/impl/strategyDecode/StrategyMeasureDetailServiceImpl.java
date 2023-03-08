@@ -108,6 +108,17 @@ public class StrategyMeasureDetailServiceImpl implements IStrategyMeasureDetailS
     }
 
     /**
+     * 根据战略举措id查询战略举措清单详情表
+     *
+     * @param strategyMeasureId 战略举措id
+     * @return List
+     */
+    @Override
+    public List<StrategyMeasureDetailDTO> selectStrategyMeasureDetailByStrategyMeasureId(Long strategyMeasureId) {
+        return null;
+    }
+
+    /**
      * 逻辑删除战略举措清单详情表信息
      *
      * @param strategyMeasureDetailDTO 战略举措清单详情表
