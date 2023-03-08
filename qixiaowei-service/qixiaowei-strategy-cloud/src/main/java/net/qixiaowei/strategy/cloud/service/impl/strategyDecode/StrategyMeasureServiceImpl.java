@@ -1,5 +1,6 @@
 package net.qixiaowei.strategy.cloud.service.impl.strategyDecode;
 
+import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -27,10 +28,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -42,6 +40,15 @@ import java.util.stream.Collectors;
  */
 @Service
 public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
+
+    public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.of(
+            "region", "区域",
+            "department", "部门",
+            "product", "产品",
+            "industry", "行业",
+            "company", "公司级"
+    );
+
     @Autowired
     private StrategyMeasureMapper strategyMeasureMapper;
 
@@ -83,7 +90,86 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
      */
     @Override
     public StrategyMeasureDTO selectStrategyMeasureByStrategyMeasureId(Long strategyMeasureId) {
-        return strategyMeasureMapper.selectStrategyMeasureByStrategyMeasureId(strategyMeasureId);
+        StrategyMeasureDTO strategyMeasureDTO = strategyMeasureMapper.selectStrategyMeasureByStrategyMeasureId(strategyMeasureId);
+        if (StringUtils.isNull(strategyMeasureDTO)) {
+            throw new ServiceException("战略举措清单表已不存在");
+        }
+        String businessUnitDecompose = strategyMeasureDTO.getBusinessUnitDecompose();
+        if (StringUtils.isNotEmpty(businessUnitDecompose)) {
+            StringBuilder businessUnitDecomposeNames = new StringBuilder();
+            List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
+            businessUnitDecomposeList.forEach(decompose -> {
+                if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
+                    businessUnitDecomposeNames.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
+                }
+            });
+            List<Map<String, Object>> businessUnitDecomposes = new ArrayList<>();
+            for (String business : businessUnitDecomposeList) {
+                Map<String, Object> businessUnitDecomposeMap = new HashMap<>();
+                businessUnitDecomposeMap.put("label", BUSINESS_UNIT_DECOMPOSE_MAP.get(business));
+                businessUnitDecomposeMap.put("value", business);
+                businessUnitDecomposes.add(businessUnitDecomposeMap);
+            }
+            strategyMeasureDTO.setBusinessUnitDecomposes(businessUnitDecomposes);
+            strategyMeasureDTO.setBusinessUnitDecomposeName(businessUnitDecomposeNames.substring(0, businessUnitDecomposeNames.length() - 1));
+        }
+        setDecomposeValue(strategyMeasureDTO, businessUnitDecompose);
+        List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOS = strategyMeasureDetailService.selectStrategyMeasureDetailByStrategyMeasureId(strategyMeasureId);
+
+        return strategyMeasureDTO;
+    }
+
+    /**
+     * 根据维度进行赋值
+     *
+     * @param strategyMeasureDTO    清单DTO
+     * @param businessUnitDecompose 业务单元维度
+     */
+    private void setDecomposeValue(StrategyMeasureDTO strategyMeasureDTO, String businessUnitDecompose) {
+        Long areaId = strategyMeasureDTO.getAreaId();
+        Long departmentId = strategyMeasureDTO.getDepartmentId();
+        Long productId = strategyMeasureDTO.getProductId();
+        Long industryId = strategyMeasureDTO.getIndustryId();
+        if (businessUnitDecompose.contains("region")) {
+            if (StringUtils.isNotNull(areaId)) {
+                R<AreaDTO> areaDTOR = areaService.getById(areaId, SecurityConstants.INNER);
+                AreaDTO areaDTO = areaDTOR.getData();
+                if (StringUtils.isNull(areaDTO)) {
+                    throw new ServiceException("当前区域配置的信息已删除 请联系管理员");
+                }
+                strategyMeasureDTO.setAreaName(areaDTO.getAreaName());
+            }
+        }
+        if (businessUnitDecompose.contains("department")) {
+            if (StringUtils.isNotNull(departmentId)) {
+                R<DepartmentDTO> departmentDTOR = departmentService.selectdepartmentId(departmentId, SecurityConstants.INNER);
+                DepartmentDTO departmentDTO = departmentDTOR.getData();
+                if (StringUtils.isNull(departmentDTO)) {
+                    throw new ServiceException("当前部门配置的信息已删除 请联系管理员");
+                }
+                strategyMeasureDTO.setDepartmentName(departmentDTO.getDepartmentName());
+            }
+        }
+        if (businessUnitDecompose.contains("product")) {
+            if (StringUtils.isNotNull(productId)) {
+                R<ProductDTO> productDTOR = productService.remoteSelectById(productId, SecurityConstants.INNER);
+                ProductDTO productDTO = productDTOR.getData();
+                if (StringUtils.isNull(productDTO)) {
+                    throw new ServiceException("当前产品配置的信息已删除 请联系管理员");
+                }
+                strategyMeasureDTO.setProductName(productDTO.getProductName());
+            }
+        }
+        if (businessUnitDecompose.contains("industry")) {
+            if (StringUtils.isNotNull(industryId)) {
+                R<IndustryDTO> industryDTOR = industryService.selectById(industryId, SecurityConstants.INNER);
+                IndustryDTO industryDTO = industryDTOR.getData();
+                if (StringUtils.isNull(industryDTO)) {
+                    throw new ServiceException("当前行业配置的信息已删除 请联系管理员");
+                }
+                strategyMeasureDTO.setIndustryName(industryDTO.getIndustryName());
+            }
+        }
     }
 
     /**
@@ -204,20 +290,37 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
         strategyMeasure.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         strategyMeasureMapper.insertStrategyMeasure(strategyMeasure);
         Long strategyMeasureId = strategyMeasure.getStrategyMeasureId();
+
+        // 详情
         List<StrategyMeasureDetailVO> strategyMeasureDetailVOS = strategyMeasureDTO.getStrategyMeasureDetailVOS();
         if (StringUtils.isNotEmpty(strategyMeasureDetailVOS)) {
             Long strategyIndexDimensionId = null;
-            List<StrategyMeasureDetailVO> strategyMeasureDetailVOList = null;
-            for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
-                if (!strategyMeasureDetailVO.getStrategyIndexDimensionId().equals(strategyIndexDimensionId)) {
-                    strategyMeasureDetailVOList = new ArrayList<>();
-                    strategyIndexDimensionId = strategyMeasureDetailVO.getStrategyIndexDimensionId();
-                } else {
-                    strategyMeasureDetailVOList.add(strategyMeasureDetailVO);
-                }
+            List<List<StrategyMeasureDetailVO>> strategyMeasureDetailVOListS = null;
+            List<StrategyMeasureDetailVO> strategyMeasureDetailVOList = new ArrayList<>();
+            for (int i = 0; i < strategyMeasureDetailVOS.size(); i++) {
+                StrategyMeasureDetailVO strategyMeasureDetailVO = strategyMeasureDetailVOS.get(i);
+//                if (!strategyMeasureDetailVO.getStrategyIndexDimensionId().equals(strategyIndexDimensionId)) {
+//                    strategyMeasureDetailVOListS.add(strategyMeasureDetailVOList);
+//                    strategyMeasureDetailVOList = new ArrayList<>();
+//                    strategyIndexDimensionId = strategyMeasureDetailVO.getStrategyIndexDimensionId();
+//                } else {
+//                    strategyMeasureDetailVOList.add(strategyMeasureDetailVO);
+//                }
+                if (strategyMeasureDetailVOS.size() > i + 1) {
+                    StrategyMeasureDetailVO strategyMeasureDetailVONext = strategyMeasureDetailVOS.get(i + 1);
+                    if (!strategyMeasureDetailVONext.getStrategyIndexDimensionId().equals(strategyMeasureDetailVO.getStrategyIndexDimensionId())) {
+                        strategyMeasureDetailVOListS.add(strategyMeasureDetailVOList);
+                        strategyMeasureDetailVOList = new ArrayList<>();
+                        strategyIndexDimensionId = strategyMeasureDetailVO.getStrategyIndexDimensionId();
+                    }
 
+
+                } else {
+
+                }
             }
         }
+
 
         return strategyMeasureDTO;
     }
