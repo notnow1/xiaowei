@@ -121,6 +121,15 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
         }
         List<MiIndustryDetailDTO> miIndustryDetailDTOS = miIndustryDetailMapper.selectMiIndustryDetailByMarketInsightIndustryId(marketInsightIndustryId);
         List<MiIndustryAttractionDTO> miIndustryAttractionDTOS = miIndustryAttractionMapper.selectMiIndustryAttractionByMarketInsightIndustryId(marketInsightIndustryId);
+        if (StringUtils.isNotEmpty(miIndustryAttractionDTOS)){
+            for (MiIndustryAttractionDTO miIndustryAttractionDTO : miIndustryAttractionDTOS) {
+                if (null != miIndustryAttractionDTO.getIndustryAttractionId()){
+                    miIndustryAttractionDTO.setIndustryAttractionElementDTOS(industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionId(miIndustryAttractionDTO.getIndustryAttractionId()));
+                }
+
+            }
+
+        }
         if (StringUtils.isNotEmpty(miIndustryDetailDTOS)) {
             List<Long> industryTypes = miIndustryDetailDTOS.stream().filter(f -> null != f.getIndustryType()).map(MiIndustryDetailDTO::getIndustryType).collect(Collectors.toList());
 
@@ -161,9 +170,14 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 Map<Long, List<MiIndustryAttractionDataDTO>> miIndustryAttractionDataDTOMap = new HashMap<>();
                 if (StringUtils.isNotEmpty(miIndustryAttractionDataDTOS)) {
                     for (MiIndustryAttractionDataDTO miIndustryAttractionDataDTO : miIndustryAttractionDataDTOS) {
-                        Long miIndustryAttractionId = miIndustryAttractionDataDTO.getMiIndustryAttractionId();
-                        if (null != miIndustryAttractionId){
-                            miIndustryAttractionDataDTO.setIndustryAttractionElementDTOS(industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionId(miIndustryAttractionId));
+                        if (null != miIndustryAttractionDataDTO.getIndustryAttractionElementId()){
+                            IndustryAttractionElementDTO industryAttractionElementDTO = industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionElementId(miIndustryAttractionDataDTO.getIndustryAttractionElementId());
+                            if (StringUtils.isNotNull(industryAttractionElementDTO)){
+                                miIndustryAttractionDataDTO.setAssessStandardName(industryAttractionElementDTO.getAssessStandardName());
+                                miIndustryAttractionDataDTO.setAssessStandardDescription(industryAttractionElementDTO.getAssessStandardDescription());
+                                miIndustryAttractionDataDTO.setDisplayColor(industryAttractionElementDTO.getDisplayColor());
+                            }
+
                         }
                     }
                     //根据详情id分组
@@ -185,6 +199,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
         }
         marketInsightIndustryDTO.setMiIndustryDetailDTOS(miIndustryDetailDTOS);
         marketInsightIndustryDTO.setMiIndustryAttractionDTOS(miIndustryAttractionDTOS);
+
         return marketInsightIndustryDTO;
     }
 
@@ -524,7 +539,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 //修改市场洞察行业详情集合
                 List<MiIndustryDetail> miIndustryDetailUpdateList = new ArrayList<>();
                 //新增修改市场洞察行业详情集合
-                this.packAddAndUpdatemiIndustryDetail(i, marketInsightIndustry, miIndustryDetailDTOS, miIndustryDetailDTOList, miIndustryDetailAddList, miIndustryDetailUpdateList);
+                this.packAddAndUpdatemiIndustryDetail(marketInsightIndustry, miIndustryDetailDTOS, miIndustryDetailDTOList, miIndustryDetailAddList, miIndustryDetailUpdateList);
                 //新增修改市场洞察行业预估集合
                 this.packAddAndUpdatemiIndustryEstimateDTO(marketInsightIndustry, miIndustryDetailDTOS, miIndustryDetailAddList);
                 //新增修改市场洞察行业吸引力数据集合
@@ -759,7 +774,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
      * @param miIndustryDetailAddList
      * @param miIndustryDetailUpdateList
      */
-    private void packAddAndUpdatemiIndustryDetail(int i, MarketInsightIndustry marketInsightIndustry, List<MiIndustryDetailDTO> miIndustryDetailDTOS, List<MiIndustryDetailDTO> miIndustryDetailDTOList, List<MiIndustryDetail> miIndustryDetailAddList, List<MiIndustryDetail> miIndustryDetailUpdateList) {
+    private void packAddAndUpdatemiIndustryDetail(MarketInsightIndustry marketInsightIndustry, List<MiIndustryDetailDTO> miIndustryDetailDTOS, List<MiIndustryDetailDTO> miIndustryDetailDTOList, List<MiIndustryDetail> miIndustryDetailAddList, List<MiIndustryDetail> miIndustryDetailUpdateList) {
         List<Long> miIndustryDetailIds = new ArrayList<>();
         //sterm流求差集
         miIndustryDetailIds = miIndustryDetailDTOList.stream().filter(a ->
@@ -783,7 +798,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 miIndustryDetailAddList.add(miIndustryDetail);
             } else {
                 MiIndustryDetail miIndustryDetail = new MiIndustryDetail();
-                BeanUtils.copyProperties(miIndustryDetailDTOS.get(i), miIndustryDetail);
+                BeanUtils.copyProperties(miIndustryDetailDTOS.get(i1), miIndustryDetail);
                 miIndustryDetail.setUpdateTime(DateUtils.getNowDate());
                 miIndustryDetail.setUpdateBy(SecurityUtils.getUserId());
                 miIndustryDetail.setSort(i1 + 1);

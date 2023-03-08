@@ -70,10 +70,7 @@ public class MiIndustryAttractionDataDTO {
      * 显示颜色
      */
     private  String  displayColor;
-    /**
-     * 行业吸引力要素表集合
-     */
-    private List<IndustryAttractionElementDTO> industryAttractionElementDTOS;
+
     /**
     * 删除标记:0未删除;1已删除
     */
