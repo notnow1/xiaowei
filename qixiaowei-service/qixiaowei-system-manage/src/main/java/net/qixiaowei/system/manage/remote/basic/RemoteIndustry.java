@@ -58,4 +58,16 @@ public class RemoteIndustry implements RemoteIndustryService {
         return R.ok(industryService.selectIndustryByIndustryIds(industryIds));
     }
 
+    /**
+     * 查找行业列表
+     *
+     * @return 结果
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/selectList")
+    public R<List<IndustryDTO>> selectListByIndustry(@RequestBody IndustryDTO industryDTO, String inner) {
+        return R.ok(industryService.selectIndustryList(industryDTO));
+    }
+
 }
