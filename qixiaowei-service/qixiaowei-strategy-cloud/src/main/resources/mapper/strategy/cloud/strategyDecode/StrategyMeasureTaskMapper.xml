@@ -7,7 +7,7 @@
         SELECT
         strategy_measure_task_id,strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_measure_task
-        WHERE  strategy_measure_task_id=#{strategyMeasureTaskId}
+        WHERE strategy_measure_task_id=#{strategyMeasureTaskId}
         and delete_flag=0
     </select>
 
@@ -17,70 +17,84 @@
         SELECT
         strategy_measure_task_id,strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_measure_task
-        WHERE  strategy_measure_task_id in
-            <foreach item="item"
-                     collection="strategyMeasureTaskIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE strategy_measure_task_id in
+        <foreach item="item"
+                 collection="strategyMeasureTaskIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询战略举措清单任务表列表-->
-    <select id="selectStrategyMeasureTaskList" resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO">
+    <select id="selectStrategyMeasureTaskList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO">
         SELECT
         strategy_measure_task_id,strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_measure_task
         WHERE delete_flag=0
-                        <if test="strategyMeasureTask.strategyMeasureTaskId != null">
-                            and strategy_measure_task_id=#{strategyMeasureTask.strategyMeasureTaskId}
-                        </if>
-                        <if test="strategyMeasureTask.strategyMeasureId != null">
-                            and strategy_measure_id=#{strategyMeasureTask.strategyMeasureId}
-                        </if>
-                        <if test="strategyMeasureTask.strategyMeasureDetailId != null">
-                            and strategy_measure_detail_id=#{strategyMeasureTask.strategyMeasureDetailId}
-                        </if>
-                        <if test="strategyMeasureTask.keyTask != null and strategyMeasureTask.keyTask != ''">
-                            and key_task=#{strategyMeasureTask.keyTask}
-                        </if>
-                        <if test="strategyMeasureTask.closeStandard != null and strategyMeasureTask.closeStandard != ''">
-                            and close_standard=#{strategyMeasureTask.closeStandard}
-                        </if>
-                        <if test="strategyMeasureTask.dutyDepartmentId != null">
-                            and duty_department_id=#{strategyMeasureTask.dutyDepartmentId}
-                        </if>
-                        <if test="strategyMeasureTask.dutyEmployeeId != null">
-                            and duty_employee_id=#{strategyMeasureTask.dutyEmployeeId}
-                        </if>
-                        <if test="strategyMeasureTask.dutyEmployeeName != null and strategyMeasureTask.dutyEmployeeName != ''">
-                            and duty_employee_name=#{strategyMeasureTask.dutyEmployeeName}
-                        </if>
-                        <if test="strategyMeasureTask.dutyEmployeeCode != null and strategyMeasureTask.dutyEmployeeCode != ''">
-                            and duty_employee_code=#{strategyMeasureTask.dutyEmployeeCode}
-                        </if>
-                        <if test="strategyMeasureTask.sort != null">
-                            and sort=#{strategyMeasureTask.sort}
-                        </if>
-                        <if test="strategyMeasureTask.deleteFlag != null">
-                            and delete_flag=#{strategyMeasureTask.deleteFlag}
-                        </if>
-                        <if test="strategyMeasureTask.createBy != null">
-                            and create_by=#{strategyMeasureTask.createBy}
-                        </if>
-                        <if test="strategyMeasureTask.createTime != null">
-                            and create_time=#{strategyMeasureTask.createTime}
-                        </if>
-                        <if test="strategyMeasureTask.updateBy != null">
-                            and update_by=#{strategyMeasureTask.updateBy}
-                        </if>
-                        <if test="strategyMeasureTask.updateTime != null">
-                            and update_time=#{strategyMeasureTask.updateTime}
-                        </if>
+        <if test="strategyMeasureTask.strategyMeasureTaskId != null">
+            and strategy_measure_task_id=#{strategyMeasureTask.strategyMeasureTaskId}
+        </if>
+        <if test="strategyMeasureTask.strategyMeasureId != null">
+            and strategy_measure_id=#{strategyMeasureTask.strategyMeasureId}
+        </if>
+        <if test="strategyMeasureTask.strategyMeasureDetailId != null">
+            and strategy_measure_detail_id=#{strategyMeasureTask.strategyMeasureDetailId}
+        </if>
+        <if test="strategyMeasureTask.keyTask != null and strategyMeasureTask.keyTask != ''">
+            and key_task=#{strategyMeasureTask.keyTask}
+        </if>
+        <if test="strategyMeasureTask.closeStandard != null and strategyMeasureTask.closeStandard != ''">
+            and close_standard=#{strategyMeasureTask.closeStandard}
+        </if>
+        <if test="strategyMeasureTask.dutyDepartmentId != null">
+            and duty_department_id=#{strategyMeasureTask.dutyDepartmentId}
+        </if>
+        <if test="strategyMeasureTask.dutyEmployeeId != null">
+            and duty_employee_id=#{strategyMeasureTask.dutyEmployeeId}
+        </if>
+        <if test="strategyMeasureTask.dutyEmployeeName != null and strategyMeasureTask.dutyEmployeeName != ''">
+            and duty_employee_name=#{strategyMeasureTask.dutyEmployeeName}
+        </if>
+        <if test="strategyMeasureTask.dutyEmployeeCode != null and strategyMeasureTask.dutyEmployeeCode != ''">
+            and duty_employee_code=#{strategyMeasureTask.dutyEmployeeCode}
+        </if>
+        <if test="strategyMeasureTask.sort != null">
+            and sort=#{strategyMeasureTask.sort}
+        </if>
+        <if test="strategyMeasureTask.deleteFlag != null">
+            and delete_flag=#{strategyMeasureTask.deleteFlag}
+        </if>
+        <if test="strategyMeasureTask.createBy != null">
+            and create_by=#{strategyMeasureTask.createBy}
+        </if>
+        <if test="strategyMeasureTask.createTime != null">
+            and create_time=#{strategyMeasureTask.createTime}
+        </if>
+        <if test="strategyMeasureTask.updateBy != null">
+            and update_by=#{strategyMeasureTask.updateBy}
+        </if>
+        <if test="strategyMeasureTask.updateTime != null">
+            and update_time=#{strategyMeasureTask.updateTime}
+        </if>
+    </select>
+    <!--根据战略清单ID集合查询战略举措清单任务表信息-->
+    <select id="selectStrategyMeasureTaskByStrategyMeasureId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO">
+        SELECT
+        strategy_measure_task_id,strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_measure_task
+        WHERE delete_flag=0
+        AND strategy_measure_detail_id IN
+        <foreach collection="" close=")" open="(" separator="," item="item" index="index">
+            #{item}
+        </foreach>
     </select>
     <!--新增战略举措清单任务表-->
     <insert id="insertStrategyMeasureTask" useGeneratedKeys="true" keyProperty="strategyMeasureTaskId">
-        INSERT INTO strategy_measure_task (strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO strategy_measure_task
+        (strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{strategyMeasureTask.strategyMeasureId},#{strategyMeasureTask.strategyMeasureDetailId},#{strategyMeasureTask.keyTask},#{strategyMeasureTask.closeStandard},#{strategyMeasureTask.dutyDepartmentId},#{strategyMeasureTask.dutyEmployeeId},#{strategyMeasureTask.dutyEmployeeName},#{strategyMeasureTask.dutyEmployeeCode},#{strategyMeasureTask.sort},#{strategyMeasureTask.deleteFlag},#{strategyMeasureTask.createBy},#{strategyMeasureTask.createTime},#{strategyMeasureTask.updateBy},#{strategyMeasureTask.updateTime})
     </insert>
@@ -88,77 +102,78 @@
     <update id="updateStrategyMeasureTask">
         UPDATE strategy_measure_task
         SET
-                    <if test="strategyMeasureTask.strategyMeasureId != null">
-                        strategy_measure_id=#{strategyMeasureTask.strategyMeasureId},
-                    </if>
-                    <if test="strategyMeasureTask.strategyMeasureDetailId != null">
-                        strategy_measure_detail_id=#{strategyMeasureTask.strategyMeasureDetailId},
-                    </if>
-                    <if test="strategyMeasureTask.keyTask != null and strategyMeasureTask.keyTask != ''">
-                        key_task=#{strategyMeasureTask.keyTask},
-                    </if>
-                    <if test="strategyMeasureTask.closeStandard != null and strategyMeasureTask.closeStandard != ''">
-                        close_standard=#{strategyMeasureTask.closeStandard},
-                    </if>
-                    <if test="strategyMeasureTask.dutyDepartmentId != null">
-                        duty_department_id=#{strategyMeasureTask.dutyDepartmentId},
-                    </if>
-                    <if test="strategyMeasureTask.dutyEmployeeId != null">
-                        duty_employee_id=#{strategyMeasureTask.dutyEmployeeId},
-                    </if>
-                    <if test="strategyMeasureTask.dutyEmployeeName != null and strategyMeasureTask.dutyEmployeeName != ''">
-                        duty_employee_name=#{strategyMeasureTask.dutyEmployeeName},
-                    </if>
-                    <if test="strategyMeasureTask.dutyEmployeeCode != null and strategyMeasureTask.dutyEmployeeCode != ''">
-                        duty_employee_code=#{strategyMeasureTask.dutyEmployeeCode},
-                    </if>
-                    <if test="strategyMeasureTask.sort != null">
-                        sort=#{strategyMeasureTask.sort},
-                    </if>
-                    <if test="strategyMeasureTask.deleteFlag != null">
-                        delete_flag=#{strategyMeasureTask.deleteFlag},
-                    </if>
-                    <if test="strategyMeasureTask.createBy != null">
-                        create_by=#{strategyMeasureTask.createBy},
-                    </if>
-                    <if test="strategyMeasureTask.createTime != null">
-                        create_time=#{strategyMeasureTask.createTime},
-                    </if>
-                    <if test="strategyMeasureTask.updateBy != null">
-                        update_by=#{strategyMeasureTask.updateBy},
-                    </if>
-                    <if test="strategyMeasureTask.updateTime != null">
-                        update_time=#{strategyMeasureTask.updateTime}
-                    </if>
+        <if test="strategyMeasureTask.strategyMeasureId != null">
+            strategy_measure_id=#{strategyMeasureTask.strategyMeasureId},
+        </if>
+        <if test="strategyMeasureTask.strategyMeasureDetailId != null">
+            strategy_measure_detail_id=#{strategyMeasureTask.strategyMeasureDetailId},
+        </if>
+        <if test="strategyMeasureTask.keyTask != null and strategyMeasureTask.keyTask != ''">
+            key_task=#{strategyMeasureTask.keyTask},
+        </if>
+        <if test="strategyMeasureTask.closeStandard != null and strategyMeasureTask.closeStandard != ''">
+            close_standard=#{strategyMeasureTask.closeStandard},
+        </if>
+        <if test="strategyMeasureTask.dutyDepartmentId != null">
+            duty_department_id=#{strategyMeasureTask.dutyDepartmentId},
+        </if>
+        <if test="strategyMeasureTask.dutyEmployeeId != null">
+            duty_employee_id=#{strategyMeasureTask.dutyEmployeeId},
+        </if>
+        <if test="strategyMeasureTask.dutyEmployeeName != null and strategyMeasureTask.dutyEmployeeName != ''">
+            duty_employee_name=#{strategyMeasureTask.dutyEmployeeName},
+        </if>
+        <if test="strategyMeasureTask.dutyEmployeeCode != null and strategyMeasureTask.dutyEmployeeCode != ''">
+            duty_employee_code=#{strategyMeasureTask.dutyEmployeeCode},
+        </if>
+        <if test="strategyMeasureTask.sort != null">
+            sort=#{strategyMeasureTask.sort},
+        </if>
+        <if test="strategyMeasureTask.deleteFlag != null">
+            delete_flag=#{strategyMeasureTask.deleteFlag},
+        </if>
+        <if test="strategyMeasureTask.createBy != null">
+            create_by=#{strategyMeasureTask.createBy},
+        </if>
+        <if test="strategyMeasureTask.createTime != null">
+            create_time=#{strategyMeasureTask.createTime},
+        </if>
+        <if test="strategyMeasureTask.updateBy != null">
+            update_by=#{strategyMeasureTask.updateBy},
+        </if>
+        <if test="strategyMeasureTask.updateTime != null">
+            update_time=#{strategyMeasureTask.updateTime}
+        </if>
         WHERE
-                 strategy_measure_task_id=#{strategyMeasureTask.strategyMeasureTaskId}
+        strategy_measure_task_id=#{strategyMeasureTask.strategyMeasureTaskId}
     </update>
     <!--逻辑删除战略举措清单任务表-->
     <update id="logicDeleteStrategyMeasureTaskByStrategyMeasureTaskId">
         UPDATE strategy_measure_task
-        SET     delete_flag= 1,
-                update_by=#{strategyMeasureTask.updateBy},
-                update_time=#{strategyMeasureTask.updateTime}
+        SET delete_flag= 1,
+        update_by=#{strategyMeasureTask.updateBy},
+        update_time=#{strategyMeasureTask.updateTime}
         WHERE
-                strategy_measure_task_id=#{strategyMeasureTask.strategyMeasureTaskId}
+        strategy_measure_task_id=#{strategyMeasureTask.strategyMeasureTaskId}
     </update>
     <!--逻辑批量删除战略举措清单任务表-->
     <update id="logicDeleteStrategyMeasureTaskByStrategyMeasureTaskIds">
         UPDATE strategy_measure_task
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         strategy_measure_task_id IN
-            <foreach item="item"
-                     collection="strategyMeasureTaskIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        strategy_measure_task_id IN
+        <foreach item="item"
+                 collection="strategyMeasureTaskIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增战略举措清单任务表-->
     <insert id="batchStrategyMeasureTask">
-        INSERT INTO strategy_measure_task (strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO strategy_measure_task
+        (strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="strategyMeasureTasks"
@@ -170,125 +185,125 @@
     <!--物理删除战略举措清单任务表-->
     <delete id="deleteStrategyMeasureTaskByStrategyMeasureTaskId">
         DELETE FROM strategy_measure_task
-        WHERE  strategy_measure_task_id=#{strategyMeasureTask}
+        WHERE strategy_measure_task_id=#{strategyMeasureTask}
 
     </delete>
     <!--物理批量删除战略举措清单任务表-->
     <delete id="deleteStrategyMeasureTaskByStrategyMeasureTaskIds">
         DELETE FROM strategy_measure_task
-        WHERE  strategy_measure_task_id IN
-            <foreach item="item"
-                     collection="strategyMeasureTaskIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE strategy_measure_task_id IN
+        <foreach item="item"
+                 collection="strategyMeasureTaskIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改战略举措清单任务表-->
     <update id="updateStrategyMeasureTasks">
         update strategy_measure_task
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="strategy_measure_id=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.strategyMeasureId != null">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.strategyMeasureId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="strategy_measure_detail_id=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.strategyMeasureDetailId != null">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.strategyMeasureDetailId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="key_task=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.keyTask != null and item.keyTask != ''">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.keyTask}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="close_standard=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.closeStandard != null and item.closeStandard != ''">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.closeStandard}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="duty_department_id=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.dutyDepartmentId != null">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.dutyDepartmentId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="duty_employee_id=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.dutyEmployeeId != null">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.dutyEmployeeId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="duty_employee_name=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.dutyEmployeeName != null and item.dutyEmployeeName != ''">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.dutyEmployeeName}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="duty_employee_code=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.dutyEmployeeCode != null and item.dutyEmployeeCode != ''">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.dutyEmployeeCode}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="sort=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.sort != null">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.sort}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="strategyMeasureTaskList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="strategy_measure_id=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.strategyMeasureId != null">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.strategyMeasureId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="strategy_measure_detail_id=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.strategyMeasureDetailId != null">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.strategyMeasureDetailId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="key_task=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.keyTask != null and item.keyTask != ''">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.keyTask}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="close_standard=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.closeStandard != null and item.closeStandard != ''">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.closeStandard}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="duty_department_id=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.dutyDepartmentId != null">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.dutyDepartmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="duty_employee_id=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.dutyEmployeeId != null">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.dutyEmployeeId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="duty_employee_name=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.dutyEmployeeName != null and item.dutyEmployeeName != ''">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.dutyEmployeeName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="duty_employee_code=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.dutyEmployeeCode != null and item.dutyEmployeeCode != ''">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.dutyEmployeeCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.sort != null">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="strategyMeasureTaskList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when strategy_measure_task_id=#{item.strategyMeasureTaskId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="strategyMeasureTaskList" separator="or" item="item" index="index">
-                    strategy_measure_task_id=#{item.strategyMeasureTaskId}
+            strategy_measure_task_id=#{item.strategyMeasureTaskId}
         </foreach>
     </update>
 </mapper>

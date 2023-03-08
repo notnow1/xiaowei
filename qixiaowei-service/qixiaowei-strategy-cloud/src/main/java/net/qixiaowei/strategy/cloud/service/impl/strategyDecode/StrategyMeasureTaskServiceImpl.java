@@ -108,6 +108,17 @@ public class StrategyMeasureTaskServiceImpl implements IStrategyMeasureTaskServi
     }
 
     /**
+     * 根据战略清单ID集合查询战略举措清单任务表信息
+     *
+     * @param strategyMeasureDetailIds 根据战略清单ID集合
+     * @return List
+     */
+    @Override
+    public List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureId(List<Long> strategyMeasureDetailIds) {
+        return strategyMeasureTaskMapper.selectStrategyMeasureTaskByStrategyMeasureId(strategyMeasureDetailIds);
+    }
+
+    /**
      * 逻辑删除战略举措清单任务表信息
      *
      * @param strategyMeasureTaskDTO 战略举措清单任务表

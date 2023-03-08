@@ -101,4 +101,11 @@ public interface IStrategyMeasureTaskService {
      */
     int deleteStrategyMeasureTaskByStrategyMeasureTaskId(Long strategyMeasureTaskId);
 
+    /**
+     * 根据战略清单ID集合查询战略举措清单任务表信息
+     *
+     * @param strategyMeasureDetailIds 根据战略清单ID集合
+     * @return List
+     */
+    List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureId(List<Long> strategyMeasureDetailIds);
 }

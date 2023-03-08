@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.service.strategyDecode;
 
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDetailDTO;
+import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 
 import java.util.List;
 
@@ -107,5 +108,5 @@ public interface IStrategyMeasureDetailService {
      * @param strategyMeasureId 战略举措id
      * @return List
      */
-    List<StrategyMeasureDetailDTO> selectStrategyMeasureDetailByStrategyMeasureId(Long strategyMeasureId);
+    List<StrategyMeasureDetailVO> selectStrategyMeasureDetailVOByStrategyMeasureId(Long strategyMeasureId);
 }

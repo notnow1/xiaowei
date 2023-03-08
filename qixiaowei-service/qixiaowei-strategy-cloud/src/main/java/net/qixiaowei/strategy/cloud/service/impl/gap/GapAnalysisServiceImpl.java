@@ -235,9 +235,9 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                 R<IndustryDTO> industryDTOR = industryService.selectById(industryId, SecurityConstants.INNER);
                 IndustryDTO industryDTO = industryDTOR.getData();
                 if (StringUtils.isNull(industryDTO)) {
-                    throw new ServiceException("当前行业配置的信息已删除 请联系管理员");
+//                    throw new ServiceException("当前行业配置的信息已删除 请联系管理员");
                 }
-                gapAnalysisDTO.setIndustryName(industryDTO.getIndustryName());
+//                gapAnalysisDTO.setIndustryName(industryDTO.getIndustryName());
             }
         }
     }
@@ -415,7 +415,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                         -> indicatorDTO.getIndicatorId().equals(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList()).get(0);
                 Long indicatorId = matchIndicatorDTO.getIndicatorId();
                 GapAnalysisOperateDTO gapAnalysisOperate = new GapAnalysisOperateDTO();
-                List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getGapAnalysisOperateDTOS();
+                List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getSonGapAnalysisOperateDTOS();
                 for (GapAnalysisOperateDTO analysisOperateDTO : gapAnalysisOperateDTOSList) {
                     if (StringUtils.isNull(analysisOperateDTO.getOperateMap().get("operateYear"))) {
                         throw new ServiceException("请传入历史经营情况的年份");
@@ -634,7 +634,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                     -> indicatorDTO.getIndicatorId().equals(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList()).get(0);
             Long indicatorId = matchIndicatorDTO.getIndicatorId();
             GapAnalysisOperateDTO gapAnalysisOperate = new GapAnalysisOperateDTO();
-            List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getGapAnalysisOperateDTOS();
+            List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getSonGapAnalysisOperateDTOS();
             int yearNumber = gapAnalysisById.getPlanYear() - 1;
             for (GapAnalysisOperateDTO analysisOperateDTO : gapAnalysisOperateDTOSList) {
                 if (StringUtils.isNull(analysisOperateDTO.getOperateMap().get("operateYear"))) {

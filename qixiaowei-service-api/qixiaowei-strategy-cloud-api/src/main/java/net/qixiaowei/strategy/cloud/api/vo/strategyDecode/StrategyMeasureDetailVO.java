@@ -26,13 +26,17 @@ public class StrategyMeasureDetailVO {
      */
     private Long strategyIndexDimensionId;
     /**
-     * 序列号
+     * 战略指标维度名称
      */
-    private Integer serialNumber;
+    private Long indexDimensionName;
     /**
      * 战略指标维度编码
      */
     private Integer indexDimensionCode;
+    /**
+     * 序列号
+     */
+    private Integer serialNumber;
     /**
      * 编码名称
      */
@@ -71,6 +75,10 @@ public class StrategyMeasureDetailVO {
      * 责任部门
      */
     private Long dutyDepartmentId;
+    /**
+     * 责任部门名称
+     */
+    private String dutyDepartmentName;
     /**
      * 责任人员ID
      */

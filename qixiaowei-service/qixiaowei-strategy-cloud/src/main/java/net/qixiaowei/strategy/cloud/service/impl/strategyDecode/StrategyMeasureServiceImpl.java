@@ -17,6 +17,7 @@ import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasure;
 import net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDetailDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO;
 import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 import net.qixiaowei.strategy.cloud.mapper.plan.PlanBusinessUnitMapper;
 import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyMeasureMapper;
@@ -114,7 +115,38 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             strategyMeasureDTO.setBusinessUnitDecomposeName(businessUnitDecomposeNames.substring(0, businessUnitDecomposeNames.length() - 1));
         }
         setDecomposeValue(strategyMeasureDTO, businessUnitDecompose);
-        List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOS = strategyMeasureDetailService.selectStrategyMeasureDetailByStrategyMeasureId(strategyMeasureId);
+        // 详情
+        List<StrategyMeasureDetailVO> strategyMeasureDetailVOS = strategyMeasureDetailService.selectStrategyMeasureDetailVOByStrategyMeasureId(strategyMeasureId);
+        List<Long> dutyDepartmentIds = strategyMeasureDetailVOS.stream().map(StrategyMeasureDetailVO::getDutyDepartmentId).collect(Collectors.toList());
+        R<List<DepartmentDTO>> departmentDTOSR = departmentService.selectdepartmentIds(dutyDepartmentIds, SecurityConstants.INNER);
+        List<DepartmentDTO> departmentDTOS = departmentDTOSR.getData();
+        if (StringUtils.isEmpty(departmentDTOS)) {
+            throw new ServiceException("当前部门已不存在");
+        }
+        for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
+            for (DepartmentDTO departmentDTO : departmentDTOS) {
+                if (departmentDTO.getDepartmentId().equals(strategyMeasureDetailVO.getDutyDepartmentId())) {
+                    strategyMeasureDetailVO.setDutyDepartmentName(departmentDTO.getDepartmentName());
+                    break;
+                }
+            }
+        }
+
+
+//            for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
+//                for (StrategyMeasureDetailDTO strategyMeasureDetailDTO : strategyMeasureDetailDTOS) {
+//                    if (strategyMeasureDetailDTO.getStrategyMeasureDetailId().equals(strategyMeasureDetailVO.getStrategyMeasureDetailId())) {
+//                        BeanUtils.copyProperties(strategyMeasureDetailDTO, strategyMeasureDetailVO);
+//                        break;
+//                    }
+//                }
+//            }
+//            Map<Long, List<StrategyMeasureDetailVO>> groupStrategyMeasureDetailVOS =
+//                    strategyMeasureDetailVOS.stream().sorted(Comparator.comparing(StrategyMeasureDetailVO::getSort))
+//                            .sorted(Comparator.comparing(StrategyMeasureDetailVO::getSerialNumber))
+//                            .sorted(Comparator.comparing(StrategyMeasureDetailVO::getTaskSort))
+//                            .collect(Collectors.groupingBy(StrategyMeasureDetailVO::getStrategyMeasureDetailId));
+
 
         return strategyMeasureDTO;
     }
