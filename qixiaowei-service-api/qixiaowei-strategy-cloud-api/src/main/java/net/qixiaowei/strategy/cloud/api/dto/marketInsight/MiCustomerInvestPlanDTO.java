@@ -7,6 +7,8 @@ import java.util.Date;
 import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,6 +50,10 @@ public class MiCustomerInvestPlanDTO {
     */
     private  Long industryId;
     /**
+     * 行业名称
+     */
+    private  String industryName;
+    /**
     * 客户名称
     */
     private  String customerName;
@@ -55,6 +61,10 @@ public class MiCustomerInvestPlanDTO {
     * 客户类别
     */
     private  Long customerCategory;
+    /**
+     * 客户类别名称
+     */
+    private  String customerCategoryName;
     /**
     * 现有市场占有率
     */
@@ -75,6 +85,10 @@ public class MiCustomerInvestPlanDTO {
     * 排序
     */
     private  Integer sort;
+    /**
+     * 市场洞察客户投资详情集合
+     */
+    private List<MiCustomerInvestDetailDTO>  miCustomerInvestDetailDTOS;
     /**
     * 删除标记:0未删除;1已删除
     */

@@ -21,6 +21,13 @@ public interface MiCustomerInvestPlanMapper{
     */
     MiCustomerInvestPlanDTO selectMiCustomerInvestPlanByMiCustomerInvestPlanId(@Param("miCustomerInvestPlanId")Long miCustomerInvestPlanId);
 
+    /**
+     * 根据市场洞察客户主表主键查询市场洞察客户投资计划表
+     *
+     * @param marketInsightCustomerId 市场洞察客户主表主键
+     * @return 市场洞察客户投资计划表
+     */
+    List<MiCustomerInvestPlanDTO> selectMiCustomerInvestPlanByMarketInsightCustomerId(@Param("marketInsightCustomerId")Long marketInsightCustomerId);
 
     /**
     * 批量查询市场洞察客户投资计划表
@@ -29,6 +36,14 @@ public interface MiCustomerInvestPlanMapper{
     * @return 市场洞察客户投资计划表
     */
     List<MiCustomerInvestPlanDTO> selectMiCustomerInvestPlanByMiCustomerInvestPlanIds(@Param("miCustomerInvestPlanIds") List<Long> miCustomerInvestPlanIds);
+
+    /**
+     * 根据市场洞察客户主表主键集合批量查询市场洞察客户投资计划表
+     *
+     * @param marketInsightCustomerIds 市场洞察客户主表主键集合
+     * @return 市场洞察客户投资计划表
+     */
+    List<MiCustomerInvestPlanDTO> selectMiCustomerInvestPlanByMarketInsightCustomerIds(@Param("marketInsightCustomerIds") List<Long> marketInsightCustomerIds);
 
     /**
     * 查询市场洞察客户投资计划表列表

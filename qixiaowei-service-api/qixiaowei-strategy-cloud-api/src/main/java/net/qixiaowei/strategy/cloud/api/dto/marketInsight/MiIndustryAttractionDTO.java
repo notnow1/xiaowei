@@ -7,6 +7,9 @@ import java.util.Date;
 import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,6 +58,10 @@ public class MiIndustryAttractionDTO {
     * 排序
     */
     private  Integer sort;
+    /**
+     * 行业吸引力要素表集合
+     */
+    private List<IndustryAttractionElementDTO> industryAttractionElementDTOS;
     /**
     * 删除标记:0未删除;1已删除
     */

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -40,14 +41,17 @@ public class MarketInsightCustomerDTO {
     /**
     * ID
     */
+    @NotNull(message = "id不能为空", groups = {MarketInsightCustomerDTO.UpdateMarketInsightCustomerDTO.class, MarketInsightCustomerDTO.DeleteMarketInsightCustomerDTO.class})
     private  Long marketInsightCustomerId;
     /**
     * 规划年度
     */
+    @NotNull(message = "规划年度不能为空", groups = {MarketInsightCustomerDTO.UpdateMarketInsightCustomerDTO.class, MarketInsightCustomerDTO.AddMarketInsightCustomerDTO.class})
     private  Integer planYear;
     /**
     * 规划业务单元ID
     */
+    @NotNull(message = "规划业务单元ID不能为空", groups = {MarketInsightCustomerDTO.UpdateMarketInsightCustomerDTO.class, MarketInsightCustomerDTO.AddMarketInsightCustomerDTO.class})
     private  Long planBusinessUnitId;
     /**
      * 规划业务单元名称
@@ -106,7 +110,14 @@ public class MarketInsightCustomerDTO {
      * 创建人
      */
     private  String createByName;
-
+    /**
+     * 市场洞察客户选择表集合
+     */
+    private List<MiCustomerChoiceDTO>  miCustomerChoiceDTOS;
+    /**
+     * 市场洞察客户投资计划集合
+     */
+    private List<MiCustomerInvestPlanDTO>  miCustomerInvestPlanDTOS;
     /**
     * 创建时间
     */

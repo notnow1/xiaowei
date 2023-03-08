@@ -95,6 +95,7 @@
         FROM mi_industry_detail
         WHERE market_insight_industry_id = #{marketInsightIndustryId}
           and delete_flag = 0
+        order by sort
     </select>
 <!--    根据市场洞察行业主表主键集合批量查询市场洞察行业详情表-->
     <select id="selectMiIndustryDetailByMarketInsightIndustryIds"

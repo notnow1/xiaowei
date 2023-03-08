@@ -20,7 +20,13 @@ public interface MiCustomerChoiceMapper{
     * @return 市场洞察客户选择表
     */
     MiCustomerChoiceDTO selectMiCustomerChoiceByMiCustomerChoiceId(@Param("miCustomerChoiceId")Long miCustomerChoiceId);
-
+    /**
+     * 根据市场洞察客户主表主键查询市场洞察客户选择表
+     *
+     * @param marketInsightCustomerId 市场洞察客户主表主键
+     * @return 市场洞察客户选择表
+     */
+    List<MiCustomerChoiceDTO> selectMiCustomerChoiceByMarketInsightCustomerId(@Param("marketInsightCustomerId")Long marketInsightCustomerId);
 
     /**
     * 批量查询市场洞察客户选择表
@@ -30,6 +36,13 @@ public interface MiCustomerChoiceMapper{
     */
     List<MiCustomerChoiceDTO> selectMiCustomerChoiceByMiCustomerChoiceIds(@Param("miCustomerChoiceIds") List<Long> miCustomerChoiceIds);
 
+    /**
+     * 根据市场洞察客户主表主键集合批量查询市场洞察客户选择表
+     *
+     * @param marketInsightCustomerIds 市场洞察客户主表主键集合
+     * @return 市场洞察客户选择表
+     */
+    List<MiCustomerChoiceDTO> selectMiCustomerChoiceByMarketInsightCustomerIds(@Param("marketInsightCustomerIds") List<Long> marketInsightCustomerIds);
     /**
     * 查询市场洞察客户选择表列表
     *

@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.List;
@@ -104,6 +105,7 @@ public class MarketInsightIndustryDTO {
      *市场洞察行业吸引力集合
      */
     private List<MiIndustryAttractionDTO> miIndustryAttractionDTOS;
+
     /**
     * 删除标记:0未删除;1已删除
     */

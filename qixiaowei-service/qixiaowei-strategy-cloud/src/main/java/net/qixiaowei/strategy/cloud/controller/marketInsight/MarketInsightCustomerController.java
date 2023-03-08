@@ -8,8 +8,10 @@ import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -70,7 +72,7 @@ public class MarketInsightCustomerController extends BaseController
     @RequiresPermissions("strategy:cloud:marketInsightCustomer:add")
     @Log(title = "新增市场洞察客户表", businessType = BusinessType.MARKET_INSIGHT_CUSTOMER, businessId = "marketInsightCustomerId", operationType = OperationType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody MarketInsightCustomerDTO marketInsightCustomerDTO) {
+    public AjaxResult addSave(@RequestBody  @Validated({MarketInsightCustomerDTO.AddMarketInsightCustomerDTO.class}) MarketInsightCustomerDTO marketInsightCustomerDTO) {
     return AjaxResult.success(marketInsightCustomerService.insertMarketInsightCustomer(marketInsightCustomerDTO));
     }
 
@@ -81,7 +83,7 @@ public class MarketInsightCustomerController extends BaseController
     @RequiresPermissions("strategy:cloud:marketInsightCustomer:edit")
     @Log(title = "修改市场洞察客户表", businessType = BusinessType.MARKET_INSIGHT_CUSTOMER, businessId = "marketInsightCustomerId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody MarketInsightCustomerDTO marketInsightCustomerDTO)
+    public AjaxResult editSave(@RequestBody @Validated({MarketInsightCustomerDTO.UpdateMarketInsightCustomerDTO.class}) MarketInsightCustomerDTO marketInsightCustomerDTO)
     {
     return toAjax(marketInsightCustomerService.updateMarketInsightCustomer(marketInsightCustomerDTO));
     }
@@ -91,7 +93,7 @@ public class MarketInsightCustomerController extends BaseController
     */
     @RequiresPermissions("strategy:cloud:marketInsightCustomer:remove")
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody MarketInsightCustomerDTO marketInsightCustomerDTO)
+    public AjaxResult remove(@RequestBody  @Validated({MarketInsightCustomerDTO.DeleteMarketInsightCustomerDTO.class}) MarketInsightCustomerDTO marketInsightCustomerDTO)
     {
     return toAjax(marketInsightCustomerService.logicDeleteMarketInsightCustomerByMarketInsightCustomerId(marketInsightCustomerDTO));
     }

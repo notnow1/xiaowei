@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -13,21 +14,30 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MarketInsightCustomer;
-import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO;
-import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO;
+import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiCustomerChoice;
+import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiCustomerInvestDetail;
+import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiCustomerInvestPlan;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.*;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.MarketInsightCustomerMapper;
+import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiCustomerChoiceMapper;
+import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiCustomerInvestDetailMapper;
+import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiCustomerInvestPlanMapper;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightCustomerService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,6 +53,14 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
     @Autowired
     private MarketInsightCustomerMapper marketInsightCustomerMapper;
     @Autowired
+    private MiCustomerChoiceMapper miCustomerChoiceMapper;
+    @Autowired
+    private MiCustomerInvestDetailMapper miCustomerInvestDetailMapper;
+    @Autowired
+    private MiCustomerInvestPlanMapper miCustomerInvestPlanMapper;
+
+
+    @Autowired
     private RemoteEmployeeService remoteEmployeeService;
 
     @Autowired
@@ -55,6 +73,9 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
     private RemoteProductService remoteProductService;
     @Autowired
     private RemoteAreaService remoteAreaService;
+    @Autowired
+    private RemoteDictionaryDataService remoteDictionaryDataService;
+
     /**
      * 查询市场洞察客户表
      *
@@ -66,6 +87,165 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
         MarketInsightCustomerDTO marketInsightCustomerDTO = marketInsightCustomerMapper.selectMarketInsightCustomerByMarketInsightCustomerId(marketInsightCustomerId);
         List<Map<String, Object>> dropList = PlanBusinessUnitCode.getDropList(marketInsightCustomerDTO.getBusinessUnitDecompose());
         marketInsightCustomerDTO.setBusinessUnitDecomposes(dropList);
+        packRemoteDetail(marketInsightCustomerDTO);
+        //根据市场洞察客户主表主键查询市场洞察客户选择表
+        List<MiCustomerChoiceDTO> miCustomerChoiceDTOS = miCustomerChoiceMapper.selectMiCustomerChoiceByMarketInsightCustomerId(marketInsightCustomerId);
+        if (StringUtils.isNotEmpty(miCustomerChoiceDTOS)) {
+            //客户类别集合
+            List<Long> customerCategorys = miCustomerChoiceDTOS.stream().filter(f -> null != f.getCustomerCategory()).map(MiCustomerChoiceDTO::getCustomerCategory).collect(Collectors.toList());
+            //行业id
+            List<Long> industryIds = miCustomerChoiceDTOS.stream().filter(f -> null != f.getIndustryId()).map(MiCustomerChoiceDTO::getIndustryId).collect(Collectors.toList());
+
+            if (StringUtils.isNotEmpty(customerCategorys)) {
+                R<List<DictionaryDataDTO>> dataByDictionaryDataList = remoteDictionaryDataService.selectDictionaryDataByDictionaryDataIds(customerCategorys, SecurityConstants.INNER);
+                List<DictionaryDataDTO> data = dataByDictionaryDataList.getData();
+                if (StringUtils.isNotNull(data)) {
+                    for (MiCustomerChoiceDTO miCustomerChoiceDTO : miCustomerChoiceDTOS) {
+                        for (DictionaryDataDTO datum : data) {
+                            if (miCustomerChoiceDTO.getCustomerCategory().equals(datum.getDictionaryDataId())) {
+                                miCustomerChoiceDTO.setCustomerCategoryName(datum.getDictionaryLabel());
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (StringUtils.isNotEmpty(industryIds)) {
+                R<List<IndustryDTO>> industryList = remoteIndustryService.selectByIds(industryIds, SecurityConstants.INNER);
+                List<IndustryDTO> data = industryList.getData();
+                if (StringUtils.isNotNull(data)) {
+                    for (MiCustomerChoiceDTO miCustomerChoiceDTO : miCustomerChoiceDTOS) {
+                        for (IndustryDTO datum : data) {
+                            if (miCustomerChoiceDTO.getIndustryId().equals(datum.getIndustryId())) {
+                                miCustomerChoiceDTO.setIndustryName(datum.getIndustryName());
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        //根据市场洞察客户主表主键查询市场洞察客户投资计划表
+        List<MiCustomerInvestPlanDTO> miCustomerInvestPlanDTOS = miCustomerInvestPlanMapper.selectMiCustomerInvestPlanByMarketInsightCustomerId(marketInsightCustomerId);
+        if (StringUtils.isNotEmpty(miCustomerInvestPlanDTOS)) {
+            //主键id集合
+            List<Long> miCustomerInvestPlanIds = miCustomerInvestPlanDTOS.stream().map(MiCustomerInvestPlanDTO::getMiCustomerInvestPlanId).collect(Collectors.toList());
+
+            //客户类别集合
+            List<Long> customerCategorys = miCustomerInvestPlanDTOS.stream().filter(f -> null != f.getCustomerCategory()).map(MiCustomerInvestPlanDTO::getCustomerCategory).collect(Collectors.toList());
+
+            if (StringUtils.isNotEmpty(customerCategorys)) {
+                R<List<DictionaryDataDTO>> dataByDictionaryDataList = remoteDictionaryDataService.selectDictionaryDataByDictionaryDataIds(customerCategorys, SecurityConstants.INNER);
+                List<DictionaryDataDTO> data = dataByDictionaryDataList.getData();
+                if (StringUtils.isNotNull(data)) {
+                    for (MiCustomerInvestPlanDTO miCustomerInvestPlanDTO : miCustomerInvestPlanDTOS) {
+                        for (DictionaryDataDTO datum : data) {
+                            if (miCustomerInvestPlanDTO.getCustomerCategory().equals(datum.getDictionaryDataId())) {
+                                miCustomerInvestPlanDTO.setCustomerCategoryName(datum.getDictionaryLabel());
+                            }
+                        }
+                    }
+                }
+            }
+            //行业id
+            List<Long> industryIds = miCustomerInvestPlanDTOS.stream().filter(f -> null != f.getIndustryId()).map(MiCustomerInvestPlanDTO::getIndustryId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(industryIds)) {
+                R<List<IndustryDTO>> industryList = remoteIndustryService.selectByIds(industryIds, SecurityConstants.INNER);
+                List<IndustryDTO> data = industryList.getData();
+                if (StringUtils.isNotNull(data)) {
+                    for (MiCustomerInvestPlanDTO miCustomerInvestPlanDTO : miCustomerInvestPlanDTOS) {
+                        for (IndustryDTO datum : data) {
+                            if (miCustomerInvestPlanDTO.getIndustryId().equals(datum.getIndustryId())) {
+                                miCustomerInvestPlanDTO.setIndustryName(datum.getIndustryName());
+                            }
+                        }
+                    }
+                }
+            }
+            //封装详情市场洞察客户投资详情集合
+            this.packPlanDetail(miCustomerInvestPlanDTOS, miCustomerInvestPlanIds);
+        }
+        marketInsightCustomerDTO.setMiCustomerChoiceDTOS(miCustomerChoiceDTOS);
+        marketInsightCustomerDTO.setMiCustomerInvestPlanDTOS(miCustomerInvestPlanDTOS);
+        return marketInsightCustomerDTO;
+    }
+
+    /**
+     * 封装详情市场洞察客户投资详情集合
+     * @param miCustomerInvestPlanDTOS
+     * @param miCustomerInvestPlanIds
+     */
+    private void packPlanDetail(List<MiCustomerInvestPlanDTO> miCustomerInvestPlanDTOS, List<Long> miCustomerInvestPlanIds) {
+        if (StringUtils.isNotEmpty(miCustomerInvestPlanIds)) {
+            //根据市场洞察客户投资表主键集合批量查询市场洞察客户投资详情表
+            List<MiCustomerInvestDetailDTO> miCustomerInvestDetailDTOS = miCustomerInvestDetailMapper.selectMiCustomerInvestDetailByMiCustomerInvestPlanIds(miCustomerInvestPlanIds);
+            if (StringUtils.isNotEmpty(miCustomerInvestDetailDTOS)) {
+                List<Long> productIds = miCustomerInvestDetailDTOS.stream().filter(f -> null != f.getProductId()).map(MiCustomerInvestDetailDTO::getProductId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(productIds)) {
+                    R<List<ProductDTO>> productDTOList = remoteProductService.getName(productIds, SecurityConstants.INNER);
+                    List<ProductDTO> data = productDTOList.getData();
+                    if (StringUtils.isNotEmpty(data)) {
+                        for (MiCustomerInvestDetailDTO miCustomerInvestDetailDTO : miCustomerInvestDetailDTOS) {
+                            for (ProductDTO datum : data) {
+                                if (datum.getProductId().equals(miCustomerInvestDetailDTO.getProductId())) {
+                                    miCustomerInvestDetailDTO.setProductName(datum.getProductName());
+                                    miCustomerInvestDetailDTO.setProductUnitName(datum.getProductUnitName());
+                                }
+                            }
+                        }
+                    }
+                }
+                for (MiCustomerInvestDetailDTO miCustomerInvestDetailDTO : miCustomerInvestDetailDTOS) {
+                    //公式=客户投资计划×预计市场占有率。
+                    BigDecimal partMarketSpace = new BigDecimal("0");
+                    //客户投资计划金额
+                    BigDecimal customerInvestPlanAmount = miCustomerInvestDetailDTO.getCustomerInvestPlanAmount();
+                    //预计市场占有率
+                    BigDecimal estimateMarketShare = miCustomerInvestDetailDTO.getEstimateMarketShare();
+                    if ((null != customerInvestPlanAmount && customerInvestPlanAmount.compareTo(new BigDecimal("0")) != 0) && (null != estimateMarketShare && estimateMarketShare.compareTo(new BigDecimal("0")) != 0)) {
+                        partMarketSpace = customerInvestPlanAmount.multiply(estimateMarketShare).setScale(10, BigDecimal.ROUND_HALF_UP);
+                    }
+                    miCustomerInvestDetailDTO.setPartMarketSpace(partMarketSpace);
+                }
+                //根据年份分组
+                Map<Integer, List<MiCustomerInvestDetailDTO>> miCustomerInvestDetailYearMap = miCustomerInvestDetailDTOS.stream().filter(f-> null != f.getPlanYear()).collect(Collectors.groupingBy(MiCustomerInvestDetailDTO::getPlanYear));
+                if (StringUtils.isNotEmpty(miCustomerInvestDetailYearMap)){
+                    for (Integer key : miCustomerInvestDetailYearMap.keySet()) {
+                        //合计可参与市场空间
+                        BigDecimal amountTo = new BigDecimal("0");
+                        List<MiCustomerInvestDetailDTO> miCustomerInvestDetailDTOS1 = miCustomerInvestDetailYearMap.get(key);
+                        if (StringUtils.isNotEmpty(miCustomerInvestDetailDTOS1)){
+                            for (MiCustomerInvestDetailDTO miCustomerInvestDetailDTO : miCustomerInvestDetailDTOS1) {
+                                //可参与市场空间
+                                BigDecimal partMarketSpace = miCustomerInvestDetailDTO.getPartMarketSpace();
+                                amountTo=amountTo.add(partMarketSpace);
+                            }
+                            for (MiCustomerInvestDetailDTO miCustomerInvestDetailDTO : miCustomerInvestDetailDTOS1) {
+                                miCustomerInvestDetailDTO.setAmountTo(amountTo);
+                            }
+                        }
+                    }
+                }
+                //转回list
+                List<MiCustomerInvestDetailDTO> miCustomerInvestDetailDTOList = miCustomerInvestDetailYearMap.values().stream().flatMap(List::stream).collect(Collectors.toList());
+                //根据投资id分组
+                Map<Long, List<MiCustomerInvestDetailDTO>> miCustomerInvestDetailDTOMapList = miCustomerInvestDetailDTOList.stream().collect(Collectors.groupingBy(MiCustomerInvestDetailDTO::getMiCustomerInvestPlanId));
+                if (StringUtils.isNotEmpty(miCustomerInvestDetailDTOMapList)&& StringUtils.isNotEmpty(miCustomerInvestPlanDTOS)){
+                    for (MiCustomerInvestPlanDTO miCustomerInvestPlanDTO : miCustomerInvestPlanDTOS) {
+                        miCustomerInvestPlanDTO.setMiCustomerInvestDetailDTOS(miCustomerInvestDetailDTOMapList.get(miCustomerInvestPlanDTO.getMiCustomerInvestPlanId()));
+                    }
+                }
+
+            }
+        }
+    }
+
+    /**
+     * 封装详情远程主表赋值名称
+     *
+     * @param marketInsightCustomerDTO
+     */
+    private void packRemoteDetail(MarketInsightCustomerDTO marketInsightCustomerDTO) {
         Long productId = marketInsightCustomerDTO.getProductId();
         Long areaId = marketInsightCustomerDTO.getAreaId();
         Long departmentId = marketInsightCustomerDTO.getDepartmentId();
@@ -98,8 +278,6 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 marketInsightCustomerDTO.setIndustryName(data.getIndustryName());
             }
         }
-
-        return marketInsightCustomerDTO;
     }
 
     /**
@@ -132,6 +310,17 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
         }
         marketInsightCustomer.setCreateBys(createByList);
         List<MarketInsightCustomerDTO> marketInsightCustomerDTOS = marketInsightCustomerMapper.selectMarketInsightCustomerList(marketInsightCustomer);
+        //远程封装赋值名称
+        this.packRemote(marketInsightCustomerDTOS);
+        return marketInsightCustomerDTOS;
+    }
+
+    /**
+     * 远程封装赋值名称
+     *
+     * @param marketInsightCustomerDTOS
+     */
+    private void packRemote(List<MarketInsightCustomerDTO> marketInsightCustomerDTOS) {
         if (StringUtils.isNotEmpty(marketInsightCustomerDTOS)) {
             Set<Long> createBys = marketInsightCustomerDTOS.stream().map(MarketInsightCustomerDTO::getCreateBy).collect(Collectors.toSet());
             R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);
@@ -206,8 +395,8 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 }
             }
         }
-        return marketInsightCustomerDTOS;
     }
+
     /**
      * 封装高级查询人员id
      *
@@ -249,6 +438,7 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
             }
         }
     }
+
     /**
      * 新增市场洞察客户表
      *
@@ -256,7 +446,18 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
      * @return 结果
      */
     @Override
+    @Transactional
     public MarketInsightCustomerDTO insertMarketInsightCustomer(MarketInsightCustomerDTO marketInsightCustomerDTO) {
+        int i = 0;
+        //前台传入市场洞察客户选择表集合
+        List<MiCustomerChoiceDTO> miCustomerChoiceDTOS = marketInsightCustomerDTO.getMiCustomerChoiceDTOS();
+        //保存数据
+        List<MiCustomerChoice> miCustomerChoiceList = new ArrayList<>();
+
+        //前台传入市场洞察客户投资计划集合
+        List<MiCustomerInvestPlanDTO> miCustomerInvestPlanDTOS = marketInsightCustomerDTO.getMiCustomerInvestPlanDTOS();
+        //保存数据
+        List<MiCustomerInvestPlan> miCustomerInvestPlanList = new ArrayList<>();
         MarketInsightCustomer marketInsightCustomer = new MarketInsightCustomer();
         BeanUtils.copyProperties(marketInsightCustomerDTO, marketInsightCustomer);
         marketInsightCustomer.setCreateBy(SecurityUtils.getUserId());
@@ -264,10 +465,82 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
         marketInsightCustomer.setUpdateTime(DateUtils.getNowDate());
         marketInsightCustomer.setUpdateBy(SecurityUtils.getUserId());
         marketInsightCustomer.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        marketInsightCustomerMapper.insertMarketInsightCustomer(marketInsightCustomer);
+        try {
+            i = marketInsightCustomerMapper.insertMarketInsightCustomer(marketInsightCustomer);
+        } catch (Exception e) {
+            throw new ServiceException("新增市场洞察客户失败");
+        }
+        if (StringUtils.isNotEmpty(miCustomerChoiceDTOS)) {
+            for (int i1 = 0; i1 < miCustomerChoiceDTOS.size(); i1++) {
+                MiCustomerChoice miCustomerChoice = new MiCustomerChoice();
+                BeanUtils.copyProperties(miCustomerChoiceDTOS.get(i1), miCustomerChoice);
+                miCustomerChoice.setMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
+                miCustomerChoice.setSort(i1 + 1);
+                miCustomerChoice.setCreateBy(SecurityUtils.getUserId());
+                miCustomerChoice.setCreateTime(DateUtils.getNowDate());
+                miCustomerChoice.setUpdateTime(DateUtils.getNowDate());
+                miCustomerChoice.setUpdateBy(SecurityUtils.getUserId());
+                miCustomerChoice.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                miCustomerChoiceList.add(miCustomerChoice);
+            }
+        }
 
+        if (StringUtils.isNotEmpty(miCustomerInvestPlanDTOS)) {
+            for (int i1 = 0; i1 < miCustomerInvestPlanDTOS.size(); i1++) {
+                MiCustomerInvestPlan miCustomerInvestPlan = new MiCustomerInvestPlan();
+                BeanUtils.copyProperties(miCustomerChoiceDTOS.get(i1), miCustomerInvestPlan);
+                miCustomerInvestPlan.setMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
+                miCustomerInvestPlan.setSort(i1 + 1);
+                miCustomerInvestPlan.setCreateBy(SecurityUtils.getUserId());
+                miCustomerInvestPlan.setCreateTime(DateUtils.getNowDate());
+                miCustomerInvestPlan.setUpdateTime(DateUtils.getNowDate());
+                miCustomerInvestPlan.setUpdateBy(SecurityUtils.getUserId());
+                miCustomerInvestPlan.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                miCustomerInvestPlanList.add(miCustomerInvestPlan);
+            }
+        }
+        if (StringUtils.isNotEmpty(miCustomerChoiceList)) {
+            try {
+                miCustomerChoiceMapper.batchMiCustomerChoice(miCustomerChoiceList);
+            } catch (Exception e) {
+                throw new ServiceException("批量新增市场洞察客户选择失败");
+            }
+        }
+        if (StringUtils.isNotEmpty(miCustomerInvestPlanList)) {
+            try {
+                miCustomerInvestPlanMapper.batchMiCustomerInvestPlan(miCustomerInvestPlanList);
+            } catch (Exception e) {
+                throw new ServiceException("批量新增市场洞察客户选择失败");
+            }
+            for (int i1 = 0; i1 < miCustomerInvestPlanList.size(); i1++) {
+                //前台传入市场洞察客户投资详情集合
+                List<MiCustomerInvestDetailDTO> miCustomerInvestDetailDTOS = miCustomerInvestPlanDTOS.get(i1).getMiCustomerInvestDetailDTOS();
+                List<MiCustomerInvestDetail> miCustomerInvestDetailList = new ArrayList<>();
+                if (StringUtils.isNotEmpty(miCustomerInvestDetailDTOS)) {
+                    for (int i2 = 0; i2 < miCustomerInvestDetailDTOS.size(); i2++) {
+                        MiCustomerInvestDetail miCustomerInvestDetail = new MiCustomerInvestDetail();
+                        BeanUtils.copyProperties(miCustomerInvestDetailDTOS.get(i2), miCustomerInvestDetail);
+                        miCustomerInvestDetail.setMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
+                        miCustomerInvestDetail.setMiCustomerInvestPlanId(miCustomerInvestPlanList.get(i1).getMiCustomerInvestPlanId());
+                        miCustomerInvestDetail.setSort(i1 + 1);
+                        miCustomerInvestDetail.setCreateBy(SecurityUtils.getUserId());
+                        miCustomerInvestDetail.setCreateTime(DateUtils.getNowDate());
+                        miCustomerInvestDetail.setUpdateTime(DateUtils.getNowDate());
+                        miCustomerInvestDetail.setUpdateBy(SecurityUtils.getUserId());
+                        miCustomerInvestDetail.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                        miCustomerInvestDetailList.add(miCustomerInvestDetail);
+                    }
 
-
+                }
+                if (StringUtils.isNotEmpty(miCustomerInvestDetailList)) {
+                    try {
+                        miCustomerInvestDetailMapper.batchMiCustomerInvestDetail(miCustomerInvestDetailList);
+                    } catch (Exception e) {
+                        throw new ServiceException("批量新增市场洞察客户投资详情失败");
+                    }
+                }
+            }
+        }
         marketInsightCustomerDTO.setMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
         return marketInsightCustomerDTO;
     }
@@ -279,6 +552,7 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateMarketInsightCustomer(MarketInsightCustomerDTO marketInsightCustomerDTO) {
         MarketInsightCustomer marketInsightCustomer = new MarketInsightCustomer();
         BeanUtils.copyProperties(marketInsightCustomerDTO, marketInsightCustomer);
@@ -294,8 +568,50 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteMarketInsightCustomerByMarketInsightCustomerIds(List<Long> marketInsightCustomerIds) {
-        return marketInsightCustomerMapper.logicDeleteMarketInsightCustomerByMarketInsightCustomerIds(marketInsightCustomerIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        int i = 0;
+        try {
+            i = marketInsightCustomerMapper.logicDeleteMarketInsightCustomerByMarketInsightCustomerIds(marketInsightCustomerIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("逻辑批量删除市场洞察客户失败");
+        }
+        List<MiCustomerChoiceDTO> miCustomerChoiceDTOS = miCustomerChoiceMapper.selectMiCustomerChoiceByMarketInsightCustomerIds(marketInsightCustomerIds);
+        if (StringUtils.isNotEmpty(miCustomerChoiceDTOS)) {
+            List<Long> miCustomerChoiceIds = miCustomerChoiceDTOS.stream().map(MiCustomerChoiceDTO::getMiCustomerChoiceId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(miCustomerChoiceIds)) {
+                try {
+                    miCustomerChoiceMapper.logicDeleteMiCustomerChoiceByMiCustomerChoiceIds(miCustomerChoiceIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("逻辑批量删除市场洞察客户选择失败");
+                }
+
+            }
+        }
+
+        List<MiCustomerInvestPlanDTO> miCustomerInvestPlanDTOS = miCustomerInvestPlanMapper.selectMiCustomerInvestPlanByMarketInsightCustomerIds(marketInsightCustomerIds);
+        if (StringUtils.isNotEmpty(miCustomerInvestPlanDTOS)) {
+            List<Long> miCustomerInvestPlanIds = miCustomerInvestPlanDTOS.stream().map(MiCustomerInvestPlanDTO::getMiCustomerInvestPlanId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(miCustomerInvestPlanIds)) {
+                try {
+                    miCustomerInvestPlanMapper.logicDeleteMiCustomerInvestPlanByMiCustomerInvestPlanIds(miCustomerInvestPlanIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("逻辑批量删除市场洞察客户投资计划失败");
+                }
+                List<MiCustomerInvestDetailDTO> miCustomerInvestDetailDTOS = miCustomerInvestDetailMapper.selectMiCustomerInvestDetailByMiCustomerInvestPlanIds(miCustomerInvestPlanIds);
+                if (StringUtils.isNotEmpty(miCustomerInvestDetailDTOS)) {
+                    List<Long> miCustomerInvestDetailIds = miCustomerInvestDetailDTOS.stream().map(MiCustomerInvestDetailDTO::getMiCustomerInvestDetailId).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(miCustomerInvestDetailIds)) {
+                        try {
+                            miCustomerInvestDetailMapper.logicDeleteMiCustomerInvestDetailByMiCustomerInvestDetailIds(miCustomerInvestDetailIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                        } catch (Exception e) {
+                            throw new ServiceException("逻辑批量删除市场洞察客户投资详情失败");
+                        }
+                    }
+                }
+            }
+        }
+        return i;
     }
 
     /**
@@ -316,12 +632,54 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteMarketInsightCustomerByMarketInsightCustomerId(MarketInsightCustomerDTO marketInsightCustomerDTO) {
+        int i = 0;
         MarketInsightCustomer marketInsightCustomer = new MarketInsightCustomer();
         marketInsightCustomer.setMarketInsightCustomerId(marketInsightCustomerDTO.getMarketInsightCustomerId());
         marketInsightCustomer.setUpdateTime(DateUtils.getNowDate());
         marketInsightCustomer.setUpdateBy(SecurityUtils.getUserId());
-        return marketInsightCustomerMapper.logicDeleteMarketInsightCustomerByMarketInsightCustomerId(marketInsightCustomer);
+        try {
+            i = marketInsightCustomerMapper.logicDeleteMarketInsightCustomerByMarketInsightCustomerId(marketInsightCustomer);
+        } catch (Exception e) {
+            throw new ServiceException("逻辑删除市场洞察客户失败");
+        }
+        List<MiCustomerChoiceDTO> miCustomerChoiceDTOS = miCustomerChoiceMapper.selectMiCustomerChoiceByMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
+        if (StringUtils.isNotEmpty(miCustomerChoiceDTOS)) {
+            List<Long> miCustomerChoiceIds = miCustomerChoiceDTOS.stream().map(MiCustomerChoiceDTO::getMiCustomerChoiceId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(miCustomerChoiceIds)) {
+                try {
+                    miCustomerChoiceMapper.logicDeleteMiCustomerChoiceByMiCustomerChoiceIds(miCustomerChoiceIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("逻辑批量删除市场洞察客户选择失败");
+                }
+
+            }
+        }
+
+        List<MiCustomerInvestPlanDTO> miCustomerInvestPlanDTOS = miCustomerInvestPlanMapper.selectMiCustomerInvestPlanByMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
+        if (StringUtils.isNotEmpty(miCustomerInvestPlanDTOS)) {
+            List<Long> miCustomerInvestPlanIds = miCustomerInvestPlanDTOS.stream().map(MiCustomerInvestPlanDTO::getMiCustomerInvestPlanId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(miCustomerInvestPlanIds)) {
+                try {
+                    miCustomerInvestPlanMapper.logicDeleteMiCustomerInvestPlanByMiCustomerInvestPlanIds(miCustomerInvestPlanIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("逻辑批量删除市场洞察客户投资计划失败");
+                }
+                List<MiCustomerInvestDetailDTO> miCustomerInvestDetailDTOS = miCustomerInvestDetailMapper.selectMiCustomerInvestDetailByMiCustomerInvestPlanIds(miCustomerInvestPlanIds);
+                if (StringUtils.isNotEmpty(miCustomerInvestDetailDTOS)) {
+                    List<Long> miCustomerInvestDetailIds = miCustomerInvestDetailDTOS.stream().map(MiCustomerInvestDetailDTO::getMiCustomerInvestDetailId).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(miCustomerInvestDetailIds)) {
+                        try {
+                            miCustomerInvestDetailMapper.logicDeleteMiCustomerInvestDetailByMiCustomerInvestDetailIds(miCustomerInvestDetailIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                        } catch (Exception e) {
+                            throw new ServiceException("逻辑批量删除市场洞察客户投资详情失败");
+                        }
+                    }
+                }
+            }
+        }
+        return i;
     }
 
     /**

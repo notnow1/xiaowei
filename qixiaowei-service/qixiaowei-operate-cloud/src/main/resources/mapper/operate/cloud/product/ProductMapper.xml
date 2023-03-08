@@ -386,13 +386,32 @@
     <!--    根据产品IDS返回列表-->
     <select id="selectProductListByProductIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT
-        product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
-        product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
-        FROM product
-        WHERE delete_flag=0
-        AND product_id
-        IN
+        select
+        p.product_id,
+        pu.product_unit_name ,
+        p.parent_product_id,
+        p.ancestors,
+        p.product_code,
+        p.product_name,
+        p.level,
+        p.product_unit_id,
+        p.product_category,
+        p.product_description,
+        p.list_price,
+        p.listing_flag,
+        p.delete_flag,
+        p.create_by,
+        p.create_time,
+        p.update_by,
+        p.update_time
+        from
+        product p
+        left join product_unit pu
+        on pu.product_unit_id = p.product_unit_id
+        and pu.delete_flag =0
+        where
+        p.delete_flag = 0
+        and p.product_id IN
         <foreach collection="productIds" separator="," open="(" close=")" item="item" index="index">
             #{item}
         </foreach>
