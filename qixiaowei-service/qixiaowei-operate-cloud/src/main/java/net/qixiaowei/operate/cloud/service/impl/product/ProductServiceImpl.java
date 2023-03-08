@@ -18,6 +18,7 @@ import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductExportExcel;
 import net.qixiaowei.operate.cloud.mapper.product.*;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
@@ -583,29 +584,90 @@ public class ProductServiceImpl implements IProductService {
     @Transactional
     @Override
     public int updateProduct(ProductDTO productDTO) {
+        int num = 0;
         ProductDTO productDTO1 = productMapper.selectProductByProductId(productDTO.getProductId());
         if (StringUtils.isNull(productDTO1)) {
             throw new ServiceException("产品不存在！");
         }
         Product product = new Product();
-        if (null == productDTO.getParentProductId() || productDTO.getParentProductId().equals(0L)) {
+        List<Product> productList = new ArrayList<>();
+        //排序
+        int i = 1;
+        if (productDTO.getParentProductId() == 0) {
             BeanUtils.copyProperties(productDTO, product);
-            productDTO.setParentProductId(Constants.TOP_PARENT_ID);
+            product.setUpdateTime(DateUtils.getNowDate());
+            product.setAncestors("");
+            product.setUpdateBy(SecurityUtils.getUserId());
+            product.setParentProductId(Constants.TOP_PARENT_ID);
         } else {
             ProductDTO productDTO2 = productMapper.selectProductByProductId(productDTO.getParentProductId());
-            if (StringUtils.isNull(productDTO2)) {
-                throw new ServiceException("父级产品不存在！");
-            }
-            BeanUtils.copyProperties(productDTO, product);
-            if (productDTO2.getAncestors() == null) {
-                //拼接祖级id
-                product.setAncestors(productDTO2.getParentProductId() + "," + productDTO2.getProductId());
+            BeanUtils.copyProperties(productDTO2, product);
+            product.setUpdateTime(DateUtils.getNowDate());
+            product.setUpdateBy(SecurityUtils.getUserId());
+            if (StringUtils.isBlank(product.getAncestors())) {
+                product.setAncestors(product.getParentProductId() + "," + product.getProductId());
             } else {
-                //拼接祖级id
-                product.setAncestors(productDTO2.getAncestors().trim() + "," + productDTO2.getProductId());
+                product.setAncestors(product.getAncestors() + "," + product.getParentProductId());
             }
         }
+        Map<Long,Integer> map = new HashMap<>();
+        List<ProductDTO> productDTOList = productMapper.selectAncestors(product.getProductId());
+        for (int i1 = 0; i1 < productDTOList.size(); i1++) {
+            map.put(productDTOList.get(i1).getProductId(),i1);
+        }
+        if (StringUtils.isNotEmpty(productDTOList) && productDTOList.size()>1) {
+            for (int i1 = 0; i1 < productDTOList.size(); i1++) {
+                if (i1 == 1){
+                    Product product2 = new Product();
+                    if (StringUtils.isBlank(product.getAncestors())) {
+                        productDTOList.get(i1).setAncestors(product.getParentProductId() + "," + product.getProductId());
+                    } else {
+                        productDTOList.get(i1).setAncestors(product.getAncestors() + "," + product.getProductId());
+                    }
+                    productDTOList.get(i1).setLevel(product.getLevel()+1);
 
+                    productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                    productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                    productDTOList.get(i1).setParentProductId(product.getProductId());
+                    BeanUtils.copyProperties(productDTOList.get(i1),product2);
+                    productList.add(product2);
+                }else {
+                    if (productDTOList.get(i1 - 1).getProductId().equals(productDTOList.get(i1).getParentProductId())){
+                        Product product2 = new Product();
+                        //父级
+                        ProductDTO productDTO2 = productDTOList.get(i1 - 1);
+                        if (StringUtils.isBlank(productDTO2.getAncestors())) {
+                            productDTOList.get(i1).setAncestors(productDTO2.getParentProductId() + "," + productDTO2.getProductId());
+                        } else {
+                            productDTOList.get(i1).setAncestors(productDTO2.getAncestors() + "," + productDTO2.getProductId());
+                        }
+                        productDTOList.get(i1).setLevel(productDTO2.getLevel()+1);
+                        productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                        productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                        productDTOList.get(i1).setParentProductId(productDTO2.getProductId());
+                        BeanUtils.copyProperties(productDTOList.get(i1),product2);
+                        productList.add(product2);
+                    }else {
+                        Product product2 = new Product();
+
+                        //父级
+                        ProductDTO productDTO2 = productDTOList.get(map.get(productDTOList.get(i1).getParentProductId()));
+                        if (StringUtils.isBlank(productDTO2.getAncestors())) {
+                            productDTOList.get(i1).setAncestors(productDTO2.getParentProductId() + "," + productDTO2.getProductId());
+                        } else {
+                            productDTOList.get(i1).setAncestors(productDTO2.getAncestors() + "," + productDTO2.getProductId());
+                        }
+                        productDTOList.get(i1).setLevel(productDTO2.getLevel()+1);
+                        productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                        productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                        productDTOList.get(i1).setParentProductId(productDTO2.getProductId());
+                        BeanUtils.copyProperties(productDTOList.get(i1),product2);
+                        productList.add(product2);
+                    }
+                }
+            }
+
+        }
         //产品参数表
         List<ProductSpecificationParamDTO> productSpecificationParamDTOList = new ArrayList<>();
         //修改产品参数表
@@ -635,7 +697,16 @@ public class ProductServiceImpl implements IProductService {
         //修改产品表
         product.setUpdateBy(SecurityUtils.getUserId());
         product.setUpdateTime(DateUtils.getNowDate());
-        return productMapper.updateProduct(product);
+
+        num = productMapper.updateProduct(product);
+        if (StringUtils.isNotEmpty(productList)){
+            try {
+                productMapper.updateProducts(productList);
+            } catch (Exception e) {
+                throw new ServiceException("批量修改产品失败!");
+            }
+        }
+        return num;
     }
 
     /**
@@ -1578,7 +1649,7 @@ public class ProductServiceImpl implements IProductService {
                 validEmployeeErreo.append("产品名称为必填项");
             }
             if (StringUtils.isBlank(productUnitName)) {
-                validEmployeeErreo.append("产品单位为必填项");
+                validEmployeeErreo.append("产品量纲不能为空");
             }
             //产品量纲不存在
             if (StringUtils.isNotEmpty(productUnitDTOS)) {
