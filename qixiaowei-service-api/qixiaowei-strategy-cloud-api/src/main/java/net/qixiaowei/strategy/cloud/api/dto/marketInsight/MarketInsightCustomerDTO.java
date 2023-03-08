@@ -106,6 +106,7 @@ public class MarketInsightCustomerDTO {
      * 创建人
      */
     private  String createByName;
+
     /**
     * 创建时间
     */

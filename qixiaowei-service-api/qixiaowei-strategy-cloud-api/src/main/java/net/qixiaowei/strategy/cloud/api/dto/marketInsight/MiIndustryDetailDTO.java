@@ -58,6 +58,10 @@ public class MiIndustryDetailDTO {
     */
     private  Long industryType;
     /**
+     * 行业类型名称
+     */
+    private  String industryTypeName;
+    /**
     * 规划期
     */
     private  Integer planPeriod;
@@ -82,10 +86,7 @@ public class MiIndustryDetailDTO {
      */
     private List<MiIndustryEstimateDTO> miIndustryEstimateDTOS;
 
-    /**
-     *市场洞察行业吸引力集合
-     */
-    private List<MiIndustryAttractionDTO> miIndustryAttractionDTOS;
+
     /**
      *市场洞察行业吸引力数据集合
      */

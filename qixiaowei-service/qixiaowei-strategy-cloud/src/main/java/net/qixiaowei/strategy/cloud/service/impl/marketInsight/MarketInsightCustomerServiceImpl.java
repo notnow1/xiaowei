@@ -265,6 +265,9 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
         marketInsightCustomer.setUpdateBy(SecurityUtils.getUserId());
         marketInsightCustomer.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         marketInsightCustomerMapper.insertMarketInsightCustomer(marketInsightCustomer);
+
+
+
         marketInsightCustomerDTO.setMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
         return marketInsightCustomerDTO;
     }

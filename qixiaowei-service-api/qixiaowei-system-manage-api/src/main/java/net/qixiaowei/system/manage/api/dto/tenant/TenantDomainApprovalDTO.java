@@ -56,12 +56,12 @@ public class TenantDomainApprovalDTO {
     /**
     * 提交时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     private  Date  submissionTime;
     /**
     * 审核时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     private  Date  approvalTime;
     /**
     * 审核人用户ID

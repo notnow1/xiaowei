@@ -56,6 +56,7 @@
                         <if test="industryAttraction.updateTime != null">
                             and update_time=#{industryAttraction.updateTime}
                         </if>
+    order by create_time desc
     </select>
 <!--    根据行业吸引力要素名称查询行业吸引力表-->
     <select id="selectIndustryAttractionByAttractionElementName"
