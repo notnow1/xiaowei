@@ -591,8 +591,6 @@ public class ProductServiceImpl implements IProductService {
         }
         Product product = new Product();
         List<Product> productList = new ArrayList<>();
-        //排序
-        int i = 1;
         if (productDTO.getParentProductId() == 0) {
             BeanUtils.copyProperties(productDTO, product);
             product.setUpdateTime(DateUtils.getNowDate());
@@ -601,13 +599,13 @@ public class ProductServiceImpl implements IProductService {
             product.setParentProductId(Constants.TOP_PARENT_ID);
         } else {
             ProductDTO productDTO2 = productMapper.selectProductByProductId(productDTO.getParentProductId());
-            BeanUtils.copyProperties(productDTO2, product);
+            BeanUtils.copyProperties(productDTO, product);
             product.setUpdateTime(DateUtils.getNowDate());
             product.setUpdateBy(SecurityUtils.getUserId());
-            if (StringUtils.isBlank(product.getAncestors())) {
-                product.setAncestors(product.getParentProductId() + "," + product.getProductId());
+            if (StringUtils.isBlank(productDTO2.getAncestors())) {
+                product.setAncestors(productDTO2.getParentProductId() + "," + productDTO2.getProductId());
             } else {
-                product.setAncestors(product.getAncestors() + "," + product.getParentProductId());
+                product.setAncestors(productDTO2.getAncestors() + "," + productDTO2.getParentProductId());
             }
         }
         Map<Long,Integer> map = new HashMap<>();
@@ -616,7 +614,7 @@ public class ProductServiceImpl implements IProductService {
             map.put(productDTOList.get(i1).getProductId(),i1);
         }
         if (StringUtils.isNotEmpty(productDTOList) && productDTOList.size()>1) {
-            for (int i1 = 0; i1 < productDTOList.size(); i1++) {
+            for (int i1 = 1; i1 < productDTOList.size(); i1++) {
                 if (i1 == 1){
                     Product product2 = new Product();
                     if (StringUtils.isBlank(product.getAncestors())) {
@@ -692,12 +690,6 @@ public class ProductServiceImpl implements IProductService {
         List<ProductFileDTO> productFileDTOList = productDTO.getProductFileDTOList();
         //修改产品文件表数据
         this.updateProductFile(productFileDTOList, productDTO);
-
-
-        //修改产品表
-        product.setUpdateBy(SecurityUtils.getUserId());
-        product.setUpdateTime(DateUtils.getNowDate());
-
         num = productMapper.updateProduct(product);
         if (StringUtils.isNotEmpty(productList)){
             try {
