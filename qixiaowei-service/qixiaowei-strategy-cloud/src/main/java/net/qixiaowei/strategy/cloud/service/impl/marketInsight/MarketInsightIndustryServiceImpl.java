@@ -583,6 +583,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
             List<MiIndustryAttractionDataDTO> miIndustryAttractionDataDTOS = miIndustryDetailDTO.getMiIndustryAttractionDataDTOS();
             if (null != miIndustryDetailId) {
                 List<MiIndustryAttractionDataDTO> miIndustryAttractionDataDTOList = new ArrayList<>();
+                //批量查询市场洞察行业吸引力数据表
                 miIndustryAttractionDataDTOList = miIndustryAttractionDataMapper.selectMiIndustryAttractionDataByNiIndustryDetailId(miIndustryDetailId);
                 if (StringUtils.isNotEmpty(miIndustryAttractionDataDTOS)) {
                     if (StringUtils.isNotEmpty(miIndustryAttractionDataDTOList)) {
@@ -621,6 +622,21 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                             miIndustryAttractionData.setUpdateBy(SecurityUtils.getUserId());
                             miIndustryAttractionData.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                             miIndustryAttractionDataAddList.add(miIndustryAttractionData);
+                        }
+                    }
+                }else {
+                    List<MiIndustryAttractionDataDTO> miIndustryAttractionDataDTOListNull = new ArrayList<>();
+                    //批量查询市场洞察行业吸引力数据表
+                    miIndustryAttractionDataDTOListNull = miIndustryAttractionDataMapper.selectMiIndustryAttractionDataByNiIndustryDetailId(miIndustryDetailId);
+
+                    if (StringUtils.isNotEmpty(miIndustryAttractionDataDTOListNull)) {
+                        List<Long> collect = miIndustryAttractionDataDTOListNull.stream().map(MiIndustryAttractionDataDTO::getMiIndustryAttractionDataId).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(miIndustryAttractionDataIds)) {
+                            try {
+                                miIndustryAttractionDataMapper.logicDeleteMiIndustryAttractionDataByMiIndustryAttractionDataIds(collect, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                            } catch (Exception e) {
+                                throw new ServiceException("逻辑批量删除市场洞察行业吸引力数据失败");
+                            }
                         }
                     }
                 }
@@ -722,6 +738,19 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                             miIndustryEstimateAddList.add(miIndustryEstimate);
                         }
                     }
+                }else {
+                    List<MiIndustryEstimateDTO> miIndustryEstimateDTOList2 = new ArrayList<>();
+                    miIndustryEstimateDTOList2 = miIndustryEstimateMapper.selectMiIndustryEstimateByMiIndustryDetailId(miIndustryDetailId);
+                    if (StringUtils.isNotEmpty(miIndustryEstimateDTOList2)) {
+                        List<Long> collect = miIndustryEstimateDTOList2.stream().map(MiIndustryEstimateDTO::getMiMacroEstimateId).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)) {
+                            try {
+                                miIndustryEstimateMapper.logicDeleteMiIndustryEstimateByMiMacroEstimateIds(collect, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                            } catch (Exception e) {
+                                throw new ServiceException("逻辑批量删除市场洞察行业预估失败");
+                            }
+                        }
+                    }
                 }
             } else {
                 if (StringUtils.isNotEmpty(miIndustryEstimateDTOS)) {
@@ -767,7 +796,6 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
     /**
      * 新增修改市场洞察行业详情集合
      *
-     * @param i
      * @param marketInsightIndustry
      * @param miIndustryDetailDTOS
      * @param miIndustryDetailDTOList
