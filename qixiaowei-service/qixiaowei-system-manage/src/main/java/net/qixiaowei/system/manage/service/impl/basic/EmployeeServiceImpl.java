@@ -107,6 +107,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Override
     public List<EmployeeDTO> selectEmployeeByEmployeeIds(List<Long> employeeIds) {
+        if (StringUtils.isEmpty(employeeIds)){
+            return null;
+        }
         return employeeMapper.selectEmployeeByEmployeeIds(employeeIds);
     }
 
