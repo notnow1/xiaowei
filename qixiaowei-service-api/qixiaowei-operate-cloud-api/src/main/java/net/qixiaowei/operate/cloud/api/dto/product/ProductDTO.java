@@ -68,7 +68,7 @@ public class ProductDTO {
     /**
     * 产品名称
     */
-    @NotBlank(message = "产品名称不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
+    @NotBlank(message = "产品量纲不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  String productName;
     /**
      * 指标id
