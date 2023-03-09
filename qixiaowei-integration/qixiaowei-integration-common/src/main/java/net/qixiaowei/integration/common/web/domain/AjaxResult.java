@@ -4,10 +4,7 @@ import net.qixiaowei.integration.common.constant.HttpStatus;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import org.apache.poi.ss.formula.functions.T;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 操作消息提醒
@@ -101,7 +98,7 @@ public class AjaxResult extends HashMap<String, Object> {
      *
      * @return 成功消息
      */
-    public static <T> AjaxResult successExcel(List<T> successExcel, List<T> errorExcel,String msg) {
+    public static <T> AjaxResult successExcel(List<T> successExcel, List<T> errorExcel, String msg) {
         Map<Object, Object> data = new HashMap<>();
         if (StringUtils.isEmpty(successExcel)) {
             data.put(SUCCESS_TOTAL, 0);
@@ -115,7 +112,7 @@ public class AjaxResult extends HashMap<String, Object> {
         }
         data.put(SUCCESS_LIST, successExcel);
         data.put(ERROR_LIST, errorExcel);
-        return AjaxResult.success(msg.length()>1?msg:"操作成功", data);
+        return AjaxResult.success(Optional.ofNullable(msg).orElse("操作成功").length() > 1 ? msg : "操作成功", data);
     }
 
     /**
