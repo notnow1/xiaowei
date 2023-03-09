@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +99,7 @@ public class TargetOutcomeController extends BaseController {
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         List<Map<Integer, String>> targetSettingExcelList = read.doReadAllSync();
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeService.importTargetOutcome(targetSettingExcelList, targetOutSettingId);
-        return AjaxResult.successExcel(targetOutcomeDetailsDTOList, null,null);
+        return AjaxResult.successExcel(targetOutcomeDetailsDTOList, null, null);
     }
 
     /**
@@ -160,13 +161,13 @@ public class TargetOutcomeController extends BaseController {
         List<TargetOutcomeDTO> list = targetOutcomeService.selectTargetOutcomeList(targetOutcomeDTO);
         return AjaxResult.success(list);
     }
+
     /**
      * 战略云获取指标实际值
      */
     //@RequiresPermissions("operate:cloud:targetOutcome:getResultIndicator")
     @PostMapping("/getResultIndicator")
-    public AjaxResult getResultIndicator(@RequestBody StrategyIntentOperateVO strategyIntentOperateVO)
-    {
+    public AjaxResult getResultIndicator(@RequestBody StrategyIntentOperateVO strategyIntentOperateVO) {
         return AjaxResult.success(targetOutcomeService.getResultIndicator(strategyIntentOperateVO));
     }
 
