@@ -5,12 +5,28 @@
     <select id="selectGapAnalysisByGapAnalysisId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO">
         SELECT
-        gap_analysis_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,operate_history_year,delete_flag,create_by,create_time,update_by,update_time
-        FROM gap_analysis
-        WHERE gap_analysis_id=#{gapAnalysisId}
-        and delete_flag=0
+        ga.gap_analysis_id,
+        ga.plan_year,
+        ga.plan_business_unit_id,
+        ga.business_unit_decompose,
+        ga.area_id,
+        ga.department_id,
+        ga.product_id,
+        ga.industry_id,
+        ga.operate_history_year,
+        ga.delete_flag,
+        ga.create_by,
+        ga.create_time,
+        ga.update_by,
+        ga.update_time,
+        pbu.business_unit_name
+        FROM gap_analysis ga
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = ga.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE ga.gap_analysis_id=#{gapAnalysisId}
+        and ga.delete_flag=0
     </select>
-
     <!--    批量查询差距分析表-->
     <select id="selectGapAnalysisByGapAnalysisIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO">
@@ -128,12 +144,42 @@
         <if test="gapAnalysis.params.planYearEnd != null and gapAnalysis.params.planYearEnd != ''"><!-- 结束时间检索 -->
             AND ga.plan_year &lt;= #{gapAnalysis.params.planYearEnd}
         </if>
-        <!--todo-->
-        <!--规划业务单元-->
-        <!--录入人姓名-->
-        <!--录入人工号-->
-        <!--录入日期-->
-        <!--find_in_set(hobby, ‘hobby');-->
+        <!--规划业务单元 businessUnitNameLike-->
+        <if test="gapAnalysis.params.businessUnitNameLike != null and gapAnalysis.params.businessUnitNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="gapAnalysis.params.businessUnitNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                pbu.business_unit_name LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.businessUnitNameNotLike != null and gapAnalysis.params.businessUnitNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="gapAnalysis.params.businessUnitNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!--行业-->
+        <if test="gapAnalysis.params.industryIdEqual != null and gapAnalysis.params.industryIdEqual.size() > 0">
+            and ga.industry_id IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.industryIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.industryIdNotEqual != null and gapAnalysis.params.industryIdNotEqual.size() > 0">
+            AND (ga.industry_id NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.industryIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ga.industry_id IS NULL
+            )
+        </if>
     </select>
     <!--新增差距分析表-->
     <insert id="insertGapAnalysis" useGeneratedKeys="true" keyProperty="gapAnalysisId">

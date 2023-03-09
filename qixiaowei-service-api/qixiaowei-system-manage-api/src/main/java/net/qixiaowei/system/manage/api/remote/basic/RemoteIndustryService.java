@@ -40,4 +40,12 @@ public interface RemoteIndustryService {
      */
     @PostMapping(API_PREFIX_INDUSTRY + "/selectByIds")
     R<List<IndustryDTO>> selectByIds(@RequestBody List<Long> industryIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 查找行业列表
+     *
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_INDUSTRY + "/selectList")
+    R<List<IndustryDTO>> selectListByIndustry(@RequestBody IndustryDTO industryDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String inner);
 }
