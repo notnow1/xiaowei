@@ -59,18 +59,6 @@ public class StrategyMetricsController extends BaseController {
         return AjaxResult.success(list);
     }
 
-
-    /**
-     * 新增战略衡量指标表
-     */
-    @RequiresPermissions("strategy:cloud:strategyMetrics:add")
-    @Log(title = "新增战略衡量指标表", businessType = BusinessType.STRATEGY_METRICS, businessId = "strategyMetricsId", operationType = OperationType.INSERT)
-    @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody StrategyMetricsDTO strategyMetricsDTO) {
-        return AjaxResult.success(strategyMetricsService.insertStrategyMetrics(strategyMetricsDTO));
-    }
-
-
     /**
      * 修改战略衡量指标表
      */
@@ -79,24 +67,6 @@ public class StrategyMetricsController extends BaseController {
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody StrategyMetricsDTO strategyMetricsDTO) {
         return toAjax(strategyMetricsService.updateStrategyMetrics(strategyMetricsDTO));
-    }
-
-    /**
-     * 逻辑删除战略衡量指标表
-     */
-    @RequiresPermissions("strategy:cloud:strategyMetrics:remove")
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody StrategyMetricsDTO strategyMetricsDTO) {
-        return toAjax(strategyMetricsService.logicDeleteStrategyMetricsByStrategyMetricsId(strategyMetricsDTO));
-    }
-
-    /**
-     * 逻辑批量删除战略衡量指标表
-     */
-    @RequiresPermissions("strategy:cloud:strategyMetrics:remove")
-    @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<Long> strategyMetricsIds) {
-        return toAjax(strategyMetricsService.logicDeleteStrategyMetricsByStrategyMetricsIds(strategyMetricsIds));
     }
 
 }

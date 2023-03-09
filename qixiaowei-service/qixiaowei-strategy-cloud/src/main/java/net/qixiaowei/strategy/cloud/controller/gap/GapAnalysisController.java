@@ -2,12 +2,8 @@ package net.qixiaowei.strategy.cloud.controller.gap;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.metadata.Head;
-import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
-import com.alibaba.excel.write.handler.CellWriteHandler;
-import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
-import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
@@ -21,8 +17,8 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
 import net.qixiaowei.strategy.cloud.service.gap.IGapAnalysisService;
 import org.apache.poi.ss.usermodel.Cell;
@@ -126,7 +122,7 @@ public class GapAnalysisController extends BaseController {
      * 下载模板表
      */
     @SneakyThrows
-    @RequiresPermissions("strategy:cloud:gapAnalysis:import")
+    @RequiresPermissions(value = {"strategy:cloud:gapAnalysis:edit", "operate:cloud:gapAnalysis:edit"}, logical = Logical.OR)
     @GetMapping("export-template")
     public void exportTemplate(@RequestParam("operateHistoryYear") Integer operateHistoryYear, @RequestParam("operateYear") Integer operateYear, HttpServletResponse response) {
         if (StringUtils.isNull(operateHistoryYear)) {
@@ -161,7 +157,7 @@ public class GapAnalysisController extends BaseController {
     /**
      * 解析Excel
      */
-    @RequiresPermissions("strategy:cloud:gapAnalysis:edit")
+    @RequiresPermissions(value = {"strategy:cloud:gapAnalysis:edit", "operate:cloud:gapAnalysis:edit"}, logical = Logical.OR)
     @PostMapping("/excelParseObject")
     public AjaxResult excelParseObject(@RequestParam("operateHistoryYear") Integer operateHistoryYear, @RequestParam("operateYear") Integer operateYear, MultipartFile file) {
         String filename = file.getOriginalFilename();

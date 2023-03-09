@@ -34,7 +34,7 @@ public interface IStrategyMetricsService {
      * @param strategyMetricsDTO 战略衡量指标表
      * @return 结果
      */
-    StrategyMetricsDTO insertStrategyMetrics(StrategyMetricsDTO strategyMetricsDTO);
+    Long insertStrategyMetrics(StrategyMetricsDTO strategyMetricsDTO);
 
     /**
      * 修改战略衡量指标表

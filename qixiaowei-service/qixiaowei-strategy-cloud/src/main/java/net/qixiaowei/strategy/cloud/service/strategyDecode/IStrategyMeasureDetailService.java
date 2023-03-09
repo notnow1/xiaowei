@@ -110,4 +110,12 @@ public interface IStrategyMeasureDetailService {
      * @return List
      */
     List<StrategyMeasureDetailVO> selectStrategyMeasureDetailVOByStrategyMeasureId(Long strategyMeasureId);
+
+    /**
+     * 根据战略清单ID查找详情
+     *
+     * @param strategyMeasureId 战略举措id
+     * @return
+     */
+    List<StrategyMeasureDetailDTO> selectStrategyMeasureDetailByStrategyMeasureId(Long strategyMeasureId);
 }

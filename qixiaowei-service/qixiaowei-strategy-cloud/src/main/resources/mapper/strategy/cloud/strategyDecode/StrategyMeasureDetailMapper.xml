@@ -104,6 +104,15 @@
         smd.serial_number,
         smt.sort ASC
     </select>
+    <!--根据战略清单ID查找详情-->
+    <select id="selectStrategyMeasureDetailByStrategyMeasureId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDetailDTO">
+        SELECT
+        strategy_measure_detail_id,strategy_measure_id,strategy_index_dimension_id,serial_number,strategy_measure_name,strategy_measure_source,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_measure_detail
+        WHERE delete_flag=0
+        AND strategy_measure_id = #{strategyMeasureId}
+    </select>
     <!--新增战略举措清单详情表-->
     <insert id="insertStrategyMeasureDetail" useGeneratedKeys="true" keyProperty="strategyMeasureDetailId">
         INSERT INTO strategy_measure_detail

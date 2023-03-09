@@ -57,7 +57,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
      * @return 结果
      */
     @Override
-    public StrategyMetricsDTO insertStrategyMetrics(StrategyMetricsDTO strategyMetricsDTO) {
+    public Long insertStrategyMetrics(StrategyMetricsDTO strategyMetricsDTO) {
         StrategyMetrics strategyMetrics = new StrategyMetrics();
         BeanUtils.copyProperties(strategyMetricsDTO, strategyMetrics);
         strategyMetrics.setCreateBy(SecurityUtils.getUserId());
@@ -66,8 +66,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
         strategyMetrics.setUpdateBy(SecurityUtils.getUserId());
         strategyMetrics.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         strategyMetricsMapper.insertStrategyMetrics(strategyMetrics);
-        strategyMetricsDTO.setStrategyMetricsId(strategyMetrics.getStrategyMetricsId());
-        return strategyMetricsDTO;
+        return strategyMetrics.getStrategyMetricsId();
     }
 
     /**
