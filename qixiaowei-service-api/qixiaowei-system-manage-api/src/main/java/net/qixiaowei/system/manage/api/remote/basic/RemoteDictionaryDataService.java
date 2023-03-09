@@ -32,7 +32,7 @@ public interface RemoteDictionaryDataService {
     /**
      * 根据枚举查询产品应用字典名称数据
      */
-    @GetMapping(API_PREFIX_DICTIONARYDATA+"/selectDictionaryTypeByProduct")
+    @GetMapping(API_PREFIX_DICTIONARYDATA+"/selectDictionaryTypeByCode")
     public R<DictionaryTypeDTO> selectDictionaryTypeByCode(@RequestParam("dictionaryType")String dictionaryType, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**

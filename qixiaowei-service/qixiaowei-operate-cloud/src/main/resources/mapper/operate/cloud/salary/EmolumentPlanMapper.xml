@@ -106,14 +106,14 @@
         <if test="emolumentPlan.updateTime != null">
             and update_time=#{emolumentPlan.updateTime}
         </if>
-        order by plan_year
+        order by plan_year desc
     </select>
 <!--    新增薪酬规划时预制数据-->
     <select id="prefabricateAddEmolumentPlan"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO">
         select tod.actual_total as revenueBeforeOne,
-               (SELECT SUM(sp.salary_amount)+ SUM(sp.allowance_amount)+SUM(sp.welfare_amount)+SUM(sp.bonus_amount)  from   salary_pay sp
-                where sp.pay_year=#{emolumentPlan.planYear}-1 and sp.tenant_id=#{emolumentPlan.tenantId}) as  emolumentPackageBeforeOne
+               (ifnull(SELECT SUM(sp.salary_amount)+ SUM(sp.allowance_amount)+SUM(sp.welfare_amount)+SUM(sp.bonus_amount)  from   salary_pay sp
+                where sp.pay_year=#{emolumentPlan.planYear}-1 and sp.tenant_id=#{emolumentPlan.tenantId},0)) as  emolumentPackageBeforeOne
         from target_outcome_details tod
         where  tod.target_outcome_id=(select toc.target_outcome_id
                                       from target_outcome toc

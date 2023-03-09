@@ -44,6 +44,7 @@
         <if test="productUnit.updateTime != null">
             and update_time like '%${productUnit.updateTime}%'
         </if>
+    order by create_time desc
     </select>
 <!--    根据code查询产品单位表-->
     <select id="selectProductUnitByProductUnitCode"
@@ -51,7 +52,7 @@
         SELECT
             product_unit_id, product_unit_code, product_unit_name, reserve_digit, delete_flag, create_by, create_time, update_by, update_time
         FROM product_unit
-        WHERE  product_unit_code=#{productUnitCode}
+        WHERE BINARY product_unit_code=#{productUnitCode}
           and delete_flag=0
     </select>
 <!--    批量查询产品单位表-->

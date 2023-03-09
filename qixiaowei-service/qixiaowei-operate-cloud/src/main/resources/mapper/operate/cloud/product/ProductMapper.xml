@@ -315,6 +315,7 @@
         <if test="product.listingFlag != null">
             and p.listing_flag =#{product.listingFlag}
         </if>
+        order by p.create_time desc
     </select>
 
     <select id="getProductCodes" resultType="java.lang.String">

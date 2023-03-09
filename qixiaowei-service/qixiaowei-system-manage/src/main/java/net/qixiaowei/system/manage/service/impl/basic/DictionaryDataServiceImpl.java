@@ -19,6 +19,7 @@ import net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper;
 import net.qixiaowei.system.manage.service.basic.IDictionaryDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +82,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @return 结果
      */
     @Override
+    @Transactional
     public DictionaryDataDTO insertDictionaryData(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
@@ -111,6 +113,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateDictionaryData(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
@@ -126,6 +129,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDictionaryDataByDictionaryDataIds(List<Long> dictionaryDataIds) {
         //查询code
         List<DictionaryDataDTO> dictionaryDataDTOS = dictionaryDataMapper.selectDictionaryDataByDictionaryDataIds(dictionaryDataIds);
@@ -189,6 +193,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDictionaryDataByDictionaryDataId(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         dictionaryData.setDictionaryDataId(dictionaryDataDTO.getDictionaryDataId());

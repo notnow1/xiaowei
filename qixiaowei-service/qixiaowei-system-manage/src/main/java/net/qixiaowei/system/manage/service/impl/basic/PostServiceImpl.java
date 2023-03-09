@@ -720,9 +720,9 @@ public class PostServiceImpl implements IPostService {
         }
         //岗位状态
         if (StringUtils.equals(postStatus, "生效")) {
-            post.setStatus(0);
-        } else if (StringUtils.equals(postStatus, "失效")) {
             post.setStatus(1);
+        } else if (StringUtils.equals(postStatus, "失效")) {
+            post.setStatus(0);
         } else {
             post.setStatus(0);
         }

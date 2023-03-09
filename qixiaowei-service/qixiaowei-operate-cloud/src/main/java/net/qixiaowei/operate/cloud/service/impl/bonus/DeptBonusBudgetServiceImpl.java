@@ -37,6 +37,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemServ
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -225,6 +226,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         BeanUtils.copyProperties(deptBonusBudgetDTO, deptBonusBudget);
         if (StringUtils.isNotNull(deptBonusBudgetDTO.getCreateByName())) {
             UserDTO userDTO = new UserDTO();
+            userDTO.setEmployeeName(deptBonusBudgetDTO.getCreateByName());
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
             List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
@@ -283,6 +285,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public DeptBonusBudgetDTO insertDeptBonusBudget(DeptBonusBudgetDTO deptBonusBudgetDTO) {
 
         //部门奖金包预算表
@@ -429,6 +432,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateDeptBonusBudget(DeptBonusBudgetDTO deptBonusBudgetDTO) {
         int i = 0;
         //部门奖金包预算表
@@ -519,6 +523,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDeptBonusBudgetByDeptBonusBudgetIds(List<Long> deptBonusBudgetIds) {
         int i = 0;
         List<DeptBonusBudgetDTO> deptBonusBudgetDTOS = deptBonusBudgetMapper.selectDeptBonusBudgetByDeptBonusBudgetIds(deptBonusBudgetIds);
@@ -977,6 +982,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDeptBonusBudgetByDeptBonusBudgetId(DeptBonusBudgetDTO deptBonusBudgetDTO) {
         int i = 0;
         DeptBonusBudget deptBonusBudget = new DeptBonusBudget();

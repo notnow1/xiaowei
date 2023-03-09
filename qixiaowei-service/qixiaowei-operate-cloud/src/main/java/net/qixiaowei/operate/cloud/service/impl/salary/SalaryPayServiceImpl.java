@@ -1428,10 +1428,10 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         BigDecimal totalCompensationSum;
         // 获取工资，津贴，福利，奖金合计
         for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
-            salaryAmountSum = salaryAmountSum.add(salaryPayDTO.getSalaryAmount());
-            allowanceAmountSum = allowanceAmountSum.add(salaryPayDTO.getAllowanceAmount());
-            welfareAmountSum = welfareAmountSum.add(salaryPayDTO.getWelfareAmount());
-            bonusAmountSum = bonusAmountSum.add(salaryPayDTO.getBonusAmount());
+            salaryAmountSum = salaryAmountSum.add(Optional.ofNullable(salaryPayDTO.getSalaryAmount()).orElse(BigDecimal.ZERO));
+            allowanceAmountSum = allowanceAmountSum.add(Optional.ofNullable(salaryPayDTO.getAllowanceAmount()).orElse(BigDecimal.ZERO));
+            welfareAmountSum = welfareAmountSum.add(Optional.ofNullable(salaryPayDTO.getWelfareAmount()).orElse(BigDecimal.ZERO));
+            bonusAmountSum = bonusAmountSum.add(Optional.ofNullable(salaryPayDTO.getBonusAmount()).orElse(BigDecimal.ZERO));
         }
         totalCompensationSum = salaryAmountSum.add(allowanceAmountSum).add(welfareAmountSum).add(bonusAmountSum);
         salaryStructure.setSalaryAmountSum(salaryAmountSum);
@@ -1554,10 +1554,10 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
 //                    salaryPay = salaryPayDTOList1.get(0);
 //                }
             for (SalaryPayDTO salaryPayDTO : salaryPayDTOList1) {
-                salaryAmountValue = salaryAmountValue.add(salaryPayDTO.getSalaryAmount());
-                allowanceAmountValue = allowanceAmountValue.add(salaryPayDTO.getAllowanceAmount());
-                welfareAmountValue = welfareAmountValue.add(salaryPayDTO.getWelfareAmount());
-                bonusAmountValue = bonusAmountValue.add(salaryPayDTO.getBonusAmount());
+                salaryAmountValue = salaryAmountValue.add(Optional.ofNullable(salaryPayDTO.getSalaryAmount()).orElse(BigDecimal.ZERO));
+                allowanceAmountValue = allowanceAmountValue.add(Optional.ofNullable(salaryPayDTO.getAllowanceAmount()).orElse(BigDecimal.ZERO));
+                welfareAmountValue = welfareAmountValue.add(Optional.ofNullable(salaryPayDTO.getWelfareAmount()).orElse(BigDecimal.ZERO));
+                bonusAmountValue = bonusAmountValue.add(Optional.ofNullable(salaryPayDTO.getBonusAmount()).orElse(BigDecimal.ZERO));
             }
             //固定值
             BigDecimal fixedValue = salaryAmountValue.add(allowanceAmountValue).add(welfareAmountValue);

@@ -290,6 +290,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         Integer indicatorValueType = indicatorDTO.getIndicatorValueType();
         Integer examineDirection = indicatorDTO.getExamineDirection();
         Integer choiceFlag = indicatorDTO.getChoiceFlag();
+        Integer indicatorType = indicatorDTO.getIndicatorType();
         if (indicatorValueType != 1 && indicatorValueType != 2) {
             throw new ServiceException("指标值类型输入不正确");
         }
@@ -305,6 +306,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
         IndicatorDTO indicatorByCode = indicatorMapper.getIndicatorByCode(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             throw new ServiceException("指标编码重复");
+        }
+        if (StringUtils.isNull(indicatorType)) {
+            throw new ServiceException("指标类型不可以为空");
         }
         Long parentIndicatorId = indicatorDTO.getParentIndicatorId();
         String parentAncestors = "";//仅在非一级行业时有用
@@ -381,6 +385,11 @@ public class IndicatorServiceImpl implements IIndicatorService {
             if (parentIndicator == null && !parentIndicatorId.equals(0L)) {
                 throw new ServiceException("上级指标不存在");
             }
+            if (parentIndicatorId.equals(0L)) {
+                parentLevel = 0;
+            } else {
+                parentLevel = parentIndicator.getLevel() + 1;
+            }
             if (!indicatorById.getParentIndicatorId().equals(parentIndicatorId) && !parentIndicatorId.equals(0L)) {
                 // 路径修改
                 ancestors = parentIndicator.getAncestors();
@@ -388,7 +397,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
                     ancestors = ancestors + ",";
                 }
                 ancestors = ancestors + parentIndicatorId;
-                parentLevel = parentIndicator.getLevel() + 1;
             }
         }
         Indicator indicator = new Indicator();
@@ -398,7 +406,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         indicator.setParentIndicatorId(parentIndicatorId);
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());
-        int num = indicatorMapper.updateIndicator(indicator);
+        indicatorMapper.updateIndicator(indicator);
         List<Indicator> indicatorUpdateList = this.changeSonAncestor(indicatorId, indicator);
         if (StringUtils.isNotEmpty(indicatorUpdateList)) {
             try {
@@ -407,7 +415,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                 throw new ServiceException("批量修改指标子级信息失败");
             }
         }
-        return num;
+        return 1;
     }
 
     /**
@@ -428,7 +436,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                 if (i1 == 1) {
                     Indicator indicator2 = new Indicator();
                     if (StringUtils.isBlank(indicator.getAncestors())) {
-                        indicatorDTOList.get(i1).setAncestors(indicator.getParentIndicatorId() + "," + indicator.getIndicatorId());
+                        indicatorDTOList.get(i1).setAncestors(indicator.getParentIndicatorId().toString());
                     } else {
                         indicatorDTOList.get(i1).setAncestors(indicator.getAncestors() + "," + indicator.getIndicatorId());
                     }
@@ -439,37 +447,26 @@ public class IndicatorServiceImpl implements IIndicatorService {
                     BeanUtils.copyProperties(indicatorDTOList.get(i1), indicator2);
                     indicatorUpdateList.add(indicator2);
                 } else {
+                    Indicator indicator2 = new Indicator();
+                    IndicatorDTO indicatorDTO2;
                     if (indicatorDTOList.get(i1 - 1).getIndicatorId().equals(indicatorDTOList.get(i1).getParentIndicatorId())) {
-                        Indicator indicator2 = new Indicator();
                         //父级
-                        IndicatorDTO indicatorDTO2 = indicatorDTOList.get(i1 - 1);
-                        if (StringUtils.isBlank(indicatorDTO2.getAncestors())) {
-                            indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getParentIndicatorId() + "," + indicatorDTO2.getIndicatorId());
-                        } else {
-                            indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getAncestors() + "," + indicatorDTO2.getIndicatorId());
-                        }
-                        indicatorDTOList.get(i1).setLevel(indicatorDTO2.getLevel() + 1);
-                        indicatorDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
-                        indicatorDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
-                        indicatorDTOList.get(i1).setParentIndicatorId(indicatorDTO2.getIndicatorId());
-                        BeanUtils.copyProperties(indicatorDTOList.get(i1), indicator2);
-                        indicatorUpdateList.add(indicator2);
+                        indicatorDTO2 = indicatorDTOList.get(i1 - 1);
                     } else {
-                        Indicator indicator2 = new Indicator();
                         //父级
-                        IndicatorDTO indicatorDTO2 = indicatorDTOList.get(map.get(indicatorDTOList.get(i1).getParentIndicatorId()));
-                        if (StringUtils.isBlank(indicatorDTO2.getAncestors())) {
-                            indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getParentIndicatorId() + "," + indicatorDTO2.getIndicatorId());
-                        } else {
-                            indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getAncestors() + "," + indicatorDTO2.getIndicatorId());
-                        }
-                        indicatorDTOList.get(i1).setLevel(indicatorDTO2.getLevel() + 1);
-                        indicatorDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
-                        indicatorDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
-                        indicatorDTOList.get(i1).setParentIndicatorId(indicatorDTO2.getIndicatorId());
-                        BeanUtils.copyProperties(indicatorDTOList.get(i1), indicator2);
-                        indicatorUpdateList.add(indicator2);
+                        indicatorDTO2 = indicatorDTOList.get(map.get(indicatorDTOList.get(i1).getParentIndicatorId()));
                     }
+                    if (StringUtils.isBlank(indicatorDTO2.getAncestors())) {
+                        indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getParentIndicatorId().toString());
+                    } else {
+                        indicatorDTOList.get(i1).setAncestors(indicatorDTO2.getAncestors() + "," + indicatorDTO2.getIndicatorId());
+                    }
+                    indicatorDTOList.get(i1).setLevel(indicatorDTO2.getLevel() + 1);
+                    indicatorDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                    indicatorDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                    indicatorDTOList.get(i1).setParentIndicatorId(indicatorDTO2.getIndicatorId());
+                    BeanUtils.copyProperties(indicatorDTOList.get(i1), indicator2);
+                    indicatorUpdateList.add(indicator2);
                 }
             }
         }

@@ -430,7 +430,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 case "employeeCodeNotLike":
                     params2.put("employeeCodeNotLike", params.get("employeeCodeNotLike"));
                     break;
-                default:break;
+                default:
+                    break;
             }
         }
         if (StringUtils.isNotEmpty(params2)) {
@@ -477,7 +478,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 case "departmentCodeNotLike":
                     params2.put("departmentCodeNotLike", params.get("departmentCodeNotLike"));
                     break;
-                default:break;
+                default:
+                    break;
             }
         }
         if (StringUtils.isNotEmpty(params2)) {
@@ -2458,7 +2460,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *
      * @param performanceAppraisalObjectsDTO 对象DTO
      * @param performAppraisalObjectsId      对象ID
-     * @return
+     * @return PerformanceAppraisalObjectsDTO
      */
     private PerformanceAppraisalObjectsDTO updateDevelopItem(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO, Long performAppraisalObjectsId) {
         List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsAfter = performanceAppraisalObjectsDTO.getPerformanceAppraisalItemsDTOS();
@@ -2470,6 +2472,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsAfter) {
             performanceAppraisalItemsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
             indicatorIds.add(performanceAppraisalItemsDTO.getIndicatorId());
+        }
+        if (indicatorIds.contains(null)) {
+            throw new ServiceException("请选择指标");
         }
         List<IndicatorDTO> indicatorDTOS = getIndicator(indicatorIds);
         for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsAfter) {

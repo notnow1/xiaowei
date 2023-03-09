@@ -70,7 +70,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
         ProductUnit productUnit = new ProductUnit();
         BeanUtils.copyProperties(productUnitDTO, productUnit);
         ProductUnitDTO productUnitDTO1 = productUnitMapper.selectProductUnitByProductUnitCode(productUnitDTO.getProductUnitCode());
-        if (null != productUnitDTO1) {
+        if (StringUtils.isNotNull(productUnitDTO1)) {
             throw new ServiceException("产品单位编码已存在！");
         }
         productUnit.setCreateBy(SecurityUtils.getUserId());

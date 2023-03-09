@@ -371,6 +371,7 @@
         <if test="post.status != null">
             and p.status =#{post.status}
         </if>
+        order by p.create_time desc
     </select>
 
     <select id="getPostCodes" resultType="java.lang.String">
@@ -411,6 +412,7 @@
         <foreach collection="officialRankSystemIds" open="(" close=")" separator="," item="item" index="index">
             #{item}
         </foreach>
+        and delete_flag = 0
     </select>
     <!--    查询岗位表名称-->
     <select id="selectPostName" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">

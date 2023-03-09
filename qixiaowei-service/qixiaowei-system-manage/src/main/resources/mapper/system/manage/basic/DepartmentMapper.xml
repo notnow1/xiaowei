@@ -396,7 +396,7 @@
         <if test="department.status != null">
             and dm.status = #{department.status}
         </if>
-
+        order by dm.create_time desc
     </select>
 
     <select id="getDepartmentCodes" resultType="java.lang.String">

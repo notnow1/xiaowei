@@ -27,6 +27,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -469,6 +470,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @return 结果
      */
     @Override
+    @Transactional
     public BonusPayApplicationDTO insertBonusPayApplication(BonusPayApplicationDTO bonusPayApplicationDTO) {
         BonusPayApplicationDTO bonusPayApplicationDTO1 = bonusPayApplicationMapper.selectBonusPayApplicationByAwardCode(bonusPayApplicationDTO.getAwardCode());
         if (StringUtils.isNotNull(bonusPayApplicationDTO1)) {
@@ -594,6 +596,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateBonusPayApplication(BonusPayApplicationDTO bonusPayApplicationDTO) {
         int i = 0;
         //奖金发放预算部门比例集合
@@ -784,6 +787,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteBonusPayApplicationByBonusPayApplicationIds(List<Long> bonusPayApplicationIds) {
         int i = 0;
         List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.selectBonusPayApplicationByBonusPayApplicationIds(bonusPayApplicationIds);
@@ -1263,6 +1267,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteBonusPayApplicationByBonusPayApplicationId(BonusPayApplicationDTO bonusPayApplicationDTO) {
         int i = 0;
         BonusPayApplicationDTO bonusPayApplicationDTO1 = bonusPayApplicationMapper.selectBonusPayApplicationByBonusPayApplicationId(bonusPayApplicationDTO.getBonusPayApplicationId());

@@ -33,7 +33,7 @@ INSERT INTO user_role (user_role_id, user_id, role_id, delete_flag, create_by, c
 -- init of config
 -- ----------------------------
 INSERT INTO config (config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, 0, '', 'basic', NULL, '基础配置', 1, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO config (config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(2, 1, 'basic', 'industry_enable', '0', '行业启用：1系统；2自定义', 1, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO config (config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(2, 1, 'basic', 'industry_enable', '1', '行业启用：1系统；2自定义', 1, 0, 1, sysdate(), 1, sysdate());
 
 
 -- ----------------------------

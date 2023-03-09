@@ -32,7 +32,7 @@
             and region_ids=#{area.regionIds}
         </if>
         <if test="area.regionNames != null and area.regionNames != ''">
-            and region_names  LIKE concat('%', #{area.regionNames}, '%')
+            and region_names LIKE concat('%', #{area.regionNames}, '%')
         </if>
         <if test="area.deleteFlag != null">
             and delete_flag=#{area.deleteFlag}
@@ -55,6 +55,7 @@
         update_time
         FROM area
         WHERE BINARY area_code = #{areaCode}
+        AND delete_flag = 0
     </select>
     <!--根据id集合判断是否存在-->
     <select id="selectAreaListByAreaIds" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO">
@@ -78,10 +79,11 @@
     </select>
 
     <select id="getAreaCodes" resultType="java.lang.String">
-        SELECT area_code FROM area WHERE delete_flag=0 AND area_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY area_code ASC
+        SELECT area_code FROM area WHERE delete_flag=0 AND area_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY
+        area_code ASC
     </select>
 
-<!--    根据code集合判断是否存在-->
+    <!--    根据code集合判断是否存在-->
     <select id="selectAreaListByAreaCodes"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO">
         SELECT area_id, area_code, area_name, region_ids, region_names, delete_flag, create_by, create_time, update_by,

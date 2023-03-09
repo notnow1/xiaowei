@@ -138,7 +138,11 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
             }
             BigDecimal adjustmentPercentage = deptSalaryAdjustItemDTO.getAdjustmentPercentage();//调幅
             BigDecimal coveragePercentage = deptSalaryAdjustItemDTO.getCoveragePercentage();// 覆盖比例
-            LocalDate adjustmentTime = DateUtils.toLocalDate(deptSalaryAdjustItemDTO.getAdjustmentTime());//调整时间
+            Date adjustmentTime1 = deptSalaryAdjustItemDTO.getAdjustmentTime();
+            if (StringUtils.isNull(adjustmentTime1)) {
+                throw new ServiceException("数据异常 调整时间为空");
+            }
+            LocalDate adjustmentTime = DateUtils.toLocalDate(adjustmentTime1);//调整时间
             int month;
             if (StringUtils.isNull(adjustmentTime)) {
                 month = DateUtils.getMonth();
@@ -149,7 +153,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
             BigDecimal addSalary;
             if (lastSalary.compareTo(BigDecimal.ZERO) != 0 && adjustmentPercentage.compareTo(BigDecimal.ZERO) != 0 && coveragePercentage.compareTo(BigDecimal.ZERO) != 0) {
                 addSalary = lastSalary.multiply(adjustmentPercentage).multiply(coveragePercentage)
-                        .multiply(new BigDecimal(12).subtract(new BigDecimal(month))).divide(new BigDecimal(120000), 2, RoundingMode.HALF_UP);
+                        .multiply(new BigDecimal(13).subtract(new BigDecimal(month))).divide(new BigDecimal(120000), 2, RoundingMode.HALF_UP);
             } else {
                 addSalary = BigDecimal.ZERO;
             }
@@ -251,6 +255,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertDeptSalaryAdjustPlan(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
         if (StringUtils.isNull(deptSalaryAdjustPlanDTO)) {
             throw new ServiceException("部门调薪计划表不能为空");
@@ -271,6 +276,9 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         for (DeptSalaryAdjustItemDTO deptSalaryAdjustItemDTO : deptSalaryAdjustItemDTOSAfter) {
             if (StringUtils.isNull(deptSalaryAdjustItemDTO.getDepartmentId())) {
                 throw new ServiceException("部门不可以为空");
+            }
+            if (StringUtils.isNull(deptSalaryAdjustItemDTO.getAdjustmentTime())) {
+                throw new ServiceException("调整时间不可以为空");
             }
             deptSalaryAdjustItemDTO.setDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);
             for (DeptSalaryAdjustItemDTO salaryAdjustItemDTO : deptSalaryAdjustItemDTOSBefore) {
@@ -313,6 +321,12 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         }
         List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOSBefore = deptSalaryAdjustItemService.selectDeptSalaryAdjustItemByPlanId(deptSalaryAdjustPlanId);
         for (DeptSalaryAdjustItemDTO deptSalaryAdjustItemDTO : deptSalaryAdjustItemDTOSAfter) {
+            if (StringUtils.isNull(deptSalaryAdjustItemDTO.getDepartmentId())) {
+                throw new ServiceException("部门不可以为空");
+            }
+            if (StringUtils.isNull(deptSalaryAdjustItemDTO.getAdjustmentTime())) {
+                throw new ServiceException("调整时间不可以为空");
+            }
             deptSalaryAdjustItemDTO.setDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);
             for (DeptSalaryAdjustItemDTO salaryAdjustItemDTO : deptSalaryAdjustItemDTOSBefore) {
                 if (salaryAdjustItemDTO.getDepartmentId().equals(deptSalaryAdjustItemDTO.getDepartmentId())) {
