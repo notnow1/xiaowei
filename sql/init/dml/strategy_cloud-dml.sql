@@ -1,4 +1,4 @@
-USE `operate_cloud`;
+USE `strategy_cloud`;
 SET NAMES utf8mb4;
 
 -- init of industry_attraction
