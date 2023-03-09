@@ -79,8 +79,7 @@
         smd.strategy_measure_detail_id,
         sid.index_dimension_name,
         IFNULL( sid.index_dimension_code, '' ) AS index_dimension_code,
-        IFNULL( sid.index_dimension_code, '' ) AS serial_number_name,
-        smd.serial_number,
+        CONCAT( sid.index_dimension_code, smd.serial_number ) AS serial_number_name,
         smd.sort,
         smd.strategy_measure_name,
         smd.strategy_measure_source,
@@ -176,7 +175,7 @@
         </foreach>
     </update>
     <!--批量新增战略举措清单详情表-->
-    <insert id="batchStrategyMeasureDetail">
+    <insert id="batchStrategyMeasureDetail" useGeneratedKeys="true" keyProperty="strategyMeasureDetailId">
         INSERT INTO strategy_measure_detail
         (strategy_measure_id,strategy_index_dimension_id,serial_number,strategy_measure_name,strategy_measure_source,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES

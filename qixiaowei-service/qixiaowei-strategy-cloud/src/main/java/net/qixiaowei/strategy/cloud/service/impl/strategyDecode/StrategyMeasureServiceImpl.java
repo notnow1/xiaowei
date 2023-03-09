@@ -14,17 +14,22 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasure;
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasureDetail;
 import net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDetailDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO;
 import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 import net.qixiaowei.strategy.cloud.mapper.plan.PlanBusinessUnitMapper;
+import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyIndexDimensionMapper;
 import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyMeasureMapper;
 import net.qixiaowei.strategy.cloud.service.strategyDecode.*;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,6 +71,9 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
     private RemoteIndustryService industryService;
 
     @Autowired
+    private RemoteEmployeeService employeeService;
+
+    @Autowired
     private IStrategyMeasureTaskService strategyMeasureTaskService;
 
     @Autowired
@@ -82,6 +90,9 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
 
     @Autowired
     private PlanBusinessUnitMapper planBusinessUnitMapper;
+
+    @Autowired
+    private StrategyIndexDimensionMapper strategyIndexDimensionMapper;
 
     /**
      * 查询战略举措清单表
@@ -131,23 +142,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
                 }
             }
         }
-
-
-//            for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
-//                for (StrategyMeasureDetailDTO strategyMeasureDetailDTO : strategyMeasureDetailDTOS) {
-//                    if (strategyMeasureDetailDTO.getStrategyMeasureDetailId().equals(strategyMeasureDetailVO.getStrategyMeasureDetailId())) {
-//                        BeanUtils.copyProperties(strategyMeasureDetailDTO, strategyMeasureDetailVO);
-//                        break;
-//                    }
-//                }
-//            }
-//            Map<Long, List<StrategyMeasureDetailVO>> groupStrategyMeasureDetailVOS =
-//                    strategyMeasureDetailVOS.stream().sorted(Comparator.comparing(StrategyMeasureDetailVO::getSort))
-//                            .sorted(Comparator.comparing(StrategyMeasureDetailVO::getSerialNumber))
-//                            .sorted(Comparator.comparing(StrategyMeasureDetailVO::getTaskSort))
-//                            .collect(Collectors.groupingBy(StrategyMeasureDetailVO::getStrategyMeasureDetailId));
-
-
+        strategyMeasureDTO.setStrategyMeasureDetailVOS(strategyMeasureDetailVOS);
         return strategyMeasureDTO;
     }
 
@@ -325,35 +320,86 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
 
         // 详情
         List<StrategyMeasureDetailVO> strategyMeasureDetailVOS = strategyMeasureDTO.getStrategyMeasureDetailVOS();
+        // 负责人赋值
         if (StringUtils.isNotEmpty(strategyMeasureDetailVOS)) {
-            Long strategyIndexDimensionId = null;
-            List<List<StrategyMeasureDetailVO>> strategyMeasureDetailVOListS = null;
-            List<StrategyMeasureDetailVO> strategyMeasureDetailVOList = new ArrayList<>();
-            for (int i = 0; i < strategyMeasureDetailVOS.size(); i++) {
-                StrategyMeasureDetailVO strategyMeasureDetailVO = strategyMeasureDetailVOS.get(i);
-//                if (!strategyMeasureDetailVO.getStrategyIndexDimensionId().equals(strategyIndexDimensionId)) {
-//                    strategyMeasureDetailVOListS.add(strategyMeasureDetailVOList);
-//                    strategyMeasureDetailVOList = new ArrayList<>();
-//                    strategyIndexDimensionId = strategyMeasureDetailVO.getStrategyIndexDimensionId();
-//                } else {
-//                    strategyMeasureDetailVOList.add(strategyMeasureDetailVO);
-//                }
-                if (strategyMeasureDetailVOS.size() > i + 1) {
-                    StrategyMeasureDetailVO strategyMeasureDetailVONext = strategyMeasureDetailVOS.get(i + 1);
-                    if (!strategyMeasureDetailVONext.getStrategyIndexDimensionId().equals(strategyMeasureDetailVO.getStrategyIndexDimensionId())) {
-                        strategyMeasureDetailVOListS.add(strategyMeasureDetailVOList);
-                        strategyMeasureDetailVOList = new ArrayList<>();
-                        strategyIndexDimensionId = strategyMeasureDetailVO.getStrategyIndexDimensionId();
+            List<Long> strategyIndexDimensionIds = strategyMeasureDetailVOS.stream().map(StrategyMeasureDetailVO::getStrategyIndexDimensionId).filter(Objects::nonNull).collect(Collectors.toList());
+            List<Long> dutyEmployeeIds = strategyMeasureDetailVOS.stream().map(StrategyMeasureDetailVO::getDutyEmployeeId).filter(Objects::nonNull).collect(Collectors.toList());
+            R<List<EmployeeDTO>> employeeDTOSR = employeeService.selectByEmployeeIds(dutyEmployeeIds, SecurityConstants.INNER);
+            List<EmployeeDTO> employeeDTOS = employeeDTOSR.getData();
+            if (StringUtils.isNotEmpty(employeeDTOS)) {
+                throw new ServiceException("当前负责人已不存在 请检查员工配置");
+            }
+            for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
+                for (EmployeeDTO employeeDTO : employeeDTOS) {
+                    if (employeeDTO.getEmployeeId().equals(strategyMeasureDetailVO.getDutyEmployeeId())) {
+                        strategyMeasureDetailVO.setDutyEmployeeName(employeeDTO.getEmployeeName());
+                        strategyMeasureDetailVO.setDutyEmployeeCode(employeeDTO.getEmployeeCode());
+                        break;
                     }
-
-
-                } else {
-
                 }
             }
+            if (StringUtils.isEmpty(strategyIndexDimensionIds)) {
+                throw new ServiceException("请选择维度");
+            }
+            List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionMapper.selectStrategyIndexDimensionByStrategyIndexDimensionIds(strategyIndexDimensionIds);
+            int sort = 0;
+            for (int i = 0; i < strategyMeasureDetailVOS.size(); i++) {
+                StrategyMeasureDetailVO strategyMeasureDetailVO = strategyMeasureDetailVOS.get(i);
+                strategyMeasureDetailVO.setStrategyMeasureId(strategyMeasureId);
+                // 任务排序
+                strategyMeasureDetailVO.setTaskSort(i);
+                // 序列号赋值也可排序
+                for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
+                    if (strategyMeasureDetailVO.getStrategyIndexDimensionId().equals(strategyIndexDimensionDTO.getStrategyIndexDimensionId())) {
+                        String serialNumberName = strategyMeasureDetailVO.getSerialNumberName();
+                        String indexDimensionCode = strategyIndexDimensionDTO.getIndexDimensionCode();
+                        if (StringUtils.isNotEmpty(serialNumberName)) {
+                            if (!serialNumberName.contains(indexDimensionCode))
+                                throw new ServiceException("编码不匹配 请联系管理员");
+                            Integer serialNumber = Integer.valueOf(serialNumberName.substring(indexDimensionCode.length(), serialNumberName.length() - 1));
+                            strategyMeasureDetailVO.setSerialNumber(serialNumber);
+                            break;
+                        }
+                    }
+                }
+                // 详情排序
+                strategyMeasureDetailVO.setSort(sort);
+                if (i == strategyMeasureDetailVOS.size() - 1)
+                    break;
+                if (!strategyMeasureDetailVOS.get(i + 1).getStrategyIndexDimensionId().equals(strategyMeasureDetailVO.getStrategyIndexDimensionId()))
+                    sort += 1;
+            }
+            List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOS = new ArrayList<>();
+            Map<Integer, Map<Integer, List<StrategyMeasureDetailVO>>> groupDetailMapS =
+                    strategyMeasureDetailVOS.stream().collect(Collectors.groupingBy(StrategyMeasureDetailVO::getSort, Collectors.groupingBy(StrategyMeasureDetailVO::getSerialNumber)));
+            for (Integer sorted : groupDetailMapS.keySet()) {
+                Map<Integer, List<StrategyMeasureDetailVO>> groupSerialNumberMapS = groupDetailMapS.get(sorted);
+                for (Integer serialNumber : groupSerialNumberMapS.keySet()) {
+                    StrategyMeasureDetailDTO strategyMeasureDetailDTO = new StrategyMeasureDetailDTO();
+                    StrategyMeasureDetailVO measureDetailVO = groupSerialNumberMapS.get(serialNumber).get(0);
+                    BeanUtils.copyProperties(measureDetailVO, strategyMeasureDetailDTO);
+                    strategyMeasureDetailDTOS.add(strategyMeasureDetailDTO);
+                }
+            }
+
+            List<StrategyMeasureDetail> strategyMeasureDetails = strategyMeasureDetailService.insertStrategyMeasureDetails(strategyMeasureDetailDTOS);
+            for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
+                for (StrategyMeasureDetail strategyMeasureDetail : strategyMeasureDetails) {
+                    if (strategyMeasureDetailVO.getSort().equals(strategyMeasureDetail.getSort()) && strategyMeasureDetailVO.getSerialNumber().equals(strategyMeasureDetail.getSerialNumber())) {
+                        strategyMeasureDetailVO.setStrategyMeasureDetailId(strategyMeasureDetail.getStrategyMeasureDetailId());
+                        break;
+                    }
+                }
+            }
+
+            List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = new ArrayList<>();
+            for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
+                StrategyMeasureTaskDTO strategyMeasureTaskDTO = new StrategyMeasureTaskDTO();
+                BeanUtils.copyProperties(strategyMeasureDetailVO, strategyMeasureTaskDTO);
+                strategyMeasureTaskDTOS.add(strategyMeasureTaskDTO);
+            }
+
         }
-
-
         return strategyMeasureDTO;
     }
 

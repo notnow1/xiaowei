@@ -40,7 +40,7 @@ public class StrategyMeasureDetailVO {
     /**
      * 编码名称
      */
-    private Integer serialNumberName;
+    private String serialNumberName;
     /**
      * 战略举措名称
      */
