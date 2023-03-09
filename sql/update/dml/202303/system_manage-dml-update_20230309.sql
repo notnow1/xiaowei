@@ -48,7 +48,7 @@ INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_va
 
 
 -- ----------------------------
-INSERT INTO dictionary_type (dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES('MARKET_INSIGHT_SELF_CAPACITY_FACTOR', '能力要素', '战略云', '市场洞察', '看对手', '', 1, 0, 0, sysdate(), 0, sysdate(),0);
+INSERT INTO dictionary_type (dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES('MARKET_INSIGHT_SELF_CAPACITY_FACTOR', '能力要素', '战略云', '市场洞察', '看自身', '', 1, 0, 0, sysdate(), 0, sysdate(),0);
 
 -- ----------------------------
 -- init of dictionary_data
