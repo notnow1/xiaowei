@@ -546,14 +546,37 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
      */
     @Override
     public int updateStrategyMeasure(StrategyMeasureDTO strategyMeasureDTO) {
-        checkStrategyMeasureOfUpdate(strategyMeasureDTO);
+        this.checkStrategyMeasureOfUpdate(strategyMeasureDTO);
+        // 编辑战略举措清单
         Long strategyMeasureId = editStrategyMeasure(strategyMeasureDTO);
+        // 编辑战略衡量指标
+        this.editStrategyMetrics(strategyMeasureDTO, strategyMeasureId);
         List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOBefore = strategyMeasureDetailService.selectStrategyMeasureDetailByStrategyMeasureId(strategyMeasureId);
         for (StrategyMeasureDetailDTO strategyMeasureDetailDTO : strategyMeasureDetailDTOBefore) {
             Integer serialNumber = strategyMeasureDetailDTO.getSerialNumber();
         }
+        List<StrategyMeasureDetailVO> strategyMeasureDetailVOS = strategyMeasureDTO.getStrategyMeasureDetailVOS();
+        if (StringUtils.isNotEmpty(strategyMeasureDetailVOS)) {
+
+        }
         Map<Integer, List<StrategyMeasureDetailDTO>> groupStrategyMeasureDetail = strategyMeasureDetailDTOBefore.stream().collect(Collectors.groupingBy(StrategyMeasureDetailDTO::getSerialNumber));
+
         return 1;
+    }
+
+    /**
+     * 编辑战略衡量指标
+     *
+     * @param strategyMeasureDTO 战略清单DTO
+     * @param strategyMeasureId 战略清单ID
+     */
+    private void editStrategyMetrics(StrategyMeasureDTO strategyMeasureDTO, Long strategyMeasureId) {
+        StrategyMetricsDTO strategyMetricsByMeasureId = strategyMetricsService.selectStrategyMetricsByStrategyMeasureId(strategyMeasureId);
+        if (StringUtils.isNull(strategyMetricsByMeasureId)) {
+            throw new ServiceException("数据异常 战略衡量指标数据丢失");
+        }
+        BeanUtils.copyProperties(strategyMeasureDTO, strategyMetricsByMeasureId);
+        strategyMetricsService.updateStrategyMetrics(strategyMetricsByMeasureId);
     }
 
     /**

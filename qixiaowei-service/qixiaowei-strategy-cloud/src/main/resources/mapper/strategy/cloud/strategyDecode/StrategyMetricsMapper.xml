@@ -7,7 +7,7 @@
         SELECT
         strategy_metrics_id,strategy_measure_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_period,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_metrics
-        WHERE  strategy_metrics_id=#{strategyMetricsId}
+        WHERE strategy_metrics_id=#{strategyMetricsId}
         and delete_flag=0
     </select>
 
@@ -17,70 +17,81 @@
         SELECT
         strategy_metrics_id,strategy_measure_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_period,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_metrics
-        WHERE  strategy_metrics_id in
-            <foreach item="item"
-                     collection="strategyMetricsIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE strategy_metrics_id in
+        <foreach item="item"
+                 collection="strategyMetricsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询战略衡量指标表列表-->
-    <select id="selectStrategyMetricsList" resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO">
+    <select id="selectStrategyMetricsList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO">
         SELECT
         strategy_metrics_id,strategy_measure_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_period,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_metrics
         WHERE delete_flag=0
-                        <if test="strategyMetrics.strategyMetricsId != null">
-                            and strategy_metrics_id=#{strategyMetrics.strategyMetricsId}
-                        </if>
-                        <if test="strategyMetrics.strategyMeasureId != null">
-                            and strategy_measure_id=#{strategyMetrics.strategyMeasureId}
-                        </if>
-                        <if test="strategyMetrics.planYear != null">
-                            and plan_year=#{strategyMetrics.planYear}
-                        </if>
-                        <if test="strategyMetrics.planBusinessUnitId != null">
-                            and plan_business_unit_id=#{strategyMetrics.planBusinessUnitId}
-                        </if>
-                        <if test="strategyMetrics.businessUnitDecompose != null and strategyMetrics.businessUnitDecompose != ''">
-                            and business_unit_decompose=#{strategyMetrics.businessUnitDecompose}
-                        </if>
-                        <if test="strategyMetrics.areaId != null">
-                            and area_id=#{strategyMetrics.areaId}
-                        </if>
-                        <if test="strategyMetrics.departmentId != null">
-                            and department_id=#{strategyMetrics.departmentId}
-                        </if>
-                        <if test="strategyMetrics.productId != null">
-                            and product_id=#{strategyMetrics.productId}
-                        </if>
-                        <if test="strategyMetrics.industryId != null">
-                            and industry_id=#{strategyMetrics.industryId}
-                        </if>
-                        <if test="strategyMetrics.planPeriod != null">
-                            and plan_period=#{strategyMetrics.planPeriod}
-                        </if>
-                        <if test="strategyMetrics.deleteFlag != null">
-                            and delete_flag=#{strategyMetrics.deleteFlag}
-                        </if>
-                        <if test="strategyMetrics.createBy != null">
-                            and create_by=#{strategyMetrics.createBy}
-                        </if>
-                        <if test="strategyMetrics.createTime != null">
-                            and create_time=#{strategyMetrics.createTime}
-                        </if>
-                        <if test="strategyMetrics.updateBy != null">
-                            and update_by=#{strategyMetrics.updateBy}
-                        </if>
-                        <if test="strategyMetrics.updateTime != null">
-                            and update_time=#{strategyMetrics.updateTime}
-                        </if>
+        <if test="strategyMetrics.strategyMetricsId != null">
+            and strategy_metrics_id=#{strategyMetrics.strategyMetricsId}
+        </if>
+        <if test="strategyMetrics.strategyMeasureId != null">
+            and strategy_measure_id=#{strategyMetrics.strategyMeasureId}
+        </if>
+        <if test="strategyMetrics.planYear != null">
+            and plan_year=#{strategyMetrics.planYear}
+        </if>
+        <if test="strategyMetrics.planBusinessUnitId != null">
+            and plan_business_unit_id=#{strategyMetrics.planBusinessUnitId}
+        </if>
+        <if test="strategyMetrics.businessUnitDecompose != null and strategyMetrics.businessUnitDecompose != ''">
+            and business_unit_decompose=#{strategyMetrics.businessUnitDecompose}
+        </if>
+        <if test="strategyMetrics.areaId != null">
+            and area_id=#{strategyMetrics.areaId}
+        </if>
+        <if test="strategyMetrics.departmentId != null">
+            and department_id=#{strategyMetrics.departmentId}
+        </if>
+        <if test="strategyMetrics.productId != null">
+            and product_id=#{strategyMetrics.productId}
+        </if>
+        <if test="strategyMetrics.industryId != null">
+            and industry_id=#{strategyMetrics.industryId}
+        </if>
+        <if test="strategyMetrics.planPeriod != null">
+            and plan_period=#{strategyMetrics.planPeriod}
+        </if>
+        <if test="strategyMetrics.deleteFlag != null">
+            and delete_flag=#{strategyMetrics.deleteFlag}
+        </if>
+        <if test="strategyMetrics.createBy != null">
+            and create_by=#{strategyMetrics.createBy}
+        </if>
+        <if test="strategyMetrics.createTime != null">
+            and create_time=#{strategyMetrics.createTime}
+        </if>
+        <if test="strategyMetrics.updateBy != null">
+            and update_by=#{strategyMetrics.updateBy}
+        </if>
+        <if test="strategyMetrics.updateTime != null">
+            and update_time=#{strategyMetrics.updateTime}
+        </if>
+    </select>
+    <!--根据清单ID查询战略衡量指标-->
+    <select id="selectStrategyMetricsByStrategyMeasureId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO">
+        SELECT
+        strategy_metrics_id,strategy_measure_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_period,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_metrics
+        WHERE delete_flag=0
+        AND strategy_measure_id = #{strategyMeasureId}
     </select>
     <!--新增战略衡量指标表-->
     <insert id="insertStrategyMetrics" useGeneratedKeys="true" keyProperty="strategyMetricsId">
-        INSERT INTO strategy_metrics (strategy_measure_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_period,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO strategy_metrics
+        (strategy_measure_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_period,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{strategyMetrics.strategyMeasureId},#{strategyMetrics.planYear},#{strategyMetrics.planBusinessUnitId},#{strategyMetrics.businessUnitDecompose},#{strategyMetrics.areaId},#{strategyMetrics.departmentId},#{strategyMetrics.productId},#{strategyMetrics.industryId},#{strategyMetrics.planPeriod},#{strategyMetrics.deleteFlag},#{strategyMetrics.createBy},#{strategyMetrics.createTime},#{strategyMetrics.updateBy},#{strategyMetrics.updateTime})
     </insert>
@@ -88,77 +99,78 @@
     <update id="updateStrategyMetrics">
         UPDATE strategy_metrics
         SET
-                    <if test="strategyMetrics.strategyMeasureId != null">
-                        strategy_measure_id=#{strategyMetrics.strategyMeasureId},
-                    </if>
-                    <if test="strategyMetrics.planYear != null">
-                        plan_year=#{strategyMetrics.planYear},
-                    </if>
-                    <if test="strategyMetrics.planBusinessUnitId != null">
-                        plan_business_unit_id=#{strategyMetrics.planBusinessUnitId},
-                    </if>
-                    <if test="strategyMetrics.businessUnitDecompose != null and strategyMetrics.businessUnitDecompose != ''">
-                        business_unit_decompose=#{strategyMetrics.businessUnitDecompose},
-                    </if>
-                    <if test="strategyMetrics.areaId != null">
-                        area_id=#{strategyMetrics.areaId},
-                    </if>
-                    <if test="strategyMetrics.departmentId != null">
-                        department_id=#{strategyMetrics.departmentId},
-                    </if>
-                    <if test="strategyMetrics.productId != null">
-                        product_id=#{strategyMetrics.productId},
-                    </if>
-                    <if test="strategyMetrics.industryId != null">
-                        industry_id=#{strategyMetrics.industryId},
-                    </if>
-                    <if test="strategyMetrics.planPeriod != null">
-                        plan_period=#{strategyMetrics.planPeriod},
-                    </if>
-                    <if test="strategyMetrics.deleteFlag != null">
-                        delete_flag=#{strategyMetrics.deleteFlag},
-                    </if>
-                    <if test="strategyMetrics.createBy != null">
-                        create_by=#{strategyMetrics.createBy},
-                    </if>
-                    <if test="strategyMetrics.createTime != null">
-                        create_time=#{strategyMetrics.createTime},
-                    </if>
-                    <if test="strategyMetrics.updateBy != null">
-                        update_by=#{strategyMetrics.updateBy},
-                    </if>
-                    <if test="strategyMetrics.updateTime != null">
-                        update_time=#{strategyMetrics.updateTime}
-                    </if>
+        <if test="strategyMetrics.strategyMeasureId != null">
+            strategy_measure_id=#{strategyMetrics.strategyMeasureId},
+        </if>
+        <if test="strategyMetrics.planYear != null">
+            plan_year=#{strategyMetrics.planYear},
+        </if>
+        <if test="strategyMetrics.planBusinessUnitId != null">
+            plan_business_unit_id=#{strategyMetrics.planBusinessUnitId},
+        </if>
+        <if test="strategyMetrics.businessUnitDecompose != null and strategyMetrics.businessUnitDecompose != ''">
+            business_unit_decompose=#{strategyMetrics.businessUnitDecompose},
+        </if>
+        <if test="strategyMetrics.areaId != null">
+            area_id=#{strategyMetrics.areaId},
+        </if>
+        <if test="strategyMetrics.departmentId != null">
+            department_id=#{strategyMetrics.departmentId},
+        </if>
+        <if test="strategyMetrics.productId != null">
+            product_id=#{strategyMetrics.productId},
+        </if>
+        <if test="strategyMetrics.industryId != null">
+            industry_id=#{strategyMetrics.industryId},
+        </if>
+        <if test="strategyMetrics.planPeriod != null">
+            plan_period=#{strategyMetrics.planPeriod},
+        </if>
+        <if test="strategyMetrics.deleteFlag != null">
+            delete_flag=#{strategyMetrics.deleteFlag},
+        </if>
+        <if test="strategyMetrics.createBy != null">
+            create_by=#{strategyMetrics.createBy},
+        </if>
+        <if test="strategyMetrics.createTime != null">
+            create_time=#{strategyMetrics.createTime},
+        </if>
+        <if test="strategyMetrics.updateBy != null">
+            update_by=#{strategyMetrics.updateBy},
+        </if>
+        <if test="strategyMetrics.updateTime != null">
+            update_time=#{strategyMetrics.updateTime}
+        </if>
         WHERE
-                 strategy_metrics_id=#{strategyMetrics.strategyMetricsId}
+        strategy_metrics_id=#{strategyMetrics.strategyMetricsId}
     </update>
     <!--逻辑删除战略衡量指标表-->
     <update id="logicDeleteStrategyMetricsByStrategyMetricsId">
         UPDATE strategy_metrics
-        SET     delete_flag= 1,
-                update_by=#{strategyMetrics.updateBy},
-                update_time=#{strategyMetrics.updateTime}
+        SET delete_flag= 1,
+        update_by=#{strategyMetrics.updateBy},
+        update_time=#{strategyMetrics.updateTime}
         WHERE
-                strategy_metrics_id=#{strategyMetrics.strategyMetricsId}
+        strategy_metrics_id=#{strategyMetrics.strategyMetricsId}
     </update>
     <!--逻辑批量删除战略衡量指标表-->
     <update id="logicDeleteStrategyMetricsByStrategyMetricsIds">
         UPDATE strategy_metrics
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         strategy_metrics_id IN
-            <foreach item="item"
-                     collection="strategyMetricsIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        strategy_metrics_id IN
+        <foreach item="item"
+                 collection="strategyMetricsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增战略衡量指标表-->
     <insert id="batchStrategyMetrics">
-        INSERT INTO strategy_metrics (strategy_measure_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_period,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO strategy_metrics
+        (strategy_measure_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_period,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="strategyMetricss"
@@ -170,125 +182,125 @@
     <!--物理删除战略衡量指标表-->
     <delete id="deleteStrategyMetricsByStrategyMetricsId">
         DELETE FROM strategy_metrics
-        WHERE  strategy_metrics_id=#{strategyMetrics}
+        WHERE strategy_metrics_id=#{strategyMetrics}
 
     </delete>
     <!--物理批量删除战略衡量指标表-->
     <delete id="deleteStrategyMetricsByStrategyMetricsIds">
         DELETE FROM strategy_metrics
-        WHERE  strategy_metrics_id IN
-            <foreach item="item"
-                     collection="strategyMetricsIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE strategy_metrics_id IN
+        <foreach item="item"
+                 collection="strategyMetricsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改战略衡量指标表-->
     <update id="updateStrategyMetricss">
         update strategy_metrics
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="strategy_measure_id=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.strategyMeasureId != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.strategyMeasureId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="plan_year=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.planYear != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.planYear}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="plan_business_unit_id=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.planBusinessUnitId != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.planBusinessUnitId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="business_unit_decompose=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.businessUnitDecompose}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="area_id=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.areaId != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.areaId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="department_id=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.departmentId != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.departmentId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="product_id=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.productId != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.productId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="industry_id=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.industryId != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.industryId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="plan_period=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.planPeriod != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.planPeriod}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="strategyMetricsList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when strategy_metrics_id=#{item.strategyMetricsId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="strategy_measure_id=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.strategyMeasureId != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.strategyMeasureId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="plan_year=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.planYear != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.planYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="plan_business_unit_id=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.planBusinessUnitId != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.planBusinessUnitId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_unit_decompose=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.businessUnitDecompose}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="area_id=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.areaId != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.areaId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_id=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.departmentId != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.departmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_id=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.productId != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.productId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="industry_id=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.industryId != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.industryId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="plan_period=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.planPeriod != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.planPeriod}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="strategyMetricsList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when strategy_metrics_id=#{item.strategyMetricsId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="strategyMetricsList" separator="or" item="item" index="index">
-                    strategy_metrics_id=#{item.strategyMetricsId}
+            strategy_metrics_id=#{item.strategyMetricsId}
         </foreach>
     </update>
 </mapper>

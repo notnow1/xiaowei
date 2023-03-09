@@ -107,6 +107,17 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
     }
 
     /**
+     * 根据清单ID查询战略衡量指标
+     *
+     * @param strategyMeasureId 清单ID
+     * @return 战略衡量指标
+     */
+    @Override
+    public StrategyMetricsDTO selectStrategyMetricsByStrategyMeasureId(Long strategyMeasureId) {
+        return strategyMetricsMapper.selectStrategyMetricsByStrategyMeasureId(strategyMeasureId);
+    }
+
+    /**
      * 逻辑删除战略衡量指标表信息
      *
      * @param strategyMetricsDTO 战略衡量指标表

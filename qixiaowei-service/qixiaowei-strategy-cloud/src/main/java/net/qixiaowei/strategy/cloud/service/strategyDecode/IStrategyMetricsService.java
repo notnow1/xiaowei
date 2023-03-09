@@ -101,4 +101,11 @@ public interface IStrategyMetricsService {
      */
     int deleteStrategyMetricsByStrategyMetricsId(Long strategyMetricsId);
 
+    /**
+     * 根据清单ID查询战略衡量指标
+     *
+     * @param strategyMeasureId 清单ID
+     * @return 战略衡量指标
+     */
+    StrategyMetricsDTO selectStrategyMetricsByStrategyMeasureId(Long strategyMeasureId);
 }
