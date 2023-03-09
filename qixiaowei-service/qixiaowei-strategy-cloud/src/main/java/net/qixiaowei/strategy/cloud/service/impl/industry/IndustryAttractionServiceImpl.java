@@ -52,10 +52,10 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     private static final List<IndustryAttractionElement> INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE = new ArrayList<>(4);
 
     static {
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("高潜行业").assessStandardDescription("总产值三年复合增长率达到GDP年均增长率的四倍（约为25-30%）").displayColor("蓝色").sort(1).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("价值行业").assessStandardDescription("总产值三年复合增长率达到GDP年均增长率的两倍（约为13-15%）").displayColor("蓝色").sort(2).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("稳健行业").assessStandardDescription("总产值三年复合增长率大于等于GDP年均增长率小于两倍").displayColor("灰色").sort(3).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("谨慎行业").assessStandardDescription("总产值三年复合增长率小于GDP年均增长率").displayColor("红色").sort(4).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("高潜行业").assessStandardDescription("总产值三年复合增长率达到GDP年均增长率的四倍（约为25-30%）").displayColor("#0000FF").sort(1).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("价值行业").assessStandardDescription("总产值三年复合增长率达到GDP年均增长率的两倍（约为13-15%）").displayColor("#0000FF").sort(2).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("稳健行业").assessStandardDescription("总产值三年复合增长率大于等于GDP年均增长率小于两倍").displayColor("#c0c0c0").sort(3).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("谨慎行业").assessStandardDescription("总产值三年复合增长率小于GDP年均增长率").displayColor("#FF0000").sort(4).status(1).build());
     }
 
     /**
@@ -64,10 +64,10 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     private static final List<IndustryAttractionElement> INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO = new ArrayList<>(4);
 
     static {
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("超高利润行业").assessStandardDescription("平均毛利率超过80%").displayColor("蓝色").sort(1).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("高利润行业").assessStandardDescription("平均毛利率50%-80%").displayColor("蓝色").sort(2).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("平均利润行业").assessStandardDescription("平均毛利率30%-50%").displayColor("灰色").sort(3).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("低利润行业").assessStandardDescription("平均毛利率低于30%").displayColor("红色").sort(4).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("超高利润行业").assessStandardDescription("平均毛利率超过80%").displayColor("#0000FF").sort(1).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("高利润行业").assessStandardDescription("平均毛利率50%-80%").displayColor("#0000FF").sort(2).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("平均利润行业").assessStandardDescription("平均毛利率30%-50%").displayColor("#c0c0c0").sort(3).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("低利润行业").assessStandardDescription("平均毛利率低于30%").displayColor("#FF0000").sort(4).status(1).build());
     }
 
     /**
@@ -76,10 +76,10 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     private static final List<IndustryAttractionElement> INIT_INDUSTRY_ATTRACTION_ELEMENT_Three = new ArrayList<>(4);
 
     static {
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("极高寡占型").assessStandardDescription("CR8 ≥ 70%").displayColor("红色").sort(1).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中寡占型").assessStandardDescription("40% ≤ CR8<70%").displayColor("蓝色").sort(2).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中竞争型").assessStandardDescription("20% ≤ CR8<40%").displayColor("蓝色").sort(3).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("分散竞争型").assessStandardDescription("CR8<20%").displayColor("灰色").sort(4).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("极高寡占型").assessStandardDescription("CR8 ≥ 70%").displayColor("#FF0000").sort(1).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中寡占型").assessStandardDescription("40% ≤ CR8 < 70%").displayColor("#0000FF").sort(2).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中竞争型").assessStandardDescription("20% ≤ CR8 < 40%").displayColor("#0000FF").sort(3).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("分散竞争型").assessStandardDescription("CR8 < 20%").displayColor("#c0c0c0").sort(4).status(1).build());
     }
 
     /**
