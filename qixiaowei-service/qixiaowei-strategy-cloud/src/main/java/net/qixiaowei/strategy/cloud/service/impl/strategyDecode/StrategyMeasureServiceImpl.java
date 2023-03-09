@@ -549,7 +549,10 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
         checkStrategyMeasureOfUpdate(strategyMeasureDTO);
         Long strategyMeasureId = editStrategyMeasure(strategyMeasureDTO);
         List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOBefore = strategyMeasureDetailService.selectStrategyMeasureDetailByStrategyMeasureId(strategyMeasureId);
-
+        for (StrategyMeasureDetailDTO strategyMeasureDetailDTO : strategyMeasureDetailDTOBefore) {
+            Integer serialNumber = strategyMeasureDetailDTO.getSerialNumber();
+        }
+        Map<Integer, List<StrategyMeasureDetailDTO>> groupStrategyMeasureDetail = strategyMeasureDetailDTOBefore.stream().collect(Collectors.groupingBy(StrategyMeasureDetailDTO::getSerialNumber));
         return 1;
     }
 
