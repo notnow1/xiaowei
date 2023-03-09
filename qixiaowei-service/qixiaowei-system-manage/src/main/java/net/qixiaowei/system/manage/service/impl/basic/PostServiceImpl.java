@@ -539,6 +539,7 @@ public class PostServiceImpl implements IPostService {
         //失败List
         List<PostExcel> errorExcelList = new ArrayList<>();
 
+        List<String> parentDepartmentExcelNameList = new ArrayList<>();
         //返回报错信息
         StringBuffer postError = new StringBuffer();
         if (StringUtils.isNotEmpty(postExcelList)) {
@@ -595,6 +596,8 @@ public class PostServiceImpl implements IPostService {
                                         departmentPost.setUpdateTime(DateUtils.getNowDate());
                                         departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
 
+                                    }else {
+                                        parentDepartmentExcelNameList.add(parentDepartmentExcelName);
                                     }
                                 } else {
                                     throw new ServiceException("适用组织不存在! 请先配置组织数据");
@@ -671,6 +674,10 @@ public class PostServiceImpl implements IPostService {
 
                 }
             }
+        }
+        if (StringUtils.isNotEmpty(parentDepartmentExcelNameList)){
+            List<String> collect = parentDepartmentExcelNameList.stream().distinct().collect(Collectors.toList());
+            postError.append(String.join(",",collect));
         }
         if (postError.length() > 1) {
             throw new ServiceException(postError.toString());
