@@ -50,10 +50,10 @@ INSERT INTO industry_attraction_element
 VALUES( @industry_attraction_id3, '极高寡占型', 'CR8 ≥ 70%', '#FF0000', 1, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
 ( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id3, '低集中寡占型', '40% ≤ CR8<70%', '#0000FF', 2, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+VALUES( @industry_attraction_id3, '低集中寡占型', '40% ≤ CR8 < 70%', '#0000FF', 2, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
 ( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id3, '低集中竞争型', '20% ≤ CR8<40%', '#0000FF', 3, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+VALUES( @industry_attraction_id3, '低集中竞争型', '20% ≤ CR8 < 40%', '#0000FF', 3, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
 ( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id3, '分散竞争型', 'CR8<20%', '#c0c0c0', 4, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+VALUES( @industry_attraction_id3, '分散竞争型', 'CR8 < 20%', '#c0c0c0', 4, 1, 0, 1, sysdate(), 1, sysdate(), 0);

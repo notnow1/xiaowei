@@ -77,9 +77,9 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
 
     static {
         INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("极高寡占型").assessStandardDescription("CR8 ≥ 70%").displayColor("#FF0000").sort(1).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中寡占型").assessStandardDescription("40% ≤ CR8<70%").displayColor("#0000FF").sort(2).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中竞争型").assessStandardDescription("20% ≤ CR8<40%").displayColor("#0000FF").sort(3).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("分散竞争型").assessStandardDescription("CR8<20%").displayColor("#c0c0c0").sort(4).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中寡占型").assessStandardDescription("40% ≤ CR8 < 70%").displayColor("#0000FF").sort(2).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中竞争型").assessStandardDescription("20% ≤ CR8 < 40%").displayColor("#0000FF").sort(3).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("分散竞争型").assessStandardDescription("CR8 < 20%").displayColor("#c0c0c0").sort(4).status(1).build());
     }
 
     /**
