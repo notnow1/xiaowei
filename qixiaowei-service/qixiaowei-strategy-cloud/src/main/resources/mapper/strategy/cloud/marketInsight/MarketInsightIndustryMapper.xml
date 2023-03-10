@@ -272,7 +272,7 @@
 
         <!-- 创建时间过滤  -->
         <if test="marketInsightIndustry.params.createTimeEqual != null and marketInsightIndustry.params.createTimeEqual.size() > 0">
-            AND  date_format(mii.create_time,'%Y-%m-%d') IN
+            AND  date_format(mii.create_time,'%Y/%m/%d') IN
             <foreach item="item"
                      collection="marketInsightIndustry.params.createTimeEqual"
                      index="index" open="(" separator="," close=")">
@@ -280,7 +280,7 @@
             </foreach>
         </if>
         <if test="marketInsightIndustry.params.createTimeNotEqual != null and marketInsightIndustry.params.createTimeNotEqual.size() > 0">
-            AND date_format(mii.create_time,'%Y-%m-%d') NOT IN
+            AND date_format(mii.create_time,'%Y/%m/%d') NOT IN
             <foreach item="item"
                      collection="marketInsightIndustry.params.createTimeNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -288,22 +288,22 @@
             </foreach>
         </if>
         <if test="marketInsightIndustry.params.createTimeBefore != null and marketInsightIndustry.params.createTimeBefore != ''">
-            AND date_format(mii.create_time,'%Y-%m-%d') &lt; #{marketInsightIndustry.params.createTimeBefore}
+            AND date_format(mii.create_time,'%Y/%m/%d') &lt; #{marketInsightIndustry.params.createTimeBefore}
         </if>
         <if test="marketInsightIndustry.params.createTimeNotBefore != null and marketInsightIndustry.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
-            AND date_format(mii.create_time,'%Y-%m-%d') &gt;= #{marketInsightIndustry.params.createTimeNotBefore}
+            AND date_format(mii.create_time,'%Y/%m/%d') &gt;= #{marketInsightIndustry.params.createTimeNotBefore}
         </if>
         <if test="marketInsightIndustry.params.createTimeAfter != null and marketInsightIndustry.params.createTimeAfter != ''"><!-- 开始时间检索 -->
-            AND date_format(mii.create_time,'%Y-%m-%d') &gt; #{marketInsightIndustry.params.createTimeAfter}
+            AND date_format(mii.create_time,'%Y/%m/%d') &gt; #{marketInsightIndustry.params.createTimeAfter}
         </if>
         <if test="marketInsightIndustry.params.createTimeNotAfter != null and marketInsightIndustry.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
-            AND date_format(mii.create_time,'%Y-%m-%d') &lt;= #{marketInsightIndustry.params.createTimeNotAfter}
+            AND date_format(mii.create_time,'%Y/%m/%d') &lt;= #{marketInsightIndustry.params.createTimeNotAfter}
         </if>
         <if test="marketInsightIndustry.params.createTimeStart != null and marketInsightIndustry.params.createTimeStart != ''"><!-- 开始时间检索 -->
-            AND date_format(mii.create_time,'%Y-%m-%d') &gt;= #{marketInsightIndustry.params.createTimeStart}
+            AND date_format(mii.create_time,'%Y/%m/%d') &gt;= #{marketInsightIndustry.params.createTimeStart}
         </if>
         <if test="marketInsightIndustry.params.createTimeEnd != null and marketInsightIndustry.params.createTimeEnd != ''"><!-- 结束时间检索 -->
-            AND date_format(mii.create_time,'%Y-%m-%d') &lt;= #{marketInsightIndustry.params.createTimeEnd}
+            AND date_format(mii.create_time,'%Y/%m/%d') &lt;= #{marketInsightIndustry.params.createTimeEnd}
         </if>
 
         <if test="marketInsightIndustry.createBys != null and marketInsightIndustry.createBys.size() >0">

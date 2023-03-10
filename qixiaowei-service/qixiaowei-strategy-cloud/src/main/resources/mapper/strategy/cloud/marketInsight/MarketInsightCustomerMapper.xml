@@ -273,7 +273,7 @@
 
         <!-- 创建时间过滤  -->
         <if test="marketInsightCustomer.params.createTimeEqual != null and marketInsightCustomer.params.createTimeEqual.size() > 0">
-            AND  date_format(mic.create_time,'%Y-%m-%d') IN
+            AND  date_format(mic.create_time,'%Y/%m/%d') IN
             <foreach item="item"
                      collection="marketInsightCustomer.params.createTimeEqual"
                      index="index" open="(" separator="," close=")">
@@ -281,7 +281,7 @@
             </foreach>
         </if>
         <if test="marketInsightCustomer.params.createTimeNotEqual != null and marketInsightCustomer.params.createTimeNotEqual.size() > 0">
-            AND date_format(mic.create_time,'%Y-%m-%d') NOT IN
+            AND date_format(mic.create_time,'%Y/%m/%d') NOT IN
             <foreach item="item"
                      collection="marketInsightCustomer.params.createTimeNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -289,22 +289,22 @@
             </foreach>
         </if>
         <if test="marketInsightCustomer.params.createTimeBefore != null and marketInsightCustomer.params.createTimeBefore != ''">
-            AND date_format(mic.create_time,'%Y-%m-%d') &lt; #{marketInsightCustomer.params.createTimeBefore}
+            AND date_format(mic.create_time,'%Y/%m/%d') &lt; #{marketInsightCustomer.params.createTimeBefore}
         </if>
         <if test="marketInsightCustomer.params.createTimeNotBefore != null and marketInsightCustomer.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
-            AND date_format(mic.create_time,'%Y-%m-%d') &gt;= #{marketInsightCustomer.params.createTimeNotBefore}
+            AND date_format(mic.create_time,'%Y/%m/%d') &gt;= #{marketInsightCustomer.params.createTimeNotBefore}
         </if>
         <if test="marketInsightCustomer.params.createTimeAfter != null and marketInsightCustomer.params.createTimeAfter != ''"><!-- 开始时间检索 -->
-            AND date_format(mic.create_time,'%Y-%m-%d') &gt; #{marketInsightCustomer.params.createTimeAfter}
+            AND date_format(mic.create_time,'%Y/%m/%d') &gt; #{marketInsightCustomer.params.createTimeAfter}
         </if>
         <if test="marketInsightCustomer.params.createTimeNotAfter != null and marketInsightCustomer.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
-            AND date_format(mic.create_time,'%Y-%m-%d') &lt;= #{marketInsightCustomer.params.createTimeNotAfter}
+            AND date_format(mic.create_time,'%Y/%m/%d') &lt;= #{marketInsightCustomer.params.createTimeNotAfter}
         </if>
         <if test="marketInsightCustomer.params.createTimeStart != null and marketInsightCustomer.params.createTimeStart != ''"><!-- 开始时间检索 -->
-            AND date_format(mic.create_time,'%Y-%m-%d') &gt;= #{marketInsightCustomer.params.createTimeStart}
+            AND date_format(mic.create_time,'%Y/%m/%d') &gt;= #{marketInsightCustomer.params.createTimeStart}
         </if>
         <if test="marketInsightCustomer.params.createTimeEnd != null and marketInsightCustomer.params.createTimeEnd != ''"><!-- 结束时间检索 -->
-            AND date_format(mic.create_time,'%Y-%m-%d') &lt;= #{marketInsightCustomer.params.createTimeEnd}
+            AND date_format(mic.create_time,'%Y/%m/%d') &lt;= #{marketInsightCustomer.params.createTimeEnd}
         </if>
 
         <if test="marketInsightCustomer.createBys != null and marketInsightCustomer.createBys.size() >0">
@@ -355,7 +355,7 @@
                             and mic.update_time=#{marketInsightCustomer.updateTime}
                         </if>
         <if test="marketInsightCustomer.planBusinessUnitName != null">
-            AND pbu.business_unit_name LIKE concat('%', #{marketInsightCustomer.planBusinessUnitId}, '%')
+            AND pbu.business_unit_name LIKE concat('%', #{marketInsightCustomer.planBusinessUnitName}, '%')
         </if>
         order by  mic.create_time desc
     </select>

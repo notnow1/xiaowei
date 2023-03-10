@@ -481,7 +481,7 @@ CREATE TABLE mi_customer_invest_detail(
     market_insight_customer_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察客户ID' ,
     mi_customer_invest_plan_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察客户投资计划ID' ,
     plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
-    product_id BIGINT UNSIGNED NOT NULL   COMMENT '产品ID' ,
+    product_id BIGINT UNSIGNED    COMMENT '产品ID' ,
     total_annual_demand VARCHAR(32)    COMMENT '年需求总量' ,
     customer_invest_plan_amount DECIMAL(14,2)    COMMENT '客户投资计划金额' ,
     estimate_market_share DECIMAL(5,2)    COMMENT '预计市场占有率' ,

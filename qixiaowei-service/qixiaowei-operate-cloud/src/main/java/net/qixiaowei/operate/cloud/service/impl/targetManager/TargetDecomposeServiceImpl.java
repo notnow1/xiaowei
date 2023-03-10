@@ -2877,6 +2877,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             if (StringUtils.equals(key, DecompositionDimension.EMPLOYEE.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
+                    int employeeCount = list.size()-1;
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list.size() - 1 < i) {
@@ -2888,7 +2889,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         } else {
-                            EmployeeDTO employeeDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), EmployeeDTO.class);
+                            EmployeeDTO employeeDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(employeeCount))), EmployeeDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setEmployeeName(employeeDTO.getEmployeeName());
                                 targetDecomposeDetailsDTOS.get(i).setEmployeeId(employeeDTO.getEmployeeId());
@@ -2900,15 +2901,17 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
                         }
-
+                        employeeCount--;
                     }
                 }
 
             } else if (StringUtils.equals(key, DecompositionDimension.AREA.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
-                    for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
+                    List<AreaDTO> list2  = (List<AreaDTO>) list.get(0);
+                    int areaCount = list2.size()-1;
+                    for (int i = 0; i < Math.max(list2.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-                        if (list.size() - 1 < i) {
+                        if (list2.size() - 1 < i) {
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setAreaName("");
                             } else {
@@ -2917,7 +2920,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         } else {
-                            AreaDTO areaDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), AreaDTO.class);
+                            AreaDTO areaDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list2.get(areaCount))), AreaDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setAreaName(areaDTO.getAreaName());
                                 targetDecomposeDetailsDTOS.get(i).setAreaId(areaDTO.getAreaId());
@@ -2929,11 +2932,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
                         }
+                        areaCount--;
                     }
                 }
 
             } else if (StringUtils.equals(key, DecompositionDimension.DEPARTMENT.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
+                    int departmentCount = list.size()-1;
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list.size() - 1 < i) {
@@ -2944,7 +2949,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
                         } else {
-                            DepartmentDTO departmentDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), DepartmentDTO.class);
+                            DepartmentDTO departmentDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(departmentCount-1))), DepartmentDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setDepartmentName(departmentDTO.getDepartmentName());
                                 targetDecomposeDetailsDTOS.get(i).setDepartmentId(departmentDTO.getDepartmentId());
@@ -2957,12 +2962,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         }
-
+                        departmentCount--;
                     }
                 }
 
             } else if (StringUtils.equals(key, DecompositionDimension.INDUSTRY.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
+                    int industryCount = list.size()-1;
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list.size() - 1 < i) {
@@ -2973,7 +2979,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
                         } else {
-                            IndustryDTO industryDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), IndustryDTO.class);
+                            IndustryDTO industryDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(industryCount-1))), IndustryDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setIndustryName(industryDTO.getIndustryName());
                                 targetDecomposeDetailsDTOS.get(i).setIndustryId(industryDTO.getIndustryId());
@@ -2986,11 +2992,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         }
+                        industryCount--;
                     }
                 }
 
             } else if (StringUtils.equals(key, DecompositionDimension.REGION.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
+                    int regionCount = list.size()-1;
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list.size() - 1 < i) {
@@ -3002,7 +3010,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         } else {
-                            RegionDTO regionDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), RegionDTO.class);
+                            RegionDTO regionDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(regionCount-1))), RegionDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setRegionName(regionDTO.getProvinceName());
                                 targetDecomposeDetailsDTOS.get(i).setRegionId(regionDTO.getRegionId());
@@ -3015,11 +3023,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         }
+                        regionCount--;
                     }
                 }
 
             } else if (StringUtils.equals(key, DecompositionDimension.PRODUCT.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
+                    int productCount = list.size()-1;
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list.size() - 1 < i) {
@@ -3030,7 +3040,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
                         } else {
-                            ProductDTO productDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), ProductDTO.class);
+                            ProductDTO productDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(productCount-1))), ProductDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setProductName(productDTO.getProductName());
                                 targetDecomposeDetailsDTOS.get(i).setProductId(productDTO.getProductId());
@@ -3043,6 +3053,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         }
+                        productCount--;
                     }
                 }
 

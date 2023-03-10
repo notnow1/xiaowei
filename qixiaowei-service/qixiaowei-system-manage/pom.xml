@@ -76,6 +76,12 @@
             <artifactId>qixiaowei-integration-datasource</artifactId>
         </dependency>
 
+        <!-- qixiaowei integration seata -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-integration-seata</artifactId>
+        </dependency>
+
         <!-- qixiaowei integration DataScope -->
         <dependency>
             <groupId>net.qixiaowei</groupId>

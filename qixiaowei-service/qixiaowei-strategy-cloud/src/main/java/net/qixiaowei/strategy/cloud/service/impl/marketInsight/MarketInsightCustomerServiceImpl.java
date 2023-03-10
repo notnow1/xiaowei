@@ -200,31 +200,46 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                     //预计市场占有率
                     BigDecimal estimateMarketShare = miCustomerInvestDetailDTO.getEstimateMarketShare();
                     if ((null != customerInvestPlanAmount && customerInvestPlanAmount.compareTo(new BigDecimal("0")) != 0) && (null != estimateMarketShare && estimateMarketShare.compareTo(new BigDecimal("0")) != 0)) {
-                        partMarketSpace = customerInvestPlanAmount.multiply(estimateMarketShare).setScale(10, BigDecimal.ROUND_HALF_UP);
+                        partMarketSpace = customerInvestPlanAmount.multiply(estimateMarketShare.divide(new BigDecimal("100"))).setScale(10, BigDecimal.ROUND_HALF_UP);
                     }
                     miCustomerInvestDetailDTO.setPartMarketSpace(partMarketSpace);
                 }
+                List<MiCustomerInvestDetailDTO> miCustomerInvestDetailDTOList =new ArrayList<>();
                 //根据年份分组
-                Map<Integer, List<MiCustomerInvestDetailDTO>> miCustomerInvestDetailYearMap = miCustomerInvestDetailDTOS.stream().filter(f-> null != f.getPlanYear()).collect(Collectors.groupingBy(MiCustomerInvestDetailDTO::getPlanYear));
+                Map<Long, Map<Integer, List<MiCustomerInvestDetailDTO>>> miCustomerInvestDetailYearMap = miCustomerInvestDetailDTOS.stream().filter(f -> null != f.getPlanYear()).collect(Collectors.groupingBy(MiCustomerInvestDetailDTO::getMiCustomerInvestPlanId, Collectors.groupingBy(MiCustomerInvestDetailDTO::getPlanYear)));
                 if (StringUtils.isNotEmpty(miCustomerInvestDetailYearMap)){
-                    for (Integer key : miCustomerInvestDetailYearMap.keySet()) {
-                        //合计可参与市场空间
-                        BigDecimal amountTo = new BigDecimal("0");
-                        List<MiCustomerInvestDetailDTO> miCustomerInvestDetailDTOS1 = miCustomerInvestDetailYearMap.get(key);
-                        if (StringUtils.isNotEmpty(miCustomerInvestDetailDTOS1)){
-                            for (MiCustomerInvestDetailDTO miCustomerInvestDetailDTO : miCustomerInvestDetailDTOS1) {
+                    for (Long key : miCustomerInvestDetailYearMap.keySet()) {
+                        Map<Integer, List<MiCustomerInvestDetailDTO>> integerListMap = miCustomerInvestDetailYearMap.get(key);
+                        if (StringUtils.isNotEmpty(integerListMap)){
+                            for (Integer integer : integerListMap.keySet()) {
+                                //合计可参与市场空间
+                                BigDecimal amountTo = new BigDecimal("0");
                                 //可参与市场空间
-                                BigDecimal partMarketSpace = miCustomerInvestDetailDTO.getPartMarketSpace();
-                                amountTo=amountTo.add(partMarketSpace);
-                            }
-                            for (MiCustomerInvestDetailDTO miCustomerInvestDetailDTO : miCustomerInvestDetailDTOS1) {
-                                miCustomerInvestDetailDTO.setAmountTo(amountTo);
+                                BigDecimal partMarketSpace = new BigDecimal("0");
+                                List<MiCustomerInvestDetailDTO> miCustomerInvestDetailDTOS1 = integerListMap.get(integer);
+                                if (StringUtils.isNotEmpty(miCustomerInvestDetailDTOS1)){
+                                    for (MiCustomerInvestDetailDTO miCustomerInvestDetailDTO : miCustomerInvestDetailDTOS1) {
+
+                                        partMarketSpace = miCustomerInvestDetailDTO.getPartMarketSpace();
+                                        amountTo=amountTo.add(partMarketSpace);
+                                    }
+                                    for (int i = 0; i < miCustomerInvestDetailDTOS1.size(); i++) {
+                                        if (i == 0){
+                                            miCustomerInvestDetailDTOS1.get(i).setAmountTo(amountTo);
+                                        }
+                                    }
+                                    miCustomerInvestDetailDTOList.addAll(miCustomerInvestDetailDTOS1);
+                                }
                             }
                         }
+                        
                     }
                 }
                 //转回list
-                List<MiCustomerInvestDetailDTO> miCustomerInvestDetailDTOList = miCustomerInvestDetailYearMap.values().stream().flatMap(List::stream).collect(Collectors.toList());
+
+
+
+
                 //根据投资id分组
                 Map<Long, List<MiCustomerInvestDetailDTO>> miCustomerInvestDetailDTOMapList = miCustomerInvestDetailDTOList.stream().collect(Collectors.groupingBy(MiCustomerInvestDetailDTO::getMiCustomerInvestPlanId));
                 if (StringUtils.isNotEmpty(miCustomerInvestDetailDTOMapList)&& StringUtils.isNotEmpty(miCustomerInvestPlanDTOS)){
@@ -338,15 +353,17 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
             List<Long> areaIds = marketInsightCustomerDTOS.stream().filter(f -> null != f.getAreaId()).map(MarketInsightCustomerDTO::getAreaId).collect(Collectors.toList());
             List<Long> departmentIds = marketInsightCustomerDTOS.stream().filter(f -> null != f.getDepartmentId()).map(MarketInsightCustomerDTO::getDepartmentId).collect(Collectors.toList());
             List<Long> industryIds = marketInsightCustomerDTOS.stream().filter(f -> null != f.getIndustryId()).map(MarketInsightCustomerDTO::getIndustryId).collect(Collectors.toList());
-
             if (StringUtils.isNotEmpty(productIds)) {
                 R<List<ProductDTO>> productList = remoteProductService.getName(productIds, SecurityConstants.INNER);
                 List<ProductDTO> data = productList.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     for (MarketInsightCustomerDTO insightCustomerDTO : marketInsightCustomerDTOS) {
+                        Long productId = insightCustomerDTO.getProductId();
                         for (ProductDTO datum : data) {
-                            if (insightCustomerDTO.getProductId().equals(datum.getProductId())) {
-                                insightCustomerDTO.setProductName(datum.getProductName());
+                            if (null != productId){
+                                if (insightCustomerDTO.getProductId().equals(datum.getProductId())) {
+                                    insightCustomerDTO.setProductName(datum.getProductName());
+                                }
                             }
                         }
                     }
@@ -357,10 +374,14 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 List<AreaDTO> areaListData = areaList.getData();
                 if (StringUtils.isNotNull(areaListData)) {
                     for (MarketInsightCustomerDTO insightCustomerDTO : marketInsightCustomerDTOS) {
+                        Long areaId = insightCustomerDTO.getAreaId();
                         for (AreaDTO areaListDatum : areaListData) {
-                            if (insightCustomerDTO.getAreaId().equals(areaListDatum.getAreaId())) {
-                                insightCustomerDTO.setAreaName(areaListDatum.getAreaName());
+                            if (null != areaId){
+                                if (insightCustomerDTO.getAreaId().equals(areaListDatum.getAreaId())) {
+                                    insightCustomerDTO.setAreaName(areaListDatum.getAreaName());
+                                }
                             }
+
                         }
                     }
                 }
@@ -370,10 +391,14 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 List<DepartmentDTO> data = departmentList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MarketInsightCustomerDTO insightCustomerDTO : marketInsightCustomerDTOS) {
+                        Long departmentId = insightCustomerDTO.getDepartmentId();
                         for (DepartmentDTO datum : data) {
-                            if (insightCustomerDTO.getDepartmentId().equals(datum.getDepartmentId())) {
-                                insightCustomerDTO.setDepartmentName(datum.getDepartmentName());
+                            if (departmentId != null){
+                                if (insightCustomerDTO.getDepartmentId().equals(datum.getDepartmentId())) {
+                                    insightCustomerDTO.setDepartmentName(datum.getDepartmentName());
+                                }
                             }
+
                         }
                     }
                 }
@@ -383,10 +408,14 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 List<IndustryDTO> data = industryList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MarketInsightCustomerDTO insightCustomerDTO : marketInsightCustomerDTOS) {
+                        Long industryId = insightCustomerDTO.getIndustryId();
                         for (IndustryDTO datum : data) {
-                            if (insightCustomerDTO.getIndustryId().equals(datum.getIndustryId())) {
-                                insightCustomerDTO.setIndustryName(datum.getIndustryName());
+                            if (null != industryId){
+                                if (insightCustomerDTO.getIndustryId().equals(datum.getIndustryId())) {
+                                    insightCustomerDTO.setIndustryName(datum.getIndustryName());
+                                }
                             }
+
                         }
                     }
                 }
@@ -446,6 +475,7 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
     @Transactional
     public MarketInsightCustomerDTO insertMarketInsightCustomer(MarketInsightCustomerDTO marketInsightCustomerDTO) {
         int i = 0;
+
         //前台传入市场洞察客户选择表集合
         List<MiCustomerChoiceDTO> miCustomerChoiceDTOS = marketInsightCustomerDTO.getMiCustomerChoiceDTOS();
         //保存数据
@@ -485,7 +515,7 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
         if (StringUtils.isNotEmpty(miCustomerInvestPlanDTOS)) {
             for (int i1 = 0; i1 < miCustomerInvestPlanDTOS.size(); i1++) {
                 MiCustomerInvestPlan miCustomerInvestPlan = new MiCustomerInvestPlan();
-                BeanUtils.copyProperties(miCustomerChoiceDTOS.get(i1), miCustomerInvestPlan);
+                BeanUtils.copyProperties(miCustomerInvestPlanDTOS.get(i1), miCustomerInvestPlan);
                 miCustomerInvestPlan.setMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
                 miCustomerInvestPlan.setSort(i1 + 1);
                 miCustomerInvestPlan.setCreateBy(SecurityUtils.getUserId());
@@ -715,7 +745,7 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                         if (null != miCustomerInvestDetailId){
                             MiCustomerInvestDetail miCustomerInvestDetail = new MiCustomerInvestDetail();
                             BeanUtils.copyProperties(miCustomerInvestDetailDTOS.get(i1),miCustomerInvestDetail);
-                            miCustomerInvestDetail.setSort(i1 + 1);
+                            miCustomerInvestDetail.setSort(i + 1);
                             miCustomerInvestDetail.setUpdateTime(DateUtils.getNowDate());
                             miCustomerInvestDetail.setUpdateBy(SecurityUtils.getUserId());
                             miCustomerInvestDetailUpdateList.add(miCustomerInvestDetail);
@@ -724,7 +754,7 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                             BeanUtils.copyProperties(miCustomerInvestDetailDTOS.get(i1),miCustomerInvestDetail);
                             miCustomerInvestDetail.setMiCustomerInvestPlanId(miCustomerInvestPlanId);
                             miCustomerInvestDetail.setMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
-                            miCustomerInvestDetail.setSort(i1 + 1);
+                            miCustomerInvestDetail.setSort(i + 1);
                             miCustomerInvestDetail.setCreateBy(SecurityUtils.getUserId());
                             miCustomerInvestDetail.setCreateTime(DateUtils.getNowDate());
                             miCustomerInvestDetail.setUpdateTime(DateUtils.getNowDate());
@@ -759,7 +789,7 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                             throw new ServiceException("数组越界异常" + miCustomerInvestPlanAddList.size() + ":" + num);
                         }
                         miCustomerInvestDetail.setMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
-                        miCustomerInvestDetail.setSort(i1 + 1);
+                        miCustomerInvestDetail.setSort(i + 1);
                         miCustomerInvestDetail.setCreateBy(SecurityUtils.getUserId());
                         miCustomerInvestDetail.setCreateTime(DateUtils.getNowDate());
                         miCustomerInvestDetail.setUpdateTime(DateUtils.getNowDate());

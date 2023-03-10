@@ -206,9 +206,12 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
                 List<ProductDTO> data = productList.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     for (MarketInsightMacroDTO insightMacroDTO : marketInsightMacroDTOS) {
+                        Long productId = insightMacroDTO.getProductId();
                         for (ProductDTO datum : data) {
-                            if (insightMacroDTO.getProductId().equals(datum.getProductId())) {
-                                insightMacroDTO.setProductName(datum.getProductName());
+                            if (null != productId){
+                                if (insightMacroDTO.getProductId().equals(datum.getProductId())) {
+                                    insightMacroDTO.setProductName(datum.getProductName());
+                                }
                             }
                         }
                     }
@@ -220,10 +223,14 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
                 List<AreaDTO> areaListData = areaList.getData();
                 if (StringUtils.isNotNull(areaListData)) {
                     for (MarketInsightMacroDTO insightMacroDTO : marketInsightMacroDTOS) {
+                        Long areaId = insightMacroDTO.getAreaId();
                         for (AreaDTO areaListDatum : areaListData) {
-                            if (insightMacroDTO.getAreaId().equals(areaListDatum.getAreaId())){
-                                insightMacroDTO.setAreaName(areaListDatum.getAreaName());
+                            if (null != areaId){
+                                if (insightMacroDTO.getAreaId().equals(areaListDatum.getAreaId())){
+                                    insightMacroDTO.setAreaName(areaListDatum.getAreaName());
+                                }
                             }
+
                         }
                     }
                 }
@@ -233,10 +240,14 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
                 List<DepartmentDTO> data = departmentList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MarketInsightMacroDTO insightMacroDTO : marketInsightMacroDTOS) {
+                        Long departmentId = insightMacroDTO.getDepartmentId();
                         for (DepartmentDTO datum : data) {
-                            if (insightMacroDTO.getDepartmentId().equals(datum.getDepartmentId())){
-                                insightMacroDTO.setDepartmentName(datum.getDepartmentName());
+                            if (null != departmentId){
+                                if (insightMacroDTO.getDepartmentId().equals(datum.getDepartmentId())){
+                                    insightMacroDTO.setDepartmentName(datum.getDepartmentName());
+                                }
                             }
+
                         }
                     }
                 }
@@ -246,9 +257,12 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
                 List<IndustryDTO> data = industryList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MarketInsightMacroDTO insightMacroDTO : marketInsightMacroDTOS) {
+                        Long industryId = insightMacroDTO.getIndustryId();
                         for (IndustryDTO datum : data) {
-                            if (insightMacroDTO.getIndustryId().equals(datum.getIndustryId())){
-                                insightMacroDTO.setIndustryName(datum.getIndustryName());
+                            if (null != industryId){
+                                if (insightMacroDTO.getIndustryId().equals(datum.getIndustryId())){
+                                    insightMacroDTO.setIndustryName(datum.getIndustryName());
+                                }
                             }
                         }
                     }
