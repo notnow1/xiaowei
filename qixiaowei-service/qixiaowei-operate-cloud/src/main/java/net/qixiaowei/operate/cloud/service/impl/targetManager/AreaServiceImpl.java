@@ -16,15 +16,15 @@ import net.qixiaowei.operate.cloud.mapper.targetManager.AreaMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.IAreaService;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
+import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
+import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 
 
 /**
@@ -43,6 +43,9 @@ public class AreaServiceImpl implements IAreaService {
 
     @Autowired
     private ITargetDecomposeService targetDecomposeService;
+
+    @Autowired
+    private RemoteRegionService regionService;
 
     /**
      * 查询区域表
@@ -129,6 +132,21 @@ public class AreaServiceImpl implements IAreaService {
         if (StringUtils.isNotNull(areaByCode)) {
             throw new ServiceException("区域编码不可重复");
         }
+//        String[] regionIdList = regionIds.split(",");
+//        Set<Long> regionIdSet = new HashSet<>();
+//        for (String s : regionIdList) {
+//            regionIdSet.add(Long.parseLong(s));
+//        }
+//        R<List<RegionDTO>> regionsByIds = regionService.getRegionsByIds(regionIdSet, SecurityConstants.INNER);
+//        List<RegionDTO> regionDTOS = regionsByIds.getData();
+//        if (StringUtils.isEmpty(regionDTOS)) {
+//            throw new ServiceException("当前区域不存在");
+//        }
+//        StringBuilder regionSB = new StringBuilder();
+//        for (RegionDTO regionDTO : regionDTOS) {
+//            regionSB.append(regionDTO.getRegionName()).append("；");
+//        }
+//        areaDTO.setRegionNames(regionSB.substring(0, regionSB.length() - 1));
         Area area = new Area();
         BeanUtils.copyProperties(areaDTO, area);
         area.setCreateBy(SecurityUtils.getUserId());

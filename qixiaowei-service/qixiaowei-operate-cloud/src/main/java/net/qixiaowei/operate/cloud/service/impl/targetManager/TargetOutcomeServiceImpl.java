@@ -665,52 +665,52 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     private static void excelToDTO(int size, Map<Integer, String> data, TargetOutcomeDetailsDTO targetOutcomeDetailsDTO) {
         BigDecimal sum = BigDecimal.ZERO;
         if (size > 3) {
-            targetOutcomeDetailsDTO.setActualJanuary(new BigDecimal(data.get(2)));
-            sum = sum.add(new BigDecimal(data.get(2)));
+            targetOutcomeDetailsDTO.setActualJanuary(new BigDecimal(Optional.ofNullable(data.get(2)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(2)).orElse("0")));
         }
         if (size > 4) {
-            targetOutcomeDetailsDTO.setActualFebruary(new BigDecimal(data.get(3)));
-            sum = sum.add(new BigDecimal(data.get(3)));
+            targetOutcomeDetailsDTO.setActualFebruary(new BigDecimal(Optional.ofNullable(data.get(3)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(3)).orElse("0")));
         }
         if (size > 5) {
-            targetOutcomeDetailsDTO.setActualMarch(new BigDecimal(data.get(4)));
-            sum = sum.add(new BigDecimal(data.get(4)));
+            targetOutcomeDetailsDTO.setActualMarch(new BigDecimal(Optional.ofNullable(data.get(4)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(4)).orElse("0")));
         }
         if (size > 6) {
-            targetOutcomeDetailsDTO.setActualApril(new BigDecimal(data.get(5)));
-            sum = sum.add(new BigDecimal(data.get(5)));
+            targetOutcomeDetailsDTO.setActualApril(new BigDecimal(Optional.ofNullable(data.get(5)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(5)).orElse("0")));
         }
         if (size > 7) {
-            targetOutcomeDetailsDTO.setActualMay(new BigDecimal(data.get(6)));
-            sum = sum.add(new BigDecimal(data.get(6)));
+            targetOutcomeDetailsDTO.setActualMay(new BigDecimal(Optional.ofNullable(data.get(6)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(6)).orElse("0")));
         }
         if (size > 8) {
-            targetOutcomeDetailsDTO.setActualJune(new BigDecimal(data.get(7)));
-            sum = sum.add(new BigDecimal(data.get(7)));
+            targetOutcomeDetailsDTO.setActualJune(new BigDecimal(Optional.ofNullable(data.get(7)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(7)).orElse("0")));
         }
         if (size > 9) {
-            targetOutcomeDetailsDTO.setActualJuly(new BigDecimal(data.get(8)));
-            sum = sum.add(new BigDecimal(data.get(8)));
+            targetOutcomeDetailsDTO.setActualJuly(new BigDecimal(Optional.ofNullable(data.get(8)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(8)).orElse("0")));
         }
         if (size > 10) {
-            targetOutcomeDetailsDTO.setActualAugust(new BigDecimal(data.get(9)));
-            sum = sum.add(new BigDecimal(data.get(9)));
+            targetOutcomeDetailsDTO.setActualAugust(new BigDecimal(Optional.ofNullable(data.get(9)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(9)).orElse("0")));
         }
         if (size > 11) {
-            targetOutcomeDetailsDTO.setActualSeptember(new BigDecimal(data.get(10)));
-            sum = sum.add(new BigDecimal(data.get(10)));
+            targetOutcomeDetailsDTO.setActualSeptember(new BigDecimal(Optional.ofNullable(data.get(10)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(10)).orElse("0")));
         }
         if (size > 12) {
-            targetOutcomeDetailsDTO.setActualOctober(new BigDecimal(data.get(11)));
-            sum = sum.add(new BigDecimal(data.get(11)));
+            targetOutcomeDetailsDTO.setActualOctober(new BigDecimal(Optional.ofNullable(data.get(11)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(11)).orElse("0")));
         }
         if (size > 13) {
-            targetOutcomeDetailsDTO.setActualNovember(new BigDecimal(data.get(12)));
-            sum = sum.add(new BigDecimal(data.get(12)));
+            targetOutcomeDetailsDTO.setActualNovember(new BigDecimal(Optional.ofNullable(data.get(12)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(12)).orElse("0")));
         }
         if (size > 14) {
-            targetOutcomeDetailsDTO.setActualDecember(new BigDecimal(data.get(13)));
-            sum = sum.add(new BigDecimal(data.get(13)));
+            targetOutcomeDetailsDTO.setActualDecember(new BigDecimal(Optional.ofNullable(data.get(13)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(13)).orElse("0")));
         }
         targetOutcomeDetailsDTO.setActualTotal(sum);
     }

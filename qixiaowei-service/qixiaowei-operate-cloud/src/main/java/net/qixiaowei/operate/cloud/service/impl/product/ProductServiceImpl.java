@@ -1642,12 +1642,13 @@ public class ProductServiceImpl implements IProductService {
             }
             if (StringUtils.isBlank(productUnitName)) {
                 validEmployeeErreo.append("产品量纲不能为空");
-            }
-            //产品量纲不存在
-            if (StringUtils.isNotEmpty(productUnitDTOS)) {
-                List<ProductUnitDTO> productUnitNames = productUnitDTOS.stream().filter(f -> StringUtils.equals(productUnitName, f.getProductUnitName())).collect(Collectors.toList());
-                if (StringUtils.isEmpty(productUnitNames)) {
-                    validEmployeeErreo.append("Excel中[" + productUnitName + "]产品量纲不存在！");
+            }else {
+                //产品量纲不存在
+                if (StringUtils.isNotEmpty(productUnitDTOS)) {
+                    List<ProductUnitDTO> productUnitNames = productUnitDTOS.stream().filter(f -> StringUtils.equals(productUnitName, f.getProductUnitName())).collect(Collectors.toList());
+                    if (StringUtils.isEmpty(productUnitNames)) {
+                        validEmployeeErreo.append("Excel中[" + productUnitName + "]产品量纲不存在！");
+                    }
                 }
             }
         }
