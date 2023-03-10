@@ -87,7 +87,7 @@
         FROM strategy_measure_task
         WHERE delete_flag=0
         AND strategy_measure_detail_id IN
-        <foreach collection="" close=")" open="(" separator="," item="item" index="index">
+        <foreach collection="strategyMeasureDetailIds" close=")" open="(" separator="," item="item" index="index">
             #{item}
         </foreach>
     </select>

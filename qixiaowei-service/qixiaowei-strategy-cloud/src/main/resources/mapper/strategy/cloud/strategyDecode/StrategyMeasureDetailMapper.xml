@@ -77,6 +77,8 @@
         smt.strategy_measure_id,
         smt.strategy_measure_task_id,
         smd.strategy_measure_detail_id,
+        smd.serial_number,
+        smd.strategy_index_dimension_id,
         sid.index_dimension_name,
         IFNULL( sid.index_dimension_code, '' ) AS index_dimension_code,
         CONCAT( sid.index_dimension_code, smd.serial_number ) AS serial_number_name,
@@ -112,6 +114,19 @@
         FROM strategy_measure_detail
         WHERE delete_flag=0
         AND strategy_measure_id = #{strategyMeasureId}
+    </select>
+    <!--根据举措ID集合查找详情-->
+    <select id="selectStrategyMeasureDetailByStrategyMeasureIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDetailDTO">
+        SELECT
+        strategy_measure_detail_id,strategy_measure_id,strategy_index_dimension_id,serial_number,strategy_measure_name,strategy_measure_source,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_measure_detail
+        WHERE delete_flag=0
+        AND strategy_measure_id
+        IN
+        <foreach collection="strategyMeasureIds" index="index" item="item" separator="," open="()" close=")">
+            #{item}
+        </foreach>
     </select>
     <!--新增战略举措清单详情表-->
     <insert id="insertStrategyMeasureDetail" useGeneratedKeys="true" keyProperty="strategyMeasureDetailId">

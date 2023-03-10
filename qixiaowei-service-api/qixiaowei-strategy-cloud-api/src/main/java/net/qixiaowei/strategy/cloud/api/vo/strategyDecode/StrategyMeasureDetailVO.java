@@ -28,7 +28,7 @@ public class StrategyMeasureDetailVO {
     /**
      * 战略指标维度名称
      */
-    private Long indexDimensionName;
+    private String indexDimensionName;
     /**
      * 别名-父级战略指标维度名称
      */
@@ -36,7 +36,7 @@ public class StrategyMeasureDetailVO {
     /**
      * 战略指标维度编码
      */
-    private Integer indexDimensionCode;
+    private String indexDimensionCode;
     /**
      * 序列号
      */

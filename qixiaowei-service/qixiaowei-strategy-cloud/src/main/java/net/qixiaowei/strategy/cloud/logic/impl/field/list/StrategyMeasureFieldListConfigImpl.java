@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.strategy.GapAnalysisField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.strategy.cloud.api.domain.field.FieldListConfig;
@@ -25,6 +26,14 @@ public class StrategyMeasureFieldListConfigImpl implements IFieldListConfigStrat
 
     private static final Map<String, FieldListConfig> INIT_MAP = new HashMap<>();
 
+    static {
+        INIT_MAP.put(GapAnalysisField.PLAN_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(GapAnalysisField.BUSINESS_UNIT_NAME.getCode(), FieldListConfig.builder().fieldWidth(160).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(GapAnalysisField.INDUSTRY_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(GapAnalysisField.AREA_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(GapAnalysisField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(GapAnalysisField.PRODUCT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+    }
 
     @Override
     public BusinessType getBusinessType() {

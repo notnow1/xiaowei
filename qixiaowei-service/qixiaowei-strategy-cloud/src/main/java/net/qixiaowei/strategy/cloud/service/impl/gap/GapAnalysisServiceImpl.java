@@ -304,20 +304,32 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             Long productId = analysisDTO.getProductId();
             Long departmentId = analysisDTO.getDepartmentId();
             if (businessUnitDecompose.contains("region") && StringUtils.isNotEmpty(areaDTOS)) {
-                String areaName = areaDTOS.stream().filter(areaDTO -> areaDTO.getAreaId().equals(areaId)).collect(Collectors.toList()).get(0).getAreaName();
-                analysisDTO.setAreaName(areaName);
+                List<AreaDTO> areaDTOS1 = areaDTOS.stream().filter(areaDTO -> areaDTO.getAreaId().equals(areaId)).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(areaDTOS1)) {
+                    String areaName = areaDTOS1.get(0).getAreaName();
+                    analysisDTO.setAreaName(areaName);
+                }
             }
             if (businessUnitDecompose.contains("department") && StringUtils.isNotEmpty(departmentDTOS)) {
-                String departmentName = departmentDTOS.stream().filter(departmentDTO -> departmentDTO.getDepartmentId().equals(departmentId)).collect(Collectors.toList()).get(0).getDepartmentName();
-                analysisDTO.setDepartmentName(departmentName);
+                List<DepartmentDTO> departmentDTOS1 = departmentDTOS.stream().filter(departmentDTO -> departmentDTO.getDepartmentId().equals(departmentId)).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(departmentDTOS1)) {
+                    String departmentName = departmentDTOS1.get(0).getDepartmentName();
+                    analysisDTO.setDepartmentName(departmentName);
+                }
             }
             if (businessUnitDecompose.contains("product") && StringUtils.isNotEmpty(productDTOS)) {
-                String productName = productDTOS.stream().filter(productDTO -> productDTO.getProductId().equals(productId)).collect(Collectors.toList()).get(0).getProductName();
-                analysisDTO.setProductName(productName);
+                List<ProductDTO> productDTOS1 = productDTOS.stream().filter(productDTO -> productDTO.getProductId().equals(productId)).collect(Collectors.toList());
+                if (StringUtils.isEmpty(productDTOS1)) {
+                    String productName = productDTOS1.get(0).getProductName();
+                    analysisDTO.setProductName(productName);
+                }
             }
             if (businessUnitDecompose.contains("industry") && StringUtils.isNotEmpty(industryDTOS)) {
-                String industryName = industryDTOS.stream().filter(industryDTO -> industryDTO.getIndustryId().equals(industryId)).collect(Collectors.toList()).get(0).getIndustryName();
-                analysisDTO.setIndustryName(industryName);
+                List<IndustryDTO> industryDTOS1 = industryDTOS.stream().filter(industryDTO -> industryDTO.getIndustryId().equals(industryId)).collect(Collectors.toList());
+                if (StringUtils.isEmpty(industryDTOS1)) {
+                    String industryName = industryDTOS1.get(0).getIndustryName();
+                    analysisDTO.setIndustryName(industryName);
+                }
             }
         }
         return gapAnalysisDTOS;

@@ -247,20 +247,32 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
             Long productId = designDTO.getProductId();
             Long departmentId = designDTO.getDepartmentId();
             if (businessUnitDecompose.contains("region") && StringUtils.isNotEmpty(areaDTOS)) {
-                String areaName = areaDTOS.stream().filter(areaDTO -> areaDTO.getAreaId().equals(areaId)).collect(Collectors.toList()).get(0).getAreaName();
-                designDTO.setAreaName(areaName);
+                List<AreaDTO> areaDTOS1 = areaDTOS.stream().filter(areaDTO -> areaDTO.getAreaId().equals(areaId)).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(areaDTOS1)) {
+                    String areaName = areaDTOS1.get(0).getAreaName();
+                    designDTO.setAreaName(areaName);
+                }
             }
             if (businessUnitDecompose.contains("department") && StringUtils.isNotEmpty(departmentDTOS)) {
-                String departmentName = departmentDTOS.stream().filter(departmentDTO -> departmentDTO.getDepartmentId().equals(departmentId)).collect(Collectors.toList()).get(0).getDepartmentName();
-                designDTO.setDepartmentName(departmentName);
+                List<DepartmentDTO> departmentDTOS1 = departmentDTOS.stream().filter(departmentDTO -> departmentDTO.getDepartmentId().equals(departmentId)).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(departmentDTOS1)) {
+                    String departmentName = departmentDTOS1.get(0).getDepartmentName();
+                    designDTO.setDepartmentName(departmentName);
+                }
             }
             if (businessUnitDecompose.contains("product") && StringUtils.isNotEmpty(productDTOS)) {
-                String productName = productDTOS.stream().filter(productDTO -> productDTO.getProductId().equals(productId)).collect(Collectors.toList()).get(0).getProductName();
-                designDTO.setProductName(productName);
+                List<ProductDTO> productDTOS1 = productDTOS.stream().filter(productDTO -> productDTO.getProductId().equals(productId)).collect(Collectors.toList());
+                if (StringUtils.isEmpty(productDTOS1)) {
+                    String productName = productDTOS1.get(0).getProductName();
+                    designDTO.setProductName(productName);
+                }
             }
             if (businessUnitDecompose.contains("industry") && StringUtils.isNotEmpty(industryDTOS)) {
-                String industryName = industryDTOS.stream().filter(industryDTO -> industryDTO.getIndustryId().equals(industryId)).collect(Collectors.toList()).get(0).getIndustryName();
-                designDTO.setIndustryName(industryName);
+                List<IndustryDTO> industryDTOS1 = industryDTOS.stream().filter(industryDTO -> industryDTO.getIndustryId().equals(industryId)).collect(Collectors.toList());
+                if (StringUtils.isEmpty(industryDTOS1)) {
+                    String industryName = industryDTOS1.get(0).getIndustryName();
+                    designDTO.setIndustryName(industryName);
+                }
             }
         }
         return businessDesignDTOS;

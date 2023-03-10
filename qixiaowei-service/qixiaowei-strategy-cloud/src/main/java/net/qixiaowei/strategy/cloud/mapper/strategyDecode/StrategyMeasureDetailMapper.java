@@ -1,13 +1,12 @@
 package net.qixiaowei.strategy.cloud.mapper.strategyDecode;
 
-import java.util.List;
-
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasureDetail;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDetailDTO;
 import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -122,4 +121,12 @@ public interface StrategyMeasureDetailMapper {
      * @return list
      */
     List<StrategyMeasureDetailDTO> selectStrategyMeasureDetailByStrategyMeasureId(@Param("strategyMeasureId") Long strategyMeasureId);
+
+    /**
+     * 根据举措ID集合查找详情
+     *
+     * @param strategyMeasureIds 举措ID集合
+     * @return List
+     */
+    List<StrategyMeasureDetailDTO> selectStrategyMeasureDetailByStrategyMeasureIds(@Param("strategyMeasureIds") List<Long> strategyMeasureIds);
 }

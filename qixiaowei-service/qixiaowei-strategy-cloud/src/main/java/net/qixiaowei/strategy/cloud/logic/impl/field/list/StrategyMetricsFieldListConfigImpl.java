@@ -1,8 +1,13 @@
 package net.qixiaowei.strategy.cloud.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.FieldType;
+import net.qixiaowei.integration.common.enums.field.strategy.StrategyMetricsField;
+import net.qixiaowei.integration.common.enums.field.strategy.StrategyMetricsField;
+import net.qixiaowei.integration.common.enums.field.strategy.StrategyMetricsField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.strategy.cloud.api.domain.field.FieldConfig;
 import net.qixiaowei.strategy.cloud.api.domain.field.FieldListConfig;
 import net.qixiaowei.strategy.cloud.api.dto.field.FieldConfigDTO;
 import net.qixiaowei.strategy.cloud.logic.IFieldListConfigStrategy;
@@ -25,6 +30,14 @@ public class StrategyMetricsFieldListConfigImpl implements IFieldListConfigStrat
 
     private static final Map<String, FieldListConfig> INIT_MAP = new HashMap<>();
 
+    static {
+        INIT_MAP.put(StrategyMetricsField.PLAN_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyMetricsField.BUSINESS_UNIT_NAME.getCode(), FieldListConfig.builder().fieldWidth(160).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyMetricsField.INDUSTRY_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyMetricsField.AREA_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyMetricsField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyMetricsField.PRODUCT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+    }
 
     @Override
     public BusinessType getBusinessType() {

@@ -56,7 +56,7 @@ public class PlanBusinessUnitController extends BaseController {
     /**
      * 查询规划业务单元列表
      */
-    @RequiresPermissions("strategy:cloud:planBusinessUnit:list")
+//    @RequiresPermissions("strategy:cloud:planBusinessUnit:list")
     @GetMapping("/list")
     public AjaxResult list(PlanBusinessUnitDTO planBusinessUnitDTO) {
         planBusinessUnitDTO.setStatus(1);

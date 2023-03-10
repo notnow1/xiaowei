@@ -118,4 +118,12 @@ public interface IStrategyMeasureDetailService {
      * @return
      */
     List<StrategyMeasureDetailDTO> selectStrategyMeasureDetailByStrategyMeasureId(Long strategyMeasureId);
+
+    /**
+     * 根据举措ID集合查找详情
+     *
+     * @param strategyMeasureIds 举措ID集合
+     * @return List
+     */
+    List<StrategyMeasureDetailDTO> selectStrategyMeasureDetailByStrategyMeasureIds(List<Long> strategyMeasureIds);
 }
