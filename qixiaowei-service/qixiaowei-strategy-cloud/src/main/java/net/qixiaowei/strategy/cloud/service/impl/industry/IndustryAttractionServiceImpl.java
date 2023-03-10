@@ -191,6 +191,9 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     @Override
     @Transactional
     public int updateIndustryAttraction(IndustryAttractionDTO industryAttractionDTO) {
+        //行业吸引力要素名称
+        String attractionElementName = industryAttractionDTO.getAttractionElementName();
+
         int i = 0;
         //接收前端行业吸引力要素集合
         List<IndustryAttractionElementDTO> industryAttractionElementDTOS = industryAttractionDTO.getIndustryAttractionElementDTOS();
@@ -198,6 +201,25 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
         List<IndustryAttractionElementDTO> industryAttractionElementDTOList = industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionId(industryAttractionDTO.getIndustryAttractionId());
         IndustryAttraction industryAttraction = new IndustryAttraction();
         BeanUtils.copyProperties(industryAttractionDTO, industryAttraction);
+        IndustryAttractionDTO industryAttractionDTO1 = industryAttractionMapper.selectIndustryAttractionByIndustryAttractionId(industryAttractionDTO.getIndustryAttractionId());
+        if (StringUtils.isNull(industryAttractionDTO1)){
+            throw new ServiceException("数据不存在 请刷新页面重试！");
+        }
+        List<IndustryAttractionDTO> industryAttractionDTOS = industryAttractionMapper.selectIndustryAttractionList(new IndustryAttraction());
+        if (StringUtils.isNotEmpty(industryAttractionDTOS)){
+
+            List<IndustryAttractionDTO> IndustryAttractionList = industryAttractionDTOS.stream().filter(f -> f.getAttractionElementName().equals(industryAttractionDTO1.getAttractionElementName())).collect(Collectors.toList());
+
+          if (StringUtils.isNotEmpty(IndustryAttractionList)){
+              List<String> collect = IndustryAttractionList.stream().map(IndustryAttractionDTO::getAttractionElementName).collect(Collectors.toList());
+              if (collect.contains(attractionElementName)){
+
+                  throw new ServiceException("行业吸引力要素名称重复 请重新修改！");
+              }
+
+          }
+        }
+
         industryAttraction.setUpdateTime(DateUtils.getNowDate());
         industryAttraction.setUpdateBy(SecurityUtils.getUserId());
         try {

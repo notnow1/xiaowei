@@ -97,6 +97,7 @@
             #{item}
         </foreach>
         and delete_flag=0
+     order by sort
     </select>
     <!--新增市场洞察客户投资详情表-->
     <insert id="insertMiCustomerInvestDetail" useGeneratedKeys="true" keyProperty="miCustomerInvestDetailId">

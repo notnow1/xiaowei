@@ -259,9 +259,12 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 List<ProductDTO> data = productList.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     for (MarketInsightIndustryDTO insightIndustryDTO : marketInsightIndustryDTOS) {
+                        Long productId = insightIndustryDTO.getProductId();
                         for (ProductDTO datum : data) {
-                            if (insightIndustryDTO.getProductId().equals(datum.getProductId())) {
-                                insightIndustryDTO.setProductName(datum.getProductName());
+                            if (null != productId){
+                                if (insightIndustryDTO.getProductId().equals(datum.getProductId())) {
+                                    insightIndustryDTO.setProductName(datum.getProductName());
+                                }
                             }
                         }
                     }
@@ -272,10 +275,14 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 List<AreaDTO> areaListData = areaList.getData();
                 if (StringUtils.isNotNull(areaListData)) {
                     for (MarketInsightIndustryDTO insightIndustryDTO : marketInsightIndustryDTOS) {
+                        Long areaId = insightIndustryDTO.getAreaId();
                         for (AreaDTO areaListDatum : areaListData) {
-                            if (insightIndustryDTO.getAreaId().equals(areaListDatum.getAreaId())) {
-                                insightIndustryDTO.setAreaName(areaListDatum.getAreaName());
+                            if (null != areaId){
+                                if (insightIndustryDTO.getAreaId().equals(areaListDatum.getAreaId())) {
+                                    insightIndustryDTO.setAreaName(areaListDatum.getAreaName());
+                                }
                             }
+
                         }
                     }
                 }
@@ -285,10 +292,14 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 List<DepartmentDTO> data = departmentList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MarketInsightIndustryDTO insightIndustryDTO : marketInsightIndustryDTOS) {
+                        Long departmentId = insightIndustryDTO.getDepartmentId();
                         for (DepartmentDTO datum : data) {
-                            if (insightIndustryDTO.getDepartmentId().equals(datum.getDepartmentId())) {
-                                insightIndustryDTO.setDepartmentName(datum.getDepartmentName());
+                            if (departmentId != null){
+                                if (insightIndustryDTO.getDepartmentId().equals(datum.getDepartmentId())) {
+                                    insightIndustryDTO.setDepartmentName(datum.getDepartmentName());
+                                }
                             }
+
                         }
                     }
                 }
@@ -298,9 +309,12 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 List<IndustryDTO> data = industryList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MarketInsightIndustryDTO insightIndustryDTO : marketInsightIndustryDTOS) {
+                        Long industryId = insightIndustryDTO.getIndustryId();
                         for (IndustryDTO datum : data) {
-                            if (insightIndustryDTO.getIndustryId().equals(datum.getIndustryId())) {
-                                insightIndustryDTO.setIndustryName(datum.getIndustryName());
+                            if (null != industryId){
+                                if (insightIndustryDTO.getIndustryId().equals(datum.getIndustryId())) {
+                                    insightIndustryDTO.setIndustryName(datum.getIndustryName());
+                                }
                             }
                         }
                     }

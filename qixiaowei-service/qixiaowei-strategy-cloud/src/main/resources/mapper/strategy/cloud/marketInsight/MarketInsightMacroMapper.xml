@@ -272,7 +272,7 @@
 
         <!-- 创建时间过滤  -->
         <if test="marketInsightMacro.params.createTimeEqual != null and marketInsightMacro.params.createTimeEqual.size() > 0">
-            AND  date_format(mim.create_time,'%Y-%m-%d') IN
+            AND  date_format(mim.create_time,'%Y/%m/%d') IN
             <foreach item="item"
                      collection="marketInsightMacro.params.createTimeEqual"
                      index="index" open="(" separator="," close=")">
@@ -280,7 +280,7 @@
             </foreach>
         </if>
         <if test="marketInsightMacro.params.createTimeNotEqual != null and marketInsightMacro.params.createTimeNotEqual.size() > 0">
-            AND date_format(mim.create_time,'%Y-%m-%d') NOT IN
+            AND date_format(mim.create_time,'%Y/%m/%d') NOT IN
             <foreach item="item"
                      collection="marketInsightMacro.params.createTimeNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -288,22 +288,22 @@
             </foreach>
         </if>
         <if test="marketInsightMacro.params.createTimeBefore != null and marketInsightMacro.params.createTimeBefore != ''">
-            AND date_format(mim.create_time,'%Y-%m-%d') &lt; #{marketInsightMacro.params.createTimeBefore}
+            AND date_format(mim.create_time,'%Y/%m/%d') &lt; #{marketInsightMacro.params.createTimeBefore}
         </if>
         <if test="marketInsightMacro.params.createTimeNotBefore != null and marketInsightMacro.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
-            AND date_format(mim.create_time,'%Y-%m-%d') &gt;= #{marketInsightMacro.params.createTimeNotBefore}
+            AND date_format(mim.create_time,'%Y/%m/%d') &gt;= #{marketInsightMacro.params.createTimeNotBefore}
         </if>
         <if test="marketInsightMacro.params.createTimeAfter != null and marketInsightMacro.params.createTimeAfter != ''"><!-- 开始时间检索 -->
-            AND date_format(mim.create_time,'%Y-%m-%d') &gt; #{marketInsightMacro.params.createTimeAfter}
+            AND date_format(mim.create_time,'%Y/%m/%d') &gt; #{marketInsightMacro.params.createTimeAfter}
         </if>
         <if test="marketInsightMacro.params.createTimeNotAfter != null and marketInsightMacro.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
-            AND date_format(mim.create_time,'%Y-%m-%d') &lt;= #{marketInsightMacro.params.createTimeNotAfter}
+            AND date_format(mim.create_time,'%Y/%m/%d') &lt;= #{marketInsightMacro.params.createTimeNotAfter}
         </if>
         <if test="marketInsightMacro.params.createTimeStart != null and marketInsightMacro.params.createTimeStart != ''"><!-- 开始时间检索 -->
-            AND date_format(mim.create_time,'%Y-%m-%d') &gt;= #{marketInsightMacro.params.createTimeStart}
+            AND date_format(mim.create_time,'%Y/%m/%d') &gt;= #{marketInsightMacro.params.createTimeStart}
         </if>
         <if test="marketInsightMacro.params.createTimeEnd != null and marketInsightMacro.params.createTimeEnd != ''"><!-- 结束时间检索 -->
-            AND date_format(mim.create_time,'%Y-%m-%d') &lt;= #{marketInsightMacro.params.createTimeEnd}
+            AND date_format(mim.create_time,'%Y/%m/%d') &lt;= #{marketInsightMacro.params.createTimeEnd}
         </if>
 
         <if test="marketInsightMacro.createBys != null and marketInsightMacro.createBys.size() >0">
