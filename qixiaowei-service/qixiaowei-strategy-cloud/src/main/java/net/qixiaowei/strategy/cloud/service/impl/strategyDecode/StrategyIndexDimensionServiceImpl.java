@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -90,6 +91,92 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
     }
 
     /**
+     * 获取战略指标维度根节点
+     *
+     * @return List
+     */
+    @Override
+    public List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionRootList() {
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(new StrategyIndexDimension());
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOTree = this.createTree(strategyIndexDimensionDTOS, 0L);
+        List<StrategyIndexDimensionDTO> rootList = new ArrayList<>();
+        for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOTree) {
+            List<StrategyIndexDimensionDTO> children = strategyIndexDimensionDTO.getChildren();
+            strategyIndexDimensionDTO.setRootIndexDimensionName(strategyIndexDimensionDTO.getIndexDimensionName());
+            if (StringUtils.isNotEmpty(children))
+                setRootNameValue(children, strategyIndexDimensionDTO, rootList);
+            else
+                rootList.add(strategyIndexDimensionDTO);
+        }
+        return rootList;
+    }
+
+    /**
+     * 规划业务单元列表-不带本身
+     *
+     * @param strategyIndexDimensionId 主键
+     * @return List
+     */
+    @Override
+    public List<Tree<Long>> selectStrategyIndexDimensionOtherList(Long strategyIndexDimensionId) {
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionMapper.selectStrategyIndexDimensionOtherList(strategyIndexDimensionId);
+        //自定义属性名
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("strategyIndexDimensionId");
+        treeNodeConfig.setNameKey("indexDimensionName");
+        treeNodeConfig.setParentIdKey("parentIndexDimensionId");
+        return TreeUtil.build(strategyIndexDimensionDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+                    tree.setId(treeNode.getStrategyIndexDimensionId());
+                    tree.setParentId(treeNode.getParentIndexDimensionId());
+                    tree.setName(treeNode.getIndexDimensionName());
+                    tree.setWeight(treeNode.getSort());
+                    tree.putExtra("indexDimensionCode", treeNode.getIndexDimensionCode());
+                    tree.putExtra("level", treeNode.getLevel());
+                    tree.putExtra("levelName", treeNode.getLevel() + "级");
+                    tree.putExtra("status", treeNode.getStatus());
+                    tree.putExtra("createBy", treeNode.getCreateBy());
+                    tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
+                }
+        );
+    }
+
+
+    /**
+     * 树形结构
+     *
+     * @param strategyIndexDimensionDTOChild  子级列表
+     * @param parentStrategyIndexDimensionDTO 父级DTO
+     * @param rootList                        根目录list
+     */
+    private void setRootNameValue(List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOChild, StrategyIndexDimensionDTO parentStrategyIndexDimensionDTO, List<StrategyIndexDimensionDTO> rootList) {
+        for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOChild) {
+            strategyIndexDimensionDTO.setRootIndexDimensionName(parentStrategyIndexDimensionDTO.getRootIndexDimensionName() + "-" + strategyIndexDimensionDTO.getIndexDimensionName());
+            if (StringUtils.isNotEmpty(strategyIndexDimensionDTO.getChildren()))
+                setRootNameValue(strategyIndexDimensionDTO.getChildren(), strategyIndexDimensionDTO, rootList);
+            else
+                rootList.add(strategyIndexDimensionDTO);
+        }
+    }
+
+    /**
+     * 树形结构
+     *
+     * @param pid   父级ID
+     * @param lists 列表
+     * @return List
+     */
+    private List<StrategyIndexDimensionDTO> createTree(List<StrategyIndexDimensionDTO> lists, Long pid) {
+        List<StrategyIndexDimensionDTO> tree = new ArrayList<>();
+        for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : lists) {
+            if (Objects.equals(strategyIndexDimensionDTO.getParentIndexDimensionId(), pid)) {
+                strategyIndexDimensionDTO.setChildren(createTree(lists, strategyIndexDimensionDTO.getStrategyIndexDimensionId()));
+                tree.add(strategyIndexDimensionDTO);
+            }
+        }
+        return tree;
+    }
+
+    /**
      * 新增战略指标维度表
      *
      * @param strategyIndexDimensionDTO 战略指标维度表
@@ -97,8 +184,6 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
      */
     @Override
     public StrategyIndexDimensionDTO insertStrategyIndexDimension(StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
-
-
         StrategyIndexDimension strategyIndexDimension = new StrategyIndexDimension();
         BeanUtils.copyProperties(strategyIndexDimensionDTO, strategyIndexDimension);
         strategyIndexDimension.setCreateBy(SecurityUtils.getUserId());

@@ -110,4 +110,20 @@ public interface IStrategyIndexDimensionService {
      * @return 结果
      */
     List<Tree<Long>> selectStrategyIndexDimensionTreeList(StrategyIndexDimensionDTO strategyIndexDimensionDTO);
+
+    /**
+     * 获取战略指标维度根节点
+     *
+     * @return List
+     */
+    List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionRootList();
+
+    /**
+     * 规划业务单元列表-不带本身
+     *
+     * @param strategyIndexDimensionId 主键
+     * @return list
+     */
+    List<Tree<Long>> selectStrategyIndexDimensionOtherList(Long strategyIndexDimensionId);
+
 }
