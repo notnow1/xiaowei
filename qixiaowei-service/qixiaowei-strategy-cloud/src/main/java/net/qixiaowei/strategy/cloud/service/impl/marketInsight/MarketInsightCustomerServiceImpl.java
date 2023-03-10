@@ -485,7 +485,7 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
         if (StringUtils.isNotEmpty(miCustomerInvestPlanDTOS)) {
             for (int i1 = 0; i1 < miCustomerInvestPlanDTOS.size(); i1++) {
                 MiCustomerInvestPlan miCustomerInvestPlan = new MiCustomerInvestPlan();
-                BeanUtils.copyProperties(miCustomerChoiceDTOS.get(i1), miCustomerInvestPlan);
+                BeanUtils.copyProperties(miCustomerInvestPlanDTOS.get(i1), miCustomerInvestPlan);
                 miCustomerInvestPlan.setMarketInsightCustomerId(marketInsightCustomer.getMarketInsightCustomerId());
                 miCustomerInvestPlan.setSort(i1 + 1);
                 miCustomerInvestPlan.setCreateBy(SecurityUtils.getUserId());
