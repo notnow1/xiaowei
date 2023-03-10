@@ -95,6 +95,13 @@ public interface IStrategyMeasureTaskService {
 
 
     /**
+     * 根据详情ID集合批量删除任务列表
+     *
+     * @param strategyMeasureDetailBeforeIds 详情ID集合
+     */
+    void logicDeleteStrategyMeasureTaskByStrategyMeasureDetailIds(List<Long> strategyMeasureDetailBeforeIds);
+
+    /**
      * 删除战略举措清单任务表信息
      *
      * @param strategyMeasureTaskId 战略举措清单任务表主键
@@ -108,14 +115,7 @@ public interface IStrategyMeasureTaskService {
      * @param strategyMeasureDetailIds 根据战略清单ID集合
      * @return List
      */
-    List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureId(List<Long> strategyMeasureDetailIds);
-
-    /**
-     * 根据详情ID集合批量删除任务列表
-     *
-     * @param strategyMeasureDetailBeforeIds 详情ID集合
-     */
-    void logicDeleteStrategyMeasureTaskByStrategyMeasureDetailIds(List<Long> strategyMeasureDetailBeforeIds);
+    List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureIds(List<Long> strategyMeasureDetailIds);
 
     /**
      * 根据详情ID集合查找任务表
@@ -123,6 +123,6 @@ public interface IStrategyMeasureTaskService {
      * @param strategyMeasureDetailId 战略清单详情ID集合
      * @return List
      */
-    List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureIds(@Param("strategyMeasureDetailId") Long strategyMeasureDetailId);
+    List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureId(@Param("strategyMeasureDetailId") Long strategyMeasureDetailId);
 
 }

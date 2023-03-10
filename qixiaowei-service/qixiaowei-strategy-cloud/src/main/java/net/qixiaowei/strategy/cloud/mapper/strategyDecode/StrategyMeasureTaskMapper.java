@@ -112,7 +112,7 @@ public interface StrategyMeasureTaskMapper {
      * @param strategyMeasureDetailIds 根据战略清单ID集合
      * @return List
      */
-    List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureId(@Param("strategyMeasureDetailIds") List<Long> strategyMeasureDetailIds);
+    List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureIds(@Param("strategyMeasureDetailIds") List<Long> strategyMeasureDetailIds);
 
     /**
      * 根据详情ID集合查找任务表
@@ -120,5 +120,5 @@ public interface StrategyMeasureTaskMapper {
      * @param strategyMeasureDetailId 战略清单详情ID集合
      * @return List
      */
-    List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureIds(@Param("strategyMeasureDetailId") Long strategyMeasureDetailId);
+    List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureId(@Param("strategyMeasureDetailId") Long strategyMeasureDetailId);
 }

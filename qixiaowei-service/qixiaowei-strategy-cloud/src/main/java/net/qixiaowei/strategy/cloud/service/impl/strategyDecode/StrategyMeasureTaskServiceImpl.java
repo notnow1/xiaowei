@@ -117,8 +117,8 @@ public class StrategyMeasureTaskServiceImpl implements IStrategyMeasureTaskServi
      * @return List
      */
     @Override
-    public List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureId(List<Long> strategyMeasureDetailIds) {
-        return strategyMeasureTaskMapper.selectStrategyMeasureTaskByStrategyMeasureId(strategyMeasureDetailIds);
+    public List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureIds(List<Long> strategyMeasureDetailIds) {
+        return strategyMeasureTaskMapper.selectStrategyMeasureTaskByStrategyMeasureIds(strategyMeasureDetailIds);
     }
 
     /**
@@ -142,8 +142,8 @@ public class StrategyMeasureTaskServiceImpl implements IStrategyMeasureTaskServi
      * @return List
      */
     @Override
-    public List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureIds(@Param("strategyMeasureDetailId") Long strategyMeasureDetailId) {
-        return strategyMeasureTaskMapper.selectStrategyMeasureTaskByStrategyMeasureIds(strategyMeasureDetailId);
+    public List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureId(@Param("strategyMeasureDetailId") Long strategyMeasureDetailId) {
+        return strategyMeasureTaskMapper.selectStrategyMeasureTaskByStrategyMeasureId(strategyMeasureDetailId);
     }
 
     /**
