@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.CacheConstants;
@@ -199,7 +200,8 @@ public class TenantServiceImpl implements ITenantService {
      * @param tenantDTO 租户表
      * @return 结果
      */
-    @Transactional
+    @GlobalTransactional(name = "system:manage:tenant:add", rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public TenantDTO insertTenant(TenantDTO tenantDTO) {
         String domain = getDomain(tenantDTO);
