@@ -91,6 +91,15 @@
             #{item}
         </foreach>
     </select>
+    <!--根据详情ID集合查找任务表-->
+    <select id="selectStrategyMeasureTaskByStrategyMeasureIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO">
+        SELECT
+        strategy_measure_task_id,strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_measure_task
+        WHERE delete_flag=0
+        AND strategy_measure_detail_id =#{strategyMeasureDetailId}
+    </select>
     <!--新增战略举措清单任务表-->
     <insert id="insertStrategyMeasureTask" useGeneratedKeys="true" keyProperty="strategyMeasureTaskId">
         INSERT INTO strategy_measure_task

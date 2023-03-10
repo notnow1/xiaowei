@@ -81,9 +81,6 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
     private IStrategyMetricsService strategyMetricsService;
 
     @Autowired
-    private IStrategyMetricsPlanService strategyMetricsPlanService;
-
-    @Autowired
     private IStrategyMetricsDetailService strategyMetricsDetailService;
 
     @Autowired
@@ -91,6 +88,9 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
 
     @Autowired
     private StrategyIndexDimensionMapper strategyIndexDimensionMapper;
+
+    @Autowired
+    private IStrategyIndexDimensionService strategyIndexDimensionService;
 
     /**
      * 查询战略举措清单表
@@ -126,6 +126,17 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
         setDecomposeValue(strategyMeasureDTO, businessUnitDecompose);
         // 详情
         List<StrategyMeasureDetailVO> strategyMeasureDetailVOS = strategyMeasureDetailService.selectStrategyMeasureDetailVOByStrategyMeasureId(strategyMeasureId);
+        if (StringUtils.isEmpty(strategyMeasureDetailVOS)) {
+            return strategyMeasureDTO;
+        }
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionRootList();
+        for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
+            for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
+                if (strategyMeasureDetailVO.getStrategyMeasureId().equals(strategyIndexDimensionDTO.getStrategyIndexDimensionId())) {
+                    strategyMeasureDetailVO.setRootIndexDimensionName(strategyIndexDimensionDTO.getRootIndexDimensionName());
+                }
+            }
+        }
         List<Long> dutyDepartmentIds = strategyMeasureDetailVOS.stream().map(StrategyMeasureDetailVO::getDutyDepartmentId).collect(Collectors.toList());
         R<List<DepartmentDTO>> departmentDTOSR = departmentService.selectdepartmentIds(dutyDepartmentIds, SecurityConstants.INNER);
         List<DepartmentDTO> departmentDTOS = departmentDTOSR.getData();
@@ -312,7 +323,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             // 新增战略衡量指标详情
             this.addMetricsDetail(strategyMetricsId, strategyMeasureDetails);
             // 新增战略清单详情任务表
-            this.addMeasureTask(groupDetailMapS, strategyMeasureDetails);
+            this.addMeasureTask(strategyMeasureId, groupDetailMapS, strategyMeasureDetails);
         }
         return strategyMeasureDTO;
     }
@@ -320,10 +331,11 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
     /**
      * 新增战略清单详情任务表
      *
+     * @param strategyMeasureId      战略举措清单ID
      * @param groupDetailMapS        分组详情表
      * @param strategyMeasureDetails 新增后的战略清单详情
      */
-    private void addMeasureTask(Map<Integer, Map<Integer, List<StrategyMeasureDetailVO>>> groupDetailMapS, List<StrategyMeasureDetail> strategyMeasureDetails) {
+    private void addMeasureTask(Long strategyMeasureId, Map<Integer, Map<Integer, List<StrategyMeasureDetailVO>>> groupDetailMapS, List<StrategyMeasureDetail> strategyMeasureDetails) {
         List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = new ArrayList<>();
         for (Integer sorted : groupDetailMapS.keySet()) {
             Map<Integer, List<StrategyMeasureDetailVO>> groupSerialNumberMapS = groupDetailMapS.get(sorted);
@@ -340,6 +352,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
                     throw new ServiceException("新增失败 请联系管理员");
                 for (StrategyMeasureDetailVO taskDTO : measureTaskDTOS) {
                     taskDTO.setStrategyMeasureDetailId(strategyMeasureDetailId);
+                    taskDTO.setStrategyMeasureId(strategyMeasureId);
                     StrategyMeasureTaskDTO strategyMeasureTaskDTO = new StrategyMeasureTaskDTO();
                     BeanUtils.copyProperties(taskDTO, strategyMeasureTaskDTO);
                     strategyMeasureTaskDTOS.add(strategyMeasureTaskDTO);
@@ -402,7 +415,6 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             StrategyMeasureDetailVO strategyMeasureDetailVO = strategyMeasureDetailVOS.get(i);
             strategyMeasureDetailVO.setStrategyMeasureId(strategyMeasureId);
             // 任务排序
-            strategyMeasureDetailVO.setTaskSort(i);
             // 序列号赋值也可排序
             for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
                 if (strategyMeasureDetailVO.getStrategyIndexDimensionId().equals(strategyIndexDimensionDTO.getStrategyIndexDimensionId())) {
@@ -555,10 +567,83 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
         for (StrategyMeasureDetailDTO strategyMeasureDetailDTO : strategyMeasureDetailDTOBefore) {
             Integer serialNumber = strategyMeasureDetailDTO.getSerialNumber();
         }
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionRootList();
+        List<Long> strategyIndexDimensionIds = strategyIndexDimensionDTOS.stream().map(StrategyIndexDimensionDTO::getStrategyIndexDimensionId).collect(Collectors.toList());
         List<StrategyMeasureDetailVO> strategyMeasureDetailVOS = strategyMeasureDTO.getStrategyMeasureDetailVOS();
         if (StringUtils.isNotEmpty(strategyMeasureDetailVOS)) {
+            // 负责人赋值
+            this.setDutyEmployeeValue(strategyMeasureDetailVOS);
+            // 第一层排序
+            this.setSortValue(strategyMeasureId, strategyMeasureDetailVOS, strategyIndexDimensionIds);
+            List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOAfter = new ArrayList<>();
+            Map<Integer, Map<Integer, List<StrategyMeasureDetailVO>>> groupDetailMapS =
+                    strategyMeasureDetailVOS.stream().collect(Collectors.groupingBy(StrategyMeasureDetailVO::getSort, Collectors.groupingBy(StrategyMeasureDetailVO::getSerialNumber)));
+            this.setTaskSortValue(strategyMeasureDetailDTOAfter, groupDetailMapS);
+            // 为空直接全部删除
+            List<Long> strategyMeasureDetailBeforeIds;
+            if (StringUtils.isEmpty(strategyMeasureDetailDTOAfter) && StringUtils.isNotEmpty(strategyMeasureDetailDTOBefore)) {
+                strategyMeasureDetailBeforeIds = strategyMeasureDetailDTOBefore.stream().map(StrategyMeasureDetailDTO::getStrategyMeasureDetailId).collect(Collectors.toList());
+                strategyMeasureDetailService.logicDeleteStrategyMeasureDetailByStrategyMeasureDetailIds(strategyMeasureDetailBeforeIds);
+                strategyMeasureTaskService.logicDeleteStrategyMeasureTaskByStrategyMeasureDetailIds(strategyMeasureDetailBeforeIds);
+            }
+            // 新增
+            List<StrategyMeasureDetailDTO> addStrategyMeasureDetailDTOS = strategyMeasureDetailDTOAfter.stream().filter(strategyMeasureDetailDTO ->
+                    !strategyMeasureDetailDTOBefore.stream().map(StrategyMeasureDetailDTO::getStrategyMeasureDetailId)
+                            .collect(Collectors.toList()).contains(strategyMeasureDetailDTO.getStrategyMeasureDetailId())).collect(Collectors.toList());
+            List<StrategyMeasureDetail> strategyMeasureDetails = strategyMeasureDetailService.insertStrategyMeasureDetails(addStrategyMeasureDetailDTOS);
+            List<StrategyMeasureTaskDTO> addStrategyMeasureTaskDTOS = new ArrayList<>();
+            for (StrategyMeasureDetail addStrategyMeasureDetail : strategyMeasureDetails) {
+                Long strategyMeasureDetailId = addStrategyMeasureDetail.getStrategyMeasureDetailId();
+                int addSort = addStrategyMeasureDetail.getSort();
+                int addSerialNumber = addStrategyMeasureDetail.getSerialNumber();
+                for (Integer sorted : groupDetailMapS.keySet()) {
+                    if (addSort == sorted) {
+                        Map<Integer, List<StrategyMeasureDetailVO>> groupSerialNumberMapS = groupDetailMapS.get(sorted);
+                        for (Integer serialNumber : groupSerialNumberMapS.keySet()) {
+                            if (serialNumber == addSerialNumber) {
+                                List<StrategyMeasureDetailVO> measureTaskVOS = groupSerialNumberMapS.get(serialNumber);
+                                List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = new ArrayList<>();
+                                for (StrategyMeasureDetailVO measureTaskVO : measureTaskVOS) {
+                                    StrategyMeasureTaskDTO strategyMeasureTaskDTO = new StrategyMeasureTaskDTO();
+                                    strategyMeasureTaskDTO.setStrategyMeasureDetailId(strategyMeasureDetailId);
+                                    strategyMeasureTaskDTO.setStrategyMeasureId(strategyMeasureId);
+                                    BeanUtils.copyProperties(measureTaskVO, strategyMeasureTaskDTO);
+                                    strategyMeasureTaskDTOS.add(strategyMeasureTaskDTO);
+                                }
+                                addStrategyMeasureTaskDTOS.addAll(strategyMeasureTaskDTOS);
+                            }
+                        }
+                    }
+                }
+            }
+            // 新增任务Mapper
+            // 编辑详情
+            List<StrategyMeasureDetailDTO> editStrategyMeasureDetailDTOS = strategyMeasureDetailDTOAfter.stream().filter(strategyMeasureDetailDTO ->
+                    strategyMeasureDetailDTOBefore.stream().map(StrategyMeasureDetailDTO::getStrategyMeasureDetailId)
+                            .collect(Collectors.toList()).contains(strategyMeasureDetailDTO.getStrategyMeasureDetailId())).collect(Collectors.toList());
+            List<Long> editStrategyMeasureDetailIds = editStrategyMeasureDetailDTOS.stream().map(StrategyMeasureDetailDTO::getStrategyMeasureDetailId).collect(Collectors.toList());
+            List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOSBefore = strategyMeasureTaskService.selectStrategyMeasureTaskByStrategyMeasureIds(editStrategyMeasureDetailIds);
+            for (StrategyMeasureDetailDTO editStrategyMeasureDetailDTO : editStrategyMeasureDetailDTOS) {
+                Long strategyMeasureDetailId = editStrategyMeasureDetailDTO.getStrategyMeasureDetailId();
+                int editSort = editStrategyMeasureDetailDTO.getSort();
+                int editSerialNumber = editStrategyMeasureDetailDTO.getSerialNumber();
+                for (Integer sorted : groupDetailMapS.keySet()) {
+                    if (editSort == sorted) {
+                        Map<Integer, List<StrategyMeasureDetailVO>> groupSerialNumberMapS = groupDetailMapS.get(sorted);
+                        for (Integer serialNumber : groupSerialNumberMapS.keySet()) {
+                            if (serialNumber == editSerialNumber) {
+                                List<StrategyMeasureDetailVO> measureTaskVOS = groupSerialNumberMapS.get(serialNumber);
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 新增
 
         }
+
         Map<Integer, List<StrategyMeasureDetailDTO>> groupStrategyMeasureDetail = strategyMeasureDetailDTOBefore.stream().collect(Collectors.groupingBy(StrategyMeasureDetailDTO::getSerialNumber));
 
         return 1;
@@ -568,7 +653,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
      * 编辑战略衡量指标
      *
      * @param strategyMeasureDTO 战略清单DTO
-     * @param strategyMeasureId 战略清单ID
+     * @param strategyMeasureId  战略清单ID
      */
     private void editStrategyMetrics(StrategyMeasureDTO strategyMeasureDTO, Long strategyMeasureId) {
         StrategyMetricsDTO strategyMetricsByMeasureId = strategyMetricsService.selectStrategyMetricsByStrategyMeasureId(strategyMeasureId);

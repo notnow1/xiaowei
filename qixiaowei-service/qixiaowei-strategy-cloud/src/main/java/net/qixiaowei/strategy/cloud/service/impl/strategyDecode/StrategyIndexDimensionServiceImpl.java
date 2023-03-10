@@ -108,6 +108,9 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
             else
                 rootList.add(strategyIndexDimensionDTO);
         }
+        for (int i = 0; i < rootList.size(); i++) {
+            rootList.get(i).setSort(i);
+        }
         return rootList;
     }
 

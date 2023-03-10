@@ -57,7 +57,7 @@ public class StrategyIndexDimensionDTO {
      */
     private String  parentIndexDimensionName;
     /**
-     * 父级战略指标维度名称
+     * 别名-父级战略指标维度名称
      */
     private String rootIndexDimensionName;
     /**

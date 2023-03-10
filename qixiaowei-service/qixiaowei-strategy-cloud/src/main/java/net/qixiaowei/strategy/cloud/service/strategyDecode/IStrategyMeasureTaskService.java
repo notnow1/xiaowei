@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.service.strategyDecode;
 
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -108,4 +109,20 @@ public interface IStrategyMeasureTaskService {
      * @return List
      */
     List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureId(List<Long> strategyMeasureDetailIds);
+
+    /**
+     * 根据详情ID集合批量删除任务列表
+     *
+     * @param strategyMeasureDetailBeforeIds 详情ID集合
+     */
+    void logicDeleteStrategyMeasureTaskByStrategyMeasureDetailIds(List<Long> strategyMeasureDetailBeforeIds);
+
+    /**
+     * 根据详情ID集合查找任务表
+     *
+     * @param strategyMeasureDetailId 战略清单详情ID集合
+     * @return List
+     */
+    List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureIds(@Param("strategyMeasureDetailId") Long strategyMeasureDetailId);
+
 }

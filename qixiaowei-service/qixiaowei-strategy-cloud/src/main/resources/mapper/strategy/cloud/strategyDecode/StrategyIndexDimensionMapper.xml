@@ -92,6 +92,7 @@
         <if test="strategyIndexDimension.updateTime != null">
             and sid.update_time=#{strategyIndexDimension.updateTime}
         </if>
+        ORDER BY sid.sort ASC
     </select>
     <select id="selectStrategyIndexDimensionOtherList"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">

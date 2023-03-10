@@ -2,17 +2,20 @@ package net.qixiaowei.strategy.cloud.service.impl.strategyDecode;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasureTask;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO;
 import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyMeasureTaskMapper;
 import net.qixiaowei.strategy.cloud.service.strategyDecode.IStrategyMeasureTaskService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -116,6 +119,31 @@ public class StrategyMeasureTaskServiceImpl implements IStrategyMeasureTaskServi
     @Override
     public List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureId(List<Long> strategyMeasureDetailIds) {
         return strategyMeasureTaskMapper.selectStrategyMeasureTaskByStrategyMeasureId(strategyMeasureDetailIds);
+    }
+
+    /**
+     * 根据详情ID集合批量删除任务列表
+     *
+     * @param strategyMeasureDetailBeforeIds 详情ID集合
+     */
+    @Override
+    public void logicDeleteStrategyMeasureTaskByStrategyMeasureDetailIds(List<Long> strategyMeasureDetailBeforeIds) {
+        List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = strategyMeasureTaskMapper.selectStrategyMeasureTaskByStrategyMeasureTaskIds(strategyMeasureDetailBeforeIds);
+        if (StringUtils.isNotEmpty(strategyMeasureTaskDTOS)) {
+            List<Long> strategyMeasureTaskIds = strategyMeasureTaskDTOS.stream().map(StrategyMeasureTaskDTO::getStrategyMeasureTaskId).collect(Collectors.toList());
+            strategyMeasureTaskMapper.logicDeleteStrategyMeasureTaskByStrategyMeasureTaskIds(strategyMeasureTaskIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        }
+    }
+
+    /**
+     * 根据详情ID集合查找任务表
+     *
+     * @param strategyMeasureDetailId 战略清单详情ID集合
+     * @return List
+     */
+    @Override
+    public List<StrategyMeasureTaskDTO> selectStrategyMeasureTaskByStrategyMeasureIds(@Param("strategyMeasureDetailId") Long strategyMeasureDetailId) {
+        return strategyMeasureTaskMapper.selectStrategyMeasureTaskByStrategyMeasureIds(strategyMeasureDetailId);
     }
 
     /**

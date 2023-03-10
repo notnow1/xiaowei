@@ -30,6 +30,10 @@ public class StrategyMeasureDetailVO {
      */
     private Long indexDimensionName;
     /**
+     * 别名-父级战略指标维度名称
+     */
+    private String rootIndexDimensionName;
+    /**
      * 战略指标维度编码
      */
     private Integer indexDimensionCode;
