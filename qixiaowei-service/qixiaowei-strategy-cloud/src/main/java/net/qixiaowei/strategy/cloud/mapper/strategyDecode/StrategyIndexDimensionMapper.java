@@ -104,4 +104,10 @@ public interface StrategyIndexDimensionMapper {
      * @return 结果
      */
     int batchStrategyIndexDimension(@Param("strategyIndexDimensions") List<StrategyIndexDimension> strategyIndexDimensions);
+
+    /**
+     * @param strategyIndexDimensionId 战略指标维度表ID
+     * @return list
+     */
+    List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionOtherList(@Param("strategyIndexDimensionId") Long strategyIndexDimensionId);
 }

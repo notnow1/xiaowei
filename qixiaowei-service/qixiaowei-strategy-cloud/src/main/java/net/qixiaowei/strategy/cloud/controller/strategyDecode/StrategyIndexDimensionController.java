@@ -63,6 +63,34 @@ public class StrategyIndexDimensionController extends BaseController {
     }
 
     /**
+     * 查询战略指标维度表列表
+     */
+    @RequiresPermissions("strategy:cloud:strategyIndexDimension:list")
+    @GetMapping("/rootList")
+    public AjaxResult rootList() {
+        return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionRootList());
+    }
+
+    /**
+     * 规划业务单元列表-不带本身
+     */
+    @RequiresPermissions("strategy:cloud:strategyIndexDimension:list")
+    @GetMapping("/otherList")
+    public AjaxResult otherList(@RequestParam("strategyIndexDimensionId") Long strategyIndexDimensionId) {
+        return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionOtherList(strategyIndexDimensionId));
+    }
+
+    /**
+     * 新增战略指标维度表
+     */
+    @RequiresPermissions("strategy:cloud:strategyIndexDimension:add")
+    @Log(title = "新增战略指标维度表", businessType = BusinessType.STRATEGY_INDEX_DIMENSION, businessId = "strategyIndexDimensionId", operationType = OperationType.INSERT)
+    @PostMapping("/add")
+    public AjaxResult addSave(@RequestBody StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
+        return AjaxResult.success(strategyIndexDimensionService.insertStrategyIndexDimension(strategyIndexDimensionDTO));
+    }
+
+    /**
      * 修改战略指标维度表
      */
     @RequiresPermissions("strategy:cloud:strategyIndexDimension:edit")
@@ -71,5 +99,24 @@ public class StrategyIndexDimensionController extends BaseController {
     public AjaxResult editSave(@RequestBody List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS) {
         return toAjax(strategyIndexDimensionService.updateStrategyIndexDimension(strategyIndexDimensionDTOS));
     }
+
+    /**
+     * 逻辑删除战略指标维度表
+     */
+    @RequiresPermissions("strategy:cloud:strategyIndexDimension:remove")
+    @PostMapping("/remove")
+    public AjaxResult remove(@RequestBody StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
+        return toAjax(strategyIndexDimensionService.logicDeleteStrategyIndexDimensionByStrategyIndexDimensionId(strategyIndexDimensionDTO));
+    }
+
+    /**
+     * 逻辑批量删除战略指标维度表
+     */
+    @RequiresPermissions("strategy:cloud:strategyIndexDimension:removes")
+    @PostMapping("/removes")
+    public AjaxResult removes(@RequestBody List<Long> strategyIndexDimensionIds) {
+        return toAjax(strategyIndexDimensionService.logicDeleteStrategyIndexDimensionByStrategyIndexDimensionIds(strategyIndexDimensionIds));
+    }
+
 
 }

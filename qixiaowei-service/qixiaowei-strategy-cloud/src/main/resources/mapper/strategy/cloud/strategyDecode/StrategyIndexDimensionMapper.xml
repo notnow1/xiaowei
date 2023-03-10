@@ -30,51 +30,92 @@
     <select id="selectStrategyIndexDimensionList"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
         SELECT
-        strategy_index_dimension_id,parent_index_dimension_id,ancestors,index_dimension_code,index_dimension_name,sort,LEVEL,STATUS,remark,delete_flag,create_by,create_time,update_by,update_time
-        FROM strategy_index_dimension
-        WHERE delete_flag=0
+        sid.strategy_index_dimension_id,
+        sid.parent_index_dimension_id,
+        psi.index_dimension_name AS parent_index_dimension_name,
+        sid.ancestors,
+        sid.index_dimension_code,
+        sid.index_dimension_name,
+        sid.sort,
+        sid.LEVEL,
+        sid.STATUS,
+        sid.remark,
+        sid.delete_flag,
+        sid.create_by,
+        sid.create_time,
+        sid.update_by,
+        sid.update_time
+        FROM strategy_index_dimension sid
+        LEFT JOIN strategy_index_dimension psi
+        ON sid.parent_index_dimension_id = psi.strategy_index_dimension_id
+        AND psi.delete_flag=0
+        WHERE sid.delete_flag=0
         <if test="strategyIndexDimension.strategyIndexDimensionId != null">
-            and strategy_index_dimension_id=#{strategyIndexDimension.strategyIndexDimensionId}
+            and sid.strategy_index_dimension_id=#{strategyIndexDimension.strategyIndexDimensionId}
         </if>
         <if test="strategyIndexDimension.parentIndexDimensionId != null">
-            and parent_index_dimension_id=#{strategyIndexDimension.parentIndexDimensionId}
+            and sid.parent_index_dimension_id=#{strategyIndexDimension.parentIndexDimensionId}
         </if>
         <if test="strategyIndexDimension.ancestors != null and strategyIndexDimension.ancestors != ''">
-            and ancestors=#{strategyIndexDimension.ancestors}
+            and sid.ancestors=#{strategyIndexDimension.ancestors}
         </if>
         <if test="strategyIndexDimension.indexDimensionCode != null and strategyIndexDimension.indexDimensionCode != ''">
-            and index_dimension_code=#{strategyIndexDimension.indexDimensionCode}
+            and sid.index_dimension_code=#{strategyIndexDimension.indexDimensionCode}
         </if>
         <if test="strategyIndexDimension.indexDimensionName != null and strategyIndexDimension.indexDimensionName != ''">
-            and index_dimension_name=#{strategyIndexDimension.indexDimensionName}
+            and sid.index_dimension_name=#{strategyIndexDimension.indexDimensionName}
         </if>
         <if test="strategyIndexDimension.sort != null">
-            and sort=#{strategyIndexDimension.sort}
+            and sid.sort=#{strategyIndexDimension.sort}
         </if>
         <if test="strategyIndexDimension.level != null">
-            and LEVEL=#{strategyIndexDimension.level}
+            and sid.LEVEL=#{strategyIndexDimension.level}
         </if>
         <if test="strategyIndexDimension.status != null">
-            and STATUS=#{strategyIndexDimension.status}
+            and sid.STATUS=#{strategyIndexDimension.status}
         </if>
         <if test="strategyIndexDimension.remark != null and strategyIndexDimension.remark != ''">
-            and remark=#{strategyIndexDimension.remark}
+            and sid.remark=#{strategyIndexDimension.remark}
         </if>
         <if test="strategyIndexDimension.deleteFlag != null">
-            and delete_flag=#{strategyIndexDimension.deleteFlag}
+            and sid.delete_flag=#{strategyIndexDimension.deleteFlag}
         </if>
         <if test="strategyIndexDimension.createBy != null">
-            and create_by=#{strategyIndexDimension.createBy}
+            and sid.create_by=#{strategyIndexDimension.createBy}
         </if>
         <if test="strategyIndexDimension.createTime != null">
-            and create_time=#{strategyIndexDimension.createTime}
+            and sid.create_time=#{strategyIndexDimension.createTime}
         </if>
         <if test="strategyIndexDimension.updateBy != null">
-            and update_by=#{strategyIndexDimension.updateBy}
+            and sid.update_by=#{strategyIndexDimension.updateBy}
         </if>
         <if test="strategyIndexDimension.updateTime != null">
-            and update_time=#{strategyIndexDimension.updateTime}
+            and sid.update_time=#{strategyIndexDimension.updateTime}
         </if>
+    </select>
+    <select id="selectStrategyIndexDimensionOtherList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE
+        delete_flag = 0
+        AND ( NOT FIND_IN_SET( #{strategyIndexDimensionId}, ancestors ) OR ancestors IS NULL )
+        AND strategy_index_dimension_id != #{strategyIndexDimensionId}
     </select>
     <!--新增战略指标维度表-->
     <insert id="insertStrategyIndexDimension" useGeneratedKeys="true" keyProperty="strategyIndexDimensionId">

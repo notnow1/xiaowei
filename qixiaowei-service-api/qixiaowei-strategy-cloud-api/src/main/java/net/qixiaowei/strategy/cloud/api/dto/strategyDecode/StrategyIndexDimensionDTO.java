@@ -53,6 +53,14 @@ public class StrategyIndexDimensionDTO {
      */
     private Long parentIndexDimensionId;
     /**
+     * 父级战略指标维度名称
+     */
+    private String  parentIndexDimensionName;
+    /**
+     * 父级战略指标维度名称
+     */
+    private String rootIndexDimensionName;
+    /**
      * 祖级列表ID，按层级用英文逗号隔开
      */
     private String ancestors;
@@ -111,6 +119,10 @@ public class StrategyIndexDimensionDTO {
      * 请求参数
      */
     private Map<String, Object> params;
+    /**
+     * 请求参数
+     */
+    private List<StrategyIndexDimensionDTO> children;
     /**
      * 子类
      */
