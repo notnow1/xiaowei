@@ -139,11 +139,14 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 List<IndustryDTO> data = industryList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MiIndustryDetailDTO miIndustryDetailDTO : miIndustryDetailDTOS) {
-                        for (IndustryDTO datum : data) {
-                            if (miIndustryDetailDTO.getIndustryId().equals(datum.getIndustryId())) {
-                                miIndustryDetailDTO.setIndustryName(datum.getIndustryName());
+                        if (null != miIndustryDetailDTO.getIndustryId()){
+                            for (IndustryDTO datum : data) {
+                                if (miIndustryDetailDTO.getIndustryId().equals(datum.getIndustryId())) {
+                                    miIndustryDetailDTO.setIndustryName(datum.getIndustryName());
+                                }
                             }
                         }
+
                     }
                 }
             }
@@ -153,11 +156,14 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                 List<DictionaryDataDTO> data = dataByDictionaryDataList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MiIndustryDetailDTO miIndustryDetailDTO : miIndustryDetailDTOS) {
-                        for (DictionaryDataDTO datum : data) {
-                            if (miIndustryDetailDTO.getIndustryType().equals(datum.getDictionaryDataId())) {
-                                miIndustryDetailDTO.setIndustryTypeName(datum.getDictionaryLabel());
+                        if (null != miIndustryDetailDTO.getIndustryType()){
+                            for (DictionaryDataDTO datum : data) {
+                                if (miIndustryDetailDTO.getIndustryType().equals(datum.getDictionaryDataId())) {
+                                    miIndustryDetailDTO.setIndustryTypeName(datum.getDictionaryLabel());
+                                }
                             }
                         }
+
                     }
                 }
             }

@@ -126,9 +126,11 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
                 List<DictionaryDataDTO> data = dataByDictionaryDataList.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     for (MiMacroDetailDTO miMacroDetailDTO : miMacroDetailDTOS) {
-                        for (DictionaryDataDTO datum : data) {
-                            if (miMacroDetailDTO.getVisualAngle().equals(datum.getDictionaryDataId())) {
-                                miMacroDetailDTO.setVisualAngleName(datum.getDictionaryLabel());
+                        if (null != miMacroDetailDTO.getVisualAngle()){
+                            for (DictionaryDataDTO datum : data) {
+                                if (miMacroDetailDTO.getVisualAngle().equals(datum.getDictionaryDataId())) {
+                                    miMacroDetailDTO.setVisualAngleName(datum.getDictionaryLabel());
+                                }
                             }
                         }
                     }
