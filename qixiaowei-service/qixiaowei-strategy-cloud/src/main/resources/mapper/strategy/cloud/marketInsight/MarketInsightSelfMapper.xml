@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MarketInsightSelfMapper">
+    <!--    查询市场洞察自身表-->
+    <select id="selectMarketInsightSelfByMarketInsightSelfId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO">
+        SELECT
+        market_insight_self_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_self
+        WHERE  market_insight_self_id=#{marketInsightSelfId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察自身表-->
+    <select id="selectMarketInsightSelfByMarketInsightSelfIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO">
+        SELECT
+        market_insight_self_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_self
+        WHERE  market_insight_self_id in
+            <foreach item="item"
+                     collection="marketInsightSelfIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察自身表列表-->
+    <select id="selectMarketInsightSelfList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO">
+        SELECT
+        market_insight_self_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_self
+        WHERE delete_flag=0
+                        <if test="marketInsightSelf.marketInsightSelfId != null">
+                            and market_insight_self_id=#{marketInsightSelf.marketInsightSelfId}
+                        </if>
+                        <if test="marketInsightSelf.planYear != null">
+                            and plan_year=#{marketInsightSelf.planYear}
+                        </if>
+                        <if test="marketInsightSelf.planBusinessUnitId != null">
+                            and plan_business_unit_id=#{marketInsightSelf.planBusinessUnitId}
+                        </if>
+                        <if test="marketInsightSelf.businessUnitDecompose != null and marketInsightSelf.businessUnitDecompose != ''">
+                            and business_unit_decompose=#{marketInsightSelf.businessUnitDecompose}
+                        </if>
+                        <if test="marketInsightSelf.areaId != null">
+                            and area_id=#{marketInsightSelf.areaId}
+                        </if>
+                        <if test="marketInsightSelf.departmentId != null">
+                            and department_id=#{marketInsightSelf.departmentId}
+                        </if>
+                        <if test="marketInsightSelf.productId != null">
+                            and product_id=#{marketInsightSelf.productId}
+                        </if>
+                        <if test="marketInsightSelf.industryId != null">
+                            and industry_id=#{marketInsightSelf.industryId}
+                        </if>
+                        <if test="marketInsightSelf.deleteFlag != null">
+                            and delete_flag=#{marketInsightSelf.deleteFlag}
+                        </if>
+                        <if test="marketInsightSelf.createBy != null">
+                            and create_by=#{marketInsightSelf.createBy}
+                        </if>
+                        <if test="marketInsightSelf.createTime != null">
+                            and create_time=#{marketInsightSelf.createTime}
+                        </if>
+                        <if test="marketInsightSelf.updateBy != null">
+                            and update_by=#{marketInsightSelf.updateBy}
+                        </if>
+                        <if test="marketInsightSelf.updateTime != null">
+                            and update_time=#{marketInsightSelf.updateTime}
+                        </if>
+    </select>
+    <!--新增市场洞察自身表-->
+    <insert id="insertMarketInsightSelf" useGeneratedKeys="true" keyProperty="marketInsightSelfId">
+        INSERT INTO market_insight_self (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{marketInsightSelf.planYear},#{marketInsightSelf.planBusinessUnitId},#{marketInsightSelf.businessUnitDecompose},#{marketInsightSelf.areaId},#{marketInsightSelf.departmentId},#{marketInsightSelf.productId},#{marketInsightSelf.industryId},#{marketInsightSelf.deleteFlag},#{marketInsightSelf.createBy},#{marketInsightSelf.createTime},#{marketInsightSelf.updateBy},#{marketInsightSelf.updateTime})
+    </insert>
+    <!--修改市场洞察自身表-->
+    <update id="updateMarketInsightSelf">
+        UPDATE market_insight_self
+        SET
+                    <if test="marketInsightSelf.planYear != null">
+                        plan_year=#{marketInsightSelf.planYear},
+                    </if>
+                    <if test="marketInsightSelf.planBusinessUnitId != null">
+                        plan_business_unit_id=#{marketInsightSelf.planBusinessUnitId},
+                    </if>
+                    <if test="marketInsightSelf.businessUnitDecompose != null and marketInsightSelf.businessUnitDecompose != ''">
+                        business_unit_decompose=#{marketInsightSelf.businessUnitDecompose},
+                    </if>
+                    <if test="marketInsightSelf.areaId != null">
+                        area_id=#{marketInsightSelf.areaId},
+                    </if>
+                    <if test="marketInsightSelf.departmentId != null">
+                        department_id=#{marketInsightSelf.departmentId},
+                    </if>
+                    <if test="marketInsightSelf.productId != null">
+                        product_id=#{marketInsightSelf.productId},
+                    </if>
+                    <if test="marketInsightSelf.industryId != null">
+                        industry_id=#{marketInsightSelf.industryId},
+                    </if>
+                    <if test="marketInsightSelf.deleteFlag != null">
+                        delete_flag=#{marketInsightSelf.deleteFlag},
+                    </if>
+                    <if test="marketInsightSelf.createBy != null">
+                        create_by=#{marketInsightSelf.createBy},
+                    </if>
+                    <if test="marketInsightSelf.createTime != null">
+                        create_time=#{marketInsightSelf.createTime},
+                    </if>
+                    <if test="marketInsightSelf.updateBy != null">
+                        update_by=#{marketInsightSelf.updateBy},
+                    </if>
+                    <if test="marketInsightSelf.updateTime != null">
+                        update_time=#{marketInsightSelf.updateTime}
+                    </if>
+        WHERE
+                 market_insight_self_id=#{marketInsightSelf.marketInsightSelfId}
+    </update>
+    <!--逻辑删除市场洞察自身表-->
+    <update id="logicDeleteMarketInsightSelfByMarketInsightSelfId">
+        UPDATE market_insight_self
+        SET     delete_flag= 1,
+                update_by=#{marketInsightSelf.updateBy},
+                update_time=#{marketInsightSelf.updateTime}
+        WHERE
+                market_insight_self_id=#{marketInsightSelf.marketInsightSelfId}
+    </update>
+    <!--逻辑批量删除市场洞察自身表-->
+    <update id="logicDeleteMarketInsightSelfByMarketInsightSelfIds">
+        UPDATE market_insight_self
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         market_insight_self_id IN
+            <foreach item="item"
+                     collection="marketInsightSelfIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察自身表-->
+    <insert id="batchMarketInsightSelf">
+        INSERT INTO market_insight_self (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="marketInsightSelfs"
+                 separator=",">
+            (#{item.planYear},#{item.planBusinessUnitId},#{item.businessUnitDecompose},#{item.areaId},#{item.departmentId},#{item.productId},#{item.industryId},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察自身表-->
+    <delete id="deleteMarketInsightSelfByMarketInsightSelfId">
+        DELETE FROM market_insight_self
+        WHERE  market_insight_self_id=#{marketInsightSelf}
+
+    </delete>
+    <!--物理批量删除市场洞察自身表-->
+    <delete id="deleteMarketInsightSelfByMarketInsightSelfIds">
+        DELETE FROM market_insight_self
+        WHERE  market_insight_self_id IN
+            <foreach item="item"
+                     collection="marketInsightSelfIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察自身表-->
+    <update id="updateMarketInsightSelfs">
+        update market_insight_self
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="plan_year=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.planYear != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.planYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="plan_business_unit_id=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.planBusinessUnitId != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.planBusinessUnitId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="business_unit_decompose=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.businessUnitDecompose}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="area_id=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.areaId != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.areaId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_id=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.departmentId != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.departmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_id=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.productId != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.productId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="industry_id=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.industryId != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.industryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="marketInsightSelfList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when market_insight_self_id=#{item.marketInsightSelfId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="marketInsightSelfList" separator="or" item="item" index="index">
+                    market_insight_self_id=#{item.marketInsightSelfId}
+        </foreach>
+    </update>
+</mapper>
+
+

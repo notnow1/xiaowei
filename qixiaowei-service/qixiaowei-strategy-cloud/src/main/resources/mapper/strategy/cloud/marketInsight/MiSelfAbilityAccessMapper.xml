@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MiSelfAbilityAccessMapper">
+    <!--    查询市场洞察自身能力评估表-->
+    <select id="selectMiSelfAbilityAccessByMiSelfAbilityAccessId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiSelfAbilityAccessDTO">
+        SELECT
+        mi_self_ability_access_id,market_insight_self_id,capacity_factor,description_actuality,ability_assess_score,strategy_control_point_flag,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_self_ability_access
+        WHERE  mi_self_ability_access_id=#{miSelfAbilityAccessId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察自身能力评估表-->
+    <select id="selectMiSelfAbilityAccessByMiSelfAbilityAccessIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiSelfAbilityAccessDTO">
+        SELECT
+        mi_self_ability_access_id,market_insight_self_id,capacity_factor,description_actuality,ability_assess_score,strategy_control_point_flag,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_self_ability_access
+        WHERE  mi_self_ability_access_id in
+            <foreach item="item"
+                     collection="miSelfAbilityAccessIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察自身能力评估表列表-->
+    <select id="selectMiSelfAbilityAccessList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiSelfAbilityAccessDTO">
+        SELECT
+        mi_self_ability_access_id,market_insight_self_id,capacity_factor,description_actuality,ability_assess_score,strategy_control_point_flag,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_self_ability_access
+        WHERE delete_flag=0
+                        <if test="miSelfAbilityAccess.miSelfAbilityAccessId != null">
+                            and mi_self_ability_access_id=#{miSelfAbilityAccess.miSelfAbilityAccessId}
+                        </if>
+                        <if test="miSelfAbilityAccess.marketInsightSelfId != null">
+                            and market_insight_self_id=#{miSelfAbilityAccess.marketInsightSelfId}
+                        </if>
+                        <if test="miSelfAbilityAccess.capacityFactor != null">
+                            and capacity_factor=#{miSelfAbilityAccess.capacityFactor}
+                        </if>
+                        <if test="miSelfAbilityAccess.descriptionActuality != null and miSelfAbilityAccess.descriptionActuality != ''">
+                            and description_actuality=#{miSelfAbilityAccess.descriptionActuality}
+                        </if>
+                        <if test="miSelfAbilityAccess.abilityAssessScore != null">
+                            and ability_assess_score=#{miSelfAbilityAccess.abilityAssessScore}
+                        </if>
+                        <if test="miSelfAbilityAccess.strategyControlPointFlag != null">
+                            and strategy_control_point_flag=#{miSelfAbilityAccess.strategyControlPointFlag}
+                        </if>
+                        <if test="miSelfAbilityAccess.sort != null">
+                            and sort=#{miSelfAbilityAccess.sort}
+                        </if>
+                        <if test="miSelfAbilityAccess.deleteFlag != null">
+                            and delete_flag=#{miSelfAbilityAccess.deleteFlag}
+                        </if>
+                        <if test="miSelfAbilityAccess.createBy != null">
+                            and create_by=#{miSelfAbilityAccess.createBy}
+                        </if>
+                        <if test="miSelfAbilityAccess.createTime != null">
+                            and create_time=#{miSelfAbilityAccess.createTime}
+                        </if>
+                        <if test="miSelfAbilityAccess.updateBy != null">
+                            and update_by=#{miSelfAbilityAccess.updateBy}
+                        </if>
+                        <if test="miSelfAbilityAccess.updateTime != null">
+                            and update_time=#{miSelfAbilityAccess.updateTime}
+                        </if>
+    </select>
+    <!--新增市场洞察自身能力评估表-->
+    <insert id="insertMiSelfAbilityAccess" useGeneratedKeys="true" keyProperty="miSelfAbilityAccessId">
+        INSERT INTO mi_self_ability_access (market_insight_self_id,capacity_factor,description_actuality,ability_assess_score,strategy_control_point_flag,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{miSelfAbilityAccess.marketInsightSelfId},#{miSelfAbilityAccess.capacityFactor},#{miSelfAbilityAccess.descriptionActuality},#{miSelfAbilityAccess.abilityAssessScore},#{miSelfAbilityAccess.strategyControlPointFlag},#{miSelfAbilityAccess.sort},#{miSelfAbilityAccess.deleteFlag},#{miSelfAbilityAccess.createBy},#{miSelfAbilityAccess.createTime},#{miSelfAbilityAccess.updateBy},#{miSelfAbilityAccess.updateTime})
+    </insert>
+    <!--修改市场洞察自身能力评估表-->
+    <update id="updateMiSelfAbilityAccess">
+        UPDATE mi_self_ability_access
+        SET
+                    <if test="miSelfAbilityAccess.marketInsightSelfId != null">
+                        market_insight_self_id=#{miSelfAbilityAccess.marketInsightSelfId},
+                    </if>
+                    <if test="miSelfAbilityAccess.capacityFactor != null">
+                        capacity_factor=#{miSelfAbilityAccess.capacityFactor},
+                    </if>
+                    <if test="miSelfAbilityAccess.descriptionActuality != null and miSelfAbilityAccess.descriptionActuality != ''">
+                        description_actuality=#{miSelfAbilityAccess.descriptionActuality},
+                    </if>
+                    <if test="miSelfAbilityAccess.abilityAssessScore != null">
+                        ability_assess_score=#{miSelfAbilityAccess.abilityAssessScore},
+                    </if>
+                    <if test="miSelfAbilityAccess.strategyControlPointFlag != null">
+                        strategy_control_point_flag=#{miSelfAbilityAccess.strategyControlPointFlag},
+                    </if>
+                    <if test="miSelfAbilityAccess.sort != null">
+                        sort=#{miSelfAbilityAccess.sort},
+                    </if>
+                    <if test="miSelfAbilityAccess.deleteFlag != null">
+                        delete_flag=#{miSelfAbilityAccess.deleteFlag},
+                    </if>
+                    <if test="miSelfAbilityAccess.createBy != null">
+                        create_by=#{miSelfAbilityAccess.createBy},
+                    </if>
+                    <if test="miSelfAbilityAccess.createTime != null">
+                        create_time=#{miSelfAbilityAccess.createTime},
+                    </if>
+                    <if test="miSelfAbilityAccess.updateBy != null">
+                        update_by=#{miSelfAbilityAccess.updateBy},
+                    </if>
+                    <if test="miSelfAbilityAccess.updateTime != null">
+                        update_time=#{miSelfAbilityAccess.updateTime}
+                    </if>
+        WHERE
+                 mi_self_ability_access_id=#{miSelfAbilityAccess.miSelfAbilityAccessId}
+    </update>
+    <!--逻辑删除市场洞察自身能力评估表-->
+    <update id="logicDeleteMiSelfAbilityAccessByMiSelfAbilityAccessId">
+        UPDATE mi_self_ability_access
+        SET     delete_flag= 1,
+                update_by=#{miSelfAbilityAccess.updateBy},
+                update_time=#{miSelfAbilityAccess.updateTime}
+        WHERE
+                mi_self_ability_access_id=#{miSelfAbilityAccess.miSelfAbilityAccessId}
+    </update>
+    <!--逻辑批量删除市场洞察自身能力评估表-->
+    <update id="logicDeleteMiSelfAbilityAccessByMiSelfAbilityAccessIds">
+        UPDATE mi_self_ability_access
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         mi_self_ability_access_id IN
+            <foreach item="item"
+                     collection="miSelfAbilityAccessIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察自身能力评估表-->
+    <insert id="batchMiSelfAbilityAccess">
+        INSERT INTO mi_self_ability_access (market_insight_self_id,capacity_factor,description_actuality,ability_assess_score,strategy_control_point_flag,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="miSelfAbilityAccesss"
+                 separator=",">
+            (#{item.marketInsightSelfId},#{item.capacityFactor},#{item.descriptionActuality},#{item.abilityAssessScore},#{item.strategyControlPointFlag},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察自身能力评估表-->
+    <delete id="deleteMiSelfAbilityAccessByMiSelfAbilityAccessId">
+        DELETE FROM mi_self_ability_access
+        WHERE  mi_self_ability_access_id=#{miSelfAbilityAccess}
+
+    </delete>
+    <!--物理批量删除市场洞察自身能力评估表-->
+    <delete id="deleteMiSelfAbilityAccessByMiSelfAbilityAccessIds">
+        DELETE FROM mi_self_ability_access
+        WHERE  mi_self_ability_access_id IN
+            <foreach item="item"
+                     collection="miSelfAbilityAccessIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察自身能力评估表-->
+    <update id="updateMiSelfAbilityAccesss">
+        update mi_self_ability_access
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="market_insight_self_id=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.marketInsightSelfId != null">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.marketInsightSelfId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="capacity_factor=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.capacityFactor != null">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.capacityFactor}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="description_actuality=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.descriptionActuality != null and item.descriptionActuality != ''">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.descriptionActuality}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="ability_assess_score=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.abilityAssessScore != null">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.abilityAssessScore}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="strategy_control_point_flag=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.strategyControlPointFlag != null">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.strategyControlPointFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="miSelfAbilityAccessList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when mi_self_ability_access_id=#{item.miSelfAbilityAccessId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="miSelfAbilityAccessList" separator="or" item="item" index="index">
+                    mi_self_ability_access_id=#{item.miSelfAbilityAccessId}
+        </foreach>
+    </update>
+</mapper>
+
+
