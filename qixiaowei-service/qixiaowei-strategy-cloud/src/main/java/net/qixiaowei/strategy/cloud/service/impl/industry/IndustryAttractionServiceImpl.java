@@ -208,7 +208,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
         List<IndustryAttractionDTO> industryAttractionDTOS = industryAttractionMapper.selectIndustryAttractionList(new IndustryAttraction());
         if (StringUtils.isNotEmpty(industryAttractionDTOS)){
 
-            List<IndustryAttractionDTO> IndustryAttractionList = industryAttractionDTOS.stream().filter(f -> f.getAttractionElementName().equals(industryAttractionDTO1.getAttractionElementName())).collect(Collectors.toList());
+            List<IndustryAttractionDTO> IndustryAttractionList = industryAttractionDTOS.stream().filter(f -> !f.getAttractionElementName().equals(industryAttractionDTO1.getAttractionElementName())).collect(Collectors.toList());
 
           if (StringUtils.isNotEmpty(IndustryAttractionList)){
               List<String> collect = IndustryAttractionList.stream().map(IndustryAttractionDTO::getAttractionElementName).collect(Collectors.toList());
