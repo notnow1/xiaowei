@@ -98,11 +98,14 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 List<DictionaryDataDTO> data = dataByDictionaryDataList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MiCustomerChoiceDTO miCustomerChoiceDTO : miCustomerChoiceDTOS) {
-                        for (DictionaryDataDTO datum : data) {
-                            if (miCustomerChoiceDTO.getCustomerCategory().equals(datum.getDictionaryDataId())) {
-                                miCustomerChoiceDTO.setCustomerCategoryName(datum.getDictionaryLabel());
+                        if (null != miCustomerChoiceDTO.getCustomerCategory()){
+                            for (DictionaryDataDTO datum : data) {
+                                if (miCustomerChoiceDTO.getCustomerCategory().equals(datum.getDictionaryDataId())) {
+                                    miCustomerChoiceDTO.setCustomerCategoryName(datum.getDictionaryLabel());
+                                }
                             }
                         }
+
                     }
                 }
             }
@@ -112,9 +115,11 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 List<IndustryDTO> data = industryList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MiCustomerChoiceDTO miCustomerChoiceDTO : miCustomerChoiceDTOS) {
-                        for (IndustryDTO datum : data) {
-                            if (miCustomerChoiceDTO.getIndustryId().equals(datum.getIndustryId())) {
-                                miCustomerChoiceDTO.setIndustryName(datum.getIndustryName());
+                        if (null != miCustomerChoiceDTO.getIndustryId()){
+                            for (IndustryDTO datum : data) {
+                                if (miCustomerChoiceDTO.getIndustryId().equals(datum.getIndustryId())) {
+                                    miCustomerChoiceDTO.setIndustryName(datum.getIndustryName());
+                                }
                             }
                         }
                     }
@@ -136,9 +141,12 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 List<DictionaryDataDTO> data = dataByDictionaryDataList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MiCustomerInvestPlanDTO miCustomerInvestPlanDTO : miCustomerInvestPlanDTOS) {
-                        for (DictionaryDataDTO datum : data) {
-                            if (miCustomerInvestPlanDTO.getCustomerCategory().equals(datum.getDictionaryDataId())) {
-                                miCustomerInvestPlanDTO.setCustomerCategoryName(datum.getDictionaryLabel());
+                        Long customerCategory = miCustomerInvestPlanDTO.getCustomerCategory();
+                        if (customerCategory != null){
+                            for (DictionaryDataDTO datum : data) {
+                                if (miCustomerInvestPlanDTO.getCustomerCategory().equals(datum.getDictionaryDataId())) {
+                                    miCustomerInvestPlanDTO.setCustomerCategoryName(datum.getDictionaryLabel());
+                                }
                             }
                         }
                     }
@@ -151,9 +159,12 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 List<IndustryDTO> data = industryList.getData();
                 if (StringUtils.isNotNull(data)) {
                     for (MiCustomerInvestPlanDTO miCustomerInvestPlanDTO : miCustomerInvestPlanDTOS) {
-                        for (IndustryDTO datum : data) {
-                            if (miCustomerInvestPlanDTO.getIndustryId().equals(datum.getIndustryId())) {
-                                miCustomerInvestPlanDTO.setIndustryName(datum.getIndustryName());
+                        Long industryId = miCustomerInvestPlanDTO.getIndustryId();
+                        if (null != industryId){
+                            for (IndustryDTO datum : data) {
+                                if (miCustomerInvestPlanDTO.getIndustryId().equals(datum.getIndustryId())) {
+                                    miCustomerInvestPlanDTO.setIndustryName(datum.getIndustryName());
+                                }
                             }
                         }
                     }

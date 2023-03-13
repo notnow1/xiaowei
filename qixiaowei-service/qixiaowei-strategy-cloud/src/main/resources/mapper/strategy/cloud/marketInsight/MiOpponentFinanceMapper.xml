@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MiOpponentFinanceMapper">
+    <!--    查询市场洞察对手财务表-->
+    <select id="selectMiOpponentFinanceByMiOpponentFinanceId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO">
+        SELECT
+        mi_opponent_finance_id,market_insight_opponent_id,mi_opponent_choice_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_finance
+        WHERE  mi_opponent_finance_id=#{miOpponentFinanceId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察对手财务表-->
+    <select id="selectMiOpponentFinanceByMiOpponentFinanceIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO">
+        SELECT
+        mi_opponent_finance_id,market_insight_opponent_id,mi_opponent_choice_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_finance
+        WHERE  mi_opponent_finance_id in
+            <foreach item="item"
+                     collection="miOpponentFinanceIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察对手财务表列表-->
+    <select id="selectMiOpponentFinanceList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO">
+        SELECT
+        mi_opponent_finance_id,market_insight_opponent_id,mi_opponent_choice_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_finance
+        WHERE delete_flag=0
+                        <if test="miOpponentFinance.miOpponentFinanceId != null">
+                            and mi_opponent_finance_id=#{miOpponentFinance.miOpponentFinanceId}
+                        </if>
+                        <if test="miOpponentFinance.marketInsightOpponentId != null">
+                            and market_insight_opponent_id=#{miOpponentFinance.marketInsightOpponentId}
+                        </if>
+                        <if test="miOpponentFinance.miOpponentChoiceId != null">
+                            and mi_opponent_choice_id=#{miOpponentFinance.miOpponentChoiceId}
+                        </if>
+                        <if test="miOpponentFinance.indicatorId != null">
+                            and indicator_id=#{miOpponentFinance.indicatorId}
+                        </if>
+                        <if test="miOpponentFinance.operateYear != null">
+                            and operate_year=#{miOpponentFinance.operateYear}
+                        </if>
+                        <if test="miOpponentFinance.operateValue != null">
+                            and operate_value=#{miOpponentFinance.operateValue}
+                        </if>
+                        <if test="miOpponentFinance.sort != null">
+                            and sort=#{miOpponentFinance.sort}
+                        </if>
+                        <if test="miOpponentFinance.deleteFlag != null">
+                            and delete_flag=#{miOpponentFinance.deleteFlag}
+                        </if>
+                        <if test="miOpponentFinance.createBy != null">
+                            and create_by=#{miOpponentFinance.createBy}
+                        </if>
+                        <if test="miOpponentFinance.createTime != null">
+                            and create_time=#{miOpponentFinance.createTime}
+                        </if>
+                        <if test="miOpponentFinance.updateBy != null">
+                            and update_by=#{miOpponentFinance.updateBy}
+                        </if>
+                        <if test="miOpponentFinance.updateTime != null">
+                            and update_time=#{miOpponentFinance.updateTime}
+                        </if>
+    </select>
+<!--    根据市场洞察对手选择表主键查询市场洞察对手财务表-->
+    <select id="selectMiOpponentFinanceByMiOpponentChoiceId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO">
+        SELECT
+            mi_opponent_finance_id,market_insight_opponent_id,mi_opponent_choice_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_finance
+        WHERE  mi_opponent_choice_id=#{miOpponentChoiceId}
+          and delete_flag=0
+    </select>
+<!--    根据市场洞察对手选择表主键集合批量查询市场洞察对手财务表-->
+    <select id="selectMiOpponentFinanceByMiOpponentChoiceIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO">
+        SELECT
+        mi_opponent_finance_id,market_insight_opponent_id,mi_opponent_choice_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_finance
+        WHERE  mi_opponent_choice_id in
+        <foreach item="item"
+                 collection="miOpponentChoiceIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+    <!--新增市场洞察对手财务表-->
+    <insert id="insertMiOpponentFinance" useGeneratedKeys="true" keyProperty="miOpponentFinanceId">
+        INSERT INTO mi_opponent_finance (market_insight_opponent_id,mi_opponent_choice_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{miOpponentFinance.marketInsightOpponentId},#{miOpponentFinance.miOpponentChoiceId},#{miOpponentFinance.indicatorId},#{miOpponentFinance.operateYear},#{miOpponentFinance.operateValue},#{miOpponentFinance.sort},#{miOpponentFinance.deleteFlag},#{miOpponentFinance.createBy},#{miOpponentFinance.createTime},#{miOpponentFinance.updateBy},#{miOpponentFinance.updateTime})
+    </insert>
+    <!--修改市场洞察对手财务表-->
+    <update id="updateMiOpponentFinance">
+        UPDATE mi_opponent_finance
+        SET
+                    <if test="miOpponentFinance.marketInsightOpponentId != null">
+                        market_insight_opponent_id=#{miOpponentFinance.marketInsightOpponentId},
+                    </if>
+                    <if test="miOpponentFinance.miOpponentChoiceId != null">
+                        mi_opponent_choice_id=#{miOpponentFinance.miOpponentChoiceId},
+                    </if>
+                    <if test="miOpponentFinance.indicatorId != null">
+                        indicator_id=#{miOpponentFinance.indicatorId},
+                    </if>
+                    <if test="miOpponentFinance.operateYear != null">
+                        operate_year=#{miOpponentFinance.operateYear},
+                    </if>
+                    <if test="miOpponentFinance.operateValue != null">
+                        operate_value=#{miOpponentFinance.operateValue},
+                    </if>
+                    <if test="miOpponentFinance.sort != null">
+                        sort=#{miOpponentFinance.sort},
+                    </if>
+                    <if test="miOpponentFinance.deleteFlag != null">
+                        delete_flag=#{miOpponentFinance.deleteFlag},
+                    </if>
+                    <if test="miOpponentFinance.createBy != null">
+                        create_by=#{miOpponentFinance.createBy},
+                    </if>
+                    <if test="miOpponentFinance.createTime != null">
+                        create_time=#{miOpponentFinance.createTime},
+                    </if>
+                    <if test="miOpponentFinance.updateBy != null">
+                        update_by=#{miOpponentFinance.updateBy},
+                    </if>
+                    <if test="miOpponentFinance.updateTime != null">
+                        update_time=#{miOpponentFinance.updateTime}
+                    </if>
+        WHERE
+                 mi_opponent_finance_id=#{miOpponentFinance.miOpponentFinanceId}
+    </update>
+    <!--逻辑删除市场洞察对手财务表-->
+    <update id="logicDeleteMiOpponentFinanceByMiOpponentFinanceId">
+        UPDATE mi_opponent_finance
+        SET     delete_flag= 1,
+                update_by=#{miOpponentFinance.updateBy},
+                update_time=#{miOpponentFinance.updateTime}
+        WHERE
+                mi_opponent_finance_id=#{miOpponentFinance.miOpponentFinanceId}
+    </update>
+    <!--逻辑批量删除市场洞察对手财务表-->
+    <update id="logicDeleteMiOpponentFinanceByMiOpponentFinanceIds">
+        UPDATE mi_opponent_finance
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         mi_opponent_finance_id IN
+            <foreach item="item"
+                     collection="miOpponentFinanceIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察对手财务表-->
+    <insert id="batchMiOpponentFinance" useGeneratedKeys="true" keyProperty="miOpponentFinanceId">
+        INSERT INTO mi_opponent_finance (market_insight_opponent_id,mi_opponent_choice_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="miOpponentFinances"
+                 separator=",">
+            (#{item.marketInsightOpponentId},#{item.miOpponentChoiceId},#{item.indicatorId},#{item.operateYear},#{item.operateValue},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察对手财务表-->
+    <delete id="deleteMiOpponentFinanceByMiOpponentFinanceId">
+        DELETE FROM mi_opponent_finance
+        WHERE  mi_opponent_finance_id=#{miOpponentFinance}
+
+    </delete>
+    <!--物理批量删除市场洞察对手财务表-->
+    <delete id="deleteMiOpponentFinanceByMiOpponentFinanceIds">
+        DELETE FROM mi_opponent_finance
+        WHERE  mi_opponent_finance_id IN
+            <foreach item="item"
+                     collection="miOpponentFinanceIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察对手财务表-->
+    <update id="updateMiOpponentFinances">
+        update mi_opponent_finance
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="market_insight_opponent_id=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.marketInsightOpponentId != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.marketInsightOpponentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="mi_opponent_choice_id=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.miOpponentChoiceId != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.miOpponentChoiceId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="indicator_id=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.indicatorId != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.indicatorId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="operate_year=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.operateYear != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.operateYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="operate_value=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.operateValue != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.operateValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="miOpponentFinanceList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when mi_opponent_finance_id=#{item.miOpponentFinanceId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="miOpponentFinanceList" separator="or" item="item" index="index">
+                    mi_opponent_finance_id=#{item.miOpponentFinanceId}
+        </foreach>
+    </update>
+</mapper>
+
+
