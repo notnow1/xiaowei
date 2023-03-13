@@ -371,7 +371,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
                 }
             }
             // 区域的关联ID
-            List<Long> areaIds = businessDesignParamDTOS.stream().filter(b -> b.getParamDimension() == 1).map(BusinessDesignParamDTO::getParamRelationId).collect(Collectors.toList());
+            List<Long> areaIds = businessDesignParamDTOS.stream().filter(b -> b.getParamDimension() == 3).map(BusinessDesignParamDTO::getParamRelationId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(areaIds)) {
                 R<List<AreaDTO>> areaDTOSR = areaService.selectAreaListByAreaIds(areaIds, SecurityConstants.INNER);
                 List<AreaDTO> areaDTOS = areaDTOSR.getData();
@@ -624,7 +624,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
             }
         }
         // 区域的关联ID
-        List<Long> areaIds = businessDesignParamDTOSAfter.stream().filter(b -> b.getParamDimension() == 1).map(BusinessDesignParamDTO::getParamRelationId).collect(Collectors.toList());
+        List<Long> areaIds = businessDesignParamDTOSAfter.stream().filter(b -> b.getParamDimension() == 3).map(BusinessDesignParamDTO::getParamRelationId).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(areaIds)) {
             R<List<AreaDTO>> areaDTOSR = areaService.selectAreaListByAreaIds(areaIds, SecurityConstants.INNER);
             List<AreaDTO> areaDTOS = areaDTOSR.getData();
