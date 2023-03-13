@@ -440,7 +440,7 @@ CREATE TABLE market_insight_customer(
 CREATE TABLE mi_customer_choice(
     mi_customer_choice_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     market_insight_customer_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察客户ID' ,
-    industry_id BIGINT UNSIGNED NOT NULL   COMMENT '行业ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
     customer_name VARCHAR(128)    COMMENT '客户名称' ,
     admission_flag TINYINT UNSIGNED    COMMENT '准入标记:0否;1是' ,
     customer_category BIGINT UNSIGNED    COMMENT '客户类别' ,
@@ -455,10 +455,11 @@ CREATE TABLE mi_customer_choice(
 )  COMMENT = '市场洞察客户选择表';
 
 
+
 CREATE TABLE mi_customer_invest_plan(
     mi_customer_invest_plan_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     market_insight_customer_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察客户ID' ,
-    industry_id BIGINT UNSIGNED NOT NULL   COMMENT '行业ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
     customer_name VARCHAR(128)    COMMENT '客户名称' ,
     customer_category BIGINT UNSIGNED    COMMENT '客户类别' ,
     exist_market_share DECIMAL(5,2)    COMMENT '现有市场占有率' ,
@@ -518,7 +519,7 @@ CREATE TABLE market_insight_opponent(
 CREATE TABLE mi_opponent_choice(
     mi_opponent_choice_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     market_insight_opponent_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察对手ID' ,
-    industry_id BIGINT UNSIGNED NOT NULL   COMMENT '行业ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
     opponent_name VARCHAR(128)    COMMENT '对手名称' ,
     comparison_item BIGINT UNSIGNED    COMMENT '对比项目' ,
     ability_assess_score DECIMAL(5,2)    COMMENT '能力评估分数' ,
@@ -543,7 +544,7 @@ CREATE TABLE mi_opponent_finance(
     mi_opponent_finance_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     market_insight_opponent_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察对手ID' ,
     mi_opponent_choice_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察对手选择ID' ,
-    industry_id BIGINT UNSIGNED NOT NULL   COMMENT '行业ID' ,
+    indicator_id BIGINT UNSIGNED NOT NULL   COMMENT '指标ID' ,
     operate_year SMALLINT UNSIGNED    COMMENT '经营年度' ,
     operate_value DECIMAL(14,2)    COMMENT '经营值' ,
     sort SMALLINT UNSIGNED    COMMENT '排序' ,
