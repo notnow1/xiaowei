@@ -54,7 +54,7 @@ public class MiOpponentFinanceDTO {
      */
     private Long indicatorId;
     /**
-     *
+     *对手财务具体经营值集合
      */
     private List<MiFinanceIndicatorIdDTO> miFinanceIndicatorIdDTOS;
     /**

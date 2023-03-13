@@ -16,6 +16,7 @@ import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MarketInsightOpponent;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiOpponentChoice;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiOpponentFinance;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.*;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.MarketInsightOpponentMapper;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiOpponentChoiceMapper;
@@ -207,14 +208,15 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
 
     /**
      * 封装市场洞察对手财务远程赋值
+     *
      * @param miOpponentChoiceDTOList
      * @param miOpponentChoiceIds
      */
     private void packMiOpponentFinanceDTOList(List<MiOpponentChoiceDTO> miOpponentChoiceDTOList, List<Long> miOpponentChoiceIds) {
-        if (StringUtils.isNotEmpty(miOpponentChoiceIds)){
+        if (StringUtils.isNotEmpty(miOpponentChoiceIds)) {
             List<MiOpponentFinanceDTO> miOpponentFinanceDTOList = miOpponentFinanceMapper.selectMiOpponentFinanceByMiOpponentChoiceIds(miOpponentChoiceIds);
-            if (StringUtils.isNotEmpty(miOpponentFinanceDTOList)){
-                //行业id集合
+            if (StringUtils.isNotEmpty(miOpponentFinanceDTOList)) {
+                //指标id集合
                 List<Long> indicatorIds = miOpponentFinanceDTOList.stream().filter(f -> null != f.getIndicatorId()).map(MiOpponentFinanceDTO::getIndicatorId).collect(Collectors.toList());
                 if (StringUtils.isNotEmpty(indicatorIds)) {
                     R<List<IndicatorDTO>> indicatorList = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
@@ -233,11 +235,35 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
                     }
                 }
             }
-            //根据市场洞察对手选择ID分组
-            Map<Long, List<MiOpponentFinanceDTO>> miOpponentFinanceDTOMapList = miOpponentFinanceDTOList.parallelStream().collect(Collectors.groupingBy(MiOpponentFinanceDTO::getMiOpponentChoiceId));
-            if (StringUtils.isNotEmpty(miOpponentChoiceDTOList)&& StringUtils.isNotEmpty(miOpponentFinanceDTOMapList)){
+            //根据市场洞察对手选择ID和指标id分组
+            Map<Long, Map<Long, List<MiOpponentFinanceDTO>>> miOpponentFinanceDTOMapAllList = miOpponentFinanceDTOList.parallelStream().collect(Collectors.groupingBy(MiOpponentFinanceDTO::getMiOpponentChoiceId, Collectors.groupingBy(MiOpponentFinanceDTO::getIndicatorId)));
+
+            if (StringUtils.isNotEmpty(miOpponentChoiceDTOList) && StringUtils.isNotEmpty(miOpponentFinanceDTOMapAllList)) {
                 for (MiOpponentChoiceDTO miOpponentChoiceDTO : miOpponentChoiceDTOList) {
-                    miOpponentChoiceDTO.setMiOpponentFinanceDTOS(miOpponentFinanceDTOMapList.get(miOpponentChoiceDTO.getMiOpponentChoiceId()));
+                    List<MiOpponentFinanceDTO> miOpponentFinanceDTOS = new ArrayList<>();
+                    //取出根据指标id分组的数据
+                    Map<Long, List<MiOpponentFinanceDTO>> IndicatorIdListMap = miOpponentFinanceDTOMapAllList.get(miOpponentChoiceDTO.getMiOpponentChoiceId());
+                    if (StringUtils.isNotEmpty(IndicatorIdListMap)) {
+                        for (Long key : IndicatorIdListMap.keySet()) {
+                            MiOpponentFinanceDTO miOpponentFinanceDTO = new MiOpponentFinanceDTO();
+                            //经营值集合
+                            List<MiOpponentFinanceDTO> miOpponentFinanceDTOList1 = IndicatorIdListMap.get(key);
+                            if (StringUtils.isNotEmpty(miOpponentFinanceDTOList1)) {
+                                //key 赋值指标id
+                                miOpponentFinanceDTO.setIndicatorId(key);
+                                miOpponentFinanceDTO.setIndicatorName(IndicatorIdListMap.get(key).get(0).getIndicatorName());
+                                List<MiFinanceIndicatorIdDTO> miFinanceIndicatorIdDTOS = new ArrayList<>();
+                                for (MiOpponentFinanceDTO opponentFinanceDTO : miOpponentFinanceDTOList1) {
+                                    MiFinanceIndicatorIdDTO miFinanceIndicatorIdDTO = new MiFinanceIndicatorIdDTO();
+                                    BeanUtils.copyProperties(opponentFinanceDTO, miFinanceIndicatorIdDTO);
+                                    miFinanceIndicatorIdDTOS.add(miFinanceIndicatorIdDTO);
+                                }
+                                miOpponentFinanceDTO.setMiFinanceIndicatorIdDTOS(miFinanceIndicatorIdDTOS);
+                            }
+                            miOpponentFinanceDTOS.add(miOpponentFinanceDTO);
+                        }
+                    }
+                    miOpponentChoiceDTO.setMiOpponentFinanceDTOS(miOpponentFinanceDTOS);
                 }
             }
         }
@@ -417,78 +443,98 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
     @Override
     @Transactional
     public MarketInsightOpponentDTO insertMarketInsightOpponent(MarketInsightOpponentDTO marketInsightOpponentDTO) {
-        MarketInsightOpponent marketInsightOpponent = new MarketInsightOpponent();
-        BeanUtils.copyProperties(marketInsightOpponentDTO, marketInsightOpponent);
-        marketInsightOpponent.setCreateBy(SecurityUtils.getUserId());
-        marketInsightOpponent.setCreateTime(DateUtils.getNowDate());
-        marketInsightOpponent.setUpdateTime(DateUtils.getNowDate());
-        marketInsightOpponent.setUpdateBy(SecurityUtils.getUserId());
-        marketInsightOpponent.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        try {
-            marketInsightOpponentMapper.insertMarketInsightOpponent(marketInsightOpponent);
-        } catch (Exception e) {
-            throw new ServiceException("新增市场洞察对手失败！");
-        }
-        marketInsightOpponentDTO.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
-        //市场洞察对手选择集合
-        List<MiOpponentChoiceDTO> miOpponentChoiceDTOS = marketInsightOpponentDTO.getMiOpponentChoiceDTOS();
-        //保存数据库
-        List<MiOpponentChoice> miOpponentChoiceList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(miOpponentChoiceDTOS)) {
-            for (int i = 0; i < miOpponentChoiceDTOS.size(); i++) {
-                MiOpponentChoice miOpponentChoice = new MiOpponentChoice();
-                BeanUtils.copyProperties(miOpponentChoiceDTOS.get(i), miOpponentChoice);
-                //市场洞察对手ID
-                miOpponentChoice.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
-                miOpponentChoice.setSort(i + 1);
-                miOpponentChoice.setCreateBy(SecurityUtils.getUserId());
-                miOpponentChoice.setCreateTime(DateUtils.getNowDate());
-                miOpponentChoice.setUpdateTime(DateUtils.getNowDate());
-                miOpponentChoice.setUpdateBy(SecurityUtils.getUserId());
-                miOpponentChoice.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                miOpponentChoiceList.add(miOpponentChoice);
-            }
-        }
-        if (StringUtils.isNotEmpty(miOpponentChoiceList)) {
+        if (StringUtils.isNotNull(marketInsightOpponentDTO)) {
+            Integer planYear = marketInsightOpponentDTO.getPlanYear();
+
+            MarketInsightOpponent marketInsightOpponent = new MarketInsightOpponent();
+            BeanUtils.copyProperties(marketInsightOpponentDTO, marketInsightOpponent);
+            marketInsightOpponent.setCreateBy(SecurityUtils.getUserId());
+            marketInsightOpponent.setCreateTime(DateUtils.getNowDate());
+            marketInsightOpponent.setUpdateTime(DateUtils.getNowDate());
+            marketInsightOpponent.setUpdateBy(SecurityUtils.getUserId());
+            marketInsightOpponent.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             try {
-                miOpponentChoiceMapper.batchMiOpponentChoice(miOpponentChoiceList);
+                marketInsightOpponentMapper.insertMarketInsightOpponent(marketInsightOpponent);
             } catch (Exception e) {
-                throw new ServiceException("批量新增市场洞察对手选择失败");
+                throw new ServiceException("新增市场洞察对手失败！");
             }
-        }
-        if (StringUtils.isNotEmpty(miOpponentChoiceList)) {
-            for (int i = 0; i < miOpponentChoiceList.size(); i++) {
-                //前台市场洞察对手财务集合
-                List<MiOpponentFinanceDTO> miOpponentFinanceDTOS = miOpponentChoiceDTOS.get(i).getMiOpponentFinanceDTOS();
-                //保存数据库
-                List<MiOpponentFinance> miOpponentFinanceList = new ArrayList<>();
-                if (StringUtils.isNotEmpty(miOpponentFinanceDTOS)) {
-                    for (int i1 = 0; i1 < miOpponentFinanceDTOS.size(); i1++) {
-                        MiOpponentFinance miOpponentFinance = new MiOpponentFinance();
-                        BeanUtils.copyProperties(miOpponentFinanceDTOS.get(i1), miOpponentFinance);
-                        //市场洞察对手ID
-                        miOpponentFinance.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
-                        //市场洞察对手选择ID
-                        miOpponentFinance.setMiOpponentChoiceId(miOpponentChoiceList.get(i).getMiOpponentChoiceId());
-                        miOpponentFinance.setSort(i + 1);
-                        miOpponentFinance.setCreateBy(SecurityUtils.getUserId());
-                        miOpponentFinance.setCreateTime(DateUtils.getNowDate());
-                        miOpponentFinance.setUpdateTime(DateUtils.getNowDate());
-                        miOpponentFinance.setUpdateBy(SecurityUtils.getUserId());
-                        miOpponentFinance.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                        miOpponentFinanceList.add(miOpponentFinance);
-
+            marketInsightOpponentDTO.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
+            //市场洞察对手选择集合
+            List<MiOpponentChoiceDTO> miOpponentChoiceDTOS = marketInsightOpponentDTO.getMiOpponentChoiceDTOS();
+            //保存数据库
+            List<MiOpponentChoice> miOpponentChoiceList = new ArrayList<>();
+            if (StringUtils.isNotEmpty(miOpponentChoiceDTOS)) {
+                for (int i = 0; i < miOpponentChoiceDTOS.size(); i++) {
+                    //对手财务具体经营值集合
+                    List<MiOpponentFinanceDTO> miOpponentFinanceDTOS = miOpponentChoiceDTOS.get(i).getMiOpponentFinanceDTOS();
+                    //经营历史期
+                    Integer operateHistoryPeriod = miOpponentChoiceDTOS.get(i).getOperateHistoryPeriod();
+                    if (StringUtils.isNotNull(operateHistoryPeriod) && StringUtils.isNotEmpty(miOpponentFinanceDTOS)) {
+                        for (int i1 = 0; i1 < miOpponentFinanceDTOS.size(); i1++) {
+                            miOpponentFinanceDTOS.get(i1).setOperateYear(planYear - (i1 + 1));
+                        }
                     }
-                }
-                if (StringUtils.isNotEmpty(miOpponentFinanceList)) {
-                    try {
-                        miOpponentFinanceMapper.batchMiOpponentFinance(miOpponentFinanceList);
-                    } catch (Exception e) {
-                        throw new ServiceException("批量新增市场洞察对手财务失败");
-                    }
+                    MiOpponentChoice miOpponentChoice = new MiOpponentChoice();
+                    BeanUtils.copyProperties(miOpponentChoiceDTOS.get(i), miOpponentChoice);
+                    //市场洞察对手ID
+                    miOpponentChoice.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
+                    miOpponentChoice.setSort(i + 1);
+                    miOpponentChoice.setCreateBy(SecurityUtils.getUserId());
+                    miOpponentChoice.setCreateTime(DateUtils.getNowDate());
+                    miOpponentChoice.setUpdateTime(DateUtils.getNowDate());
+                    miOpponentChoice.setUpdateBy(SecurityUtils.getUserId());
+                    miOpponentChoice.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    miOpponentChoiceList.add(miOpponentChoice);
                 }
             }
+            if (StringUtils.isNotEmpty(miOpponentChoiceList)) {
+                try {
+                    miOpponentChoiceMapper.batchMiOpponentChoice(miOpponentChoiceList);
+                } catch (Exception e) {
+                    throw new ServiceException("批量新增市场洞察对手选择失败");
+                }
+            }
+            if (StringUtils.isNotEmpty(miOpponentChoiceList)) {
 
+                for (int i = 0; i < miOpponentChoiceList.size(); i++) {
+                    //前台市场洞察对手财务集合
+                    List<MiOpponentFinanceDTO> miOpponentFinanceDTOS = miOpponentChoiceDTOS.get(i).getMiOpponentFinanceDTOS();
+                    //保存数据库
+                    List<MiOpponentFinance> miOpponentFinanceList = new ArrayList<>();
+                    if (StringUtils.isNotEmpty(miOpponentFinanceDTOS)) {
+                        for (int i1 = 0; i1 < miOpponentFinanceDTOS.size(); i1++) {
+                            //对手财务具体经营值集合
+                            List<MiFinanceIndicatorIdDTO> miFinanceIndicatorIdDTOS = miOpponentFinanceDTOS.get(i1).getMiFinanceIndicatorIdDTOS();
+                            if (StringUtils.isNotEmpty(miFinanceIndicatorIdDTOS)) {
+                                for (int i2 = 0; i2 < miFinanceIndicatorIdDTOS.size(); i2++) {
+                                    MiOpponentFinance miOpponentFinance = new MiOpponentFinance();
+                                    BeanUtils.copyProperties(miFinanceIndicatorIdDTOS.get(i2), miOpponentFinance);
+                                    miOpponentFinance.setIndicatorId(miOpponentFinanceDTOS.get(i1).getIndicatorId());
+                                    //市场洞察对手ID
+                                    miOpponentFinance.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
+                                    //市场洞察对手选择ID
+                                    miOpponentFinance.setMiOpponentChoiceId(miOpponentChoiceList.get(i).getMiOpponentChoiceId());
+                                    miOpponentFinance.setSort(i2 + 1);
+                                    miOpponentFinance.setCreateBy(SecurityUtils.getUserId());
+                                    miOpponentFinance.setCreateTime(DateUtils.getNowDate());
+                                    miOpponentFinance.setUpdateTime(DateUtils.getNowDate());
+                                    miOpponentFinance.setUpdateBy(SecurityUtils.getUserId());
+                                    miOpponentFinance.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                                    miOpponentFinanceList.add(miOpponentFinance);
+                                }
+                            }
+                        }
+                    }
+                    if (StringUtils.isNotEmpty(miOpponentFinanceList)) {
+                        try {
+                            miOpponentFinanceMapper.batchMiOpponentFinance(miOpponentFinanceList);
+                        } catch (Exception e) {
+                            throw new ServiceException("批量新增市场洞察对手财务失败");
+                        }
+                    }
+                }
+
+            }
         }
         return marketInsightOpponentDTO;
     }
@@ -502,11 +548,193 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
     @Override
     @Transactional
     public int updateMarketInsightOpponent(MarketInsightOpponentDTO marketInsightOpponentDTO) {
+        int i = 0;
+
         MarketInsightOpponent marketInsightOpponent = new MarketInsightOpponent();
         BeanUtils.copyProperties(marketInsightOpponentDTO, marketInsightOpponent);
         marketInsightOpponent.setUpdateTime(DateUtils.getNowDate());
         marketInsightOpponent.setUpdateBy(SecurityUtils.getUserId());
-        return marketInsightOpponentMapper.updateMarketInsightOpponent(marketInsightOpponent);
+        try {
+            i = marketInsightOpponentMapper.updateMarketInsightOpponent(marketInsightOpponent);
+        } catch (Exception e) {
+            throw new ServiceException("修改市场洞察对手失败！");
+        }
+        //前台接收到市场洞察对手选择集合
+        List<MiOpponentChoiceDTO> miOpponentChoiceDTOS = marketInsightOpponentDTO.getMiOpponentChoiceDTOS();
+        //后台新增市场洞察对手选择集合
+        List<MiOpponentChoice> miOpponentChoiceAddList = new ArrayList<>();
+        //后台修改市场洞察对手选择集合
+        List<MiOpponentChoice> miOpponentChoiceUpdateList = new ArrayList<>();
+        //封装新增修改市场洞察对手选择集合
+        this.packMarketInsightOpponentUpdates(marketInsightOpponent, miOpponentChoiceDTOS, miOpponentChoiceAddList, miOpponentChoiceUpdateList);
+        return i;
+    }
+
+    /**
+     * 封装新增修改市场洞察对手选择集合
+     *
+     * @param marketInsightOpponent
+     * @param miOpponentChoiceDTOS
+     * @param miOpponentChoiceAddList
+     * @param miOpponentChoiceUpdateList
+     */
+    private void packMarketInsightOpponentUpdates(MarketInsightOpponent marketInsightOpponent, List<MiOpponentChoiceDTO> miOpponentChoiceDTOS, List<MiOpponentChoice> miOpponentChoiceAddList, List<MiOpponentChoice> miOpponentChoiceUpdateList) {
+        //规划年度
+        Integer planYear = marketInsightOpponent.getPlanYear();
+        if (StringUtils.isNotEmpty(miOpponentChoiceDTOS)) {
+            List<MiOpponentChoiceDTO> miOpponentChoiceDTOList = miOpponentChoiceMapper.selectMiOpponentChoiceByMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
+            if (StringUtils.isNotEmpty(miOpponentChoiceDTOList)) {
+                //stream流求差集
+                List<Long> industryAttractionElementIds = miOpponentChoiceDTOList.stream().filter(a ->
+                        !miOpponentChoiceDTOS.stream().map(MiOpponentChoiceDTO::getMiOpponentChoiceId).collect(Collectors.toList()).contains(a.getMiOpponentChoiceId())
+                ).collect(Collectors.toList()).stream().map(MiOpponentChoiceDTO::getMiOpponentChoiceId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(industryAttractionElementIds)) {
+                    try {
+                        miOpponentChoiceMapper.logicDeleteMiOpponentChoiceByMiOpponentChoiceIds(industryAttractionElementIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                    } catch (Exception e) {
+                        throw new ServiceException("逻辑批量删除市场洞察对手选择失败！");
+                    }
+                }
+            }
+            for (int i1 = 0; i1 < miOpponentChoiceDTOS.size(); i1++) {
+                Long miOpponentChoiceId = miOpponentChoiceDTOS.get(i1).getMiOpponentChoiceId();
+                if (null != miOpponentChoiceId) {
+                    MiOpponentChoice miOpponentChoice = new MiOpponentChoice();
+                    BeanUtils.copyProperties(miOpponentChoiceDTOS.get(i1), miOpponentChoice);
+                    miOpponentChoice.setSort(i1 + 1);
+                    miOpponentChoice.setUpdateTime(DateUtils.getNowDate());
+                    miOpponentChoice.setUpdateBy(SecurityUtils.getUserId());
+                    miOpponentChoiceUpdateList.add(miOpponentChoice);
+                } else {
+                    MiOpponentChoice miOpponentChoice = new MiOpponentChoice();
+                    BeanUtils.copyProperties(miOpponentChoiceDTOS.get(i1), miOpponentChoice);
+                    miOpponentChoice.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
+                    miOpponentChoice.setSort(i1 + 1);
+                    miOpponentChoice.setUpdateTime(DateUtils.getNowDate());
+                    miOpponentChoice.setUpdateBy(SecurityUtils.getUserId());
+                    miOpponentChoice.setCreateBy(SecurityUtils.getUserId());
+                    miOpponentChoice.setCreateTime(DateUtils.getNowDate());
+                    miOpponentChoice.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    miOpponentChoiceAddList.add(miOpponentChoice);
+                }
+            }
+            if (StringUtils.isNotEmpty(miOpponentChoiceAddList)) {
+                try {
+                    miOpponentChoiceMapper.batchMiOpponentChoice(miOpponentChoiceAddList);
+                } catch (Exception e) {
+                    throw new ServiceException("批量新增市场洞察对手选择失败!");
+                }
+            }
+            if (StringUtils.isNotEmpty(miOpponentChoiceUpdateList)) {
+                try {
+                    miOpponentChoiceMapper.updateMiOpponentChoices(miOpponentChoiceUpdateList);
+                } catch (Exception e) {
+                    throw new ServiceException("批量修改市场洞察对手选择失败!");
+                }
+            }
+            //封装指标年份
+            this.packIndicatorYear(miOpponentChoiceDTOS, planYear);
+            //封装新增修改对手财务具体经营值集合
+            this.packMiOpponentFinanceUpdates(marketInsightOpponent, miOpponentChoiceDTOS, miOpponentChoiceAddList);
+        }
+    }
+
+    /**
+     * 封装指标年份
+     *
+     * @param miOpponentChoiceDTOS
+     * @param planYear
+     */
+    private void packIndicatorYear(List<MiOpponentChoiceDTO> miOpponentChoiceDTOS, Integer planYear) {
+        for (MiOpponentChoiceDTO miOpponentChoiceDTO : miOpponentChoiceDTOS) {
+            //前台对手财务具体经营值集合
+            List<MiOpponentFinanceDTO> miOpponentFinanceDTOS = miOpponentChoiceDTO.getMiOpponentFinanceDTOS();
+            if (StringUtils.isNotEmpty(miOpponentFinanceDTOS)) {
+                for (MiOpponentFinanceDTO miOpponentFinanceDTO : miOpponentFinanceDTOS) {
+                    //前台对手财务具体经营值集合
+                    List<MiFinanceIndicatorIdDTO> miFinanceIndicatorIdDTOS = miOpponentFinanceDTO.getMiFinanceIndicatorIdDTOS();
+                    if (StringUtils.isNotEmpty(miFinanceIndicatorIdDTOS)) {
+                        for (int i = 0; i < miFinanceIndicatorIdDTOS.size(); i++) {
+                            miFinanceIndicatorIdDTOS.get(i).setOperateYear(planYear - (i + 1));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 封装新增修改对手财务具体经营值集合
+     *
+     * @param marketInsightOpponent
+     * @param miOpponentChoiceDTOS
+     * @param miOpponentChoiceAddList
+     */
+    private void packMiOpponentFinanceUpdates(MarketInsightOpponent marketInsightOpponent, List<MiOpponentChoiceDTO> miOpponentChoiceDTOS, List<MiOpponentChoice> miOpponentChoiceAddList) {
+        for (int i = 0; i < miOpponentChoiceDTOS.size(); i++) {
+            int num = 0;
+            //前台对手财务具体经营值集合
+            List<MiOpponentFinanceDTO> miOpponentFinanceDTOS = miOpponentChoiceDTOS.get(i).getMiOpponentFinanceDTOS();
+            //新增对手财务具体经营值集合
+            List<MiOpponentFinance> miOpponentFinanceAddList = new ArrayList<>();
+            //修改对手财务具体经营值集合
+            List<MiOpponentFinance> miOpponentFinanceUpdateList = new ArrayList<>();
+            if (StringUtils.isNotEmpty(miOpponentFinanceDTOS)) {
+                for (MiOpponentFinanceDTO miOpponentFinanceDTO : miOpponentFinanceDTOS) {
+                    //前台对手财务具体经营值集合
+                    List<MiFinanceIndicatorIdDTO> miFinanceIndicatorIdDTOS = miOpponentFinanceDTO.getMiFinanceIndicatorIdDTOS();
+                    if (StringUtils.isNotEmpty(miFinanceIndicatorIdDTOS)) {
+                        for (int i1 = 0; i1 < miFinanceIndicatorIdDTOS.size(); i1++) {
+                            Long miOpponentFinanceId = miFinanceIndicatorIdDTOS.get(i1).getMiOpponentFinanceId();
+                            if (null != miOpponentFinanceId) {
+                                MiOpponentFinance miOpponentFinance = new MiOpponentFinance();
+                                BeanUtils.copyProperties(miFinanceIndicatorIdDTOS.get(i1), miOpponentFinance);
+                                //市场洞察对手ID
+                                miOpponentFinance.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
+                                //市场洞察对手选择ID
+                                miOpponentFinance.setMiOpponentChoiceId(miOpponentChoiceDTOS.get(i).getMiOpponentChoiceId());
+                                miOpponentFinance.setIndicatorId(miOpponentFinanceDTO.getIndicatorId());
+                                miOpponentFinance.setSort(i1 + 1);
+                                miOpponentFinance.setUpdateTime(DateUtils.getNowDate());
+                                miOpponentFinance.setUpdateBy(SecurityUtils.getUserId());
+                                miOpponentFinanceUpdateList.add(miOpponentFinance);
+                            } else {
+                                MiOpponentFinance miOpponentFinance = new MiOpponentFinance();
+                                BeanUtils.copyProperties(miFinanceIndicatorIdDTOS.get(i1), miOpponentFinance);
+                                miOpponentFinance.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
+                                if (StringUtils.isNotEmpty(miOpponentChoiceAddList)) {
+                                    //市场洞察对手选择ID
+                                    miOpponentFinance.setMiOpponentChoiceId(miOpponentChoiceAddList.get(num).getMiOpponentChoiceId());
+                                }
+                                miOpponentFinance.setIndicatorId(miOpponentFinanceDTO.getIndicatorId());
+                                miOpponentFinance.setSort(i1 + 1);
+                                miOpponentFinance.setUpdateTime(DateUtils.getNowDate());
+                                miOpponentFinance.setUpdateBy(SecurityUtils.getUserId());
+                                miOpponentFinance.setCreateBy(SecurityUtils.getUserId());
+                                miOpponentFinance.setCreateTime(DateUtils.getNowDate());
+                                miOpponentFinance.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                                miOpponentFinanceAddList.add(miOpponentFinance);
+                                num++;
+                            }
+                        }
+                    }
+                }
+            }
+            if (StringUtils.isNotEmpty(miOpponentFinanceAddList)) {
+                try {
+                    miOpponentFinanceMapper.batchMiOpponentFinance(miOpponentFinanceAddList);
+                } catch (Exception e) {
+                    throw new ServiceException("批量新增市场洞察对手财务失败！");
+                }
+            }
+            if (StringUtils.isNotEmpty(miOpponentFinanceUpdateList)) {
+                try {
+                    miOpponentFinanceMapper.updateMiOpponentFinances(miOpponentFinanceUpdateList);
+                } catch (Exception e) {
+                    throw new ServiceException("批量修改市场洞察对手财务失败！");
+                }
+            }
+        }
     }
 
     /**

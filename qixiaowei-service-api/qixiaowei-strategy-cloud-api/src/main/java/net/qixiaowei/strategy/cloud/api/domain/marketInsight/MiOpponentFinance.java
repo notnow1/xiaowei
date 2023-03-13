@@ -32,9 +32,9 @@ public class MiOpponentFinance extends TenantEntity {
      */
      private  Long  miOpponentChoiceId;
      /**
-     * 行业ID
+     * 指标ID
      */
-     private  Long  industryId;
+     private  Long  indicatorId;
      /**
      * 经营年度
      */

@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -90,12 +92,14 @@ public class MarketInsightOpponentDTO {
     */
     private  Long industryId;
     /**
-     * 行业ID
+     * 行业名称
      */
     private  String industryName;
     /**
      * 市场洞察对手选择集合
      */
+    @NotEmpty(message = "市场洞察对手选择集合不能为空",groups = {MarketInsightOpponentDTO.AddMarketInsightOpponentDTO.class, MarketInsightOpponentDTO.UpdateMarketInsightOpponentDTO.class})
+    @Valid
     private List<MiOpponentChoiceDTO> miOpponentChoiceDTOS;
     /**
     * 删除标记:0未删除;1已删除

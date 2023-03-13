@@ -231,7 +231,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
         List<Long> industryAttractionElementIds = new ArrayList<>();
         if (StringUtils.isNotEmpty(industryAttractionElementDTOList)) {
             if (StringUtils.isNotEmpty(industryAttractionElementDTOS)) {
-                //sterm流求差集
+                //stream流求差集
                 industryAttractionElementIds = industryAttractionElementDTOList.stream().filter(a ->
                         !industryAttractionElementDTOS.stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList()).contains(a.getIndustryAttractionElementId())
                 ).collect(Collectors.toList()).stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList());
