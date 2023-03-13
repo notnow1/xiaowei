@@ -5,6 +5,7 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
+import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -35,6 +36,11 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
             @Override
             public R<UserDTO> getUserInfoByUserId(Long userId, String source) {
                 return R.fail("根据用户ID获取用户失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<UserProfileVO> initUserCache(Long userId, String source) {
+                return R.fail("初始化用户失败:" + throwable.getMessage());
             }
 
             @Override

@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.tenant;
 
 import java.util.List;
 
+import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantInfoVO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantLoginFormVO;
@@ -34,6 +35,14 @@ public interface ITenantService {
      * @return 租户表集合
      */
     List<TenantDTO> selectTenantList(TenantDTO tenantDTO);
+
+    /**
+     * 处理返回
+     *
+     * @param result 用户表
+     * @return 角色表集合
+     */
+    void handleResult(List<TenantDTO> result);
 
     /**
      * 生成租户编码

@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.enums.system.RoleType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.domain.user.User;
@@ -93,6 +94,18 @@ public class RoleServiceImpl implements IRoleService {
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
         return roleMapper.selectRoleList(role);
+    }
+
+    @Override
+    public void handleResult(List<RoleDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(RoleDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

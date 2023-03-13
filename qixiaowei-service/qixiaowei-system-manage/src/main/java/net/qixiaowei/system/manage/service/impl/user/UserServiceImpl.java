@@ -5,9 +5,7 @@ import java.util.*;
 import net.qixiaowei.file.api.RemoteFileService;
 import net.qixiaowei.file.api.dto.FileDTO;
 import net.qixiaowei.integration.common.config.FileConfig;
-import net.qixiaowei.integration.common.constant.BusinessConstants;
-import net.qixiaowei.integration.common.constant.Constants;
-import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.constant.*;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.tenant.TenantStatus;
 import net.qixiaowei.integration.common.enums.user.UserType;
@@ -16,7 +14,9 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.file.FileTypeUtils;
 import net.qixiaowei.integration.common.utils.file.MimeTypeUtils;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.service.TokenService;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
@@ -49,7 +49,6 @@ import net.qixiaowei.system.manage.api.domain.user.User;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.user.IUserService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -96,6 +95,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private IUserConfigService userConfigService;
+
+    @Autowired
+    private RedisService redisService;
 
 
     @Override
@@ -305,6 +307,25 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
+     * 初始化用户缓存
+     *
+     * @param userId 用户表主键
+     * @return 用户表
+     */
+    @Override
+    public UserProfileVO initUserCache(Long userId) {
+        UserDTO userDTO = userMapper.selectUserByUserId(userId);
+        UserProfileVO userProfileVO = null;
+        if (StringUtils.isNotNull(userDTO)) {
+            String key = CacheConstants.USER_KEY + userId;
+            userProfileVO = new UserProfileVO();
+            BeanUtils.copyProperties(userDTO, userProfileVO);
+            redisService.setCacheObject(key, userProfileVO);
+        }
+        return userProfileVO;
+    }
+
+    /**
      * 根据用户ID查询用户角色列表
      *
      * @param userId 用户表主键
@@ -333,6 +354,24 @@ public class UserServiceImpl implements IUserService {
         }
         user.setParams(params);
         return userMapper.selectUserList(user);
+    }
+
+    /**
+     * 处理返回
+     *
+     * @param result 用户表
+     * @return 用户表集合
+     */
+    @Override
+    public void handleResult(List<UserDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(UserDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -371,12 +410,14 @@ public class UserServiceImpl implements IUserService {
         }
         //新增用户
         int row = userMapper.insertUser(user);
+        Long userId = user.getUserId();
         //初始化用户配置
-        userConfigService.initUserConfig(user.getUserId());
-        userDTO.setUserId(user.getUserId());
+        userConfigService.initUserConfig(userId);
+        this.initUserCache(userId);
+        userDTO.setUserId(userId);
         //新增用户角色
         insertUserRole(userDTO);
-        userDTO.setUserId(user.getUserId());
+        userDTO.setUserId(userId);
         return userDTO;
     }
 
@@ -411,7 +452,11 @@ public class UserServiceImpl implements IUserService {
         user.setAvatar(null);
         user.setUpdateTime(DateUtils.getNowDate());
         user.setUpdateBy(SecurityUtils.getUserId());
-        return userMapper.updateUser(user);
+        int row = userMapper.updateUser(user);
+        if (row > 0) {
+            this.initUserCache(userId);
+        }
+        return row;
     }
 
     /**

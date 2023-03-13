@@ -97,6 +97,10 @@ public class RoleDTO {
      */
     private Long createBy;
     /**
+     * 创建人姓名
+     */
+    private String createByName;
+    /**
      * 创建时间
      */
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
