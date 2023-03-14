@@ -14,6 +14,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryPay;
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryPayDetails;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
@@ -213,6 +214,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 }
             }
         }
+        this.handleResult(salaryPayDTOList);
         return salaryPayDTOList;
     }
 
@@ -1586,6 +1588,18 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             salaryPayDTOS.add(salaryPayDTO);
         }
         return salaryPayDTOS;
+    }
+
+    @Override
+    public void handleResult(List<SalaryPayDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(SalaryPayDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
 }

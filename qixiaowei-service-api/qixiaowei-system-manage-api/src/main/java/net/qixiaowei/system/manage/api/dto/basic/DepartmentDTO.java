@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.api.dto.basic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -23,7 +24,7 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-public class DepartmentDTO {
+public class DepartmentDTO extends BaseDTO {
 
     //查询检验
     public interface QueryDepartmentDTO extends Default {
@@ -159,24 +160,6 @@ public class DepartmentDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
      * 部门岗位关联表
      */
     private List<DepartmentPostDTO> departmentPostDTOList;
@@ -195,9 +178,6 @@ public class DepartmentDTO {
      * 组织子节点信息
      */
     private List<DepartmentDTO> children;
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
+
 }
 

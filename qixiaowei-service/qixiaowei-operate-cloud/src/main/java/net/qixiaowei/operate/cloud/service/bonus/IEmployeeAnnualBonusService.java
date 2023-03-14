@@ -30,6 +30,13 @@ public interface IEmployeeAnnualBonusService{
     * @return 个人年终奖表集合
     */
     List<EmployeeAnnualBonusDTO> selectEmployeeAnnualBonusList(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<EmployeeAnnualBonusDTO> result);
 
     /**
     * 新增个人年终奖表

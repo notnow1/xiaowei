@@ -12,6 +12,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 /**
 * 目标分解表
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 */
 @Data
 @Accessors(chain = true)
-public class TargetDecomposeDTO {
+public class TargetDecomposeDTO extends BaseDTO {
 
     //查询检验
     public interface QueryTargetDecomposeDTO extends Default{
@@ -173,24 +174,6 @@ public class TargetDecomposeDTO {
     */
     private  Integer deleteFlag;
     /**
-    * 创建人
-    */
-    private  Long createBy;
-    /**
-    * 创建时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private  Date  createTime;
-    /**
-    * 更新人
-    */
-    private  Long updateBy;
-    /**
-    * 更新时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private  Date  updateTime;
-    /**
      * 是否可以分解年份
      */
     private Boolean decommpFlag;
@@ -202,9 +185,5 @@ public class TargetDecomposeDTO {
      * 是否提交（0-保存/1-提交通知）
      */
     private Integer isSubmit;
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
 }
 

@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.api.dto.employee;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -21,7 +22,7 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-public class EmployeeBudgetDTO {
+public class EmployeeBudgetDTO extends BaseDTO {
 
     //查询检验
     public interface QueryEmployeeBudgetDTO extends Default {
@@ -112,27 +113,5 @@ public class EmployeeBudgetDTO {
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
-    /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
 }
 

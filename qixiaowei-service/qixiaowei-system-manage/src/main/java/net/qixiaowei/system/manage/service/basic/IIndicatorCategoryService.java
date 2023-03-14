@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.util.List;
 
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 
 
@@ -27,6 +28,14 @@ public interface IIndicatorCategoryService {
      * @return 指标分类表集合
      */
     List<IndicatorCategoryDTO> selectIndicatorCategoryList(IndicatorCategoryDTO indicatorCategoryDTO);
+
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<IndicatorCategoryDTO> result);
 
     /**
      * 生成指标分类编码

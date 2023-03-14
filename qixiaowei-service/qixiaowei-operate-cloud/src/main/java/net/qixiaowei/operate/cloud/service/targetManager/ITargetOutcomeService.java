@@ -33,6 +33,13 @@ public interface ITargetOutcomeService {
      * @return 目标结果表集合
      */
     List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO);
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<TargetOutcomeDTO> result);
 
     /**
      * 新增目标结果表

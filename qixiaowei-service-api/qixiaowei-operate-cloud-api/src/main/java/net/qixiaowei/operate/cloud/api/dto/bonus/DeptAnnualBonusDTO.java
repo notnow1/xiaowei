@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 /**
 * 部门年终奖表
@@ -18,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 */
 @Data
 @Accessors(chain = true)
-public class DeptAnnualBonusDTO {
+public class DeptAnnualBonusDTO extends BaseDTO {
 
     //查询检验
     public interface QueryDeptAnnualBonusDTO extends Default{
@@ -96,29 +97,9 @@ public class DeptAnnualBonusDTO {
     */
     private  Integer deleteFlag;
     /**
-    * 创建人
-    */
-    private  Long createBy;
-    /**
-    * 创建时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private  Date  createTime;
-
-    /**
      * 评议年度
      */
     private  String  createTimeYear;
-
-    /**
-    * 更新人
-    */
-    private  Long updateBy;
-    /**
-    * 更新时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private  Date  updateTime;
     /**
     * 租户ID
     */

@@ -10,11 +10,13 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper;
 import net.qixiaowei.system.manage.service.basic.IDictionaryDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -62,6 +66,18 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
         return dictionaryDataMapper.selectDictionaryDataByDictionaryDataIds(dictionaryDataIds);
     }
 
+    @Override
+    public void handleResult(List<DictionaryDataDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(DictionaryDataDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
+    }
+
     /**
      * 查询字典数据表列表
      *
@@ -72,7 +88,9 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     public List<DictionaryDataDTO> selectDictionaryDataList(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
-        return dictionaryDataMapper.selectDictionaryDataList(dictionaryData);
+        List<DictionaryDataDTO> dictionaryDataDTOS = dictionaryDataMapper.selectDictionaryDataList(dictionaryData);
+        this.handleResult(dictionaryDataDTOS);
+        return dictionaryDataDTOS;
     }
 
     /**

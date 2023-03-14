@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.Area;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
@@ -16,15 +17,14 @@ import net.qixiaowei.operate.cloud.mapper.targetManager.AreaMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.IAreaService;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
-import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Array;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -68,7 +68,21 @@ public class AreaServiceImpl implements IAreaService {
     public List<AreaDTO> selectAreaList(AreaDTO areaDTO) {
         Area area = new Area();
         BeanUtils.copyProperties(areaDTO, area);
-        return areaMapper.selectAreaList(area);
+        List<AreaDTO> areaDTOS = areaMapper.selectAreaList(area);
+        this.handleResult(areaDTOS);
+        return areaDTOS;
+    }
+
+    @Override
+    public void handleResult(List<AreaDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(AreaDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

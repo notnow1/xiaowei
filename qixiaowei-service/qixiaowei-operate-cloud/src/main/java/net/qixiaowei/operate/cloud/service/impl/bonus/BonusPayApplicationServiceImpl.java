@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayApplication;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayBudgetDept;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayObjects;
@@ -21,7 +22,6 @@ import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusPayApplicationService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
@@ -239,9 +239,6 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
         if (StringUtils.isNotEmpty(bonusPayApplicationDTOS)) {
             //申请部门ID集合
             List<Long> collect = bonusPayApplicationDTOS.stream().map(BonusPayApplicationDTO::getApplyDepartmentId).collect(Collectors.toList());
-            //创建人id
-            Set<Long> collect3 = bonusPayApplicationDTOS.stream().map(BonusPayApplicationDTO::getCreateBy).collect(Collectors.toSet());
-
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                 List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS = bonusPayBudgetDeptMapper.selectBonusPayBudgetDeptByBonusPayApplicationId(payApplicationDTO.getBonusPayApplicationId());
                 if (StringUtils.isNotEmpty(bonusPayBudgetDeptDTOS)) {
@@ -283,19 +280,6 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     }
                 }
             }
-            //远程人员名称赋值
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(collect3, SecurityConstants.INNER);
-            List<UserDTO> data1 = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(data1)) {
-                for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
-                    for (UserDTO userDTO : data1) {
-                        if (payApplicationDTO.getCreateBy().equals(userDTO.getUserId())) {
-                            //创建人名称
-                            payApplicationDTO.setCreateByName(userDTO.getEmployeeName());
-                        }
-                    }
-                }
-            }
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                 if (payApplicationDTO.getAwardMonth() >= 10) {
                     payApplicationDTO.setAwardYearMonth(payApplicationDTO.getAwardYear() + "/" + payApplicationDTO.getAwardMonth());
@@ -305,6 +289,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
 
             }
         }
+        this.handleResult(bonusPayApplicationDTOS);
         return this.packQueryBonusBudget(bonusPayApplicationDTO, bonusPayApplicationDTOS);
     }
     /**
@@ -1384,6 +1369,18 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             bonusPayApplicationList.add(bonusPayApplication);
         }
         return bonusPayApplicationMapper.updateBonusPayApplications(bonusPayApplicationList);
+    }
+
+    @Override
+    public void handleResult(List<BonusPayApplicationDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(BonusPayApplicationDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
 }

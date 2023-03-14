@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 /**
  * 行业
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 @Data
 @Accessors(chain = true)
-public class IndustryDTO {
+public class IndustryDTO extends BaseDTO {
 
     //查询检验
     public interface QueryIndustryDTO extends Default {
@@ -79,31 +80,9 @@ public class IndustryDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
      * 启用类型（0-默认，1-自定义）
      */
     private Integer configValue;
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
 
 }
 

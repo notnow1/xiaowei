@@ -8,6 +8,7 @@ import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
+import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
 import net.qixiaowei.system.manage.service.tenant.ITenantService;
 import net.qixiaowei.system.manage.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,13 @@ public class RemoteUser implements RemoteUserService {
     @GetMapping("/infoByUserId")
     public R<UserDTO> getUserInfoByUserId(Long UserId, String source) {
         return R.ok(userService.selectUserByUserId(UserId));
+    }
+
+    @InnerAuth
+    @Override
+    @GetMapping("/initUserCache")
+    public R<UserProfileVO> initUserCache(Long userId, String source) {
+        return R.ok(userService.initUserCache(userId));
     }
 
     @Override
@@ -98,6 +106,7 @@ public class RemoteUser implements RemoteUserService {
 
     /**
      * 远程查询用户信息 支持模糊查询等等
+     *
      * @param userDTO
      * @param source
      * @return

@@ -48,7 +48,6 @@ public interface IPerformanceAppraisalService {
      * @return 绩效考核表集合
      */
     List<PerformanceAppraisalDTO> selectPerformanceAppraisalList(PerformanceAppraisalDTO performanceAppraisalDTO);
-
     /**
      * 查询组织绩效归档
      *

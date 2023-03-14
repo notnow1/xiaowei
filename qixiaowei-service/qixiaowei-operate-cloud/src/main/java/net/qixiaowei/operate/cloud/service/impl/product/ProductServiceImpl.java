@@ -12,18 +12,17 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.product.*;
 import net.qixiaowei.operate.cloud.api.dto.product.*;
 import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductExportExcel;
 import net.qixiaowei.operate.cloud.mapper.product.*;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
-import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,6 +117,18 @@ public class ProductServiceImpl implements IProductService {
         return productMapper.selectProductList(product);
     }
 
+    @Override
+    public void handleResult(List<ProductDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(ProductDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
+    }
+
     /**
      * 封装产品类别名称
      *
@@ -202,6 +213,7 @@ public class ProductServiceImpl implements IProductService {
                 }
             }
         }
+        this.handleResult(productDTOList);
         if (!CheckObjectIsNullUtils.isNull(productDTO)) {
             return productDTOList;
         } else {

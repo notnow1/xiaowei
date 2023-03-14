@@ -5,7 +5,6 @@ import java.util.Map;
 
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceRank;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 
 
 /**
@@ -30,7 +29,13 @@ public interface IPerformanceRankService {
      * @return 绩效等级表集合
      */
     List<PerformanceRankDTO> selectPerformanceRankList(PerformanceRankDTO performanceRankDTO);
-
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<PerformanceRankDTO> result);
     /**
      * 新增绩效等级表
      *

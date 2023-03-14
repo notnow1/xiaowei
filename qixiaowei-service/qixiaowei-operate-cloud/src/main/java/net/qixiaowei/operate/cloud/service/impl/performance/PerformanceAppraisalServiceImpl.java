@@ -14,6 +14,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
 import net.qixiaowei.operate.cloud.api.dto.performance.*;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
@@ -393,8 +394,32 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
             return performanceAppraisalDTOS;
         }
-        performanceAppraisalDTOS.forEach(PerformanceAppraisalServiceImpl::setFieldName);
+        this.handleResultOfPerformanceAppraisal(performanceAppraisalDTOS);
         return performanceAppraisalDTOS;
+    }
+
+    private void handleResultOfPerformanceAppraisal(List<PerformanceAppraisalDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(PerformanceAppraisalDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+                setFieldName(entity);
+            });
+        }
+    }
+
+    private void handleResultOfPerformanceAppraisalObjects(List<PerformanceAppraisalObjectsDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(PerformanceAppraisalObjectsDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+                setObjectFieldName(entity);
+            });
+        }
     }
 
     /**
@@ -538,7 +563,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Map<String, Object> params = performanceAppraisal.getParams();
         performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
-        performanceAppraisalDTOS.forEach(PerformanceAppraisalServiceImpl::setFieldName);
+        this.handleResultOfPerformanceAppraisal(performanceAppraisalDTOS);
         for (PerformanceAppraisalDTO appraisalDTO : performanceAppraisalDTOS) {
             if (StringUtils.isNull(appraisalDTO.getFilingDate())) {
                 appraisalDTO.setIsFiling(0);
@@ -564,7 +589,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Map<String, Object> params = performanceAppraisal.getParams();
         performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
-        performanceAppraisalDTOS.forEach(PerformanceAppraisalServiceImpl::setFieldName);
+        this.handleResultOfPerformanceAppraisal(performanceAppraisalDTOS);
         for (PerformanceAppraisalDTO appraisalDTO : performanceAppraisalDTOS) {
             if (StringUtils.isNull(appraisalDTO.getFilingDate())) {
                 appraisalDTO.setIsFiling(0);
@@ -2258,7 +2283,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         performanceAppraisalObjectsDTO.setParams(params);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
-        performanceAppraisalObjectsDTOList.forEach(PerformanceAppraisalServiceImpl::setObjectFieldName);
+        this.handleResultOfPerformanceAppraisalObjects(performanceAppraisalObjectsDTOList);
         return performanceAppraisalObjectsDTOList;
     }
 
@@ -2335,7 +2360,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         performanceAppraisalObjectsDTO.setParams(params);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
-        performanceAppraisalObjectsDTOList.forEach(PerformanceAppraisalServiceImpl::setObjectFieldName);
+        this.handleResultOfPerformanceAppraisalObjects(performanceAppraisalObjectsDTOList);
         return performanceAppraisalObjectsDTOList;
     }
 
@@ -2605,7 +2630,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         performanceAppraisalObjectsDTO.setParams(params);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
-        performanceAppraisalObjectsDTOList.forEach(PerformanceAppraisalServiceImpl::setObjectFieldName);
+        this.handleResultOfPerformanceAppraisalObjects(performanceAppraisalObjectsDTOList);
         return performanceAppraisalObjectsDTOList;
     }
 
@@ -2682,7 +2707,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         performanceAppraisalObjectsDTO.setParams(params);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
-        performanceAppraisalObjectsDTOList.forEach(PerformanceAppraisalServiceImpl::setObjectFieldName);
+        this.handleResultOfPerformanceAppraisalObjects(performanceAppraisalObjectsDTOList);
         return performanceAppraisalObjectsDTOList;
     }
 
@@ -2982,7 +3007,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Map<String, Object> params = performanceAppraisal.getParams();
         performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
-        performanceAppraisalDTOS.forEach(PerformanceAppraisalServiceImpl::setFieldName);
+        this.handleResultOfPerformanceAppraisal(performanceAppraisalDTOS);
         for (PerformanceAppraisalDTO appraisalDTO : performanceAppraisalDTOS) {
             if (StringUtils.isNull(appraisalDTO.getFilingDate())) {
                 appraisalDTO.setIsFiling(0);
@@ -3008,7 +3033,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Map<String, Object> params = performanceAppraisal.getParams();
         performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
-        performanceAppraisalDTOS.forEach(PerformanceAppraisalServiceImpl::setFieldName);
+        this.handleResultOfPerformanceAppraisal(performanceAppraisalDTOS);
         for (PerformanceAppraisalDTO appraisalDTO : performanceAppraisalDTOS) {
             if (StringUtils.isNull(appraisalDTO.getFilingDate())) {
                 appraisalDTO.setIsFiling(0);

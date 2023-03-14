@@ -14,6 +14,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO;
@@ -24,6 +25,7 @@ import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppra
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteSettingService;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
@@ -34,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -177,6 +180,18 @@ public class IndicatorServiceImpl implements IIndicatorService {
         return indicatorDTOS;
     }
 
+    @Override
+    public void handleResult(List<IndicatorDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(IndicatorDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
+    }
+
     /**
      * 关键经营结果获取Indicator
      *
@@ -213,6 +228,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
         List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicator);
+        this.handleResult(indicatorDTOS);
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         treeNodeConfig.setIdKey("indicatorId");
         treeNodeConfig.setNameKey("indicatorName");
@@ -235,6 +251,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
             tree.putExtra("parentIndicatorName", treeNode.getParentIndicatorName());
             tree.putExtra("isPreset", treeNode.getIsPreset());
             tree.putExtra("createBy", treeNode.getCreateBy());
+            tree.putExtra("createByName", treeNode.getCreateByName());
             tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
         });
     }
@@ -377,18 +394,12 @@ public class IndicatorServiceImpl implements IIndicatorService {
             }
         }
         String ancestors = "";//仅在非一级指标时有用
-        int parentLevel = 1;
         Long parentIndicatorId = 0L;
         if (StringUtils.isNotNull(indicatorDTO.getParentIndicatorId())) {
             parentIndicatorId = indicatorDTO.getParentIndicatorId();
             IndicatorDTO parentIndicator = indicatorMapper.selectIndicatorByIndicatorId(parentIndicatorId);
             if (parentIndicator == null && !parentIndicatorId.equals(0L)) {
                 throw new ServiceException("上级指标不存在");
-            }
-            if (parentIndicatorId.equals(0L)) {
-                parentLevel = 0;
-            } else {
-                parentLevel = parentIndicator.getLevel() + 1;
             }
             if (!indicatorById.getParentIndicatorId().equals(parentIndicatorId) && !parentIndicatorId.equals(0L)) {
                 // 路径修改
@@ -402,7 +413,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
         indicator.setAncestors(ancestors);
-        indicator.setLevel(parentLevel);
         indicator.setParentIndicatorId(parentIndicatorId);
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());

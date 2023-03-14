@@ -73,4 +73,9 @@ public interface CacheConstants {
      * 用户配置 redis key
      */
     String USER_CONFIG_KEY = "user_config:";
+
+    /**
+     * 用户 redis key
+     */
+    String USER_KEY = "user:";
 }

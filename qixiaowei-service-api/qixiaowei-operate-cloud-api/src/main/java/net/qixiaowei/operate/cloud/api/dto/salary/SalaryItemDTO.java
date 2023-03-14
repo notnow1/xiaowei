@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 /**
  * 工资项
@@ -21,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 @Data
 @Accessors(chain = true)
-public class SalaryItemDTO {
+public class SalaryItemDTO extends BaseDTO {
 
     //查询检验
     public interface QuerySalaryItemDTO extends Default {
@@ -84,24 +85,6 @@ public class SalaryItemDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
      * 是否被选中(1-选中，0-未选中)
      */
     private Integer isSelect;
@@ -109,9 +92,5 @@ public class SalaryItemDTO {
      * 选中的工资条列表
      */
     private List<Long> selectSalaryItem;
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
 }
 

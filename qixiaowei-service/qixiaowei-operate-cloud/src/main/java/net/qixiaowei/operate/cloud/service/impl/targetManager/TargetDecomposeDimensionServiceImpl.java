@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDimension;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeDimensionMapper;
@@ -16,10 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -78,7 +77,20 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
                 decomposeDimensionDTO.setDecompositionDimensionName(substring);
             }
         }
+        this.handleResult(targetDecomposeDimensionDTOS);
         return targetDecomposeDimensionDTOS;
+    }
+
+    @Override
+    public void handleResult(List<TargetDecomposeDimensionDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(TargetDecomposeDimensionDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

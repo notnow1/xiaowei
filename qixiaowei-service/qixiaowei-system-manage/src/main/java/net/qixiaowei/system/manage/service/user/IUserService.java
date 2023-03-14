@@ -60,6 +60,14 @@ public interface IUserService {
     UserDTO selectUserByUserId(Long userId);
 
     /**
+     * 初始化用户缓存
+     *
+     * @param userId 用户表主键
+     * @return 用户表
+     */
+    UserProfileVO initUserCache(Long userId);
+
+    /**
      * 根据用户ID查询用户角色列表
      *
      * @param userId 用户表主键
@@ -74,6 +82,14 @@ public interface IUserService {
      * @return 用户表集合
      */
     List<UserDTO> selectUserList(UserDTO userDTO);
+
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<UserDTO> result);
 
     /**
      * 查询用户表列表

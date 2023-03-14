@@ -17,6 +17,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
@@ -157,6 +158,18 @@ public class TenantServiceImpl implements ITenantService {
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, tenant);
         return tenantMapper.selectTenantList(tenant);
+    }
+
+    @Override
+    public void handleResult(List<TenantDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(TenantDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

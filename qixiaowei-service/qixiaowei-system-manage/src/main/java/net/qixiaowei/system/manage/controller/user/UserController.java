@@ -43,6 +43,7 @@ public class UserController extends BaseController {
     public TableDataInfo pageList(UserDTO userDTO) {
         startPage();
         List<UserDTO> list = userService.selectUserList(userDTO);
+        userService.handleResult(list);
         return getDataTable(list);
     }
 

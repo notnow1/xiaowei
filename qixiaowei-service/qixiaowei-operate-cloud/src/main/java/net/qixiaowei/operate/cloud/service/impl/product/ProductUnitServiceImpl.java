@@ -1,17 +1,22 @@
 package net.qixiaowei.operate.cloud.service.impl.product;
 
 import java.util.List;
+
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
-import net.qixiaowei.operate.cloud.api.factory.bonus.RemoteEmployeeAnnualBonusFallbackFactory;
-import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.product.ProductUnit;
@@ -34,6 +39,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
 
     @Autowired
     private ProductMapper productMapper;
+
     /**
      * 查询产品单位表
      *
@@ -55,7 +61,21 @@ public class ProductUnitServiceImpl implements IProductUnitService {
     public List<ProductUnitDTO> selectProductUnitList(ProductUnitDTO productUnitDTO) {
         ProductUnit productUnit = new ProductUnit();
         BeanUtils.copyProperties(productUnitDTO, productUnit);
-        return productUnitMapper.selectProductUnitList(productUnit);
+        List<ProductUnitDTO> productUnitDTOS = productUnitMapper.selectProductUnitList(productUnit);
+        this.handleResult(productUnitDTOS);
+        return productUnitDTOS;
+    }
+
+    @Override
+    public void handleResult(List<ProductUnitDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(ProductUnitDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -110,7 +130,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
     @Override
     public int logicDeleteProductUnitByProductUnitIds(List<Long> productUnitIds) {
         List<ProductUnitDTO> productUnitDTOS = productUnitMapper.selectProductUnitByProductUnitIds(productUnitIds);
-        if (StringUtils.isEmpty(productUnitDTOS)){
+        if (StringUtils.isEmpty(productUnitDTOS)) {
             throw new ServiceException("产品单位不存在");
         }
         for (ProductUnitDTO productUnitDTO : productUnitDTOS) {
@@ -118,12 +138,12 @@ public class ProductUnitServiceImpl implements IProductUnitService {
             List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitId(productUnitDTO.getProductUnitId());
             // 产品引用
             StringBuffer productErreo = new StringBuffer();
-            if (!StringUtils.isEmpty(productDTOList)){
+            if (!StringUtils.isEmpty(productDTOList)) {
                 for (ProductDTO productDTO : productDTOList) {
-                    productErreo.append("产品单位"+productUnitDTO.getProductUnitName()+"被"+productDTO.getProductName()+"引用"+"\n");
+                    productErreo.append("产品单位" + productUnitDTO.getProductUnitName() + "被" + productDTO.getProductName() + "引用" + "\n");
                 }
             }
-            if (productErreo.length()>0){
+            if (productErreo.length() > 0) {
                 throw new ServiceException(productErreo.toString());
             }
         }
@@ -162,12 +182,12 @@ public class ProductUnitServiceImpl implements IProductUnitService {
         List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitId(productUnitDTO.getProductUnitId());
         // 产品引用
         StringBuffer productErreo = new StringBuffer();
-        if (!StringUtils.isEmpty(productDTOList)){
+        if (!StringUtils.isEmpty(productDTOList)) {
             for (ProductDTO productDTO : productDTOList) {
-                productErreo.append("产品单位"+productUnitDTO1.getProductUnitName()+"被"+productDTO.getProductName()+"引用"+"\n");
+                productErreo.append("产品单位" + productUnitDTO1.getProductUnitName() + "被" + productDTO.getProductName() + "引用" + "\n");
             }
         }
-        if (productErreo.length()>0){
+        if (productErreo.length() > 0) {
             throw new ServiceException(productErreo.toString());
         }
         return productUnitMapper.logicDeleteProductUnitByProductUnitId(productUnit, SecurityUtils.getUserId(), DateUtils.getNowDate());

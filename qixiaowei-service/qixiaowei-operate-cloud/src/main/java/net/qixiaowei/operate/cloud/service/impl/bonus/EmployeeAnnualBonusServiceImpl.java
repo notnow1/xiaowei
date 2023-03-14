@@ -10,6 +10,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.message.api.dto.backlog.BacklogDTO;
 import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
@@ -17,10 +18,7 @@ import net.qixiaowei.operate.cloud.api.domain.bonus.DeptAnnualBonus;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmpAnnualBonusObjects;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmpAnnualBonusSnapshot;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
-import net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.*;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.mapper.bonus.DeptAnnualBonusMapper;
@@ -30,7 +28,6 @@ import net.qixiaowei.operate.cloud.mapper.bonus.EmployeeAnnualBonusMapper;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalObjectsMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IEmployeeAnnualBonusService;
-import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
@@ -110,6 +107,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             //申请年终奖总额
             packApplyBonusAmount(employeeAnnualBonusDTOS);
         }
+        this.handleResult(employeeAnnualBonusDTOS);
         //模糊查询申请年终奖金额
         BigDecimal applyBonusAmount = employeeAnnualBonusDTO.getApplyBonusAmount();
         if (StringUtils.isNotNull(applyBonusAmount)) {
@@ -1329,6 +1327,18 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             employeeAnnualBonusList.add(employeeAnnualBonus);
         }
         return employeeAnnualBonusMapper.updateEmployeeAnnualBonuss(employeeAnnualBonusList);
+    }
+
+    @Override
+    public void handleResult(List<EmployeeAnnualBonusDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(EmployeeAnnualBonusDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 }
 

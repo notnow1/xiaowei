@@ -30,6 +30,13 @@ public interface IDeptSalaryAdjustPlanService {
      * @return 部门调薪计划表集合
      */
     List<DeptSalaryAdjustPlanDTO> selectDeptSalaryAdjustPlanList(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO);
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<DeptSalaryAdjustPlanDTO> result);
 
     /**
      * 新增部门调薪计划表

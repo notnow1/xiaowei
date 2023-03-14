@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudget;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetAdjusts;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetDetails;
@@ -218,7 +219,19 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             //年度平均人数 = 上年期末数+平均新增人数
             budgetDTO.setAnnualAverageNum(annualAverageNum);
         }
+        this.handleResult(employeeBudgetDTOS);
         return employeeBudgetDTOS;
+    }
+
+    public void handleResult(List<EmployeeBudgetDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(EmployeeBudgetDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

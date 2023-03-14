@@ -15,6 +15,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
@@ -97,6 +98,18 @@ public class IndustryServiceImpl implements IIndustryService {
         return industryMapper.selectIndustryList(industry);
     }
 
+    @Override
+    public void handleResult(List<IndustryDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(IndustryDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
+    }
+
     /**
      * 查询行业列表
      * 行业启用：1系统；2自定义
@@ -141,6 +154,7 @@ public class IndustryServiceImpl implements IIndustryService {
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
         List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(industry);
+        this.handleResult(industryDTOS);
         //自定义属性名
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         treeNodeConfig.setIdKey("industryId");
@@ -155,6 +169,7 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());
             tree.putExtra("createBy", treeNode.getCreateBy());
+            tree.putExtra("createByName", treeNode.getCreateByName());
             tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
         });
     }
