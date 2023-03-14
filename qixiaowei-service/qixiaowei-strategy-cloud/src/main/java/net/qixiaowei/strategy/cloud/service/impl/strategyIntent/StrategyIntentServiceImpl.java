@@ -196,7 +196,7 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                 R<List<EmployeeDTO>> listR = remoteEmployeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
                 List<EmployeeDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
-                    List<Long> employeeIds = data.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+                    List<Long> employeeIds = data.stream().filter(f ->f.getUserId() != null).map(EmployeeDTO::getUserId).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(employeeIds)) {
                         params.put("createBys", employeeIds);
                     }
