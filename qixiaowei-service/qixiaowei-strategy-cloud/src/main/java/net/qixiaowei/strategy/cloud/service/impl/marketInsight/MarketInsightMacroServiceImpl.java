@@ -172,7 +172,7 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
             userDTO.setEmployeeName(marketInsightMacroDTO.getCreateByName());
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
-            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            List<Long> employeeIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(employeeIds)) {
                 employeeIds.forEach(e -> {
                     createByList.add(String.valueOf(e));
@@ -183,20 +183,6 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
         }
         marketInsightMacro.setCreateBys(createByList);
         List<MarketInsightMacroDTO> marketInsightMacroDTOS = marketInsightMacroMapper.selectMarketInsightMacroList(marketInsightMacro);
-        if (StringUtils.isNotEmpty(marketInsightMacroDTOS)) {
-            Set<Long> createBys = marketInsightMacroDTOS.stream().map(MarketInsightMacroDTO::getCreateBy).collect(Collectors.toSet());
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);
-            List<UserDTO> userDTOList = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(userDTOList)) {
-                for (MarketInsightMacroDTO insightMacroDTO : marketInsightMacroDTOS) {
-                    for (UserDTO userDTO : userDTOList) {
-                        if (insightMacroDTO.getCreateBy().equals(userDTO.getUserId())) {
-                            insightMacroDTO.setCreateByName(userDTO.getEmployeeName());
-                        }
-                    }
-                }
-            }
-        }
 
         if (StringUtils.isNotEmpty(marketInsightMacroDTOS)) {
             List<Long> productIds = marketInsightMacroDTOS.stream().filter(f -> null != f.getProductId()).map(MarketInsightMacroDTO::getProductId).collect(Collectors.toList());

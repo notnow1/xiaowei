@@ -69,6 +69,29 @@
                             and update_time=#{miSelfAbilityAccess.updateTime}
                         </if>
     </select>
+<!--    根据市场洞察自身主表主键查询市场洞察自身能力评估表-->
+    <select id="selectMiSelfAbilityAccessByMarketInsightSelfId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiSelfAbilityAccessDTO">
+        SELECT
+            mi_self_ability_access_id,market_insight_self_id,capacity_factor,description_actuality,ability_assess_score,strategy_control_point_flag,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_self_ability_access
+        WHERE  market_insight_self_id=#{marketInsightSelfId}
+          and delete_flag=0
+    </select>
+<!--    根据市场洞察自身主表主键集合批量查询市场洞察自身能力评估表-->
+    <select id="selectMiSelfAbilityAccessByMarketInsightSelfIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiSelfAbilityAccessDTO">
+        SELECT
+        mi_self_ability_access_id,market_insight_self_id,capacity_factor,description_actuality,ability_assess_score,strategy_control_point_flag,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_self_ability_access
+        WHERE  market_insight_self_id in
+        <foreach item="item"
+                 collection="marketInsightSelfIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增市场洞察自身能力评估表-->
     <insert id="insertMiSelfAbilityAccess" useGeneratedKeys="true" keyProperty="miSelfAbilityAccessId">
         INSERT INTO mi_self_ability_access (market_insight_self_id,capacity_factor,description_actuality,ability_assess_score,strategy_control_point_flag,sort,delete_flag,create_by,create_time,update_by,update_time)
@@ -139,7 +162,7 @@
             </foreach>
     </update>
     <!--批量新增市场洞察自身能力评估表-->
-    <insert id="batchMiSelfAbilityAccess">
+    <insert id="batchMiSelfAbilityAccess" useGeneratedKeys="true" keyProperty="miSelfAbilityAccessId">
         INSERT INTO mi_self_ability_access (market_insight_self_id,capacity_factor,description_actuality,ability_assess_score,strategy_control_point_flag,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"

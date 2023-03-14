@@ -362,6 +362,7 @@
         <if test="marketInsightOpponent.updateTime != null">
             and mio.update_time=#{marketInsightOpponent.updateTime}
         </if>
+        order by  mio.create_time desc
     </select>
     <!--新增市场洞察对手表-->
     <insert id="insertMarketInsightOpponent" useGeneratedKeys="true" keyProperty="marketInsightOpponentId">

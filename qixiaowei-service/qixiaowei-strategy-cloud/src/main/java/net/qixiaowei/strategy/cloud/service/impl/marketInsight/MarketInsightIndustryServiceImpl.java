@@ -229,7 +229,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
             userDTO.setEmployeeName(marketInsightIndustryDTO.getCreateByName());
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
-            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            List<Long> employeeIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(employeeIds)) {
                 employeeIds.forEach(e -> {
                     createByList.add(String.valueOf(e));
@@ -240,20 +240,6 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
         }
         marketInsightIndustry.setCreateBys(createByList);
         List<MarketInsightIndustryDTO> marketInsightIndustryDTOS = marketInsightIndustryMapper.selectMarketInsightIndustryList(marketInsightIndustry);
-        if (StringUtils.isNotEmpty(marketInsightIndustryDTOS)) {
-            Set<Long> createBys = marketInsightIndustryDTOS.stream().map(MarketInsightIndustryDTO::getCreateBy).collect(Collectors.toSet());
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);
-            List<UserDTO> userDTOList = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(userDTOList)) {
-                for (MarketInsightIndustryDTO insightIndustryDTO : marketInsightIndustryDTOS) {
-                    for (UserDTO userDTO : userDTOList) {
-                        if (insightIndustryDTO.getCreateBy().equals(userDTO.getUserId())) {
-                            insightIndustryDTO.setCreateByName(userDTO.getEmployeeName());
-                        }
-                    }
-                }
-            }
-        }
 
         if (StringUtils.isNotEmpty(marketInsightIndustryDTOS)) {
             List<Long> productIds = marketInsightIndustryDTOS.stream().filter(f -> null != f.getProductId()).map(MarketInsightIndustryDTO::getProductId).collect(Collectors.toList());

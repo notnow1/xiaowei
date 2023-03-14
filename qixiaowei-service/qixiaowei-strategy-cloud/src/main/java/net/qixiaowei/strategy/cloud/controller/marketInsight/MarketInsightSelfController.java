@@ -1,18 +1,24 @@
 package net.qixiaowei.strategy.cloud.controller.marketInsight;
 
 import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightSelfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -46,6 +52,14 @@ public class MarketInsightSelfController extends BaseController {
     public TableDataInfo pageList(MarketInsightSelfDTO marketInsightSelfDTO) {
         startPage();
         List<MarketInsightSelfDTO> list = marketInsightSelfService.selectMarketInsightSelfList(marketInsightSelfDTO);
+        if (StringUtils.isNotEmpty(list)) {
+            Set<Long> userIds = list.stream().map(MarketInsightSelfDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            list.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
         return getDataTable(list);
     }
 

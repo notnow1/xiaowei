@@ -25,7 +25,9 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightOpponentDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
 import net.qixiaowei.strategy.cloud.excel.marketInsight.MarketInsightMacroExcel;
 import net.qixiaowei.strategy.cloud.excel.marketInsight.MarketInsightMacroImportListener;
@@ -41,10 +43,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -78,6 +78,14 @@ public class MarketInsightMacroController extends BaseController {
     public TableDataInfo pageList(MarketInsightMacroDTO marketInsightMacroDTO) {
         startPage();
         List<MarketInsightMacroDTO> list = marketInsightMacroService.selectMarketInsightMacroList(marketInsightMacroDTO);
+        if (StringUtils.isNotEmpty(list)) {
+            Set<Long> userIds = list.stream().map(MarketInsightMacroDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            list.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
         return getDataTable(list);
     }
 

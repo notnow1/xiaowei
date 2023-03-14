@@ -8,6 +8,8 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
 import net.qixiaowei.strategy.cloud.api.domain.strategyIntent.StrategyIntent;
 import net.qixiaowei.strategy.cloud.api.domain.strategyIntent.StrategyIntentOperate;
 import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
@@ -146,21 +148,8 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
             }
         }
         strategyIntent.setCreateBys(createByList);
+
         List<StrategyIntentDTO> strategyIntentDTOS = strategyIntentMapper.selectStrategyIntentList(strategyIntent);
-        if (StringUtils.isNotEmpty(strategyIntentDTOS)) {
-            Set<Long> createBys = strategyIntentDTOS.stream().map(StrategyIntentDTO::getCreateBy).collect(Collectors.toSet());
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);
-            List<UserDTO> userDTOList = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(userDTOList)) {
-                for (StrategyIntentDTO intentDTO : strategyIntentDTOS) {
-                    for (UserDTO userDTO : userDTOList) {
-                        if (intentDTO.getCreateBy().equals(userDTO.getUserId())) {
-                            intentDTO.setCreateByName(userDTO.getEmployeeName());
-                        }
-                    }
-                }
-            }
-        }
         return strategyIntentDTOS;
     }
 

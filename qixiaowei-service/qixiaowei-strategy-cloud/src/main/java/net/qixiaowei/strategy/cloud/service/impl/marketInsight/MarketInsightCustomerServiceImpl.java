@@ -322,7 +322,7 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
             userDTO.setEmployeeName(marketInsightCustomerDTO.getCreateByName());
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
-            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            List<Long> employeeIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(employeeIds)) {
                 employeeIds.forEach(e -> {
                     createByList.add(String.valueOf(e));
@@ -344,21 +344,6 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
      * @param marketInsightCustomerDTOS
      */
     private void packRemote(List<MarketInsightCustomerDTO> marketInsightCustomerDTOS) {
-        if (StringUtils.isNotEmpty(marketInsightCustomerDTOS)) {
-            Set<Long> createBys = marketInsightCustomerDTOS.stream().map(MarketInsightCustomerDTO::getCreateBy).collect(Collectors.toSet());
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);
-            List<UserDTO> userDTOList = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(userDTOList)) {
-                for (MarketInsightCustomerDTO insightCustomerDTO : marketInsightCustomerDTOS) {
-                    for (UserDTO userDTO : userDTOList) {
-                        if (insightCustomerDTO.getCreateBy().equals(userDTO.getUserId())) {
-                            insightCustomerDTO.setCreateByName(userDTO.getEmployeeName());
-                        }
-                    }
-                }
-            }
-        }
-
         if (StringUtils.isNotEmpty(marketInsightCustomerDTOS)) {
             List<Long> productIds = marketInsightCustomerDTOS.stream().filter(f -> null != f.getProductId()).map(MarketInsightCustomerDTO::getProductId).collect(Collectors.toList());
             List<Long> areaIds = marketInsightCustomerDTOS.stream().filter(f -> null != f.getAreaId()).map(MarketInsightCustomerDTO::getAreaId).collect(Collectors.toList());

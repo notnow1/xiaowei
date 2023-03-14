@@ -21,6 +21,13 @@ public interface MiSelfAbilityAccessMapper{
     */
     MiSelfAbilityAccessDTO selectMiSelfAbilityAccessByMiSelfAbilityAccessId(@Param("miSelfAbilityAccessId")Long miSelfAbilityAccessId);
 
+    /**
+     * 根据市场洞察自身主表主键查询市场洞察自身能力评估表
+     *
+     * @param marketInsightSelfId 市场洞察自身主表主键
+     * @return 市场洞察自身能力评估表
+     */
+    List<MiSelfAbilityAccessDTO> selectMiSelfAbilityAccessByMarketInsightSelfId(@Param("marketInsightSelfId")Long marketInsightSelfId);
 
     /**
     * 批量查询市场洞察自身能力评估表
@@ -30,6 +37,13 @@ public interface MiSelfAbilityAccessMapper{
     */
     List<MiSelfAbilityAccessDTO> selectMiSelfAbilityAccessByMiSelfAbilityAccessIds(@Param("miSelfAbilityAccessIds") List<Long> miSelfAbilityAccessIds);
 
+    /**
+     * 根据市场洞察自身主表主键集合批量查询市场洞察自身能力评估表
+     *
+     * @param marketInsightSelfIds 市场洞察自身主表主键集合
+     * @return 市场洞察自身能力评估表
+     */
+    List<MiSelfAbilityAccessDTO> selectMiSelfAbilityAccessByMarketInsightSelfIds(@Param("marketInsightSelfIds") List<Long> marketInsightSelfIds);
     /**
     * 查询市场洞察自身能力评估表列表
     *

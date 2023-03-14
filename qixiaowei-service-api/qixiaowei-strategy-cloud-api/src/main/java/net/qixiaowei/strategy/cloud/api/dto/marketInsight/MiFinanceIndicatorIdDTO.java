@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.api.dto.marketInsight;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ import java.util.Map;
 */
 @Data
 @Accessors(chain = true)
-public class MiFinanceIndicatorIdDTO {
+public class MiFinanceIndicatorIdDTO extends BaseDTO {
 
     //查询检验
     public interface QueryMiFinanceIndicatorIdDTO extends Default{
