@@ -305,18 +305,12 @@ public class IndicatorServiceImpl implements IIndicatorService {
             }
         }
         String ancestors = "";//仅在非一级指标时有用
-        int parentLevel = 1;
         Long parentIndicatorId = 0L;
         if (StringUtils.isNotNull(indicatorDTO.getParentIndicatorId())) {
             parentIndicatorId = indicatorDTO.getParentIndicatorId();
             IndicatorDTO parentIndicator = indicatorMapper.selectIndicatorByIndicatorId(parentIndicatorId);
             if (parentIndicator == null && !parentIndicatorId.equals(0L)) {
                 throw new ServiceException("上级指标不存在");
-            }
-            if (parentIndicatorId.equals(0L)) {
-                parentLevel = 0;
-            } else {
-                parentLevel = parentIndicator.getLevel() + 1;
             }
             if (!indicatorById.getParentIndicatorId().equals(parentIndicatorId) && !parentIndicatorId.equals(0L)) {
                 // 路径修改
@@ -330,7 +324,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
         indicator.setAncestors(ancestors);
-        indicator.setLevel(parentLevel);
         indicator.setParentIndicatorId(parentIndicatorId);
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());
