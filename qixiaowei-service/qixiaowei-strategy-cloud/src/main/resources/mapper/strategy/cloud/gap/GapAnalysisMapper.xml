@@ -68,6 +68,9 @@
         <if test="gapAnalysis.gapAnalysisId != null">
             and ga.gap_analysis_id=#{gapAnalysis.gapAnalysisId}
         </if>
+        <if test="gapAnalysis.businessUnitName != null and gapAnalysis.businessUnitName != ''">
+            and pbu.business_unit_name like concat('%', #{gapAnalysis.businessUnitName}, '%')
+        </if>
         <if test="gapAnalysis.planYear != null">
             and ga.plan_year=#{gapAnalysis.planYear}
         </if>

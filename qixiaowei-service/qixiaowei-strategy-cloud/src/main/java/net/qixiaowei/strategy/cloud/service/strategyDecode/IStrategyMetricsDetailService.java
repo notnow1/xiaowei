@@ -1,5 +1,6 @@
 package net.qixiaowei.strategy.cloud.service.strategyDecode;
 
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMetricsDetail;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO;
 
 import java.util.List;
@@ -58,7 +59,7 @@ public interface IStrategyMetricsDetailService {
      * @param strategyMetricsDetailDtos 战略衡量指标详情表
      * @return 结果
      */
-    int insertStrategyMetricsDetails(List<StrategyMetricsDetailDTO> strategyMetricsDetailDtos);
+    List<StrategyMetricsDetail> insertStrategyMetricsDetails(List<StrategyMetricsDetailDTO> strategyMetricsDetailDtos);
 
     /**
      * 逻辑批量删除战略衡量指标详情表

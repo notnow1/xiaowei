@@ -45,6 +45,13 @@ public interface IStrategyMetricsService {
     int updateStrategyMetrics(StrategyMetricsDTO strategyMetricsDTO);
 
     /**
+     * 更新衡量指标表
+     *
+     * @param strategyMetricsDTO 衡量指标DTO
+     */
+    Long editStrategyMetrics(StrategyMetricsDTO strategyMetricsDTO);
+
+    /**
      * 批量修改战略衡量指标表
      *
      * @param strategyMetricsDtos 战略衡量指标表

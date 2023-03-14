@@ -101,4 +101,9 @@ public interface IStrategyMetricsPlanService {
      */
     int deleteStrategyMetricsPlanByStrategyMetricsPlanId(Long strategyMetricsPlanId);
 
+    /**
+     * @param editStrategyMetricsDetailIds 战略衡量指标规划表主键
+     * @return 结果
+     */
+    List<StrategyMetricsPlanDTO> selectStrategyMetricsPlanByStrategyMetricsDetailIds(List<Long> editStrategyMetricsDetailIds);
 }

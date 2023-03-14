@@ -158,7 +158,7 @@ public class StrategyMetricsDetailServiceImpl implements IStrategyMetricsDetailS
      * @param strategyMetricsDetailDtos 战略衡量指标详情表对象
      */
 
-    public int insertStrategyMetricsDetails(List<StrategyMetricsDetailDTO> strategyMetricsDetailDtos) {
+    public List<StrategyMetricsDetail> insertStrategyMetricsDetails(List<StrategyMetricsDetailDTO> strategyMetricsDetailDtos) {
         List<StrategyMetricsDetail> strategyMetricsDetailList = new ArrayList<>();
 
         for (StrategyMetricsDetailDTO strategyMetricsDetailDTO : strategyMetricsDetailDtos) {
@@ -171,7 +171,8 @@ public class StrategyMetricsDetailServiceImpl implements IStrategyMetricsDetailS
             strategyMetricsDetail.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             strategyMetricsDetailList.add(strategyMetricsDetail);
         }
-        return strategyMetricsDetailMapper.batchStrategyMetricsDetail(strategyMetricsDetailList);
+        strategyMetricsDetailMapper.batchStrategyMetricsDetail(strategyMetricsDetailList);
+        return strategyMetricsDetailList;
     }
 
     /**

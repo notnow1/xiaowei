@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.api.dto.strategyDecode;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 
 import javax.validation.groups.Default;
 import java.util.Date;
@@ -56,9 +57,25 @@ public class StrategyMetricsDTO {
      */
     private Long planBusinessUnitId;
     /**
+     * 规划业务单元名称
+     */
+    private String businessUnitName;
+    /**
+     * 战略指标维度名称
+     */
+    private String indexDimensionName;
+    /**
      * 规划业务单元维度(region,department,product,industry)
      */
     private String businessUnitDecompose;
+    /**
+     * 规划业务单元维度(region,department,product,industry)
+     */
+    private List<Map<String, Object>> BusinessUnitDecomposes;
+    /**
+     * 规划业务单元维度(region,department,product,industry)
+     */
+    private String businessUnitDecomposeName;
     /**
      * 区域ID
      */
@@ -96,6 +113,10 @@ public class StrategyMetricsDTO {
      */
     private Integer planPeriod;
     /**
+     * 规划期
+     */
+    private String planPeriodName;
+    /**
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
@@ -130,9 +151,5 @@ public class StrategyMetricsDTO {
      * 战略衡量指标详情表
      */
     private List<StrategyMetricsDetailDTO> strategyMetricsDetailDTOS;
-    /**
-     * 战略衡量指标规划表
-     */
-    private List<StrategyMetricsPlanDTO> strategyMetricsPlanDTOS;
 }
 

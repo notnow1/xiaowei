@@ -107,6 +107,11 @@ public class StrategyMetricsPlanServiceImpl implements IStrategyMetricsPlanServi
         return strategyMetricsPlanMapper.deleteStrategyMetricsPlanByStrategyMetricsPlanId(strategyMetricsPlanId);
     }
 
+    @Override
+    public List<StrategyMetricsPlanDTO> selectStrategyMetricsPlanByStrategyMetricsDetailIds(List<Long> editStrategyMetricsDetailIds) {
+        return strategyMetricsPlanMapper.selectStrategyMetricsPlanByStrategyMetricsDetailIds(editStrategyMetricsDetailIds);
+    }
+
     /**
      * 逻辑删除战略衡量指标规划表信息
      *

@@ -5,10 +5,28 @@
     <select id="selectStrategyMetricsByStrategyMetricsId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO">
         SELECT
-        strategy_metrics_id,strategy_measure_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_period,delete_flag,create_by,create_time,update_by,update_time
-        FROM strategy_metrics
-        WHERE strategy_metrics_id=#{strategyMetricsId}
-        and delete_flag=0
+        sm.strategy_metrics_id,
+        sm.strategy_measure_id,
+        sm.plan_year,
+        sm.plan_business_unit_id,
+        sm.business_unit_decompose,
+        sm.area_id,
+        sm.department_id,
+        sm.product_id,
+        sm.industry_id,
+        sm.plan_period,
+        sm.delete_flag,
+        sm.create_by,
+        sm.create_time,
+        sm.update_by,
+        sm.update_time,
+        pbu.business_unit_name
+        FROM strategy_metrics sm
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = sm.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE sm.strategy_metrics_id=#{strategyMetricsId}
+        and sm.delete_flag=0
     </select>
 
     <!--    批量查询战略衡量指标表-->

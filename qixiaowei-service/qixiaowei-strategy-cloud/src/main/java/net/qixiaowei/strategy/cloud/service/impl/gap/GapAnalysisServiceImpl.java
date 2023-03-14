@@ -415,7 +415,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
     private void addAnalysisOperateList(Long gapAnalysisId, List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS, GapAnalysisDTO gapAnalysisDTO) {
         if (StringUtils.isNotEmpty(gapAnalysisOperateDTOS)) {
             Integer planYear = gapAnalysisDTO.getPlanYear();
-            List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).collect(Collectors.toList());
+            List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
             R<List<IndicatorDTO>> indicatorByIdR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> indicatorById = indicatorByIdR.getData();
             if (StringUtils.isEmpty(indicatorById)) {
@@ -638,7 +638,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
      * @param gapAnalysisById        根据ID查找DTO
      */
     private void editAnalysisOperateList(Long gapAnalysisId, List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS, GapAnalysisDTO gapAnalysisDTO, GapAnalysisDTO gapAnalysisById) {
-        List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).collect(Collectors.toList());
+        List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
         Integer planYear = gapAnalysisDTO.getPlanYear();
         Integer operateHistoryYear = gapAnalysisDTO.getOperateHistoryYear();
         if (StringUtils.isEmpty(indicatorIds)) {
