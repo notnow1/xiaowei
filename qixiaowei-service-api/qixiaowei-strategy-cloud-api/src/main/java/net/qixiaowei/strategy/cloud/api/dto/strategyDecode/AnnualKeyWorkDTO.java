@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.groups.Default;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,9 +52,21 @@ public class AnnualKeyWorkDTO {
      */
     private Long planBusinessUnitId;
     /**
+     * 规划业务单元名称
+     */
+    private String businessUnitName;
+    /**
      * 规划业务单元维度(region,department,product,industry)
      */
     private String businessUnitDecompose;
+    /**
+     * 规划业务单元维度(region,department,product,industry)
+     */
+    private List<Map<String, Object>> BusinessUnitDecomposes;
+    /**
+     * 规划业务单元维度(region,department,product,industry)
+     */
+    private String businessUnitDecomposeName;
     /**
      * 区域ID
      */
@@ -71,9 +84,29 @@ public class AnnualKeyWorkDTO {
      */
     private Long industryId;
     /**
+     * 区域名称
+     */
+    private String areaName;
+    /**
+     * 部门名称
+     */
+    private String departmentName;
+    /**
+     * 产品名称
+     */
+    private String productName;
+    /**
+     * 行业名称
+     */
+    private String industryName;
+    /**
      * 规划级别:1部门;2公司
      */
     private Integer planRank;
+    /**
+     * 规划级别名称:1部门;2公司
+     */
+    private String planRankName;
     /**
      * 删除标记:0未删除;1已删除
      */
@@ -82,6 +115,10 @@ public class AnnualKeyWorkDTO {
      * 创建人
      */
     private Long createBy;
+    /**
+     * 创建人名称
+     */
+    private String createByName;
     /**
      * 创建时间
      */
@@ -105,5 +142,9 @@ public class AnnualKeyWorkDTO {
      * 请求参数
      */
     private Map<String, Object> params;
+    /**
+     * 年度重点工作详情表
+     */
+    private List<AnnualKeyWorkDetailDTO> annualKeyWorkDetailDTOS;
 }
 

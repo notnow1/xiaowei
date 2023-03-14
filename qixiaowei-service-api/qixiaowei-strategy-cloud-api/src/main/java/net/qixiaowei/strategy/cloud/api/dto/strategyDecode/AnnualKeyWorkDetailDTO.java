@@ -60,9 +60,17 @@ public class AnnualKeyWorkDetailDTO {
      */
     private Long departmentId;
     /**
+     * 所属部门名称
+     */
+    private String departmentName;
+    /**
      * 部门主管
      */
     private Long departmentEmployeeId;
+    /**
+     * 部门主管名称
+     */
+    private String departmentEmployeeName;
     /**
      * 任务描述
      */
@@ -72,7 +80,7 @@ public class AnnualKeyWorkDetailDTO {
      */
     private String closeStandard;
     /**
-     * 任务开始时间
+     * 起止时间
      */
     private LocalDate taskStartTime;
     /**

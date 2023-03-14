@@ -108,6 +108,28 @@ public class AnnualKeyWorkDetailServiceImpl implements IAnnualKeyWorkDetailServi
     }
 
     /**
+     * 根据主表ID查询详情
+     *
+     * @param annualKeyWorkId 年度重点工作ID
+     * @return List
+     */
+    @Override
+    public List<AnnualKeyWorkDetailDTO> selectAnnualKeyWorkDetailByAnnualKeyWorkId(Long annualKeyWorkId) {
+        return annualKeyWorkDetailMapper.selectAnnualKeyWorkDetailByAnnualKeyWorkId(annualKeyWorkId);
+    }
+
+    /**
+     * 根据主表ID集合查询详情
+     *
+     * @param annualKeyWorkIds 年度重点工作ID集合
+     * @return List
+     */
+    @Override
+    public List<AnnualKeyWorkDetailDTO> selectAnnualKeyWorkDetailByAnnualKeyWorkIds(List<Long> annualKeyWorkIds) {
+        return annualKeyWorkDetailMapper.selectAnnualKeyWorkDetailByAnnualKeyWorkIds(annualKeyWorkIds);
+    }
+
+    /**
      * 逻辑删除年度重点工作详情表信息
      *
      * @param annualKeyWorkDetailDTO 年度重点工作详情表

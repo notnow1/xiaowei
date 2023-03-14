@@ -1,13 +1,9 @@
 package net.qixiaowei.strategy.cloud.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
-import net.qixiaowei.integration.common.enums.field.FieldType;
-import net.qixiaowei.integration.common.enums.field.strategy.StrategyMetricsField;
-import net.qixiaowei.integration.common.enums.field.strategy.StrategyMetricsField;
 import net.qixiaowei.integration.common.enums.field.strategy.StrategyMetricsField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.strategy.cloud.api.domain.field.FieldConfig;
 import net.qixiaowei.strategy.cloud.api.domain.field.FieldListConfig;
 import net.qixiaowei.strategy.cloud.api.dto.field.FieldConfigDTO;
 import net.qixiaowei.strategy.cloud.logic.IFieldListConfigStrategy;

@@ -100,4 +100,20 @@ public interface IAnnualKeyWorkDetailService {
      * @return 结果
      */
     int deleteAnnualKeyWorkDetailByAnnualKeyWorkDetailId(Long annualKeyWorkDetailId);
+
+    /**
+     * 根据主表ID查询详情
+     *
+     * @param annualKeyWorkId 年度重点工作ID
+     * @return List
+     */
+    List<AnnualKeyWorkDetailDTO> selectAnnualKeyWorkDetailByAnnualKeyWorkId(Long annualKeyWorkId);
+
+    /**
+     * 根据主表ID集合查询详情
+     *
+     * @param annualKeyWorkIds 年度重点工作ID集合
+     * @return List
+     */
+    List<AnnualKeyWorkDetailDTO> selectAnnualKeyWorkDetailByAnnualKeyWorkIds(List<Long> annualKeyWorkIds);
 }
