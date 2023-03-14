@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.strategyDecode.AnnualKeyWorkMapper">
+    <!--    查询年度重点工作表-->
+    <select id="selectAnnualKeyWorkByAnnualKeyWorkId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO">
+        SELECT
+        annual_key_work_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_rank,delete_flag,create_by,create_time,update_by,update_time
+        FROM annual_key_work
+        WHERE  annual_key_work_id=#{annualKeyWorkId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询年度重点工作表-->
+    <select id="selectAnnualKeyWorkByAnnualKeyWorkIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO">
+        SELECT
+        annual_key_work_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_rank,delete_flag,create_by,create_time,update_by,update_time
+        FROM annual_key_work
+        WHERE  annual_key_work_id in
+            <foreach item="item"
+                     collection="annualKeyWorkIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询年度重点工作表列表-->
+    <select id="selectAnnualKeyWorkList" resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO">
+        SELECT
+        annual_key_work_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_rank,delete_flag,create_by,create_time,update_by,update_time
+        FROM annual_key_work
+        WHERE delete_flag=0
+                        <if test="annualKeyWork.annualKeyWorkId != null">
+                            and annual_key_work_id=#{annualKeyWork.annualKeyWorkId}
+                        </if>
+                        <if test="annualKeyWork.planYear != null">
+                            and plan_year=#{annualKeyWork.planYear}
+                        </if>
+                        <if test="annualKeyWork.planBusinessUnitId != null">
+                            and plan_business_unit_id=#{annualKeyWork.planBusinessUnitId}
+                        </if>
+                        <if test="annualKeyWork.businessUnitDecompose != null and annualKeyWork.businessUnitDecompose != ''">
+                            and business_unit_decompose=#{annualKeyWork.businessUnitDecompose}
+                        </if>
+                        <if test="annualKeyWork.areaId != null">
+                            and area_id=#{annualKeyWork.areaId}
+                        </if>
+                        <if test="annualKeyWork.departmentId != null">
+                            and department_id=#{annualKeyWork.departmentId}
+                        </if>
+                        <if test="annualKeyWork.productId != null">
+                            and product_id=#{annualKeyWork.productId}
+                        </if>
+                        <if test="annualKeyWork.industryId != null">
+                            and industry_id=#{annualKeyWork.industryId}
+                        </if>
+                        <if test="annualKeyWork.planRank != null">
+                            and plan_rank=#{annualKeyWork.planRank}
+                        </if>
+                        <if test="annualKeyWork.deleteFlag != null">
+                            and delete_flag=#{annualKeyWork.deleteFlag}
+                        </if>
+                        <if test="annualKeyWork.createBy != null">
+                            and create_by=#{annualKeyWork.createBy}
+                        </if>
+                        <if test="annualKeyWork.createTime != null">
+                            and create_time=#{annualKeyWork.createTime}
+                        </if>
+                        <if test="annualKeyWork.updateBy != null">
+                            and update_by=#{annualKeyWork.updateBy}
+                        </if>
+                        <if test="annualKeyWork.updateTime != null">
+                            and update_time=#{annualKeyWork.updateTime}
+                        </if>
+    </select>
+    <!--新增年度重点工作表-->
+    <insert id="insertAnnualKeyWork" useGeneratedKeys="true" keyProperty="annualKeyWorkId">
+        INSERT INTO annual_key_work (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_rank,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{annualKeyWork.planYear},#{annualKeyWork.planBusinessUnitId},#{annualKeyWork.businessUnitDecompose},#{annualKeyWork.areaId},#{annualKeyWork.departmentId},#{annualKeyWork.productId},#{annualKeyWork.industryId},#{annualKeyWork.planRank},#{annualKeyWork.deleteFlag},#{annualKeyWork.createBy},#{annualKeyWork.createTime},#{annualKeyWork.updateBy},#{annualKeyWork.updateTime})
+    </insert>
+    <!--修改年度重点工作表-->
+    <update id="updateAnnualKeyWork">
+        UPDATE annual_key_work
+        SET
+                    <if test="annualKeyWork.planYear != null">
+                        plan_year=#{annualKeyWork.planYear},
+                    </if>
+                    <if test="annualKeyWork.planBusinessUnitId != null">
+                        plan_business_unit_id=#{annualKeyWork.planBusinessUnitId},
+                    </if>
+                    <if test="annualKeyWork.businessUnitDecompose != null and annualKeyWork.businessUnitDecompose != ''">
+                        business_unit_decompose=#{annualKeyWork.businessUnitDecompose},
+                    </if>
+                    <if test="annualKeyWork.areaId != null">
+                        area_id=#{annualKeyWork.areaId},
+                    </if>
+                    <if test="annualKeyWork.departmentId != null">
+                        department_id=#{annualKeyWork.departmentId},
+                    </if>
+                    <if test="annualKeyWork.productId != null">
+                        product_id=#{annualKeyWork.productId},
+                    </if>
+                    <if test="annualKeyWork.industryId != null">
+                        industry_id=#{annualKeyWork.industryId},
+                    </if>
+                    <if test="annualKeyWork.planRank != null">
+                        plan_rank=#{annualKeyWork.planRank},
+                    </if>
+                    <if test="annualKeyWork.deleteFlag != null">
+                        delete_flag=#{annualKeyWork.deleteFlag},
+                    </if>
+                    <if test="annualKeyWork.createBy != null">
+                        create_by=#{annualKeyWork.createBy},
+                    </if>
+                    <if test="annualKeyWork.createTime != null">
+                        create_time=#{annualKeyWork.createTime},
+                    </if>
+                    <if test="annualKeyWork.updateBy != null">
+                        update_by=#{annualKeyWork.updateBy},
+                    </if>
+                    <if test="annualKeyWork.updateTime != null">
+                        update_time=#{annualKeyWork.updateTime}
+                    </if>
+        WHERE
+                 annual_key_work_id=#{annualKeyWork.annualKeyWorkId}
+    </update>
+    <!--逻辑删除年度重点工作表-->
+    <update id="logicDeleteAnnualKeyWorkByAnnualKeyWorkId">
+        UPDATE annual_key_work
+        SET     delete_flag= 1,
+                update_by=#{annualKeyWork.updateBy},
+                update_time=#{annualKeyWork.updateTime}
+        WHERE
+                annual_key_work_id=#{annualKeyWork.annualKeyWorkId}
+    </update>
+    <!--逻辑批量删除年度重点工作表-->
+    <update id="logicDeleteAnnualKeyWorkByAnnualKeyWorkIds">
+        UPDATE annual_key_work
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         annual_key_work_id IN
+            <foreach item="item"
+                     collection="annualKeyWorkIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增年度重点工作表-->
+    <insert id="batchAnnualKeyWork">
+        INSERT INTO annual_key_work (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_rank,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="annualKeyWorks"
+                 separator=",">
+            (#{item.planYear},#{item.planBusinessUnitId},#{item.businessUnitDecompose},#{item.areaId},#{item.departmentId},#{item.productId},#{item.industryId},#{item.planRank},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除年度重点工作表-->
+    <delete id="deleteAnnualKeyWorkByAnnualKeyWorkId">
+        DELETE FROM annual_key_work
+        WHERE  annual_key_work_id=#{annualKeyWork}
+
+    </delete>
+    <!--物理批量删除年度重点工作表-->
+    <delete id="deleteAnnualKeyWorkByAnnualKeyWorkIds">
+        DELETE FROM annual_key_work
+        WHERE  annual_key_work_id IN
+            <foreach item="item"
+                     collection="annualKeyWorkIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改年度重点工作表-->
+    <update id="updateAnnualKeyWorks">
+        update annual_key_work
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="plan_year=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.planYear != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.planYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="plan_business_unit_id=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.planBusinessUnitId != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.planBusinessUnitId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="business_unit_decompose=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.businessUnitDecompose}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="area_id=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.areaId != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.areaId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_id=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.departmentId != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.departmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_id=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.productId != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.productId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="industry_id=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.industryId != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.industryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="plan_rank=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.planRank != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.planRank}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="annualKeyWorkList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when annual_key_work_id=#{item.annualKeyWorkId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="annualKeyWorkList" separator="or" item="item" index="index">
+                    annual_key_work_id=#{item.annualKeyWorkId}
+        </foreach>
+    </update>
+</mapper>
+
+

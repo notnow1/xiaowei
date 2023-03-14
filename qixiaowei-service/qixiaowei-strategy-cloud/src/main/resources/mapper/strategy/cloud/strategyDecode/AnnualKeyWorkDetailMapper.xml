@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.strategyDecode.AnnualKeyWorkDetailMapper">
+    <!--    查询年度重点工作详情表-->
+    <select id="selectAnnualKeyWorkDetailByAnnualKeyWorkDetailId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO">
+        SELECT
+        annual_key_work_detail_id,annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time
+        FROM annual_key_work_detail
+        WHERE  annual_key_work_detail_id=#{annualKeyWorkDetailId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询年度重点工作详情表-->
+    <select id="selectAnnualKeyWorkDetailByAnnualKeyWorkDetailIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO">
+        SELECT
+        annual_key_work_detail_id,annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time
+        FROM annual_key_work_detail
+        WHERE  annual_key_work_detail_id in
+            <foreach item="item"
+                     collection="annualKeyWorkDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询年度重点工作详情表列表-->
+    <select id="selectAnnualKeyWorkDetailList" resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO">
+        SELECT
+        annual_key_work_detail_id,annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time
+        FROM annual_key_work_detail
+        WHERE delete_flag=0
+                        <if test="annualKeyWorkDetail.annualKeyWorkDetailId != null">
+                            and annual_key_work_detail_id=#{annualKeyWorkDetail.annualKeyWorkDetailId}
+                        </if>
+                        <if test="annualKeyWorkDetail.annualKeyWorkId != null">
+                            and annual_key_work_id=#{annualKeyWorkDetail.annualKeyWorkId}
+                        </if>
+                        <if test="annualKeyWorkDetail.taskNumber != null and annualKeyWorkDetail.taskNumber != ''">
+                            and task_number=#{annualKeyWorkDetail.taskNumber}
+                        </if>
+                        <if test="annualKeyWorkDetail.taskName != null and annualKeyWorkDetail.taskName != ''">
+                            and task_name=#{annualKeyWorkDetail.taskName}
+                        </if>
+                        <if test="annualKeyWorkDetail.departmentId != null">
+                            and department_id=#{annualKeyWorkDetail.departmentId}
+                        </if>
+                        <if test="annualKeyWorkDetail.departmentEmployeeId != null">
+                            and department_employee_id=#{annualKeyWorkDetail.departmentEmployeeId}
+                        </if>
+                        <if test="annualKeyWorkDetail.taskDescription != null and annualKeyWorkDetail.taskDescription != ''">
+                            and task_description=#{annualKeyWorkDetail.taskDescription}
+                        </if>
+                        <if test="annualKeyWorkDetail.closeStandard != null and annualKeyWorkDetail.closeStandard != ''">
+                            and close_standard=#{annualKeyWorkDetail.closeStandard}
+                        </if>
+                        <if test="annualKeyWorkDetail.taskStartTime != null">
+                            and task_start_time=#{annualKeyWorkDetail.taskStartTime}
+                        </if>
+                        <if test="annualKeyWorkDetail.taskEndTime != null">
+                            and task_end_time=#{annualKeyWorkDetail.taskEndTime}
+                        </if>
+                        <if test="annualKeyWorkDetail.dutyEmployeeId != null">
+                            and duty_employee_id=#{annualKeyWorkDetail.dutyEmployeeId}
+                        </if>
+                        <if test="annualKeyWorkDetail.dutyEmployeeName != null and annualKeyWorkDetail.dutyEmployeeName != ''">
+                            and duty_employee_name=#{annualKeyWorkDetail.dutyEmployeeName}
+                        </if>
+                        <if test="annualKeyWorkDetail.dutyEmployeeCode != null and annualKeyWorkDetail.dutyEmployeeCode != ''">
+                            and duty_employee_code=#{annualKeyWorkDetail.dutyEmployeeCode}
+                        </if>
+                        <if test="annualKeyWorkDetail.deleteFlag != null">
+                            and delete_flag=#{annualKeyWorkDetail.deleteFlag}
+                        </if>
+                        <if test="annualKeyWorkDetail.createBy != null">
+                            and create_by=#{annualKeyWorkDetail.createBy}
+                        </if>
+                        <if test="annualKeyWorkDetail.createTime != null">
+                            and create_time=#{annualKeyWorkDetail.createTime}
+                        </if>
+                        <if test="annualKeyWorkDetail.updateBy != null">
+                            and update_by=#{annualKeyWorkDetail.updateBy}
+                        </if>
+                        <if test="annualKeyWorkDetail.updateTime != null">
+                            and update_time=#{annualKeyWorkDetail.updateTime}
+                        </if>
+    </select>
+    <!--新增年度重点工作详情表-->
+    <insert id="insertAnnualKeyWorkDetail" useGeneratedKeys="true" keyProperty="annualKeyWorkDetailId">
+        INSERT INTO annual_key_work_detail (annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{annualKeyWorkDetail.annualKeyWorkId},#{annualKeyWorkDetail.taskNumber},#{annualKeyWorkDetail.taskName},#{annualKeyWorkDetail.departmentId},#{annualKeyWorkDetail.departmentEmployeeId},#{annualKeyWorkDetail.taskDescription},#{annualKeyWorkDetail.closeStandard},#{annualKeyWorkDetail.taskStartTime},#{annualKeyWorkDetail.taskEndTime},#{annualKeyWorkDetail.dutyEmployeeId},#{annualKeyWorkDetail.dutyEmployeeName},#{annualKeyWorkDetail.dutyEmployeeCode},#{annualKeyWorkDetail.deleteFlag},#{annualKeyWorkDetail.createBy},#{annualKeyWorkDetail.createTime},#{annualKeyWorkDetail.updateBy},#{annualKeyWorkDetail.updateTime})
+    </insert>
+    <!--修改年度重点工作详情表-->
+    <update id="updateAnnualKeyWorkDetail">
+        UPDATE annual_key_work_detail
+        SET
+                    <if test="annualKeyWorkDetail.annualKeyWorkId != null">
+                        annual_key_work_id=#{annualKeyWorkDetail.annualKeyWorkId},
+                    </if>
+                    <if test="annualKeyWorkDetail.taskNumber != null and annualKeyWorkDetail.taskNumber != ''">
+                        task_number=#{annualKeyWorkDetail.taskNumber},
+                    </if>
+                    <if test="annualKeyWorkDetail.taskName != null and annualKeyWorkDetail.taskName != ''">
+                        task_name=#{annualKeyWorkDetail.taskName},
+                    </if>
+                    <if test="annualKeyWorkDetail.departmentId != null">
+                        department_id=#{annualKeyWorkDetail.departmentId},
+                    </if>
+                    <if test="annualKeyWorkDetail.departmentEmployeeId != null">
+                        department_employee_id=#{annualKeyWorkDetail.departmentEmployeeId},
+                    </if>
+                    <if test="annualKeyWorkDetail.taskDescription != null and annualKeyWorkDetail.taskDescription != ''">
+                        task_description=#{annualKeyWorkDetail.taskDescription},
+                    </if>
+                    <if test="annualKeyWorkDetail.closeStandard != null and annualKeyWorkDetail.closeStandard != ''">
+                        close_standard=#{annualKeyWorkDetail.closeStandard},
+                    </if>
+                    <if test="annualKeyWorkDetail.taskStartTime != null">
+                        task_start_time=#{annualKeyWorkDetail.taskStartTime},
+                    </if>
+                    <if test="annualKeyWorkDetail.taskEndTime != null">
+                        task_end_time=#{annualKeyWorkDetail.taskEndTime},
+                    </if>
+                    <if test="annualKeyWorkDetail.dutyEmployeeId != null">
+                        duty_employee_id=#{annualKeyWorkDetail.dutyEmployeeId},
+                    </if>
+                    <if test="annualKeyWorkDetail.dutyEmployeeName != null and annualKeyWorkDetail.dutyEmployeeName != ''">
+                        duty_employee_name=#{annualKeyWorkDetail.dutyEmployeeName},
+                    </if>
+                    <if test="annualKeyWorkDetail.dutyEmployeeCode != null and annualKeyWorkDetail.dutyEmployeeCode != ''">
+                        duty_employee_code=#{annualKeyWorkDetail.dutyEmployeeCode},
+                    </if>
+                    <if test="annualKeyWorkDetail.deleteFlag != null">
+                        delete_flag=#{annualKeyWorkDetail.deleteFlag},
+                    </if>
+                    <if test="annualKeyWorkDetail.createBy != null">
+                        create_by=#{annualKeyWorkDetail.createBy},
+                    </if>
+                    <if test="annualKeyWorkDetail.createTime != null">
+                        create_time=#{annualKeyWorkDetail.createTime},
+                    </if>
+                    <if test="annualKeyWorkDetail.updateBy != null">
+                        update_by=#{annualKeyWorkDetail.updateBy},
+                    </if>
+                    <if test="annualKeyWorkDetail.updateTime != null">
+                        update_time=#{annualKeyWorkDetail.updateTime}
+                    </if>
+        WHERE
+                 annual_key_work_detail_id=#{annualKeyWorkDetail.annualKeyWorkDetailId}
+    </update>
+    <!--逻辑删除年度重点工作详情表-->
+    <update id="logicDeleteAnnualKeyWorkDetailByAnnualKeyWorkDetailId">
+        UPDATE annual_key_work_detail
+        SET     delete_flag= 1,
+                update_by=#{annualKeyWorkDetail.updateBy},
+                update_time=#{annualKeyWorkDetail.updateTime}
+        WHERE
+                annual_key_work_detail_id=#{annualKeyWorkDetail.annualKeyWorkDetailId}
+    </update>
+    <!--逻辑批量删除年度重点工作详情表-->
+    <update id="logicDeleteAnnualKeyWorkDetailByAnnualKeyWorkDetailIds">
+        UPDATE annual_key_work_detail
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         annual_key_work_detail_id IN
+            <foreach item="item"
+                     collection="annualKeyWorkDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增年度重点工作详情表-->
+    <insert id="batchAnnualKeyWorkDetail">
+        INSERT INTO annual_key_work_detail (annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="annualKeyWorkDetails"
+                 separator=",">
+            (#{item.annualKeyWorkId},#{item.taskNumber},#{item.taskName},#{item.departmentId},#{item.departmentEmployeeId},#{item.taskDescription},#{item.closeStandard},#{item.taskStartTime},#{item.taskEndTime},#{item.dutyEmployeeId},#{item.dutyEmployeeName},#{item.dutyEmployeeCode},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除年度重点工作详情表-->
+    <delete id="deleteAnnualKeyWorkDetailByAnnualKeyWorkDetailId">
+        DELETE FROM annual_key_work_detail
+        WHERE  annual_key_work_detail_id=#{annualKeyWorkDetail}
+
+    </delete>
+    <!--物理批量删除年度重点工作详情表-->
+    <delete id="deleteAnnualKeyWorkDetailByAnnualKeyWorkDetailIds">
+        DELETE FROM annual_key_work_detail
+        WHERE  annual_key_work_detail_id IN
+            <foreach item="item"
+                     collection="annualKeyWorkDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改年度重点工作详情表-->
+    <update id="updateAnnualKeyWorkDetails">
+        update annual_key_work_detail
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="annual_key_work_id=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.annualKeyWorkId != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.annualKeyWorkId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="task_number=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.taskNumber != null and item.taskNumber != ''">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.taskNumber}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="task_name=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.taskName != null and item.taskName != ''">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.taskName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_id=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.departmentId != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.departmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_employee_id=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.departmentEmployeeId != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.departmentEmployeeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="task_description=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.taskDescription != null and item.taskDescription != ''">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.taskDescription}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="close_standard=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.closeStandard != null and item.closeStandard != ''">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.closeStandard}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="task_start_time=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.taskStartTime != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.taskStartTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="task_end_time=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.taskEndTime != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.taskEndTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="duty_employee_id=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.dutyEmployeeId != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.dutyEmployeeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="duty_employee_name=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.dutyEmployeeName != null and item.dutyEmployeeName != ''">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.dutyEmployeeName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="duty_employee_code=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.dutyEmployeeCode != null and item.dutyEmployeeCode != ''">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.dutyEmployeeCode}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="annualKeyWorkDetailList" separator="or" item="item" index="index">
+                    annual_key_work_detail_id=#{item.annualKeyWorkDetailId}
+        </foreach>
+    </update>
+</mapper>
+
+
