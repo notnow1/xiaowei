@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.DeptSalaryAdjustPlan;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustItemDTO;
@@ -245,6 +246,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
                 }
             }
         }
+        this.handleResult(deptSalaryAdjustPlanDTOS);
         return deptSalaryAdjustPlanDTOS;
     }
 
@@ -728,6 +730,17 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         List<DeptSalaryAdjustPlanDTO> deptSalaryAdjustPlanDTOList = deptSalaryAdjustPlanMapper.selectDeptSalaryAdjustPlanList(deptSalaryAdjustPlan);
         List<DeptSalaryAdjustPlanExcel> deptSalaryAdjustPlanExcelList = new ArrayList<>();
         return deptSalaryAdjustPlanExcelList;
+    }
+    @Override
+    public void handleResult(List<DeptSalaryAdjustPlanDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(DeptSalaryAdjustPlanDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 }
 

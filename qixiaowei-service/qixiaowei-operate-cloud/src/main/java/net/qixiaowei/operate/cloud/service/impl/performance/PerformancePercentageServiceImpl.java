@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformancePercentage;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceRank;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -151,7 +153,20 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
             percentageDTO.setOrgPerformanceRankName(orgPerformanceRankMap.get(percentageDTO.getOrgPerformanceRankId()));
             percentageDTO.setPersonPerformanceRankName(personPerformanceRankMap.get(percentageDTO.getPersonPerformanceRankId()));
         }
+        this.handleResult(performancePercentageDTOS);
         return performancePercentageDTOS;
+    }
+
+    @Override
+    public void handleResult(List<PerformancePercentageDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(PerformancePercentageDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

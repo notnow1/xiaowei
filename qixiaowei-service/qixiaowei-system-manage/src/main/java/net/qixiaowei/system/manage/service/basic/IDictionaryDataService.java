@@ -27,6 +27,13 @@ public interface IDictionaryDataService{
      */
     List<DictionaryDataDTO> selectDictionaryDataByDictionaryDataIds(List<Long> dictionaryDataIds);
     /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<DictionaryDataDTO> result);
+    /**
     * 查询字典数据表列表
     *
     * @param dictionaryDataDTO 字典数据表

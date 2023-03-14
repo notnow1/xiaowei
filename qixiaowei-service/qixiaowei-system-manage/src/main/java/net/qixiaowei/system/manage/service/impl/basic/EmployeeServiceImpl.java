@@ -10,6 +10,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
@@ -125,7 +126,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
         BeanUtils.copyProperties(employeeDTO, employee);
         Map<String, Object> params = employeeDTO.getParams();
         employee.setParams(params);
-        return employeeMapper.selectEmployeeList(employee);
+        List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeeList(employee);
+        this.handleResult(employeeDTOS);
+        return employeeDTOS;
+    }
+
+    @Override
+    public void handleResult(List<EmployeeDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(EmployeeDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

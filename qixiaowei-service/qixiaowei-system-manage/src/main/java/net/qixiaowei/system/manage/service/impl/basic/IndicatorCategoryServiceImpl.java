@@ -7,7 +7,9 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.system.manage.api.domain.basic.IndicatorCategory;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
@@ -19,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -56,7 +61,21 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     public List<IndicatorCategoryDTO> selectIndicatorCategoryList(IndicatorCategoryDTO indicatorCategoryDTO) {
         IndicatorCategory indicatorCategory = new IndicatorCategory();
         BeanUtils.copyProperties(indicatorCategoryDTO, indicatorCategory);
-        return indicatorCategoryMapper.selectIndicatorCategoryList(indicatorCategory);
+        List<IndicatorCategoryDTO> indicatorCategoryDTOS = indicatorCategoryMapper.selectIndicatorCategoryList(indicatorCategory);
+        this.handleResult(indicatorCategoryDTOS);
+        return indicatorCategoryDTOS;
+    }
+
+    @Override
+    public void handleResult(List<IndicatorCategoryDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(IndicatorCategoryDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

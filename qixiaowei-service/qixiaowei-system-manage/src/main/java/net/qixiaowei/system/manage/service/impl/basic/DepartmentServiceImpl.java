@@ -11,6 +11,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
@@ -99,6 +100,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         List<DepartmentDTO> tree = new ArrayList<>();
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
+        this.handleResult(departmentDTOList);
         if (!CheckObjectIsNullUtils.isNull(departmentDTO)) {
             return departmentDTOList;
         } else {
@@ -110,6 +112,18 @@ public class DepartmentServiceImpl implements IDepartmentService {
             }
         }
 
+    }
+
+    @Override
+    public void handleResult(List<DepartmentDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(DepartmentDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

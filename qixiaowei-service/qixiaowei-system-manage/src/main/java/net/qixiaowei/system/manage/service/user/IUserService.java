@@ -86,8 +86,8 @@ public interface IUserService {
     /**
      * 处理返回
      *
-     * @param result 用户表
-     * @return 用户表集合
+     * @param result 返回集合
+     * @return 返回集合
      */
     void handleResult(List<UserDTO> result);
 

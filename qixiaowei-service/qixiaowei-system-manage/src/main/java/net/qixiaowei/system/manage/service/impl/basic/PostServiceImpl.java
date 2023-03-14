@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
@@ -90,7 +91,21 @@ public class PostServiceImpl implements IPostService {
     public List<PostDTO> selectPostList(PostDTO postDTO) {
         Post post = new Post();
         BeanUtils.copyProperties(postDTO, post);
-        return postMapper.selectPostList(post);
+        List<PostDTO> postDTOS = postMapper.selectPostList(post);
+        this.handleResult(postDTOS);
+        return postDTOS;
+    }
+
+    @Override
+    public void handleResult(List<PostDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(PostDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

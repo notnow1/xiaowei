@@ -26,6 +26,13 @@ public interface IBonusBudgetService{
     * @return 奖金预算表集合
     */
     List<BonusBudgetDTO> selectBonusBudgetList(BonusBudgetDTO bonusBudgetDTO);
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<BonusBudgetDTO> result);
 
     /**
      * 总奖金包预算生成

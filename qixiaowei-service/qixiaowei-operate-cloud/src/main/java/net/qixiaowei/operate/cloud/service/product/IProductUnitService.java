@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.product;
 
 import java.util.List;
+
 import net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO;
 
 
@@ -25,7 +26,13 @@ public interface IProductUnitService{
     * @return 产品单位表集合
     */
     List<ProductUnitDTO> selectProductUnitList(ProductUnitDTO productUnitDTO);
-
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<ProductUnitDTO> result);
     /**
     * 新增产品单位表
     *

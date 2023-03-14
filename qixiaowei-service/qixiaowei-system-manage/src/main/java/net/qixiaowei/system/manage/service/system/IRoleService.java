@@ -42,8 +42,8 @@ public interface IRoleService {
     /**
      * 处理返回
      *
-     * @param result 用户表
-     * @return 角色表集合
+     * @param result 返回集合
+     * @return 返回集合
      */
     void handleResult(List<RoleDTO> result);
 

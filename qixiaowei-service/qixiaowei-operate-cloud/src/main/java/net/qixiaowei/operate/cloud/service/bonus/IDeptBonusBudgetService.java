@@ -26,6 +26,13 @@ public interface IDeptBonusBudgetService{
     * @return 部门奖金包预算表集合
     */
     List<DeptBonusBudgetDTO> selectDeptBonusBudgetList(DeptBonusBudgetDTO deptBonusBudgetDTO);
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<DeptBonusBudgetDTO> result);
 
     /**
     * 新增部门奖金包预算表

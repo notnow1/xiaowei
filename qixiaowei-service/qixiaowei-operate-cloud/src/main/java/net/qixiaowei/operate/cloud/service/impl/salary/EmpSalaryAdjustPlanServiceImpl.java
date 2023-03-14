@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.EmpSalaryAdjustPlan;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPerformDTO;
@@ -289,6 +290,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
             empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
         }
+        this.handleResult(empSalaryAdjustPlanDTOS);
         return empSalaryAdjustPlanDTOS;
     }
 
@@ -1042,6 +1044,18 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
 //            throw new ServiceException("个人调薪到达生效日期更新员工信息失败 请联系管理员");
         }
         return 1;
+    }
+
+    @Override
+    public void handleResult(List<EmpSalaryAdjustPlanDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(EmpSalaryAdjustPlanDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 }
 

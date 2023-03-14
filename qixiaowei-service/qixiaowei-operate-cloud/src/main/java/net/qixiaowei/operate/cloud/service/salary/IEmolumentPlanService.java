@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
 import java.util.List;
+
 import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
 
 
@@ -26,7 +27,13 @@ public interface IEmolumentPlanService{
     * @return 薪酬规划表集合
     */
     List<EmolumentPlanDTO> selectEmolumentPlanList(EmolumentPlanDTO emolumentPlanDTO);
-
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<EmolumentPlanDTO> result);
     /**
     * 新增薪酬规划表
     *

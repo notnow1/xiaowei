@@ -27,6 +27,13 @@ public interface IAreaService {
      * @return 区域表集合
      */
     List<AreaDTO> selectAreaList(AreaDTO areaDTO);
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<AreaDTO> result);
 
     /**
      * 生成区域编码

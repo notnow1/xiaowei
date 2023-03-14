@@ -2,7 +2,6 @@ package net.qixiaowei.operate.cloud.service.targetManager;
 
 import java.util.List;
 
-import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDimension;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
 
 
@@ -28,7 +27,13 @@ public interface ITargetDecomposeDimensionService {
      * @return 目标分解维度配置集合
      */
     List<TargetDecomposeDimensionDTO> selectTargetDecomposeDimensionList(TargetDecomposeDimensionDTO targetDecomposeDimensionDTO);
-
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<TargetDecomposeDimensionDTO> result);
     /**
      * 新增目标分解维度配置
      *

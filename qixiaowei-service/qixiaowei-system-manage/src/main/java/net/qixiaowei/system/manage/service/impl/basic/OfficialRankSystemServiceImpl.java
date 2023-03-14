@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
@@ -21,6 +22,7 @@ import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
 import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper;
 import net.qixiaowei.system.manage.mapper.basic.OfficialRankSystemMapper;
 import net.qixiaowei.system.manage.mapper.basic.PostMapper;
@@ -101,6 +103,17 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         return officialRankSystemDTOS;
     }
 
+    @Override
+    public void handleResult(List<OfficialRankSystemDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(OfficialRankSystemDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
+    }
 
     /**
      * 分页查询list
@@ -116,6 +129,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         officialRankSystem.setParams(params);
         List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemMapper.selectOfficialRankSystemList(officialRankSystem);
         writeOfficialRank(officialRankSystemDTOS);
+        this.handleResult(officialRankSystemDTOS);
         return officialRankSystemDTOS;
     }
 

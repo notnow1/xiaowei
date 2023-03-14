@@ -24,7 +24,6 @@ import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantDomainApproval;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
-import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;

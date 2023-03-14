@@ -17,7 +17,6 @@ import net.qixiaowei.system.manage.api.dto.system.RoleAuthUsersDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleMenuDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
-import net.qixiaowei.system.manage.mapper.system.MenuMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;

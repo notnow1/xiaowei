@@ -26,6 +26,13 @@ public interface IDeptAnnualBonusService{
     * @return 部门年终奖表集合
     */
     List<DeptAnnualBonusDTO> selectDeptAnnualBonusList(DeptAnnualBonusDTO deptAnnualBonusDTO);
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<DeptAnnualBonusDTO> result);
 
     /**
     * 新增部门年终奖表

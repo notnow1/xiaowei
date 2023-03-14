@@ -52,6 +52,13 @@ public interface ITargetDecomposeService {
      * @return 目标分解表
      */
     List<TargetDecomposeDTO> selectTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds);
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<TargetDecomposeDTO> result);
 
     /**
      * 查询目标分解(销售订单)表

@@ -27,7 +27,13 @@ public interface IPerformancePercentageService {
      * @return 绩效比例表集合
      */
     List<PerformancePercentageDTO> selectPerformancePercentageList(PerformancePercentageDTO performancePercentageDTO);
-
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<PerformancePercentageDTO> result);
     /**
      * 新增绩效比例表
      *

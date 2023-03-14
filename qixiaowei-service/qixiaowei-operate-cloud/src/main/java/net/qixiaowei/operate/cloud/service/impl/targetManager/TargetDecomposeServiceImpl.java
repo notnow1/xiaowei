@@ -22,6 +22,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.message.api.dto.backlog.BacklogDTO;
 import net.qixiaowei.message.api.dto.message.MessageReceiverDTO;
 import net.qixiaowei.message.api.dto.message.MessageSendDTO;
@@ -445,6 +446,18 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         return targetDecomposeDTOS;
     }
 
+    @Override
+    public void handleResult(List<TargetDecomposeDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(TargetDecomposeDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
+    }
+
     /**
      * 封装版本号
      *
@@ -782,6 +795,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 this.packDecompositionDimension(decomposeDTO);
             }
         }
+        this.handleResult(targetDecomposeDTOS);
         return targetDecomposeDTOS;
     }
 
@@ -885,6 +899,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 this.packDecompositionDimension(decomposeDTO);
             }
         }
+        this.handleResult(targetDecomposeDTOS);
         return targetDecomposeDTOS;
     }
 
@@ -946,6 +961,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 this.packDecompositionDimension(decomposeDTO);
             }
         }
+        this.handleResult(targetDecomposeDTOS);
         return targetDecomposeDTOS;
     }
 
@@ -969,6 +985,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 this.packDecompositionDimension(decomposeDTO);
             }
         }
+        this.handleResult(targetDecomposeDTOS);
         return targetDecomposeDTOS;
     }
 
@@ -1003,6 +1020,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 this.packDecompositionDimension(decomposeDTO);
             }
         }
+        this.handleResult(targetDecomposeDTOS);
         return targetDecomposeDTOS;
     }
 

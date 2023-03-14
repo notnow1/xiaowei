@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.EmolumentPlan;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
 import net.qixiaowei.operate.cloud.mapper.salary.EmolumentPlanMapper;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -157,24 +159,9 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
         }
         emolumentPlan.setCreateBys(createBys);
         List<EmolumentPlanDTO> emolumentPlanDTOS = emolumentPlanMapper.selectEmolumentPlanList(emolumentPlan);
-        //远程查询创建人姓名
-        Set<Long> collect = emolumentPlanDTOS.stream().map(EmolumentPlanDTO::getCreateBy).collect(Collectors.toSet());
-        if (StringUtils.isNotEmpty(collect)) {
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(collect, SecurityConstants.INNER);
-            List<UserDTO> data = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(data)) {
-                for (EmolumentPlanDTO planDTO : emolumentPlanDTOS) {
-                    for (UserDTO datum : data) {
-                        if (planDTO.getCreateBy().equals(datum.getUserId())) {
-                            //员工姓名
-                            planDTO.setCreateByName(datum.getEmployeeName());
-                        }
-                    }
-                }
-            }
-        }
         //薪酬规划列表list计算
         this.queryCalculateList(emolumentPlanDTOS);
+        this.handleResult(emolumentPlanDTOS);
         return emolumentPlanDTOS;
     }
 
@@ -499,6 +486,18 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             emolumentPlanList.add(emolumentPlan);
         }
         return emolumentPlanMapper.updateEmolumentPlans(emolumentPlanList);
+    }
+
+    @Override
+    public void handleResult(List<EmolumentPlanDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(EmolumentPlanDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 }
 

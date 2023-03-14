@@ -29,6 +29,13 @@ public interface IEmpSalaryAdjustPlanService {
      * @return 个人调薪计划表集合
      */
     List<EmpSalaryAdjustPlanDTO> selectEmpSalaryAdjustPlanList(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO);
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<EmpSalaryAdjustPlanDTO> result);
 
     /**
      * 新增个人调薪计划表

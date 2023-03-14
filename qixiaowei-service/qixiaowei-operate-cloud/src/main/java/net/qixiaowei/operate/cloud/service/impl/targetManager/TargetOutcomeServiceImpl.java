@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
@@ -282,7 +283,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     @Override
     public List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO) {
         String createByName = targetOutcomeDTO.getCreateByName();
-        Set<Long> createBys = new HashSet<>();
         List<TargetOutcomeDTO> targetOutcomeDTOS;
         if (StringUtils.isNull(createByName)) {
             TargetOutcome targetOutcome = new TargetOutcome();
@@ -313,25 +313,20 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                 targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeByCreateBys(targetOutcome);
             }
         }
-        if (StringUtils.isEmpty(targetOutcomeDTOS)) {
-            return targetOutcomeDTOS;
-        }
-        for (TargetOutcomeDTO outcomeDTO : targetOutcomeDTOS) {
-            createBys.add(outcomeDTO.getCreateBy());
-        }
-        // todo 根据createBys获取创建人名称  setCreateByName
-        List<UserDTO> userDTOS = getUserDTOS(createBys);
-        for (TargetOutcomeDTO outcomeDTO : targetOutcomeDTOS) {
-            if (StringUtils.isNotEmpty(userDTOS)) {
-                for (UserDTO userDTO : userDTOS) {
-                    if (userDTO.getUserId().equals(outcomeDTO.getCreateBy())) {
-                        outcomeDTO.setCreateByName(userDTO.getEmployeeName());
-                        break;
-                    }
-                }
-            }
-        }
+        this.handleResult(targetOutcomeDTOS);
         return targetOutcomeDTOS;
+    }
+
+    @Override
+    public void handleResult(List<TargetOutcomeDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(TargetOutcomeDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**

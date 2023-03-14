@@ -8,13 +8,11 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptBonusBudget;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptBonusBudgetDetails;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptBonusBudgetItems;
-import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDetailsDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetItemsDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.*;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.*;
@@ -240,21 +238,6 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         }
         deptBonusBudget.setCreateBys(createBys);
         List<DeptBonusBudgetDTO> deptBonusBudgetDTOS = deptBonusBudgetMapper.selectDeptBonusBudgetList(deptBonusBudget);
-        if (StringUtils.isNotEmpty(deptBonusBudgetDTOS)) {
-            Set<Long> collect = deptBonusBudgetDTOS.stream().map(DeptBonusBudgetDTO::getCreateBy).collect(Collectors.toSet());
-            //远程调用人员查询姓名
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(collect, SecurityConstants.INNER);
-            List<UserDTO> data = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(data)) {
-                for (DeptBonusBudgetDTO bonusBudgetDTO : deptBonusBudgetDTOS) {
-                    for (UserDTO datum : data) {
-                        if (bonusBudgetDTO.getCreateBy().equals(datum.getUserId())) {
-                            bonusBudgetDTO.setCreateByName(datum.getEmployeeName());
-                        }
-                    }
-                }
-            }
-        }
         //模糊查询名称
         String createByName = deptBonusBudgetDTO.getCreateByName();
         if (StringUtils.isNotNull(createByName)) {
@@ -274,7 +257,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             }
             return deptBonusBudgetDTOList;
         }
-
+        this.handleResult(deptBonusBudgetDTOS);
         return deptBonusBudgetDTOS;
     }
 
@@ -1105,6 +1088,18 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             deptBonusBudgetList.add(deptBonusBudget);
         }
         return deptBonusBudgetMapper.updateDeptBonusBudgets(deptBonusBudgetList);
+    }
+
+    @Override
+    public void handleResult(List<DeptBonusBudgetDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(DeptBonusBudgetDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 }
 

@@ -10,6 +10,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusBudget;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusBudgetParameters;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
@@ -214,23 +215,20 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         List<BonusBudgetDTO> bonusBudgetDTOS = bonusBudgetMapper.selectBonusBudgetList(bonusBudget);
         //封装总奖金包预算列表涨薪包数据
         this.packPaymentBonusBudgetList(bonusBudgetDTOS);
-        // 远程调用 赋值创建人名称
-
-        Set<Long> collect = bonusBudgetDTOS.stream().map(BonusBudgetDTO::getCreateBy).distinct().collect(Collectors.toSet());
-        if (StringUtils.isNotEmpty(collect)) {
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(collect, SecurityConstants.INNER);
-            List<UserDTO> data = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(data)) {
-                for (BonusBudgetDTO budgetDTO : bonusBudgetDTOS) {
-                    for (UserDTO datum : data) {
-                        if (budgetDTO.getCreateBy().equals(datum.getUserId())) {
-                            budgetDTO.setCreateByName(datum.getEmployeeName());
-                        }
-                    }
-                }
-            }
-        }
+        this.handleResult(bonusBudgetDTOS);
         return bonusBudgetDTOS;
+    }
+
+    @Override
+    public void handleResult(List<BonusBudgetDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(BonusBudgetDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
 

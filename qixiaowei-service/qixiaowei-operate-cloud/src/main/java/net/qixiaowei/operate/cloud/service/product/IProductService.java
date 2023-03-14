@@ -29,7 +29,13 @@ public interface IProductService {
      * @return 产品表集合
      */
     List<ProductDTO> selectProduct(ProductDTO productDTO);
-
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<ProductDTO> result);
     /**
      * 查询产品表列表-树结构
      *
