@@ -115,4 +115,12 @@ public interface IStrategyMetricsService {
      * @return 战略衡量指标
      */
     StrategyMetricsDTO selectStrategyMetricsByStrategyMeasureId(Long strategyMeasureId);
+
+    /**
+     * 根据清单ID集合查询战略衡量指标
+     *
+     * @param strategyMeasureIds 清单ID集合
+     * @return List
+     */
+    List<StrategyMetricsDTO> selectStrategyMetricsByStrategyMeasureIds(List<Long> strategyMeasureIds);
 }

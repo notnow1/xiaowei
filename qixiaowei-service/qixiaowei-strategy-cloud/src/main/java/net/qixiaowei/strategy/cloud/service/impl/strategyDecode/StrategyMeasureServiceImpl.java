@@ -90,6 +90,9 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
     private IStrategyMetricsDetailService strategyMetricsDetailService;
 
     @Autowired
+    private IStrategyMetricsPlanService strategyMetricsPlanService;
+
+    @Autowired
     private PlanBusinessUnitMapper planBusinessUnitMapper;
 
     @Autowired
@@ -704,7 +707,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
                         .collect(Collectors.toList()).contains(strategyMeasureDetailId)).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(delStrategyMeasureDetailIds)) {
             strategyMeasureDetailService.logicDeleteStrategyMeasureDetailByStrategyMeasureDetailIds(delStrategyMeasureDetailIds);
-            List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = strategyMeasureTaskService.selectStrategyMeasureTaskByStrategyMeasureIds(delStrategyMeasureDetailIds);
+            List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = strategyMeasureTaskService.selectStrategyMeasureTaskByStrategyMeasureDetailIds(delStrategyMeasureDetailIds);
             return strategyMeasureTaskDTOS.stream().map(StrategyMeasureTaskDTO::getStrategyMeasureTaskId).collect(Collectors.toList());
         }
         return new ArrayList<>();
@@ -737,7 +740,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
         if (StringUtils.isEmpty(editStrategyMeasureDetailDTOS))
             strategyMeasureDetailService.updateStrategyMeasureDetails(editStrategyMeasureDetailDTOS);
         List<Long> editStrategyMeasureDetailIds = editStrategyMeasureDetailDTOS.stream().map(StrategyMeasureDetailDTO::getStrategyMeasureDetailId).collect(Collectors.toList());
-        List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOSBefore = strategyMeasureTaskService.selectStrategyMeasureTaskByStrategyMeasureIds(editStrategyMeasureDetailIds);
+        List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOSBefore = strategyMeasureTaskService.selectStrategyMeasureTaskByStrategyMeasureDetailIds(editStrategyMeasureDetailIds);
         // 任务
         for (StrategyMeasureDetailDTO editStrategyMeasureDetailDTO : editStrategyMeasureDetailDTOS) {
             Long strategyMeasureDetailId = editStrategyMeasureDetailDTO.getStrategyMeasureDetailId();
@@ -880,18 +883,38 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             throw new ServiceException("请选择战略举措清单");
         List<StrategyMeasureDTO> strategyMeasureDTOS = strategyMeasureMapper.selectStrategyMeasureByStrategyMeasureIds(strategyMeasureIds);
         if (StringUtils.isEmpty(strategyMeasureDTOS))
-            throw new ServiceException("当前战略举措清单列表已不存在");
+            throw new ServiceException("当前战略举措清单列表不存在");
         strategyMeasureMapper.logicDeleteStrategyMeasureByStrategyMeasureIds(strategyMeasureIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        // 战略举措详情列表
         List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOS = strategyMeasureDetailService.selectStrategyMeasureDetailByStrategyMeasureIds(strategyMeasureIds);
         if (StringUtils.isEmpty(strategyMeasureDetailDTOS))
-            throw new ServiceException("当前战略举措清单详情列表已不存在");
+            throw new ServiceException("当前战略举措清单详情列表不存在");
         List<Long> strategyMeasureDetailIds = strategyMeasureDetailDTOS.stream().map(StrategyMeasureDetailDTO::getStrategyMeasureDetailId).collect(Collectors.toList());
         strategyMeasureDetailService.logicDeleteStrategyMeasureDetailByStrategyMeasureDetailIds(strategyMeasureDetailIds);
-        List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = strategyMeasureTaskService.selectStrategyMeasureTaskByStrategyMeasureIds(strategyMeasureIds);
+        // 战略举措详情任务表
+        List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = strategyMeasureTaskService.selectStrategyMeasureTaskByStrategyMeasureDetailIds(strategyMeasureDetailIds);
         if (StringUtils.isEmpty(strategyMeasureTaskDTOS))
-            throw new ServiceException("当前战略举措清单详情任务列表已不存在");
+            throw new ServiceException("当前战略举措清单详情任务列表不存在");
         List<Long> strategyMeasureTaskIds = strategyMeasureTaskDTOS.stream().map(StrategyMeasureTaskDTO::getStrategyMeasureTaskId).collect(Collectors.toList());
         strategyMeasureTaskService.logicDeleteStrategyMeasureTaskByStrategyMeasureTaskIds(strategyMeasureTaskIds);
+        // 战略衡量指标
+        List<StrategyMetricsDTO> strategyMetricsDTOS = strategyMetricsService.selectStrategyMetricsByStrategyMeasureIds(strategyMeasureIds);
+        if (StringUtils.isEmpty(strategyMetricsDTOS))
+            throw new ServiceException("当前战略衡量指标列表不存在");
+        List<Long> strategyMetricsIds = strategyMetricsDTOS.stream().map(StrategyMetricsDTO::getStrategyMetricsId).collect(Collectors.toList());
+        strategyMetricsService.logicDeleteStrategyMetricsByStrategyMetricsIds(strategyMetricsIds);
+        // 战略衡量指标详情
+        List<StrategyMetricsDetailDTO> strategyMetricsDetailDTOS = strategyMetricsDetailService.selectStrategyMetricsDetailByStrategyMetricsIds(strategyMeasureIds);
+        if (StringUtils.isEmpty(strategyMetricsDetailDTOS))
+            throw new ServiceException("当前战略衡量指标详情列表不存在");
+        List<Long> strategyMetricsDetailIds = strategyMetricsDetailDTOS.stream().map(StrategyMetricsDetailDTO::getStrategyMetricsDetailId).collect(Collectors.toList());
+        strategyMetricsDetailService.logicDeleteStrategyMetricsDetailByStrategyMetricsDetailIds(strategyMetricsDetailIds);
+        // 战略衡量指标详情任务
+        List<StrategyMetricsPlanDTO> strategyMetricsPlanDTOS = strategyMetricsPlanService.selectStrategyMetricsPlanByStrategyMetricsDetailIds(strategyMetricsDetailIds);
+        if (StringUtils.isEmpty(strategyMetricsPlanDTOS))
+            return 1;
+        List<Long> strategyMetricsPlanIds = strategyMetricsPlanDTOS.stream().map(StrategyMetricsPlanDTO::getStrategyMetricsPlanId).collect(Collectors.toList());
+        strategyMetricsPlanService.logicDeleteStrategyMetricsPlanByStrategyMetricsPlanIds(strategyMetricsPlanIds);
         return 1;
     }
 
@@ -921,16 +944,36 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
         strategyMeasure.setUpdateTime(DateUtils.getNowDate());
         strategyMeasure.setUpdateBy(SecurityUtils.getUserId());
         strategyMeasureMapper.logicDeleteStrategyMeasureByStrategyMeasureId(strategyMeasure);
+        // 详情表
         List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOS = strategyMeasureDetailService.selectStrategyMeasureDetailByStrategyMeasureId(strategyMeasureId);
         if (StringUtils.isEmpty(strategyMeasureDetailDTOS))
             throw new ServiceException("数据异常 当前战略清单没有详情?");
         List<Long> strategyMeasureDetailIds = strategyMeasureDetailDTOS.stream().map(StrategyMeasureDetailDTO::getStrategyMeasureDetailId).collect(Collectors.toList());
         strategyMeasureDetailService.logicDeleteStrategyMeasureDetailByStrategyMeasureDetailIds(strategyMeasureDetailIds);
-        List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = strategyMeasureTaskService.selectStrategyMeasureTaskByStrategyMeasureId(strategyMeasureId);
+        // 详情任务表
+        List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = strategyMeasureTaskService.selectStrategyMeasureTaskByStrategyMeasureDetailIds(strategyMeasureDetailIds);
         if (StringUtils.isEmpty(strategyMeasureTaskDTOS))
             throw new ServiceException("数据异常 当前战略清单没有详情任务?");
         List<Long> strategyMeasureTaskIds = strategyMeasureTaskDTOS.stream().map(StrategyMeasureTaskDTO::getStrategyMeasureTaskId).collect(Collectors.toList());
         strategyMeasureTaskService.logicDeleteStrategyMeasureTaskByStrategyMeasureTaskIds(strategyMeasureTaskIds);
+        // 战略衡量指标表
+        StrategyMetricsDTO strategyMetricsDTO = strategyMetricsService.selectStrategyMetricsByStrategyMeasureId(strategyMeasureId);
+        if (StringUtils.isNull(strategyMetricsDTO))
+            throw new ServiceException("数据异常 当前战略衡量指标不存在?");
+        Long strategyMetricsId = strategyMetricsDTO.getStrategyMetricsId();
+        strategyMetricsService.logicDeleteStrategyMetricsByStrategyMetricsId(strategyMetricsDTO);
+        // 战略衡量指标详情表
+        List<StrategyMetricsDetailDTO> strategyMetricsDetailDTOS = strategyMetricsDetailService.selectStrategyMetricsDetailByStrategyMetricsId(strategyMetricsId);
+        if (StringUtils.isEmpty(strategyMetricsDetailDTOS))
+            throw new ServiceException("数据异常 当前战略衡量指标没有详情任务?");
+        List<Long> strategyMetricsDetailIds = strategyMetricsDetailDTOS.stream().map(StrategyMetricsDetailDTO::getStrategyMetricsDetailId).collect(Collectors.toList());
+        strategyMetricsDetailService.logicDeleteStrategyMetricsDetailByStrategyMetricsDetailIds(strategyMetricsDetailIds);
+        // 战略衡量指标计划表
+        List<StrategyMetricsPlanDTO> strategyMetricsPlanDTOS = strategyMetricsPlanService.selectStrategyMetricsPlanByStrategyMetricsDetailIds(strategyMetricsDetailIds);
+        if (StringUtils.isEmpty(strategyMetricsPlanDTOS))
+            return 1;
+        List<Long> strategyMetricsPlanIds = strategyMetricsPlanDTOS.stream().map(StrategyMetricsPlanDTO::getStrategyMetricsPlanId).collect(Collectors.toList());
+        strategyMetricsPlanService.logicDeleteStrategyMetricsPlanByStrategyMetricsPlanIds(strategyMetricsPlanIds);
         return 1;
     }
 
@@ -940,7 +983,6 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
      * @param strategyMeasureDTO 战略举措清单表
      * @return 结果
      */
-
     @Override
     public int deleteStrategyMeasureByStrategyMeasureId(StrategyMeasureDTO strategyMeasureDTO) {
         StrategyMeasure strategyMeasure = new StrategyMeasure();

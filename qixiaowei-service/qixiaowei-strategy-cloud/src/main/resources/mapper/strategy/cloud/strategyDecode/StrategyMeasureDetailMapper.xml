@@ -124,7 +124,7 @@
         WHERE delete_flag=0
         AND strategy_measure_id
         IN
-        <foreach collection="strategyMeasureIds" index="index" item="item" separator="," open="()" close=")">
+        <foreach collection="strategyMeasureIds" index="index" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
     </select>

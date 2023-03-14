@@ -108,6 +108,28 @@ public class StrategyMetricsDetailServiceImpl implements IStrategyMetricsDetailS
     }
 
     /**
+     * 根据主键ID查询分表
+     *
+     * @param strategyMetricsId 主键ID
+     * @return List
+     */
+    @Override
+    public List<StrategyMetricsDetailDTO> selectStrategyMetricsDetailByStrategyMetricsId(Long strategyMetricsId) {
+        return strategyMetricsDetailMapper.selectStrategyMetricsDetailByStrategyMetricsId(strategyMetricsId);
+    }
+
+    /**
+     * 根据主键ID查询分表
+     *
+     * @param strategyMetricsIds 主键ID
+     * @return List
+     */
+    @Override
+    public List<StrategyMetricsDetailDTO> selectStrategyMetricsDetailByStrategyMetricsIds(List<Long> strategyMetricsIds) {
+        return strategyMetricsDetailMapper.selectStrategyMetricsDetailByStrategyMetricsIds(strategyMetricsIds);
+    }
+
+    /**
      * 逻辑删除战略衡量指标详情表信息
      *
      * @param strategyMetricsDetailDTO 战略衡量指标详情表

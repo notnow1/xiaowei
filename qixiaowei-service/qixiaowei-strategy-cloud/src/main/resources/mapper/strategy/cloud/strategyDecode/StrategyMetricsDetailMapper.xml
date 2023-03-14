@@ -96,6 +96,29 @@
         AND smd.delete_flag = 0
         ORDER BY smd.sort,smd.serial_number
     </select>
+    <!--根据主表ID查询详情-->
+    <select id="selectStrategyMetricsDetailByStrategyMetricsIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO">
+        SELECT
+        strategy_metrics_detail_id,
+        strategy_metrics_id,
+        strategy_index_dimension_id,
+        serial_number,
+        strategy_measure_name,
+        indicator_id,
+        sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM strategy_metrics_detail
+        WHERE delete_flag=0
+        AND strategy_metrics_id IN
+        <foreach collection="strategyMetricsIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}}
+        </foreach>
+    </select>
     <!--新增战略衡量指标详情表-->
     <insert id="insertStrategyMetricsDetail" useGeneratedKeys="true" keyProperty="strategyMetricsDetailId">
         INSERT INTO strategy_metrics_detail

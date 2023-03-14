@@ -80,7 +80,7 @@
         </if>
     </select>
     <!--根据战略清单ID集合查询战略举措清单任务表信息-->
-    <select id="selectStrategyMeasureTaskByStrategyMeasureIds"
+    <select id="selectStrategyMeasureTaskByStrategyMeasureDetailIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO">
         SELECT
         strategy_measure_task_id,strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
@@ -92,7 +92,7 @@
         </foreach>
     </select>
     <!--根据详情ID集合查找任务表-->
-    <select id="selectStrategyMeasureTaskByStrategyMeasureId"
+    <select id="selectStrategyMeasureTaskByStrategyMeasureDetailId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO">
         SELECT
         strategy_measure_task_id,strategy_measure_id,strategy_measure_detail_id,key_task,close_standard,duty_department_id,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time

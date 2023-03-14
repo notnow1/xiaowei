@@ -113,4 +113,12 @@ public interface StrategyMetricsDetailMapper {
      * @return List
      */
     List<StrategyMetricsDetailDTO> selectStrategyMetricsDetailByStrategyMetricsId(@Param("strategyMetricsId") Long strategyMetricsId);
+
+    /**
+     * 根据主表ID查询详情
+     *
+     * @param strategyMetricsIds 主表ID
+     * @return List
+     */
+    List<StrategyMetricsDetailDTO> selectStrategyMetricsDetailByStrategyMetricsIds(@Param("strategyMetricsIds") List<Long> strategyMetricsIds);
 }

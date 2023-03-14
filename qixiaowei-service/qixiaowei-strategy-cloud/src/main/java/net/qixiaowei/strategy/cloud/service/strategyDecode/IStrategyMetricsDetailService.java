@@ -102,4 +102,19 @@ public interface IStrategyMetricsDetailService {
      */
     int deleteStrategyMetricsDetailByStrategyMetricsDetailId(Long strategyMetricsDetailId);
 
+    /**
+     * 根据主键ID查询分表
+     *
+     * @param strategyMetricsId 主键ID
+     * @return List
+     */
+    List<StrategyMetricsDetailDTO> selectStrategyMetricsDetailByStrategyMetricsId(Long strategyMetricsId);
+
+    /**
+     * 根据主键ID查询分表
+     *
+     * @param strategyMetricsIds 主键ID
+     * @return List
+     */
+    List<StrategyMetricsDetailDTO> selectStrategyMetricsDetailByStrategyMetricsIds(List<Long> strategyMetricsIds);
 }
