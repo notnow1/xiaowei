@@ -448,6 +448,10 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
 
             MarketInsightOpponent marketInsightOpponent = new MarketInsightOpponent();
             BeanUtils.copyProperties(marketInsightOpponentDTO, marketInsightOpponent);
+            List<MarketInsightOpponentDTO> marketInsightOpponentDTOS = marketInsightOpponentMapper.selectMarketInsightOpponentList(marketInsightOpponent);
+            if (StringUtils.isNotEmpty(marketInsightOpponentDTOS)){
+                throw new ServiceException(marketInsightOpponent.getPlanYear() + "年数据已存在！");
+            }
             marketInsightOpponent.setCreateBy(SecurityUtils.getUserId());
             marketInsightOpponent.setCreateTime(DateUtils.getNowDate());
             marketInsightOpponent.setUpdateTime(DateUtils.getNowDate());

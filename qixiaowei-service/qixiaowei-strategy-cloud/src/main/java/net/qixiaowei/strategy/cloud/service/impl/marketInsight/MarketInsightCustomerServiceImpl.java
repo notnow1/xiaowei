@@ -498,6 +498,10 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
         List<MiCustomerInvestPlan> miCustomerInvestPlanList = new ArrayList<>();
         MarketInsightCustomer marketInsightCustomer = new MarketInsightCustomer();
         BeanUtils.copyProperties(marketInsightCustomerDTO, marketInsightCustomer);
+        List<MarketInsightCustomerDTO> marketInsightCustomerDTOS = marketInsightCustomerMapper.selectMarketInsightCustomerList(marketInsightCustomer);
+        if (StringUtils.isNotEmpty(marketInsightCustomerDTOS)){
+            throw new ServiceException(marketInsightCustomer.getPlanYear() + "年数据已存在！");
+        }
         marketInsightCustomer.setCreateBy(SecurityUtils.getUserId());
         marketInsightCustomer.setCreateTime(DateUtils.getNowDate());
         marketInsightCustomer.setUpdateTime(DateUtils.getNowDate());
