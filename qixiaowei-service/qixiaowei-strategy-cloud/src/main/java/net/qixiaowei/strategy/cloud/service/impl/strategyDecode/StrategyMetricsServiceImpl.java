@@ -32,9 +32,11 @@ import net.qixiaowei.strategy.cloud.service.strategyDecode.IStrategyMetricsServi
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,6 +101,9 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
     @Autowired
     private IStrategyIndexDimensionService strategyIndexDimensionService;
 
+    @Autowired
+    private RemoteUserService remoteUserService;
+
     /**
      * 查询战略衡量指标表
      *
@@ -135,17 +140,17 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
         }
         setDecomposeValue(strategyMetricsDTO, businessUnitDecompose);
         // 详情
-        List<StrategyMetricsDetailDTO> strategyMetricsDetailDTO = strategyMetricsDetailMapper.selectStrategyMetricsDetailByStrategyMetricsId(strategyMetricsId);
-        if (StringUtils.isEmpty(strategyMetricsDetailDTO)) {
+        List<StrategyMetricsDetailDTO> strategyMetricsDetailDTOS = strategyMetricsDetailMapper.selectStrategyMetricsDetailByStrategyMetricsId(strategyMetricsId);
+        if (StringUtils.isEmpty(strategyMetricsDetailDTOS)) {
             return strategyMetricsDTO;
         }
         // 获取指标
-        List<Long> indicatorIds = strategyMetricsDetailDTO.stream().map(StrategyMetricsDetailDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
+        List<Long> indicatorIds = strategyMetricsDetailDTOS.stream().map(StrategyMetricsDetailDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(indicatorIds)) {
             R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
             if (StringUtils.isNotEmpty(indicatorDTOS)) {
-                for (StrategyMetricsDetailDTO detailDTO : strategyMetricsDetailDTO) {
+                for (StrategyMetricsDetailDTO detailDTO : strategyMetricsDetailDTOS) {
                     for (IndicatorDTO indicatorDTO : indicatorDTOS) {
                         if (StringUtils.isNotNull(detailDTO.getIndicatorId()) && detailDTO.getIndicatorId().equals(indicatorDTO.getIndicatorId())) {
                             detailDTO.setIndicatorName(indicatorDTO.getIndicatorName());
@@ -156,9 +161,8 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
                 }
             }
         }
-
         List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionRootList();
-        for (StrategyMetricsDetailDTO detailDTO : strategyMetricsDetailDTO) {
+        for (StrategyMetricsDetailDTO detailDTO : strategyMetricsDetailDTOS) {
             for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
                 if (strategyIndexDimensionDTO.getStrategyIndexDimensionId().equals(detailDTO.getStrategyIndexDimensionId())) {
                     detailDTO.setRootIndexDimensionName(strategyIndexDimensionDTO.getRootIndexDimensionName());
@@ -166,9 +170,9 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
                 }
             }
         }
-        List<Long> strategyMetricsDetailIds = strategyMetricsDetailDTO.stream().map(StrategyMetricsDetailDTO::getStrategyMetricsDetailId).collect(Collectors.toList());
+        List<Long> strategyMetricsDetailIds = strategyMetricsDetailDTOS.stream().map(StrategyMetricsDetailDTO::getStrategyMetricsDetailId).collect(Collectors.toList());
         List<StrategyMetricsPlanDTO> strategyMetricsPlanDTOS = strategyMetricsPlanMapper.selectStrategyMetricsPlanByStrategyMetricsDetailIds(strategyMetricsDetailIds);
-        for (StrategyMetricsDetailDTO metricsDetailDTO : strategyMetricsDetailDTO) {
+        for (StrategyMetricsDetailDTO metricsDetailDTO : strategyMetricsDetailDTOS) {
             List<Map<String, Object>> periodList = new ArrayList<>();
             Long strategyMetricsDetailId = metricsDetailDTO.getStrategyMetricsDetailId();
             List<StrategyMetricsPlanDTO> sonStrategyMetricsPlanDTOS = strategyMetricsPlanDTOS.stream()
@@ -183,7 +187,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
             }
             metricsDetailDTO.setPeriodList(periodList);
         }
-        strategyMetricsDTO.setStrategyMetricsDetailDTOS(strategyMetricsDetailDTO);
+        strategyMetricsDTO.setStrategyMetricsDetailDTOS(strategyMetricsDetailDTOS);
         return strategyMetricsDTO;
     }
 
@@ -202,40 +206,32 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
             if (StringUtils.isNotNull(areaId)) {
                 R<AreaDTO> areaDTOR = areaService.getById(areaId, SecurityConstants.INNER);
                 AreaDTO areaDTO = areaDTOR.getData();
-                if (StringUtils.isNull(areaDTO)) {
-                    throw new ServiceException("当前区域配置的信息已删除 请联系管理员");
-                }
-                strategyMetricsDTO.setAreaName(areaDTO.getAreaName());
+                if (StringUtils.isNotNull(areaDTO))
+                    strategyMetricsDTO.setAreaName(areaDTO.getAreaName());
             }
         }
         if (businessUnitDecompose.contains("department")) {
             if (StringUtils.isNotNull(departmentId)) {
                 R<DepartmentDTO> departmentDTOR = departmentService.selectdepartmentId(departmentId, SecurityConstants.INNER);
                 DepartmentDTO departmentDTO = departmentDTOR.getData();
-                if (StringUtils.isNull(departmentDTO)) {
-                    throw new ServiceException("当前部门配置的信息已删除 请联系管理员");
-                }
-                strategyMetricsDTO.setDepartmentName(departmentDTO.getDepartmentName());
+                if (StringUtils.isNotNull(departmentDTO))
+                    strategyMetricsDTO.setDepartmentName(departmentDTO.getDepartmentName());
             }
         }
         if (businessUnitDecompose.contains("product")) {
             if (StringUtils.isNotNull(productId)) {
                 R<ProductDTO> productDTOR = productService.remoteSelectById(productId, SecurityConstants.INNER);
                 ProductDTO productDTO = productDTOR.getData();
-                if (StringUtils.isNull(productDTO)) {
-                    throw new ServiceException("当前产品配置的信息已删除 请联系管理员");
-                }
-                strategyMetricsDTO.setProductName(productDTO.getProductName());
+                if (StringUtils.isNotNull(productDTO))
+                    strategyMetricsDTO.setProductName(productDTO.getProductName());
             }
         }
         if (businessUnitDecompose.contains("industry")) {
             if (StringUtils.isNotNull(industryId)) {
                 R<IndustryDTO> industryDTOR = industryService.selectById(industryId, SecurityConstants.INNER);
                 IndustryDTO industryDTO = industryDTOR.getData();
-                if (StringUtils.isNull(industryDTO)) {
-                    throw new ServiceException("当前行业配置的信息已删除 请联系管理员");
-                }
-                strategyMetricsDTO.setIndustryName(industryDTO.getIndustryName());
+                if (StringUtils.isNotNull(industryDTO))
+                    strategyMetricsDTO.setIndustryName(industryDTO.getIndustryName());
             }
         }
     }
@@ -249,12 +245,44 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
     @Override
     public List<StrategyMetricsDTO> selectStrategyMetricsList(StrategyMetricsDTO strategyMetricsDTO) {
         StrategyMetrics strategyMetrics = new StrategyMetrics();
-        Map<String, Object> params = strategyMetrics.getParams();
-        strategyMetrics.setParams(params);
+        Map<String, Object> params = strategyMetricsDTO.getParams();
+        if (StringUtils.isNull(params))
+            params = new HashMap<>();
         BeanUtils.copyProperties(strategyMetricsDTO, strategyMetrics);
+        if (StringUtils.isNotNull(strategyMetricsDTO.getBusinessUnitName()))
+            params.put("businessUnitName", strategyMetricsDTO.getBusinessUnitName());
+        String createByName = strategyMetricsDTO.getCreateByName();
+        List<String> createByList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(createByName)) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmployeeName(createByName);
+            R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
+            List<UserDTO> userListData = userList.getData();
+            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(employeeIds)) {
+                employeeIds.forEach(e -> createByList.add(String.valueOf(e)));
+            } else {
+                createByList.add("");
+            }
+        }
+        params.put("createByList", createByList);
+        strategyMetrics.setParams(params);
         List<StrategyMetricsDTO> strategyMetricsDTOS = strategyMetricsMapper.selectStrategyMetricsList(strategyMetrics);
         if (StringUtils.isEmpty(strategyMetricsDTOS)) {
             return strategyMetricsDTOS;
+        }
+        // 赋值员工
+        Set<Long> createBys = strategyMetricsDTOS.stream().map(StrategyMetricsDTO::getCreateBy).collect(Collectors.toSet());
+        R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);
+        List<UserDTO> userDTOList = usersByUserIds.getData();
+        if (StringUtils.isNotEmpty(userDTOList)) {
+            for (StrategyMetricsDTO strategyMetricsDTO1 : strategyMetricsDTOS) {
+                for (UserDTO userDTO : userDTOList) {
+                    if (strategyMetricsDTO1.getCreateBy().equals(userDTO.getUserId())) {
+                        strategyMetricsDTO1.setCreateByName(userDTO.getEmployeeName());
+                    }
+                }
+            }
         }
         List<Long> areaIds = strategyMetricsDTOS.stream().map(StrategyMetricsDTO::getAreaId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
         List<Long> departmentIds = strategyMetricsDTOS.stream().map(StrategyMetricsDTO::getDepartmentId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
@@ -264,7 +292,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
         if (StringUtils.isNotEmpty(areaIds)) {
             R<List<AreaDTO>> areaDTOSR = areaService.selectAreaListByAreaIds(areaIds, SecurityConstants.INNER);
             areaDTOS = areaDTOSR.getData();
-            if (StringUtils.isNull(areaDTOS)) {
+            if (StringUtils.isEmpty(areaDTOS)) {
                 throw new ServiceException("当前区域配置的信息已删除 请联系管理员");
             }
         }
@@ -272,7 +300,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
         if (StringUtils.isNotEmpty(departmentIds)) {
             R<List<DepartmentDTO>> departmentDTOSR = departmentService.selectdepartmentIds(departmentIds, SecurityConstants.INNER);
             departmentDTOS = departmentDTOSR.getData();
-            if (StringUtils.isNull(departmentDTOS)) {
+            if (StringUtils.isEmpty(departmentDTOS)) {
                 throw new ServiceException("当前部门配置的信息已删除 请联系管理员");
             }
         }
@@ -280,7 +308,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
         if (StringUtils.isNotEmpty(productIds)) {
             R<List<ProductDTO>> productDTOSR = productService.getName(productIds, SecurityConstants.INNER);
             productDTOS = productDTOSR.getData();
-            if (StringUtils.isNull(productDTOS)) {
+            if (StringUtils.isEmpty(productDTOS)) {
                 throw new ServiceException("当前产品配置的信息已删除 请联系管理员");
             }
         }
@@ -288,7 +316,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
         if (StringUtils.isNotEmpty(industryIds)) {
             R<List<IndustryDTO>> industryDTOSR = industryService.selectByIds(industryIds, SecurityConstants.INNER);
             industryDTOS = industryDTOSR.getData();
-            if (StringUtils.isNull(industryDTOS)) {
+            if (StringUtils.isEmpty(industryDTOS)) {
                 throw new ServiceException("当前行业配置的信息已删除 请联系管理员");
             }
         }

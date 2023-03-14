@@ -44,57 +44,236 @@
         and delete_flag=0
     </select>
 
-    <!--    查询战略衡量指标表列表-->
+    <!--查询战略衡量指标表列表-->
     <select id="selectStrategyMetricsList"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO">
         SELECT
-        strategy_metrics_id,strategy_measure_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,plan_period,delete_flag,create_by,create_time,update_by,update_time
-        FROM strategy_metrics
-        WHERE delete_flag=0
+        sm.strategy_metrics_id,
+        sm.strategy_measure_id,
+        sm.plan_year,
+        sm.plan_business_unit_id,
+        sm.business_unit_decompose,
+        sm.area_id,
+        sm.department_id,
+        sm.product_id,
+        sm.industry_id,
+        sm.plan_period,
+        sm.delete_flag,
+        sm.create_by,
+        sm.create_time,
+        sm.update_by,
+        sm.update_time,
+        pbu.business_unit_name
+        FROM strategy_metrics sm
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = bd.plan_business_unit_id
+        AND pbu.delete_flag = 0
+        WHERE sm.delete_flag=0
         <if test="strategyMetrics.strategyMetricsId != null">
-            and strategy_metrics_id=#{strategyMetrics.strategyMetricsId}
+            and sm.strategy_metrics_id=#{strategyMetrics.strategyMetricsId}
         </if>
         <if test="strategyMetrics.strategyMeasureId != null">
-            and strategy_measure_id=#{strategyMetrics.strategyMeasureId}
+            and sm.strategy_measure_id=#{strategyMetrics.strategyMeasureId}
         </if>
         <if test="strategyMetrics.planYear != null">
-            and plan_year=#{strategyMetrics.planYear}
+            and sm.plan_year=#{strategyMetrics.planYear}
         </if>
         <if test="strategyMetrics.planBusinessUnitId != null">
-            and plan_business_unit_id=#{strategyMetrics.planBusinessUnitId}
+            and sm.plan_business_unit_id=#{strategyMetrics.planBusinessUnitId}
         </if>
         <if test="strategyMetrics.businessUnitDecompose != null and strategyMetrics.businessUnitDecompose != ''">
-            and business_unit_decompose=#{strategyMetrics.businessUnitDecompose}
+            and sm.business_unit_decompose=#{strategyMetrics.businessUnitDecompose}
         </if>
         <if test="strategyMetrics.areaId != null">
-            and area_id=#{strategyMetrics.areaId}
+            and sm.area_id=#{strategyMetrics.areaId}
         </if>
         <if test="strategyMetrics.departmentId != null">
-            and department_id=#{strategyMetrics.departmentId}
+            and sm.department_id=#{strategyMetrics.departmentId}
         </if>
         <if test="strategyMetrics.productId != null">
-            and product_id=#{strategyMetrics.productId}
+            and sm.product_id=#{strategyMetrics.productId}
         </if>
         <if test="strategyMetrics.industryId != null">
-            and industry_id=#{strategyMetrics.industryId}
+            and sm.industry_id=#{strategyMetrics.industryId}
         </if>
         <if test="strategyMetrics.planPeriod != null">
-            and plan_period=#{strategyMetrics.planPeriod}
+            and sm.plan_period=#{strategyMetrics.planPeriod}
         </if>
         <if test="strategyMetrics.deleteFlag != null">
-            and delete_flag=#{strategyMetrics.deleteFlag}
+            and sm.delete_flag=#{strategyMetrics.deleteFlag}
         </if>
         <if test="strategyMetrics.createBy != null">
-            and create_by=#{strategyMetrics.createBy}
+            and sm.create_by=#{strategyMetrics.createBy}
         </if>
         <if test="strategyMetrics.createTime != null">
-            and create_time=#{strategyMetrics.createTime}
+            and sm.create_time=#{strategyMetrics.createTime}
         </if>
         <if test="strategyMetrics.updateBy != null">
-            and update_by=#{strategyMetrics.updateBy}
+            and sm.update_by=#{strategyMetrics.updateBy}
         </if>
         <if test="strategyMetrics.updateTime != null">
-            and update_time=#{strategyMetrics.updateTime}
+            and sm.update_time=#{strategyMetrics.updateTime}
+        </if>
+        <!-- 创建人等于过滤  -->
+        <if test="strategyMetrics.params.createByList != null and strategyMetrics.params.createByList.size() > 0">
+            AND sm.create_by IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.createByList"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!--规划业务单元名称-->
+        <if test="strategyMetrics.params.businessUnitName != null and strategyMetrics.params.businessUnitName != ''">
+            and pbu.business_unit_name like concat('%', #{strategyMetrics.params.businessUnitName}, '%')
+        </if>
+        <!--年份过滤-->
+        <if test="strategyMetrics.params.planYearEqual != null and strategyMetrics.params.planYearEqual.size() > 0">
+            and sm.plan_year IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.planYearEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyMetrics.params.planYearNotEqual != null and strategyMetrics.params.planYearNotEqual.size() > 0">
+            AND (sm.plan_year NOT IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.planYearNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR sm.plan_year IS NULL
+            )
+        </if>
+        <if test="strategyMetrics.params.planYearBefore != null and strategyMetrics.params.planYearBefore != ''">
+            AND sm.plan_year &lt; #{strategyMetrics.params.planYearBefore}
+        </if>
+        <if test="strategyMetrics.params.planYearNotBefore != null and strategyMetrics.params.planYearNotBefore != ''"><!-- 开始时间检索 -->
+            AND sm.plan_year &gt;= #{strategyMetrics.params.planYearNotBefore}
+        </if>
+        <if test="strategyMetrics.params.planYearAfter != null and strategyMetrics.params.planYearAfter != ''"><!-- 开始时间检索 -->
+            AND sm.plan_year &gt; #{strategyMetrics.params.planYearAfter}
+        </if>
+        <if test="strategyMetrics.params.planYearNotAfter != null and strategyMetrics.params.planYearNotAfter != ''"><!-- 结束时间检索 -->
+            AND sm.plan_year &lt;= #{strategyMetrics.params.planYearNotAfter}
+        </if>
+        <if test="strategyMetrics.params.planYearStart != null and strategyMetrics.params.planYearStart != ''"><!-- 开始时间检索 -->
+            AND sm.plan_year &gt;= #{strategyMetrics.params.planYearStart}
+        </if>
+        <if test="strategyMetrics.params.planYearEnd != null and strategyMetrics.params.planYearEnd != ''"><!-- 结束时间检索 -->
+            AND sm.plan_year &lt;= #{strategyMetrics.params.planYearEnd}
+        </if>
+        <!--规划业务单元名称高级搜索-->
+        <if test="strategyMetrics.params.businessUnitNameEqual != null and strategyMetrics.params.businessUnitNameEqual.size() > 0">
+            AND pbu.business_unit_name IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.businessUnitNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyMetrics.params.businessUnitNameNotEqual != null and strategyMetrics.params.businessUnitNameNotEqual.size() > 0">
+            AND (pbu.business_unit_name NOT IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.businessUnitNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pbu.business_unit_name IS NULL
+            )
+        </if>
+        <if test="strategyMetrics.params.businessUnitNameLike != null and strategyMetrics.params.businessUnitNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="strategyMetrics.params.businessUnitNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                pbu.business_unit_name LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="strategyMetrics.params.businessUnitNameNotLike != null and strategyMetrics.params.businessUnitNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="strategyMetrics.params.businessUnitNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!--行业-->
+        <if test="strategyMetrics.params.industryIdEqual != null and strategyMetrics.params.industryIdEqual.size() > 0">
+            and sm.industry_id IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.industryIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyMetrics.params.industryIdNotEqual != null and strategyMetrics.params.industryIdNotEqual.size() > 0">
+            AND (sm.industry_id NOT IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.industryIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR sm.industry_id IS NULL
+            )
+        </if>
+        <!--区域-->
+        <if test="strategyMetrics.params.areaIdEqual != null and strategyMetrics.params.areaIdEqual.size() > 0">
+            and sm.area_id IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.areaIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyMetrics.params.areaIdNotEqual != null and strategyMetrics.params.areaIdNotEqual.size() > 0">
+            AND (sm.area_id NOT IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.areaIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR sm.area_id IS NULL
+            )
+        </if>
+        <!--产品-->
+        <if test="strategyMetrics.params.productIdEqual != null and strategyMetrics.params.productIdEqual.size() > 0">
+            and sm.product_id IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.productIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyMetrics.params.productIdNotEqual != null and strategyMetrics.params.productIdNotEqual.size() > 0">
+            AND (sm.product_id NOT IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.productIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR sm.product_id IS NULL
+            )
+        </if>
+        <!--部门-->
+        <if test="strategyMetrics.params.departmentIdEqual != null and strategyMetrics.params.departmentIdEqual.size() > 0">
+            and sm.department_id IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.departmentIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyMetrics.params.departmentIdNotEqual != null and strategyMetrics.params.departmentIdNotEqual.size() > 0">
+            AND (sm.department_id NOT IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.departmentIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR sm.department_id IS NULL
+            )
         </if>
     </select>
     <!--根据清单ID查询战略衡量指标-->

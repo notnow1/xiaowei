@@ -33,10 +33,12 @@ import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,6 +90,9 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
 
     @Autowired
     private RemoteEmployeeService employeeService;
+
+    @Autowired
+    private RemoteUserService remoteUserService;
 
     public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.of(
             "region", "区域",
@@ -246,13 +251,45 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
     public List<GapAnalysisDTO> selectGapAnalysisList(GapAnalysisDTO gapAnalysisDTO) {
         GapAnalysis gapAnalysis = new GapAnalysis();
         Map<String, Object> params = gapAnalysisDTO.getParams();
-        if (StringUtils.isNotNull(gapAnalysisDTO.getBusinessUnitName()))
-            params.put("businessUnitName", gapAnalysisDTO.getBusinessUnitName());
-        gapAnalysis.setParams(params);
+        if (StringUtils.isNull(params))
+            params = new HashMap<>();
         BeanUtils.copyProperties(gapAnalysisDTO, gapAnalysis);
+        if (StringUtils.isNotEmpty(gapAnalysisDTO.getBusinessUnitName()))
+            params.put("businessUnitName", gapAnalysisDTO.getBusinessUnitName());
+        String createByName = gapAnalysisDTO.getCreateByName();
+        List<String> createByList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(createByName)) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmployeeName(createByName);
+            R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
+            List<UserDTO> userListData = userList.getData();
+            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(employeeIds)) {
+                employeeIds.forEach(e -> {
+                    createByList.add(String.valueOf(e));
+                });
+            } else {
+                createByList.add("");
+            }
+        }
+        params.put("createByList", createByList);
+        gapAnalysis.setParams(params);
         List<GapAnalysisDTO> gapAnalysisDTOS = gapAnalysisMapper.selectGapAnalysisList(gapAnalysis);
         if (StringUtils.isEmpty(gapAnalysisDTOS)) {
             return gapAnalysisDTOS;
+        }
+        // 赋值员工
+        Set<Long> createBys = gapAnalysisDTOS.stream().map(GapAnalysisDTO::getCreateBy).collect(Collectors.toSet());
+        R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);
+        List<UserDTO> userDTOList = usersByUserIds.getData();
+        if (StringUtils.isNotEmpty(userDTOList)) {
+            for (GapAnalysisDTO gapAnalysisDTO1 : gapAnalysisDTOS) {
+                for (UserDTO userDTO : userDTOList) {
+                    if (gapAnalysisDTO1.getCreateBy().equals(userDTO.getUserId())) {
+                        gapAnalysisDTO1.setCreateByName(userDTO.getEmployeeName());
+                    }
+                }
+            }
         }
         List<Long> areaIds = gapAnalysisDTOS.stream().map(GapAnalysisDTO::getAreaId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
         List<Long> departmentIds = gapAnalysisDTOS.stream().map(GapAnalysisDTO::getDepartmentId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
@@ -418,12 +455,12 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             List<GapAnalysisOperateDTO> gapAnalysisOperates = new ArrayList<>();
             for (int i = 0; i < gapAnalysisOperateDTOS.size(); i++) {
                 GapAnalysisOperateDTO gapAnalysisOperateDTO = gapAnalysisOperateDTOS.get(i);
-                if (!indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
+                if (StringUtils.isNotNull(gapAnalysisOperateDTO.getIndicatorId()) && !indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
                     throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
                 }
-                IndicatorDTO matchIndicatorDTO = indicatorById.stream().filter(indicatorDTO //匹配的指标DTO
-                        -> indicatorDTO.getIndicatorId().equals(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList()).get(0);
-                Long indicatorId = matchIndicatorDTO.getIndicatorId();
+//                IndicatorDTO matchIndicatorDTO = indicatorById.stream().filter(indicatorDTO //匹配的指标DTO
+//                        -> indicatorDTO.getIndicatorId().equals(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList()).get(0);
+                Long indicatorId = gapAnalysisOperateDTO.getIndicatorId();
                 List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getSonGapAnalysisOperateDTOS();
                 for (int j = 1; j < gapAnalysisOperateDTOSList.size() + 1; j++) {
                     GapAnalysisOperateDTO gapAnalysisOperate = new GapAnalysisOperateDTO();
@@ -646,12 +683,12 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSAfter = new ArrayList<>();
         for (int i = 0; i < gapAnalysisOperateDTOS.size(); i++) {
             GapAnalysisOperateDTO gapAnalysisOperateDTO = gapAnalysisOperateDTOS.get(i);
-            if (!indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
+            if (StringUtils.isNotNull(gapAnalysisOperateDTO.getIndicatorId()) && !indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
                 throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
             }
-            IndicatorDTO matchIndicatorDTO = indicatorById.stream().filter(indicatorDTO //匹配的指标DTO
-                    -> indicatorDTO.getIndicatorId().equals(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList()).get(0);
-            Long indicatorId = matchIndicatorDTO.getIndicatorId();
+//            IndicatorDTO matchIndicatorDTO = indicatorById.stream().filter(indicatorDTO //匹配的指标DTO
+//                    -> indicatorDTO.getIndicatorId().equals(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList()).get(0);
+            Long indicatorId = gapAnalysisOperateDTO.getIndicatorId();
             List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getSonGapAnalysisOperateDTOS();
             int yearNumber = gapAnalysisById.getPlanYear() - 1;
             for (int j = 1; j < gapAnalysisOperateDTOSList.size() + 1; j++) {

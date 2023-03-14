@@ -23,11 +23,15 @@ import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyIndexDimension
 import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyMeasureMapper;
 import net.qixiaowei.strategy.cloud.service.strategyDecode.*;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +75,9 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
     private RemoteEmployeeService employeeService;
 
     @Autowired
+    private RemoteUserService remoteUserService;
+
+    @Autowired
     private IStrategyMeasureTaskService strategyMeasureTaskService;
 
     @Autowired
@@ -90,6 +97,9 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
 
     @Autowired
     private IStrategyIndexDimensionService strategyIndexDimensionService;
+
+    @Autowired
+    private RemoteDictionaryDataService remoteDictionaryDataService;
 
     /**
      * 查询战略举措清单表
@@ -127,6 +137,20 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
         List<StrategyMeasureDetailVO> strategyMeasureDetailVOS = strategyMeasureDetailService.selectStrategyMeasureDetailVOByStrategyMeasureId(strategyMeasureId);
         if (StringUtils.isEmpty(strategyMeasureDetailVOS)) {
             return strategyMeasureDTO;
+        }
+        // 来源赋值 strategyMeasureSource
+        List<Long> strategyMeasureSources = strategyMeasureDetailVOS.stream().map(StrategyMeasureDetailVO::getStrategyMeasureSource).collect(Collectors.toList());
+        R<List<DictionaryDataDTO>> strategyMeasureSourceDTOSR = remoteDictionaryDataService.selectDictionaryDataByDictionaryDataIds(strategyMeasureSources, SecurityConstants.INNER);
+        List<DictionaryDataDTO> strategyMeasureSourceDTOS = strategyMeasureSourceDTOSR.getData();
+        if (StringUtils.isNull(strategyMeasureSourceDTOS))
+            throw new ServiceException("远程枚举失败 请联系管理员");
+        for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
+            for (DictionaryDataDTO strategyMeasureSourceDTO : strategyMeasureSourceDTOS) {
+                if (strategyMeasureSourceDTO.getDictionaryDataId().equals(strategyMeasureDetailVO.getStrategyMeasureSource())) {
+                    strategyMeasureDetailVO.setStrategyMeasureSourceName(strategyMeasureSourceDTO.getDictionaryLabel());
+                    break;
+                }
+            }
         }
         List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionRootList();
         for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
@@ -211,13 +235,45 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
      */
     @Override
     public List<StrategyMeasureDTO> selectStrategyMeasureList(StrategyMeasureDTO strategyMeasureDTO) {
+        Map<String, Object> params = strategyMeasureDTO.getParams();
+        if (StringUtils.isNull(params))
+            params = new HashMap<>();
         StrategyMeasure strategyMeasure = new StrategyMeasure();
-        Map<String, Object> params = strategyMeasure.getParams();
-        strategyMeasure.setParams(params);
         BeanUtils.copyProperties(strategyMeasureDTO, strategyMeasure);
+        if (StringUtils.isNotNull(strategyMeasureDTO.getBusinessUnitName()))
+            params.put("businessUnitName", strategyMeasureDTO.getBusinessUnitName());
+        String createByName = strategyMeasureDTO.getCreateByName();
+        List<String> createByList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(createByName)) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmployeeName(createByName);
+            R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
+            List<UserDTO> userListData = userList.getData();
+            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(employeeIds)) {
+                employeeIds.forEach(e -> createByList.add(String.valueOf(e)));
+            } else {
+                createByList.add("");
+            }
+        }
+        params.put("createByList", createByList);
+        strategyMeasure.setParams(params);
         List<StrategyMeasureDTO> strategyMeasureDTOS = strategyMeasureMapper.selectStrategyMeasureList(strategyMeasure);
         if (StringUtils.isEmpty(strategyMeasureDTOS)) {
             return strategyMeasureDTOS;
+        }
+        // 赋值员工
+        Set<Long> createBys = strategyMeasureDTOS.stream().map(StrategyMeasureDTO::getCreateBy).collect(Collectors.toSet());
+        R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);
+        List<UserDTO> userDTOList = usersByUserIds.getData();
+        if (StringUtils.isNotEmpty(userDTOList)) {
+            for (StrategyMeasureDTO strategyMeasureDTO1 : strategyMeasureDTOS) {
+                for (UserDTO userDTO : userDTOList) {
+                    if (strategyMeasureDTO1.getCreateBy().equals(userDTO.getUserId())) {
+                        strategyMeasureDTO1.setCreateByName(userDTO.getEmployeeName());
+                    }
+                }
+            }
         }
         List<Long> areaIds = strategyMeasureDTOS.stream().map(StrategyMeasureDTO::getAreaId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
         List<Long> departmentIds = strategyMeasureDTOS.stream().map(StrategyMeasureDTO::getDepartmentId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
@@ -425,25 +481,10 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
      * @param strategyIndexDimensionIds 清单ID集合
      */
     private void setSortValue(Long strategyMeasureId, List<StrategyMeasureDetailVO> strategyMeasureDetailVOS, List<Long> strategyIndexDimensionIds) {
-        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionMapper.selectStrategyIndexDimensionByStrategyIndexDimensionIds(strategyIndexDimensionIds);
         int sort = 0;
         for (int i = 0; i < strategyMeasureDetailVOS.size(); i++) {
             StrategyMeasureDetailVO strategyMeasureDetailVO = strategyMeasureDetailVOS.get(i);
             strategyMeasureDetailVO.setStrategyMeasureId(strategyMeasureId);
-//            任务排序
-//            for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
-//                if (strategyMeasureDetailVO.getStrategyIndexDimensionId().equals(strategyIndexDimensionDTO.getStrategyIndexDimensionId())) {
-//                    String serialNumberName = strategyMeasureDetailVO.getSerialNumberName();
-//                    String indexDimensionCode = strategyIndexDimensionDTO.getIndexDimensionCode();
-//                    if (StringUtils.isNotEmpty(serialNumberName)) {
-//                        if (!serialNumberName.contains(indexDimensionCode))
-//                            throw new ServiceException("编码不匹配 请联系管理员");
-//                        Integer serialNumber = Integer.valueOf(serialNumberName.substring(indexDimensionCode.length()));
-//                        strategyMeasureDetailVO.setSerialNumber(serialNumber);
-//                        break;
-//                    }
-//                }
-//            }
             // 详情排序
             strategyMeasureDetailVO.setSort(sort);
             if (i == strategyMeasureDetailVOS.size() - 1)

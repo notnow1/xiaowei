@@ -95,9 +95,6 @@
         <if test="gapAnalysis.deleteFlag != null">
             and ga.delete_flag=#{gapAnalysis.deleteFlag}
         </if>
-        <if test="gapAnalysis.createBy != null">
-            and ga.create_by=#{gapAnalysis.createBy}
-        </if>
         <if test="gapAnalysis.createTime != null">
             and ga.create_time=#{gapAnalysis.createTime}
         </if>
@@ -106,6 +103,15 @@
         </if>
         <if test="gapAnalysis.updateTime != null">
             and ga.update_time=#{gapAnalysis.updateTime}
+        </if>
+        <!-- 创建人等于过滤  -->
+        <if test="gapAnalysis.params.createByList != null and gapAnalysis.params.createByList.size() > 0">
+            AND ga.create_by IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.createByList"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
         <!--规划业务单元名称-->
         <if test="gapAnalysis.params.businessUnitName != null and gapAnalysis.params.businessUnitName != ''">
@@ -149,6 +155,24 @@
             AND ga.plan_year &lt;= #{gapAnalysis.params.planYearEnd}
         </if>
         <!--规划业务单元名称高级搜索-->
+        <if test="gapAnalysis.params.businessUnitNameEqual != null and gapAnalysis.params.businessUnitNameEqual.size() > 0">
+            AND pbu.business_unit_name IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.businessUnitNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.businessUnitNameNotEqual != null and gapAnalysis.params.businessUnitNameNotEqual.size() > 0">
+            AND (pbu.business_unit_name NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.businessUnitNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pbu.business_unit_name IS NULL
+            )
+        </if>
         <if test="gapAnalysis.params.businessUnitNameLike != null and gapAnalysis.params.businessUnitNameLike.size() > 0">
             AND
             <foreach item="item"

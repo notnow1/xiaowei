@@ -25,8 +25,10 @@ import net.qixiaowei.strategy.cloud.service.businessDesign.IBusinessDesignParamS
 import net.qixiaowei.strategy.cloud.service.businessDesign.IBusinessDesignService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +69,9 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
 
     @Autowired
     private RemoteIndustryService industryService;
+
+    @Autowired
+    private RemoteUserService remoteUserService;
 
     /**
      * 查询业务设计表
@@ -193,11 +198,43 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
     public List<BusinessDesignDTO> selectBusinessDesignList(BusinessDesignDTO businessDesignDTO) {
         BusinessDesign businessDesign = new BusinessDesign();
         Map<String, Object> params = businessDesignDTO.getParams();
-        businessDesign.setParams(params);
+        if (StringUtils.isNull(params))
+            params = new HashMap<>();
         BeanUtils.copyProperties(businessDesignDTO, businessDesign);
+        if (StringUtils.isNotNull(businessDesignDTO.getBusinessUnitName()))
+            params.put("businessUnitName", businessDesignDTO.getBusinessUnitName());
+        String createByName = businessDesignDTO.getCreateByName();
+        List<String> createByList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(createByName)) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmployeeName(createByName);
+            R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
+            List<UserDTO> userListData = userList.getData();
+            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(employeeIds)) {
+                employeeIds.forEach(e -> createByList.add(String.valueOf(e)));
+            } else {
+                createByList.add("");
+            }
+        }
+        params.put("createByList", createByList);
+        businessDesign.setParams(params);
         List<BusinessDesignDTO> businessDesignDTOS = businessDesignMapper.selectBusinessDesignList(businessDesign);
         if (StringUtils.isEmpty(businessDesignDTOS)) {
             return businessDesignDTOS;
+        }
+        // 赋值员工
+        Set<Long> createBys = businessDesignDTOS.stream().map(BusinessDesignDTO::getCreateBy).collect(Collectors.toSet());
+        R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);
+        List<UserDTO> userDTOList = usersByUserIds.getData();
+        if (StringUtils.isNotEmpty(userDTOList)) {
+            for (BusinessDesignDTO businessDesignDTO1 : businessDesignDTOS) {
+                for (UserDTO userDTO : userDTOList) {
+                    if (businessDesignDTO1.getCreateBy().equals(userDTO.getUserId())) {
+                        businessDesignDTO1.setCreateByName(userDTO.getEmployeeName());
+                    }
+                }
+            }
         }
         List<Long> areaIds = businessDesignDTOS.stream().map(BusinessDesignDTO::getAreaId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
         List<Long> departmentIds = businessDesignDTOS.stream().map(BusinessDesignDTO::getDepartmentId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
@@ -207,7 +244,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         if (StringUtils.isNotEmpty(areaIds)) {
             R<List<AreaDTO>> areaDTOSR = areaService.selectAreaListByAreaIds(areaIds, SecurityConstants.INNER);
             areaDTOS = areaDTOSR.getData();
-            if (StringUtils.isNull(areaDTOS)) {
+            if (StringUtils.isEmpty(areaDTOS)) {
                 throw new ServiceException("当前区域配置的信息已删除 请联系管理员");
             }
         }
@@ -215,7 +252,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         if (StringUtils.isNotEmpty(departmentIds)) {
             R<List<DepartmentDTO>> departmentDTOSR = departmentService.selectdepartmentIds(departmentIds, SecurityConstants.INNER);
             departmentDTOS = departmentDTOSR.getData();
-            if (StringUtils.isNull(departmentDTOS)) {
+            if (StringUtils.isEmpty(departmentDTOS)) {
                 throw new ServiceException("当前部门配置的信息已删除 请联系管理员");
             }
         }
@@ -223,7 +260,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         if (StringUtils.isNotEmpty(productIds)) {
             R<List<ProductDTO>> productDTOSR = productService.getName(productIds, SecurityConstants.INNER);
             productDTOS = productDTOSR.getData();
-            if (StringUtils.isNull(productDTOS)) {
+            if (StringUtils.isEmpty(productDTOS)) {
                 throw new ServiceException("当前产品配置的信息已删除 请联系管理员");
             }
         }
@@ -231,7 +268,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         if (StringUtils.isNotEmpty(industryIds)) {
             R<List<IndustryDTO>> industryDTOSR = industryService.selectByIds(industryIds, SecurityConstants.INNER);
             industryDTOS = industryDTOSR.getData();
-            if (StringUtils.isNull(industryDTOS)) {
+            if (StringUtils.isEmpty(industryDTOS)) {
                 throw new ServiceException("当前行业配置的信息已删除 请联系管理员");
             }
         }
