@@ -15,6 +15,7 @@ import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MarketInsightSelf;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiSelfAbilityAccess;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightOpponentDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO;
@@ -348,11 +349,71 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
     @Override
     @Transactional
     public int updateMarketInsightSelf(MarketInsightSelfDTO marketInsightSelfDTO) {
+        int i = 0;
         MarketInsightSelf marketInsightSelf = new MarketInsightSelf();
         BeanUtils.copyProperties(marketInsightSelfDTO, marketInsightSelf);
         marketInsightSelf.setUpdateTime(DateUtils.getNowDate());
         marketInsightSelf.setUpdateBy(SecurityUtils.getUserId());
-        return marketInsightSelfMapper.updateMarketInsightSelf(marketInsightSelf);
+        try {
+            i = marketInsightSelfMapper.updateMarketInsightSelf(marketInsightSelf);
+        } catch (Exception e) {
+            throw new ServiceException("修改市场洞察自身失败!");
+        }
+        //前台传入数据
+        List<MiSelfAbilityAccessDTO> miSelfAbilityAccessDTOS = marketInsightSelfDTO.getMiSelfAbilityAccessDTOS();
+        List<MiSelfAbilityAccess> miSelfAbilityAccessAddList = new ArrayList<>();
+        List<MiSelfAbilityAccess> miSelfAbilityAccessUpdateList = new ArrayList<>();
+        //数据库已存在数据
+        List<MiSelfAbilityAccessDTO> miSelfAbilityAccessDTOList = miSelfAbilityAccessMapper.selectMiSelfAbilityAccessByMarketInsightSelfId(marketInsightSelf.getMarketInsightSelfId());
+        if (StringUtils.isNotEmpty(miSelfAbilityAccessDTOList)){
+            //stream流求差集
+            List<Long> miSelfAbilityAccessIds = miSelfAbilityAccessDTOList.stream().filter(a ->
+                    !miSelfAbilityAccessDTOS.stream().map(MiSelfAbilityAccessDTO::getMiSelfAbilityAccessId).collect(Collectors.toList()).contains(a.getMiSelfAbilityAccessId())
+            ).collect(Collectors.toList()).stream().map(MiSelfAbilityAccessDTO::getMiSelfAbilityAccessId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(miSelfAbilityAccessIds)){
+                try {
+                    miSelfAbilityAccessMapper.logicDeleteMiSelfAbilityAccessByMiSelfAbilityAccessIds(miSelfAbilityAccessIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("逻辑批量删除市场洞察自身能力评估表失败！");
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(miSelfAbilityAccessDTOS)){
+            for (int i1 = 0; i1 < miSelfAbilityAccessDTOS.size(); i1++) {
+                Long miSelfAbilityAccessId = miSelfAbilityAccessDTOS.get(i1).getMiSelfAbilityAccessId();
+                if (null == miSelfAbilityAccessId){
+                    MiSelfAbilityAccess miSelfAbilityAccess = new MiSelfAbilityAccess();
+                    miSelfAbilityAccess.setMarketInsightSelfId(marketInsightSelf.getMarketInsightSelfId());
+                    miSelfAbilityAccess.setSort(i1+1);
+                    miSelfAbilityAccess.setCreateBy(SecurityUtils.getUserId());
+                    miSelfAbilityAccess.setCreateTime(DateUtils.getNowDate());
+                    miSelfAbilityAccess.setUpdateTime(DateUtils.getNowDate());
+                    miSelfAbilityAccess.setUpdateBy(SecurityUtils.getUserId());
+                    miSelfAbilityAccess.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    miSelfAbilityAccessAddList.add(miSelfAbilityAccess);
+                }else {
+                    MiSelfAbilityAccess miSelfAbilityAccess = new MiSelfAbilityAccess();
+                    miSelfAbilityAccess.setUpdateTime(DateUtils.getNowDate());
+                    miSelfAbilityAccess.setUpdateBy(SecurityUtils.getUserId());
+                    miSelfAbilityAccessUpdateList.add(miSelfAbilityAccess);
+                }
+            }
+            if (StringUtils.isNotEmpty(miSelfAbilityAccessAddList)){
+                try {
+                    miSelfAbilityAccessMapper.batchMiSelfAbilityAccess(miSelfAbilityAccessAddList);
+                } catch (Exception e) {
+                    throw new ServiceException("批量新增市场洞察自身能力评估失败！");
+                }
+            }
+            if (StringUtils.isNotEmpty(miSelfAbilityAccessUpdateList)){
+                try {
+                    miSelfAbilityAccessMapper.updateMiSelfAbilityAccesss(miSelfAbilityAccessUpdateList);
+                } catch (Exception e) {
+                    throw new ServiceException("批量修改市场洞察自身能力评估失败！");
+                }
+            }
+        }
+        return i;
     }
 
     /**
@@ -364,7 +425,20 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
     @Override
     @Transactional
     public int logicDeleteMarketInsightSelfByMarketInsightSelfIds(List<Long> marketInsightSelfIds) {
-        return marketInsightSelfMapper.logicDeleteMarketInsightSelfByMarketInsightSelfIds(marketInsightSelfIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        int i = 0 ;
+        try {
+            i=  marketInsightSelfMapper.logicDeleteMarketInsightSelfByMarketInsightSelfIds(marketInsightSelfIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("逻辑批量删除市场洞察自身失败！");
+        }
+        List<MiSelfAbilityAccessDTO> miSelfAbilityAccessDTOList = miSelfAbilityAccessMapper.selectMiSelfAbilityAccessByMarketInsightSelfIds(marketInsightSelfIds);
+        if (StringUtils.isNotEmpty(miSelfAbilityAccessDTOList)){
+            List<Long> miSelfAbilityAccessIds = miSelfAbilityAccessDTOList.stream().map(MiSelfAbilityAccessDTO::getMiSelfAbilityAccessId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(miSelfAbilityAccessIds)){
+                miSelfAbilityAccessMapper.logicDeleteMiSelfAbilityAccessByMiSelfAbilityAccessIds(miSelfAbilityAccessIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+            }
+        }
+        return i;
     }
 
     /**

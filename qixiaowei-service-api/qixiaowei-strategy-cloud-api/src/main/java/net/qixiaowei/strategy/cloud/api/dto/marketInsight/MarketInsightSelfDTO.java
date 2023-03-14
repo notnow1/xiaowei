@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import net.qixiaowei.integration.common.domain.dto.BaseDTO;
@@ -41,10 +44,12 @@ public class MarketInsightSelfDTO extends BaseDTO {
     /**
     * ID
     */
+    @NotNull(message = "id不能为空", groups = {MarketInsightSelfDTO.UpdateMarketInsightSelfDTO.class, MarketInsightSelfDTO.DeleteMarketInsightSelfDTO.class})
     private  Long marketInsightSelfId;
     /**
     * 规划年度
     */
+    @NotNull(message = "规划年度不能为空", groups = {MarketInsightSelfDTO.UpdateMarketInsightSelfDTO.class, MarketInsightSelfDTO.AddMarketInsightSelfDTO.class})
     private  Integer planYear;
     /**
     * 规划业务单元ID
@@ -97,6 +102,8 @@ public class MarketInsightSelfDTO extends BaseDTO {
     /**
      * 市场洞察自身能力评估集合
      */
+    @NotEmpty(message = "市场洞察自身能力评估信息不能为空",groups = {MarketInsightSelfDTO.UpdateMarketInsightSelfDTO.class,MarketInsightSelfDTO.AddMarketInsightSelfDTO.class})
+    @Valid
     private  List<MiSelfAbilityAccessDTO> miSelfAbilityAccessDTOS;
     /**
     * 删除标记:0未删除;1已删除
