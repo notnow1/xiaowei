@@ -57,8 +57,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
             "region", "区域",
             "department", "部门",
             "product", "产品",
-            "industry", "行业",
-            "company", "公司级"
+            "industry", "行业"
     );
 
     @Autowired
@@ -148,8 +147,9 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
             if (StringUtils.isNotEmpty(indicatorDTOS)) {
                 for (StrategyMetricsDetailDTO detailDTO : strategyMetricsDetailDTO) {
                     for (IndicatorDTO indicatorDTO : indicatorDTOS) {
-                        if (detailDTO.getIndicatorId().equals(indicatorDTO.getIndicatorId())) {
+                        if (StringUtils.isNotNull(detailDTO.getIndicatorId()) && detailDTO.getIndicatorId().equals(indicatorDTO.getIndicatorId())) {
                             detailDTO.setIndicatorName(indicatorDTO.getIndicatorName());
+                            detailDTO.setIndicatorValueType(indicatorDTO.getIndicatorValueType());
                             break;
                         }
                     }

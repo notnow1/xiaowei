@@ -157,33 +157,29 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         if (StringUtils.isNotNull(areaId)) {
             R<AreaDTO> areaDTOR = areaService.getById(areaId, SecurityConstants.INNER);
             areaDTO = areaDTOR.getData();
-            if (StringUtils.isNotNull(areaDTO)) {
+            if (StringUtils.isNotNull(areaDTO))
                 businessDesignDTO.setAreaName(areaDTO.getAreaName());
-            }
         }
         DepartmentDTO departmentDTO;
         if (StringUtils.isNotNull(departmentId)) {
             R<DepartmentDTO> departmentDTOR = departmentService.selectdepartmentId(departmentId, SecurityConstants.INNER);
             departmentDTO = departmentDTOR.getData();
-            if (StringUtils.isNotNull(departmentDTO)) {
+            if (StringUtils.isNotNull(departmentDTO))
                 businessDesignDTO.setDepartmentName(departmentDTO.getDepartmentName());
-            }
         }
         ProductDTO productDTO;
         if (StringUtils.isNotNull(productId)) {
             R<ProductDTO> productDTOR = productService.remoteSelectById(productId, SecurityConstants.INNER);
             productDTO = productDTOR.getData();
-            if (StringUtils.isNotNull(productDTO)) {
-                businessDesignDTO.setDepartmentName(productDTO.getProductName());
-            }
+            if (StringUtils.isNotNull(productDTO))
+                businessDesignDTO.setProductName(productDTO.getProductName());
         }
         IndustryDTO industryDTO;
         if (StringUtils.isNotNull(industryId)) {
             R<IndustryDTO> industryDTOR = industryService.selectById(industryId, SecurityConstants.INNER);
             industryDTO = industryDTOR.getData();
-            if (StringUtils.isNotNull(industryDTO)) {
+            if (StringUtils.isNotNull(industryDTO))
                 businessDesignDTO.setIndustryName(industryDTO.getIndustryName());
-            }
         }
     }
 
@@ -262,14 +258,14 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
             }
             if (businessUnitDecompose.contains("product") && StringUtils.isNotEmpty(productDTOS)) {
                 List<ProductDTO> productDTOS1 = productDTOS.stream().filter(productDTO -> productDTO.getProductId().equals(productId)).collect(Collectors.toList());
-                if (StringUtils.isEmpty(productDTOS1)) {
+                if (StringUtils.isNotEmpty(productDTOS1)) {
                     String productName = productDTOS1.get(0).getProductName();
                     designDTO.setProductName(productName);
                 }
             }
             if (businessUnitDecompose.contains("industry") && StringUtils.isNotEmpty(industryDTOS)) {
                 List<IndustryDTO> industryDTOS1 = industryDTOS.stream().filter(industryDTO -> industryDTO.getIndustryId().equals(industryId)).collect(Collectors.toList());
-                if (StringUtils.isEmpty(industryDTOS1)) {
+                if (StringUtils.isNotEmpty(industryDTOS1)) {
                     String industryName = industryDTOS1.get(0).getIndustryName();
                     designDTO.setIndustryName(industryName);
                 }

@@ -61,7 +61,8 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
                     businessUnitDecomposeName.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
                 }
             });
-            planBusinessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
+            if (StringUtils.isNotEmpty(businessUnitDecomposeName))
+                planBusinessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
         }
         return planBusinessUnitDTO;
     }
@@ -89,7 +90,8 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
                         businessUnitDecomposeName.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
                     }
                 });
-                businessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
+                if (StringUtils.isNotEmpty(businessUnitDecomposeName))
+                    businessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
                 List<String> businessUnitDecomposeNames = Arrays.asList(businessUnitDecomposeName.toString().split(";"));
                 List<Map<String, Object>> businessUnitDecomposes = new ArrayList<>();
                 for (int i = 0; i < businessUnitDecomposeList.size(); i++) {

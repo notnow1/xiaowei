@@ -49,8 +49,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             "region", "区域",
             "department", "部门",
             "product", "产品",
-            "industry", "行业",
-            "company", "公司级"
+            "industry", "行业"
     );
 
     @Autowired
@@ -174,40 +173,32 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             if (StringUtils.isNotNull(areaId)) {
                 R<AreaDTO> areaDTOR = areaService.getById(areaId, SecurityConstants.INNER);
                 AreaDTO areaDTO = areaDTOR.getData();
-                if (StringUtils.isNull(areaDTO)) {
-                    throw new ServiceException("当前区域配置的信息已删除 请联系管理员");
-                }
-                strategyMeasureDTO.setAreaName(areaDTO.getAreaName());
+                if (StringUtils.isNotNull(areaDTO))
+                    strategyMeasureDTO.setAreaName(areaDTO.getAreaName());
             }
         }
         if (businessUnitDecompose.contains("department")) {
             if (StringUtils.isNotNull(departmentId)) {
                 R<DepartmentDTO> departmentDTOR = departmentService.selectdepartmentId(departmentId, SecurityConstants.INNER);
                 DepartmentDTO departmentDTO = departmentDTOR.getData();
-                if (StringUtils.isNull(departmentDTO)) {
-                    throw new ServiceException("当前部门配置的信息已删除 请联系管理员");
-                }
-                strategyMeasureDTO.setDepartmentName(departmentDTO.getDepartmentName());
+                if (StringUtils.isNotNull(departmentDTO))
+                    strategyMeasureDTO.setDepartmentName(departmentDTO.getDepartmentName());
             }
         }
         if (businessUnitDecompose.contains("product")) {
             if (StringUtils.isNotNull(productId)) {
                 R<ProductDTO> productDTOR = productService.remoteSelectById(productId, SecurityConstants.INNER);
                 ProductDTO productDTO = productDTOR.getData();
-                if (StringUtils.isNull(productDTO)) {
-                    throw new ServiceException("当前产品配置的信息已删除 请联系管理员");
-                }
-                strategyMeasureDTO.setProductName(productDTO.getProductName());
+                if (StringUtils.isNotNull(productDTO))
+                    strategyMeasureDTO.setProductName(productDTO.getProductName());
             }
         }
         if (businessUnitDecompose.contains("industry")) {
             if (StringUtils.isNotNull(industryId)) {
                 R<IndustryDTO> industryDTOR = industryService.selectById(industryId, SecurityConstants.INNER);
                 IndustryDTO industryDTO = industryDTOR.getData();
-                if (StringUtils.isNull(industryDTO)) {
-                    throw new ServiceException("当前行业配置的信息已删除 请联系管理员");
-                }
-                strategyMeasureDTO.setIndustryName(industryDTO.getIndustryName());
+                if (StringUtils.isNotNull(industryDTO))
+                    strategyMeasureDTO.setIndustryName(industryDTO.getIndustryName());
             }
         }
     }
@@ -288,14 +279,14 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             }
             if (businessUnitDecompose.contains("product") && StringUtils.isNotEmpty(productDTOS)) {
                 List<ProductDTO> productDTOS1 = productDTOS.stream().filter(productDTO -> productDTO.getProductId().equals(productId)).collect(Collectors.toList());
-                if (StringUtils.isEmpty(productDTOS1)) {
+                if (StringUtils.isNotEmpty(productDTOS1)) {
                     String productName = productDTOS1.get(0).getProductName();
                     measureDTO.setProductName(productName);
                 }
             }
             if (businessUnitDecompose.contains("industry") && StringUtils.isNotEmpty(industryDTOS)) {
                 List<IndustryDTO> industryDTOS1 = industryDTOS.stream().filter(industryDTO -> industryDTO.getIndustryId().equals(industryId)).collect(Collectors.toList());
-                if (StringUtils.isEmpty(industryDTOS1)) {
+                if (StringUtils.isNotEmpty(industryDTOS1)) {
                     String industryName = industryDTOS1.get(0).getIndustryName();
                     measureDTO.setIndustryName(industryName);
                 }

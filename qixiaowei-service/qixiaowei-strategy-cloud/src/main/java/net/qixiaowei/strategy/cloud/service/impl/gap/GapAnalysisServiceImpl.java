@@ -93,8 +93,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             "region", "区域",
             "department", "部门",
             "product", "产品",
-            "industry", "行业",
-            "company", "公司级"
+            "industry", "行业"
     );
 
     /**
@@ -207,40 +206,32 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             if (StringUtils.isNotNull(areaId)) {
                 R<AreaDTO> areaDTOR = areaService.getById(areaId, SecurityConstants.INNER);
                 AreaDTO areaDTO = areaDTOR.getData();
-                if (StringUtils.isNull(areaDTO)) {
-                    throw new ServiceException("当前区域配置的信息已删除 请联系管理员");
-                }
-                gapAnalysisDTO.setAreaName(areaDTO.getAreaName());
+                if (StringUtils.isNotNull(areaDTO))
+                    gapAnalysisDTO.setAreaName(areaDTO.getAreaName());
             }
         }
         if (businessUnitDecompose.contains("department")) {
             if (StringUtils.isNotNull(departmentId)) {
                 R<DepartmentDTO> departmentDTOR = departmentService.selectdepartmentId(departmentId, SecurityConstants.INNER);
                 DepartmentDTO departmentDTO = departmentDTOR.getData();
-                if (StringUtils.isNull(departmentDTO)) {
-                    throw new ServiceException("当前部门配置的信息已删除 请联系管理员");
-                }
-                gapAnalysisDTO.setDepartmentName(departmentDTO.getDepartmentName());
+                if (StringUtils.isNotNull(departmentDTO))
+                    gapAnalysisDTO.setDepartmentName(departmentDTO.getDepartmentName());
             }
         }
         if (businessUnitDecompose.contains("product")) {
             if (StringUtils.isNotNull(productId)) {
                 R<ProductDTO> productDTOR = productService.remoteSelectById(productId, SecurityConstants.INNER);
                 ProductDTO productDTO = productDTOR.getData();
-                if (StringUtils.isNull(productDTO)) {
-                    throw new ServiceException("当前产品配置的信息已删除 请联系管理员");
-                }
-                gapAnalysisDTO.setProductName(productDTO.getProductName());
+                if (StringUtils.isNotNull(productDTO))
+                    gapAnalysisDTO.setProductName(productDTO.getProductName());
             }
         }
         if (businessUnitDecompose.contains("industry")) {
             if (StringUtils.isNotNull(industryId)) {
                 R<IndustryDTO> industryDTOR = industryService.selectById(industryId, SecurityConstants.INNER);
                 IndustryDTO industryDTO = industryDTOR.getData();
-                if (StringUtils.isNull(industryDTO)) {
-//                    throw new ServiceException("当前行业配置的信息已删除 请联系管理员");
-                }
-//                gapAnalysisDTO.setIndustryName(industryDTO.getIndustryName());
+                if (StringUtils.isNotNull(industryDTO))
+                    gapAnalysisDTO.setIndustryName(industryDTO.getIndustryName());
             }
         }
     }
@@ -255,6 +246,8 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
     public List<GapAnalysisDTO> selectGapAnalysisList(GapAnalysisDTO gapAnalysisDTO) {
         GapAnalysis gapAnalysis = new GapAnalysis();
         Map<String, Object> params = gapAnalysisDTO.getParams();
+        if (StringUtils.isNotNull(gapAnalysisDTO.getBusinessUnitName()))
+            params.put("businessUnitName", gapAnalysisDTO.getBusinessUnitName());
         gapAnalysis.setParams(params);
         BeanUtils.copyProperties(gapAnalysisDTO, gapAnalysis);
         List<GapAnalysisDTO> gapAnalysisDTOS = gapAnalysisMapper.selectGapAnalysisList(gapAnalysis);
@@ -269,7 +262,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         if (StringUtils.isNotEmpty(areaIds)) {
             R<List<AreaDTO>> areaDTOSR = areaService.selectAreaListByAreaIds(areaIds, SecurityConstants.INNER);
             areaDTOS = areaDTOSR.getData();
-            if (StringUtils.isNull(areaDTOS)) {
+            if (StringUtils.isEmpty(areaDTOS)) {
                 throw new ServiceException("当前区域配置的信息已删除 请联系管理员");
             }
         }
@@ -277,7 +270,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         if (StringUtils.isNotEmpty(departmentIds)) {
             R<List<DepartmentDTO>> departmentDTOSR = departmentService.selectdepartmentIds(departmentIds, SecurityConstants.INNER);
             departmentDTOS = departmentDTOSR.getData();
-            if (StringUtils.isNull(departmentDTOS)) {
+            if (StringUtils.isEmpty(departmentDTOS)) {
                 throw new ServiceException("当前部门配置的信息已删除 请联系管理员");
             }
         }
@@ -285,7 +278,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         if (StringUtils.isNotEmpty(productIds)) {
             R<List<ProductDTO>> productDTOSR = productService.getName(productIds, SecurityConstants.INNER);
             productDTOS = productDTOSR.getData();
-            if (StringUtils.isNull(productDTOS)) {
+            if (StringUtils.isEmpty(productDTOS)) {
                 throw new ServiceException("当前产品配置的信息已删除 请联系管理员");
             }
         }
@@ -293,7 +286,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         if (StringUtils.isNotEmpty(industryIds)) {
             R<List<IndustryDTO>> industryDTOSR = industryService.selectByIds(industryIds, SecurityConstants.INNER);
             industryDTOS = industryDTOSR.getData();
-            if (StringUtils.isNull(industryDTOS)) {
+            if (StringUtils.isEmpty(industryDTOS)) {
                 throw new ServiceException("当前行业配置的信息已删除 请联系管理员");
             }
         }
@@ -319,14 +312,14 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             }
             if (businessUnitDecompose.contains("product") && StringUtils.isNotEmpty(productDTOS)) {
                 List<ProductDTO> productDTOS1 = productDTOS.stream().filter(productDTO -> productDTO.getProductId().equals(productId)).collect(Collectors.toList());
-                if (StringUtils.isEmpty(productDTOS1)) {
+                if (StringUtils.isNotEmpty(productDTOS1)) {
                     String productName = productDTOS1.get(0).getProductName();
                     analysisDTO.setProductName(productName);
                 }
             }
             if (businessUnitDecompose.contains("industry") && StringUtils.isNotEmpty(industryDTOS)) {
                 List<IndustryDTO> industryDTOS1 = industryDTOS.stream().filter(industryDTO -> industryDTO.getIndustryId().equals(industryId)).collect(Collectors.toList());
-                if (StringUtils.isEmpty(industryDTOS1)) {
+                if (StringUtils.isNotEmpty(industryDTOS1)) {
                     String industryName = industryDTOS1.get(0).getIndustryName();
                     analysisDTO.setIndustryName(industryName);
                 }

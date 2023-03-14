@@ -84,6 +84,10 @@ public class StrategyMetricsDetailDTO {
      */
     private String indicatorName;
     /**
+     * 指标值类型:1金额;2比率
+     */
+    private Integer indicatorValueType;
+    /**
      * 排序
      */
     private Integer sort;

@@ -68,9 +68,6 @@
         <if test="gapAnalysis.gapAnalysisId != null">
             and ga.gap_analysis_id=#{gapAnalysis.gapAnalysisId}
         </if>
-        <if test="gapAnalysis.businessUnitName != null and gapAnalysis.businessUnitName != ''">
-            and pbu.business_unit_name like concat('%', #{gapAnalysis.businessUnitName}, '%')
-        </if>
         <if test="gapAnalysis.planYear != null">
             and ga.plan_year=#{gapAnalysis.planYear}
         </if>
@@ -110,7 +107,11 @@
         <if test="gapAnalysis.updateTime != null">
             and ga.update_time=#{gapAnalysis.updateTime}
         </if>
-        <!--    行业编码过滤-->
+        <!--规划业务单元名称-->
+        <if test="gapAnalysis.params.businessUnitName != null and gapAnalysis.params.businessUnitName != ''">
+            and pbu.business_unit_name like concat('%', #{gapAnalysis.businessUnitName}, '%')
+        </if>
+        <!--年份过滤-->
         <if test="gapAnalysis.params.planYearEqual != null and gapAnalysis.params.planYearEqual.size() > 0">
             and ga.plan_year IN
             <foreach item="item"
@@ -147,7 +148,7 @@
         <if test="gapAnalysis.params.planYearEnd != null and gapAnalysis.params.planYearEnd != ''"><!-- 结束时间检索 -->
             AND ga.plan_year &lt;= #{gapAnalysis.params.planYearEnd}
         </if>
-        <!--规划业务单元 businessUnitNameLike-->
+        <!--规划业务单元名称高级搜索-->
         <if test="gapAnalysis.params.businessUnitNameLike != null and gapAnalysis.params.businessUnitNameLike.size() > 0">
             AND
             <foreach item="item"
@@ -181,6 +182,63 @@
                 #{item}
             </foreach>
             OR ga.industry_id IS NULL
+            )
+        </if>
+        <!--区域-->
+        <if test="gapAnalysis.params.areaIdEqual != null and gapAnalysis.params.areaIdEqual.size() > 0">
+            and ga.area_id IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.areaIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.areaIdNotEqual != null and gapAnalysis.params.areaIdNotEqual.size() > 0">
+            AND (ga.area_id NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.areaIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ga.area_id IS NULL
+            )
+        </if>
+        <!--产品-->
+        <if test="gapAnalysis.params.productIdEqual != null and gapAnalysis.params.productIdEqual.size() > 0">
+            and ga.product_id IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.productIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.productIdNotEqual != null and gapAnalysis.params.productIdNotEqual.size() > 0">
+            AND (ga.product_id NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.productIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ga.product_id IS NULL
+            )
+        </if>
+        <!--部门-->
+        <if test="gapAnalysis.params.departmentIdEqual != null and gapAnalysis.params.departmentIdEqual.size() > 0">
+            and ga.department_id IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.departmentIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.departmentIdNotEqual != null and gapAnalysis.params.departmentIdNotEqual.size() > 0">
+            AND (ga.department_id NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.departmentIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ga.department_id IS NULL
             )
         </if>
     </select>
