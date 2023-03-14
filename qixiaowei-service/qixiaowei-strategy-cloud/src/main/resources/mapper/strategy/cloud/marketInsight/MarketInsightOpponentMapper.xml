@@ -147,12 +147,13 @@
             </foreach>
         </if>
         <if test="marketInsightOpponent.params.areaIdNotEqual != null and marketInsightOpponent.params.areaIdNotEqual.size() > 0">
-            AND mio.area_id NOT IN
+            AND (mio.area_id NOT IN
             <foreach item="item"
                      collection="marketInsightOpponent.params.areaIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mio.area_id IS NULL)
         </if>
         <!-- 部门ID过滤  -->
         <if test="marketInsightOpponent.params.departmentIdEqual != null and marketInsightOpponent.params.departmentIdEqual.size() > 0">
@@ -164,12 +165,13 @@
             </foreach>
         </if>
         <if test="marketInsightOpponent.params.departmentIdNotEqual != null and marketInsightOpponent.params.departmentIdNotEqual.size() > 0">
-            AND mio.department_id NOT IN
+            AND (mio.department_id NOT IN
             <foreach item="item"
                      collection="marketInsightOpponent.params.departmentIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mio.department_id IS NULL)
         </if>
         <!-- 产品ID过滤  -->
         <if test="marketInsightOpponent.params.productIdEqual != null and marketInsightOpponent.params.productIdEqual.size() > 0">
@@ -181,12 +183,13 @@
             </foreach>
         </if>
         <if test="marketInsightOpponent.params.productIdNotEqual != null and marketInsightOpponent.params.productIdNotEqual.size() > 0">
-            AND mio.product_id NOT IN
+            AND (mio.product_id NOT IN
             <foreach item="item"
                      collection="marketInsightOpponent.params.productIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mio.product_id IS NULL)
         </if>
         <!-- 行业ID过滤  -->
         <if test="marketInsightOpponent.params.industryIdEqual != null and marketInsightOpponent.params.industryIdEqual.size() > 0">
@@ -198,12 +201,13 @@
             </foreach>
         </if>
         <if test="marketInsightOpponent.params.industryIdNotEqual != null and marketInsightOpponent.params.industryIdNotEqual.size() > 0">
-            AND mio.industry_id NOT IN
+            AND (mio.industry_id NOT IN
             <foreach item="item"
                      collection="marketInsightOpponent.params.industryIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mio.area_id IS NULL)
         </if>
         <!-- 创建人等于过滤  -->
         <if test="marketInsightOpponent.params.createByNameEqual != null">

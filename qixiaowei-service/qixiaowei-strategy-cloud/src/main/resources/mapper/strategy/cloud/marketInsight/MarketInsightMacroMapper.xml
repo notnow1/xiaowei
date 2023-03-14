@@ -145,12 +145,13 @@
             </foreach>
         </if>
         <if test="marketInsightMacro.params.areaIdNotEqual != null and marketInsightMacro.params.areaIdNotEqual.size() > 0">
-            AND mim.area_id NOT IN
+            AND (mim.area_id NOT IN
             <foreach item="item"
                      collection="marketInsightMacro.params.areaIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mim.area_id IS NULL)
         </if>
         <!-- 部门ID过滤  -->
         <if test="marketInsightMacro.params.departmentIdEqual != null and marketInsightMacro.params.departmentIdEqual.size() > 0">
@@ -162,12 +163,13 @@
             </foreach>
         </if>
         <if test="marketInsightMacro.params.departmentIdNotEqual != null and marketInsightMacro.params.departmentIdNotEqual.size() > 0">
-            AND mim.department_id NOT IN
+            AND (mim.department_id NOT IN
             <foreach item="item"
                      collection="marketInsightMacro.params.departmentIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mim.department_id IS NULL)
         </if>
         <!-- 产品ID过滤  -->
         <if test="marketInsightMacro.params.productIdEqual != null and marketInsightMacro.params.productIdEqual.size() > 0">
@@ -179,12 +181,13 @@
             </foreach>
         </if>
         <if test="marketInsightMacro.params.productIdNotEqual != null and marketInsightMacro.params.productIdNotEqual.size() > 0">
-            AND mim.product_id NOT IN
+            AND (mim.product_id NOT IN
             <foreach item="item"
                      collection="marketInsightMacro.params.productIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mim.product_id IS NULL)
         </if>
         <!-- 行业ID过滤  -->
         <if test="marketInsightMacro.params.industryIdEqual != null and marketInsightMacro.params.industryIdEqual.size() > 0">
@@ -196,12 +199,13 @@
             </foreach>
         </if>
         <if test="marketInsightMacro.params.industryIdNotEqual != null and marketInsightMacro.params.industryIdNotEqual.size() > 0">
-            AND mim.industry_id NOT IN
+            AND (mim.industry_id NOT IN
             <foreach item="item"
                      collection="marketInsightMacro.params.industryIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mim.industry_id IS NULL)
         </if>
         <!-- 创建人等于过滤  -->
         <if test="marketInsightMacro.params.createByNameEqual != null">

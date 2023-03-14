@@ -67,7 +67,7 @@
         mii.delete_flag = 0
         <!-- 规划年度过滤  -->
         <if test="marketInsightIndustry.params.planYearEqual != null and marketInsightIndustry.params.planYearEqual.size() > 0">
-            AND mim.plan_year IN
+            AND mii.plan_year IN
             <foreach item="item"
                      collection="marketInsightIndustry.params.planYearEqual"
                      index="index" open="(" separator="," close=")">
@@ -75,7 +75,7 @@
             </foreach>
         </if>
         <if test="marketInsightIndustry.params.planYearNotEqual != null and marketInsightIndustry.params.planYearNotEqual.size() > 0">
-            AND mim.plan_year NOT IN
+            AND mii.plan_year NOT IN
             <foreach item="item"
                      collection="marketInsightIndustry.params.planYearNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -83,22 +83,22 @@
             </foreach>
         </if>
         <if test="marketInsightIndustry.params.planYearBefore != null and marketInsightIndustry.params.planYearBefore != ''">
-            AND mim.plan_year &lt; #{marketInsightIndustry.params.planYearBefore}
+            AND mii.plan_year &lt; #{marketInsightIndustry.params.planYearBefore}
         </if>
         <if test="marketInsightIndustry.params.planYearNotBefore != null and marketInsightIndustry.params.planYearNotBefore != ''"><!-- 开始时间检索 -->
-            AND mim.plan_year &gt;= #{marketInsightIndustry.params.planYearNotBefore}
+            AND mii.plan_year &gt;= #{marketInsightIndustry.params.planYearNotBefore}
         </if>
         <if test="marketInsightIndustry.params.planYearAfter != null and marketInsightIndustry.params.planYearAfter != ''"><!-- 开始时间检索 -->
-            AND mim.plan_year &gt; #{marketInsightIndustry.params.planYearAfter}
+            AND mii.plan_year &gt; #{marketInsightIndustry.params.planYearAfter}
         </if>
         <if test="marketInsightIndustry.params.planYearNotAfter != null and marketInsightIndustry.params.planYearNotAfter != ''"><!-- 结束时间检索 -->
-            AND mim.plan_year &lt;= #{marketInsightIndustry.params.planYearNotAfter}
+            AND mii.plan_year &lt;= #{marketInsightIndustry.params.planYearNotAfter}
         </if>
         <if test="marketInsightIndustry.params.planYearStart != null and marketInsightIndustry.params.planYearStart != ''"><!-- 开始时间检索 -->
-            AND mim.plan_year &gt;= #{marketInsightIndustry.params.planYearStart}
+            AND mii.plan_year &gt;= #{marketInsightIndustry.params.planYearStart}
         </if>
         <if test="marketInsightIndustry.params.planYearEnd != null and marketInsightIndustry.params.planYearEnd != ''"><!-- 结束时间检索 -->
-            AND mim.plan_year &lt;= #{marketInsightIndustry.params.planYearEnd}
+            AND mii.plan_year &lt;= #{marketInsightIndustry.params.planYearEnd}
         </if>
         <!-- 规划业务单元  -->
         <if test="marketInsightIndustry.params.planBusinessUnitNameLike != null and marketInsightIndustry.params.planBusinessUnitNameLike.size() > 0">
@@ -145,12 +145,13 @@
             </foreach>
         </if>
         <if test="marketInsightIndustry.params.areaIdNotEqual != null and marketInsightIndustry.params.areaIdNotEqual.size() > 0">
-            AND mii.area_id NOT IN
+            AND (mii.area_id NOT IN
             <foreach item="item"
                      collection="marketInsightIndustry.params.areaIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mii.area_id IS NULL)
         </if>
         <!-- 部门ID过滤  -->
         <if test="marketInsightIndustry.params.departmentIdEqual != null and marketInsightIndustry.params.departmentIdEqual.size() > 0">
@@ -162,12 +163,13 @@
             </foreach>
         </if>
         <if test="marketInsightIndustry.params.departmentIdNotEqual != null and marketInsightIndustry.params.departmentIdNotEqual.size() > 0">
-            AND mii.department_id NOT IN
+            AND (mii.department_id NOT IN
             <foreach item="item"
                      collection="marketInsightIndustry.params.departmentIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mii.department_id IS NULL)
         </if>
         <!-- 产品ID过滤  -->
         <if test="marketInsightIndustry.params.productIdEqual != null and marketInsightIndustry.params.productIdEqual.size() > 0">
@@ -179,12 +181,13 @@
             </foreach>
         </if>
         <if test="marketInsightIndustry.params.productIdNotEqual != null and marketInsightIndustry.params.productIdNotEqual.size() > 0">
-            AND mii.product_id NOT IN
+            AND (mii.product_id NOT IN
             <foreach item="item"
                      collection="marketInsightIndustry.params.productIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mii.product_id IS NULL)
         </if>
         <!-- 行业ID过滤  -->
         <if test="marketInsightIndustry.params.industryIdEqual != null and marketInsightIndustry.params.industryIdEqual.size() > 0">
@@ -196,12 +199,13 @@
             </foreach>
         </if>
         <if test="marketInsightIndustry.params.industryIdNotEqual != null and marketInsightIndustry.params.industryIdNotEqual.size() > 0">
-            AND mii.industry_id NOT IN
+            AND (mii.industry_id NOT IN
             <foreach item="item"
                      collection="marketInsightIndustry.params.industryIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            OR mii.industry_id IS NULL)
         </if>
         <!-- 创建人等于过滤  -->
         <if test="marketInsightIndustry.params.createByNameEqual != null">
