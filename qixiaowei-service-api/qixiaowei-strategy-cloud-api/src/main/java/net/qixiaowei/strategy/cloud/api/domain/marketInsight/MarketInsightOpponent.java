@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 市场洞察对手表
@@ -58,6 +59,10 @@ public class MarketInsightOpponent extends TenantEntity {
      * 行业ID
      */
     private Long industryId;
+    /**
+     * 创建人集合
+     */
+    private List<String> createBys;
 
 }
 

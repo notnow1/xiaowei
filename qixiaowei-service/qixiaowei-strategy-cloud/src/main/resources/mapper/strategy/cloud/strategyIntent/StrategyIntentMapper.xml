@@ -241,7 +241,7 @@
             and si.create_by=#{strategyIntent.createBy}
         </if>
         <if test="strategyIntent.createTime != null">
-            and date_format(si.create_time,'%Y/%m/%d')=#{strategyIntent.createTime}
+            and date_format(si.create_time,'%Y/%m/%d')= date_format(#{strategyIntent.createTime},'%Y/%m/%d')
         </if>
         <if test="strategyIntent.updateBy != null">
             and si.update_by=#{strategyIntent.updateBy}
