@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import net.qixiaowei.integration.common.domain.dto.BaseDTO;
@@ -48,6 +49,7 @@ public class MiSelfAbilityAccessDTO extends BaseDTO {
     /**
     * 能力要素
     */
+    @NotNull(message = "能力要素不能为空", groups = {MiSelfAbilityAccessDTO.UpdateMiSelfAbilityAccessDTO.class, MiSelfAbilityAccessDTO.AddMiSelfAbilityAccessDTO.class})
     private  Long capacityFactor;
     /**
      * 能力要素名称

@@ -10,9 +10,9 @@ import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO;
-import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightSelfService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -80,7 +80,7 @@ public class MarketInsightSelfController extends BaseController {
     @RequiresPermissions("strategy:cloud:marketInsightSelf:add")
     @Log(title = "新增市场洞察自身表", businessType = BusinessType.MARKET_INSIGHT_SELF, businessId = "marketInsightSelfId", operationType = OperationType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody MarketInsightSelfDTO marketInsightSelfDTO) {
+    public AjaxResult addSave(@RequestBody @Validated({MarketInsightSelfDTO.AddMarketInsightSelfDTO.class}) MarketInsightSelfDTO marketInsightSelfDTO) {
         return AjaxResult.success(marketInsightSelfService.insertMarketInsightSelf(marketInsightSelfDTO));
     }
 
@@ -91,7 +91,7 @@ public class MarketInsightSelfController extends BaseController {
     @RequiresPermissions("strategy:cloud:marketInsightSelf:edit")
     @Log(title = "修改市场洞察自身表", businessType = BusinessType.MARKET_INSIGHT_SELF, businessId = "marketInsightSelfId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody MarketInsightSelfDTO marketInsightSelfDTO) {
+    public AjaxResult editSave(@RequestBody @Validated({MarketInsightSelfDTO.UpdateMarketInsightSelfDTO.class}) MarketInsightSelfDTO marketInsightSelfDTO) {
         return toAjax(marketInsightSelfService.updateMarketInsightSelf(marketInsightSelfDTO));
     }
 
@@ -100,7 +100,7 @@ public class MarketInsightSelfController extends BaseController {
      */
     @RequiresPermissions("strategy:cloud:marketInsightSelf:remove")
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody MarketInsightSelfDTO marketInsightSelfDTO) {
+    public AjaxResult remove(@RequestBody @Validated({MarketInsightSelfDTO.DeleteMarketInsightSelfDTO.class}) MarketInsightSelfDTO marketInsightSelfDTO) {
         return toAjax(marketInsightSelfService.logicDeleteMarketInsightSelfByMarketInsightSelfId(marketInsightSelfDTO));
     }
 
