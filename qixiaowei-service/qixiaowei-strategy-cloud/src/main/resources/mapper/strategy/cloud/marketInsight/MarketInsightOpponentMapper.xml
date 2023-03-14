@@ -4,22 +4,26 @@
     <!--    查询市场洞察对手表-->
     <select id="selectMarketInsightOpponentByMarketInsightOpponentId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightOpponentDTO">
-        SELECT market_insight_opponent_id,
-               plan_year,
-               plan_business_unit_id,
-               business_unit_decompose,
-               area_id,
-               department_id,
-               product_id,
-               industry_id,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
-        FROM market_insight_opponent
-        WHERE market_insight_opponent_id = #{marketInsightOpponentId}
-          and delete_flag = 0
+        SELECT mio.market_insight_opponent_id,
+               mio.plan_year,
+               mio.plan_business_unit_id,
+               pbu.business_unit_name as planBusinessUnitName,
+               mio.business_unit_decompose,
+               mio.area_id,
+               mio.department_id,
+               mio.product_id,
+               mio.industry_id,
+               mio.delete_flag,
+               mio.create_by,
+               mio.create_time,
+               mio.update_by,
+               mio.update_time
+        FROM market_insight_opponent mio
+                 left join plan_business_unit pbu
+                           on pbu.plan_business_unit_id=mio.plan_business_unit_id
+                               and pbu.delete_flag =0
+        WHERE mio.market_insight_opponent_id = #{marketInsightOpponentId}
+          and mio.delete_flag = 0
     </select>
 
     <!--    批量查询市场洞察对手表-->

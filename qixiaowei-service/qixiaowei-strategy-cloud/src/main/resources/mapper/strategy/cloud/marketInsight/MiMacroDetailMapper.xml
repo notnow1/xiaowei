@@ -111,6 +111,7 @@
         FROM mi_macro_detail
         WHERE market_insight_macro_id = #{marketInsightMacroId}
           and delete_flag = 0
+            order by sort
     </select>
 <!--    根据宏观主表id集合批量查询市场洞察宏观详情表-->
     <select id="selectMiMacroDetailByMarketInsightMacroIds"

@@ -672,6 +672,7 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
      */
     private void packMiOpponentFinanceUpdates(MarketInsightOpponent marketInsightOpponent, List<MiOpponentChoiceDTO> miOpponentChoiceDTOS, List<MiOpponentChoice> miOpponentChoiceAddList) {
         for (int i = 0; i < miOpponentChoiceDTOS.size(); i++) {
+            Long miOpponentChoiceId = miOpponentChoiceDTOS.get(i).getMiOpponentChoiceId();
             int num = 0;
             //前台对手财务具体经营值集合
             List<MiOpponentFinanceDTO> miOpponentFinanceDTOS = miOpponentChoiceDTOS.get(i).getMiOpponentFinanceDTOS();
@@ -684,41 +685,62 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
                     //前台对手财务具体经营值集合
                     List<MiFinanceIndicatorIdDTO> miFinanceIndicatorIdDTOS = miOpponentFinanceDTO.getMiFinanceIndicatorIdDTOS();
                     if (StringUtils.isNotEmpty(miFinanceIndicatorIdDTOS)) {
-                        for (int i1 = 0; i1 < miFinanceIndicatorIdDTOS.size(); i1++) {
-                            Long miOpponentFinanceId = miFinanceIndicatorIdDTOS.get(i1).getMiOpponentFinanceId();
-                            if (null != miOpponentFinanceId) {
-                                MiOpponentFinance miOpponentFinance = new MiOpponentFinance();
-                                BeanUtils.copyProperties(miFinanceIndicatorIdDTOS.get(i1), miOpponentFinance);
-                                //市场洞察对手ID
-                                miOpponentFinance.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
-                                //市场洞察对手选择ID
-                                miOpponentFinance.setMiOpponentChoiceId(miOpponentChoiceDTOS.get(i).getMiOpponentChoiceId());
-                                miOpponentFinance.setIndicatorId(miOpponentFinanceDTO.getIndicatorId());
-                                miOpponentFinance.setSort(i1 + 1);
-                                miOpponentFinance.setUpdateTime(DateUtils.getNowDate());
-                                miOpponentFinance.setUpdateBy(SecurityUtils.getUserId());
-                                miOpponentFinanceUpdateList.add(miOpponentFinance);
-                            } else {
-                                MiOpponentFinance miOpponentFinance = new MiOpponentFinance();
-                                BeanUtils.copyProperties(miFinanceIndicatorIdDTOS.get(i1), miOpponentFinance);
-                                miOpponentFinance.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
-                                if (StringUtils.isNotEmpty(miOpponentChoiceAddList)) {
+                        if(null != miOpponentChoiceId){
+                            for (int i1 = 0; i1 < miFinanceIndicatorIdDTOS.size(); i1++) {
+                                Long miOpponentFinanceId = miFinanceIndicatorIdDTOS.get(i1).getMiOpponentFinanceId();
+                                if (null != miOpponentFinanceId) {
+                                    MiOpponentFinance miOpponentFinance = new MiOpponentFinance();
+                                    BeanUtils.copyProperties(miFinanceIndicatorIdDTOS.get(i1), miOpponentFinance);
+                                    //市场洞察对手ID
+                                    miOpponentFinance.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
                                     //市场洞察对手选择ID
-                                    miOpponentFinance.setMiOpponentChoiceId(miOpponentChoiceAddList.get(num).getMiOpponentChoiceId());
+                                    miOpponentFinance.setMiOpponentChoiceId(miOpponentChoiceDTOS.get(i).getMiOpponentChoiceId());
+                                    miOpponentFinance.setIndicatorId(miOpponentFinanceDTO.getIndicatorId());
+                                    miOpponentFinance.setSort(i1 + 1);
+                                    miOpponentFinance.setUpdateTime(DateUtils.getNowDate());
+                                    miOpponentFinance.setUpdateBy(SecurityUtils.getUserId());
+                                    miOpponentFinanceUpdateList.add(miOpponentFinance);
+                                } else {
+                                    MiOpponentFinance miOpponentFinance = new MiOpponentFinance();
+                                    BeanUtils.copyProperties(miFinanceIndicatorIdDTOS.get(i1), miOpponentFinance);
+                                    miOpponentFinance.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
+                                    //市场洞察对手选择ID
+                                    miOpponentFinance.setMiOpponentChoiceId(miOpponentChoiceDTOS.get(i).getMiOpponentChoiceId());
+                                    miOpponentFinance.setIndicatorId(miOpponentFinanceDTO.getIndicatorId());
+                                    miOpponentFinance.setSort(i1 + 1);
+                                    miOpponentFinance.setUpdateTime(DateUtils.getNowDate());
+                                    miOpponentFinance.setUpdateBy(SecurityUtils.getUserId());
+                                    miOpponentFinance.setCreateBy(SecurityUtils.getUserId());
+                                    miOpponentFinance.setCreateTime(DateUtils.getNowDate());
+                                    miOpponentFinance.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                                    miOpponentFinanceAddList.add(miOpponentFinance);
                                 }
-                                miOpponentFinance.setIndicatorId(miOpponentFinanceDTO.getIndicatorId());
-                                miOpponentFinance.setSort(i1 + 1);
-                                miOpponentFinance.setUpdateTime(DateUtils.getNowDate());
-                                miOpponentFinance.setUpdateBy(SecurityUtils.getUserId());
-                                miOpponentFinance.setCreateBy(SecurityUtils.getUserId());
-                                miOpponentFinance.setCreateTime(DateUtils.getNowDate());
-                                miOpponentFinance.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                                miOpponentFinanceAddList.add(miOpponentFinance);
-                                num++;
+                            }
+                        }else {
+                            for (int i1 = 0; i1 < miFinanceIndicatorIdDTOS.size(); i1++) {
+                                    MiOpponentFinance miOpponentFinance = new MiOpponentFinance();
+                                    BeanUtils.copyProperties(miFinanceIndicatorIdDTOS.get(i1), miOpponentFinance);
+                                    miOpponentFinance.setMarketInsightOpponentId(marketInsightOpponent.getMarketInsightOpponentId());
+                                    if (StringUtils.isNotEmpty(miOpponentChoiceAddList)) {
+                                        //市场洞察对手选择ID
+                                        miOpponentFinance.setMiOpponentChoiceId(miOpponentChoiceAddList.get(num).getMiOpponentChoiceId());
+                                    }
+                                    miOpponentFinance.setIndicatorId(miOpponentFinanceDTO.getIndicatorId());
+                                    miOpponentFinance.setSort(i1 + 1);
+                                    miOpponentFinance.setUpdateTime(DateUtils.getNowDate());
+                                    miOpponentFinance.setUpdateBy(SecurityUtils.getUserId());
+                                    miOpponentFinance.setCreateBy(SecurityUtils.getUserId());
+                                    miOpponentFinance.setCreateTime(DateUtils.getNowDate());
+                                    miOpponentFinance.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                                    miOpponentFinanceAddList.add(miOpponentFinance);
                             }
                         }
+
                     }
                 }
+            }
+            if (null == miOpponentChoiceId){
+                num++;
             }
             if (StringUtils.isNotEmpty(miOpponentFinanceAddList)) {
                 try {

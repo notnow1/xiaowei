@@ -95,6 +95,7 @@
         FROM mi_opponent_choice
         WHERE  market_insight_opponent_id=#{marketInsightOpponentId}
           and delete_flag=0
+            order by sort
     </select>
 <!--    根据市场洞察对手主表主键集合批量查询市场洞察对手选择表-->
     <select id="selectMiOpponentChoiceByMarketInsightOpponentIds"
