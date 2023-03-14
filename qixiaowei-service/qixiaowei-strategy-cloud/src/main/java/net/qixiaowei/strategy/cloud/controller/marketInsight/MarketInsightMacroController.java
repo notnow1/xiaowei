@@ -8,12 +8,15 @@ import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.AbstractVerticalCellStyleStrategy;
+import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
@@ -27,8 +30,10 @@ import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
 import net.qixiaowei.strategy.cloud.excel.marketInsight.MarketInsightMacroExcel;
 import net.qixiaowei.strategy.cloud.excel.marketInsight.MarketInsightMacroImportListener;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightMacroService;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +41,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +140,26 @@ public class MarketInsightMacroController extends BaseController {
     @RequiresPermissions("strategy:cloud:marketInsightMacro:export")
     public void exportMarketInsightMacro(@RequestParam Map<String, Object> marketInsightMacro, MarketInsightMacroDTO marketInsightMacroDTO, HttpServletResponse response) {
         MarketInsightMacroDTO marketInsightMacroDTO1 = marketInsightMacroService.selectMarketInsightMacroByMarketInsightMacroId(marketInsightMacroDTO.getMarketInsightMacroId());
+
+        List<Map<String, String>> dropList = PlanBusinessUnitCode.getExportDropList(marketInsightMacroDTO1.getBusinessUnitDecompose());
+        List<String> head10 = new ArrayList<String>();
+        head10.add("规划年度："+marketInsightMacroDTO1.getPlanYear());
+        head10.add("规划业务单元名称："+marketInsightMacroDTO1.getPlanBusinessUnitName());
+        if (StringUtils.isNotEmpty(dropList)){
+            for (Map<String, String> stringStringMap : dropList) {
+                String name = stringStringMap.get("name");
+                if (name.equals("productId")){
+                    head10.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO1.getProductName());
+                }else if (name.equals("areaId")){
+                    head10.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO1.getAreaName());
+                }else if (name.equals("departmentId")){
+                    head10.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO1.getDepartmentName());
+                }else if (name.equals("industryId")){
+                    head10.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO1.getIndustryName());
+                }
+            }
+        }
+
         List<List<String>> head = MarketInsightMacroImportListener.head(marketInsightMacroDTO1);
         List<MarketInsightMacroExcel> marketInsightMacroExcelList = marketInsightMacroService.exportMarketInsightMacro(marketInsightMacroDTO1);
         response.setContentType("application/vnd.ms-excel");
@@ -144,28 +170,9 @@ public class MarketInsightMacroController extends BaseController {
         EasyExcel.write(response.getOutputStream())
                 .head(head)// 设置表头
                 .sheet("市场洞察宏观详情")// 设置 sheet 的名字
+                .useDefaultStyle(false)
                 // 自适应列宽
                 .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .registerWriteHandler(new AbstractVerticalCellStyleStrategy() {
-                    //设置标题栏的列样式
-                    @Override
-                    protected WriteCellStyle headCellStyle(Head head) {
-                        //内容样式策略
-                        WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
-                        //居中
-                        contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
-                        //设置 自动换行
-                        contentWriteCellStyle.setWrapped(true);
-                        // 字体策略
-                        WriteFont contentWriteFont = new WriteFont();
-                        // 字体大小
-                        contentWriteFont.setFontHeightInPoints((short) 15);
-                        contentWriteCellStyle.setWriteFont(contentWriteFont);
-                        contentWriteCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-                        return contentWriteCellStyle;
-                    }
-                })
-                .useDefaultStyle(false)
                 //设置文本
                 .registerWriteHandler(new CellWriteHandler() {
                     @Override
@@ -173,11 +180,41 @@ public class MarketInsightMacroController extends BaseController {
                         // 3.0 设置单元格为文本
                         WriteCellData<?> cellData = context.getFirstCellData();
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        // 设置字体
+                        WriteFont headWriteFont = new WriteFont();
+                        headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                        headWriteFont.setFontHeightInPoints((short) 10);
+                        //加粗
+                        // headWriteFont.setBold(true);
+                        headWriteFont.setFontName("微软雅黑");
+                        //设置文本
                         DataFormatData dataFormatData = new DataFormatData();
-                        dataFormatData.setIndex((short) 49);
+                        if (context.getRowIndex()<head10.size()){
+                            //靠左
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            writeCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+                        }else {
+                            //居中
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            writeCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+                        }
                         writeCellStyle.setDataFormatData(dataFormatData);
+                        writeCellStyle.setWriteFont(headWriteFont);
                     }
                 })
-                .doWrite(marketInsightMacroExcelList);
+                //列宽
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                        // 使用sheet对象 简单设置 index所对应的列的列宽
+                        Sheet sheet = writeSheetHolder.getSheet();
+                        sheet.setColumnWidth(cell.getColumnIndex(), 5300);
+                    }
+                })
+                .doWrite(MarketInsightMacroImportListener.dataList(marketInsightMacroExcelList));
     }
 }

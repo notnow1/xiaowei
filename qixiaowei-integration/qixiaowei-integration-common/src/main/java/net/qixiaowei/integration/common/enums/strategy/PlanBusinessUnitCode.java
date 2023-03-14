@@ -46,7 +46,7 @@ public enum PlanBusinessUnitCode {
     public static List<Map<String, String>> getExportDropList(String decompose) {
         List<Map<String, String>> dropList = new ArrayList<>();
         if (StringUtils.isNotNull(decompose)) {
-            String[] decomposeList = decompose.split(",");
+            String[] decomposeList = decompose.split(";");
             for (String decomposerValue : decomposeList) {
                 for (PlanBusinessUnitCode item : PlanBusinessUnitCode.values()) {
                     if (item.code.equals(decomposerValue)) {

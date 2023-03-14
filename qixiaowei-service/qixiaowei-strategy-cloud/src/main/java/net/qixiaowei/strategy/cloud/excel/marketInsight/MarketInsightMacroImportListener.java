@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.*;
 
 import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
+import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightMacroService;
@@ -41,38 +42,204 @@ public class MarketInsightMacroImportListener extends AnalysisEventListener<Mark
      * @return
      */
     public static List<List<String>> head(MarketInsightMacroDTO marketInsightMacroDTO) {
-        String businessUnitDecompose = marketInsightMacroDTO.getBusinessUnitDecompose();
-        List<String> businessUnitDecomposes = Arrays.asList(businessUnitDecompose.split(","));
-        Long productId = marketInsightMacroDTO.getProductId();
-        Long areaId = marketInsightMacroDTO.getAreaId();
-        Long departmentId = marketInsightMacroDTO.getDepartmentId();
-        Long industryId = marketInsightMacroDTO.getIndustryId();
-
         List<Map<String, String>> dropList = PlanBusinessUnitCode.getExportDropList(marketInsightMacroDTO.getBusinessUnitDecompose());
         List<List<String>> list = new ArrayList<List<String>>();
 
         List<String> head2 = new ArrayList<String>();
         head2.add("规划年度："+marketInsightMacroDTO.getPlanYear());
-        list.add(head2);
-        List<String> head3 = new ArrayList<String>();
-        head3.add("规划业务单元名称："+marketInsightMacroDTO.getPlanBusinessUnitName());
-        list.add(head3);
-
+        head2.add("规划业务单元名称："+marketInsightMacroDTO.getPlanBusinessUnitName());
         if (StringUtils.isNotEmpty(dropList)){
             for (Map<String, String> stringStringMap : dropList) {
-                List<String> head4 = new ArrayList<String>();
                 String name = stringStringMap.get("name");
                 if (name.equals("productId")){
-                    head4.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getProductName());
+                    head2.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getProductName());
                 }else if (name.equals("areaId")){
-                    head4.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getAreaName());
+                    head2.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getAreaName());
                 }else if (name.equals("departmentId")){
-                    head4.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getDepartmentName());
+                    head2.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getDepartmentName());
                 }else if (name.equals("industryId")){
-                    head4.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getIndustryName());
+                    head2.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getIndustryName());
                 }
-                list.add(head4);
             }
+        }
+        head2.add("视角");
+        list.add(head2);
+        List<String> head5 = new ArrayList<String>();
+        head5.add("规划年度："+marketInsightMacroDTO.getPlanYear());
+        head5.add("规划业务单元名称："+marketInsightMacroDTO.getPlanBusinessUnitName());
+        if (StringUtils.isNotEmpty(dropList)){
+            for (Map<String, String> stringStringMap : dropList) {
+                String name = stringStringMap.get("name");
+                if (name.equals("productId")){
+                    head5.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getProductName());
+                }else if (name.equals("areaId")){
+                    head5.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getAreaName());
+                }else if (name.equals("departmentId")){
+                    head5.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getDepartmentName());
+                }else if (name.equals("industryId")){
+                    head5.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getIndustryName());
+                }
+            }
+        }
+        head5.add("与企业相关因素");
+        list.add(head5);
+
+        List<String> head6 = new ArrayList<String>();
+        head6.add("规划年度："+marketInsightMacroDTO.getPlanYear());
+        head6.add("规划业务单元名称："+marketInsightMacroDTO.getPlanBusinessUnitName());
+        if (StringUtils.isNotEmpty(dropList)){
+            for (Map<String, String> stringStringMap : dropList) {
+                String name = stringStringMap.get("name");
+                if (name.equals("productId")){
+                    head6.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getProductName());
+                }else if (name.equals("areaId")){
+                    head6.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getAreaName());
+                }else if (name.equals("departmentId")){
+                    head6.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getDepartmentName());
+                }else if (name.equals("industryId")){
+                    head6.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getIndustryName());
+                }
+            }
+        }
+        head6.add("变化及趋势");
+        list.add(head6);
+
+        List<String> head7 = new ArrayList<String>();
+        head7.add("规划年度："+marketInsightMacroDTO.getPlanYear());
+        head7.add("规划业务单元名称："+marketInsightMacroDTO.getPlanBusinessUnitName());
+        if (StringUtils.isNotEmpty(dropList)){
+            for (Map<String, String> stringStringMap : dropList) {
+                String name = stringStringMap.get("name");
+                if (name.equals("productId")){
+                    head7.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getProductName());
+                }else if (name.equals("areaId")){
+                    head7.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getAreaName());
+                }else if (name.equals("departmentId")){
+                    head7.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getDepartmentName());
+                }else if (name.equals("industryId")){
+                    head7.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getIndustryName());
+                }
+            }
+        }
+        head7.add("影响描述");
+        list.add(head7);
+
+        List<String> head8 = new ArrayList<String>();
+        head8.add("规划年度："+marketInsightMacroDTO.getPlanYear());
+        head8.add("规划业务单元名称："+marketInsightMacroDTO.getPlanBusinessUnitName());
+        if (StringUtils.isNotEmpty(dropList)){
+            for (Map<String, String> stringStringMap : dropList) {
+                String name = stringStringMap.get("name");
+                if (name.equals("productId")){
+                    head8.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getProductName());
+                }else if (name.equals("areaId")){
+                    head8.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getAreaName());
+                }else if (name.equals("departmentId")){
+                    head8.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getDepartmentName());
+                }else if (name.equals("industryId")){
+                    head8.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getIndustryName());
+                }
+            }
+        }
+        head8.add("建议措施");
+        list.add(head8);
+
+        List<String> head9 = new ArrayList<String>();
+        head9.add("规划年度："+marketInsightMacroDTO.getPlanYear());
+        head9.add("规划业务单元名称："+marketInsightMacroDTO.getPlanBusinessUnitName());
+        if (StringUtils.isNotEmpty(dropList)){
+            for (Map<String, String> stringStringMap : dropList) {
+                String name = stringStringMap.get("name");
+                if (name.equals("productId")){
+                    head9.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getProductName());
+                }else if (name.equals("areaId")){
+                    head9.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getAreaName());
+                }else if (name.equals("departmentId")){
+                    head9.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getDepartmentName());
+                }else if (name.equals("industryId")){
+                    head9.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getIndustryName());
+                }
+            }
+        }
+        head9.add("规划期");
+        list.add(head9);
+
+        List<String> head10 = new ArrayList<String>();
+        head10.add("规划年度："+marketInsightMacroDTO.getPlanYear());
+        head10.add("规划业务单元名称："+marketInsightMacroDTO.getPlanBusinessUnitName());
+        if (StringUtils.isNotEmpty(dropList)){
+            for (Map<String, String> stringStringMap : dropList) {
+                String name = stringStringMap.get("name");
+                if (name.equals("productId")){
+                    head10.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getProductName());
+                }else if (name.equals("areaId")){
+                    head10.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getAreaName());
+                }else if (name.equals("departmentId")){
+                    head10.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getDepartmentName());
+                }else if (name.equals("industryId")){
+                    head10.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getIndustryName());
+                }
+            }
+        }
+        head10.add("预估机会点金额");
+        list.add(head10);
+
+        List<String> head11 = new ArrayList<String>();
+        head11.add("规划年度："+marketInsightMacroDTO.getPlanYear());
+        head11.add("规划业务单元名称："+marketInsightMacroDTO.getPlanBusinessUnitName());
+        if (StringUtils.isNotEmpty(dropList)){
+            for (Map<String, String> stringStringMap : dropList) {
+                String name = stringStringMap.get("name");
+                if (name.equals("productId")){
+                    head11.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getProductName());
+                }else if (name.equals("areaId")){
+                    head11.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getAreaName());
+                }else if (name.equals("departmentId")){
+                    head11.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getDepartmentName());
+                }else if (name.equals("industryId")){
+                    head11.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getIndustryName());
+                }
+            }
+        }
+        head11.add("提出人姓名");
+        list.add(head11);
+
+        List<String> head12 = new ArrayList<String>();
+        head12.add("规划年度："+marketInsightMacroDTO.getPlanYear());
+        head12.add("规划业务单元名称："+marketInsightMacroDTO.getPlanBusinessUnitName());
+        if (StringUtils.isNotEmpty(dropList)){
+            for (Map<String, String> stringStringMap : dropList) {
+                String name = stringStringMap.get("name");
+                if (name.equals("productId")){
+                    head12.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getProductName());
+                }else if (name.equals("areaId")){
+                    head12.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getAreaName());
+                }else if (name.equals("departmentId")){
+                    head12.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getDepartmentName());
+                }else if (name.equals("industryId")){
+                    head12.add(stringStringMap.get("label")+"；"+marketInsightMacroDTO.getIndustryName());
+                }
+            }
+        }
+        head12.add("提出人工号");
+        list.add(head12);
+        return list;
+    }
+
+    public static List<List<Object>> dataList(List<MarketInsightMacroExcel> marketInsightMacroExcelList) {
+        List<List<Object>> list = new ArrayList<List<Object>>();
+        for (MarketInsightMacroExcel marketInsightMacroExcel : marketInsightMacroExcelList) {
+            List<Object> data = new ArrayList<Object>();
+            data.add(marketInsightMacroExcel.getVisualAngleName());
+            data.add(marketInsightMacroExcel.getCompanyRelatedFactor());
+            data.add(marketInsightMacroExcel.getChangeTrend());
+            data.add(marketInsightMacroExcel.getInfluenceDescription());
+            data.add(marketInsightMacroExcel.getRecommendedPractice());
+            data.add(marketInsightMacroExcel.getPlanPeriod());
+            data.add(marketInsightMacroExcel.getEstimateOpportunityAmount());
+            data.add(marketInsightMacroExcel.getProposeEmployeeName());
+            data.add(marketInsightMacroExcel.getProposeEmployeeCode());
+            list.add(data);
         }
         return list;
     }

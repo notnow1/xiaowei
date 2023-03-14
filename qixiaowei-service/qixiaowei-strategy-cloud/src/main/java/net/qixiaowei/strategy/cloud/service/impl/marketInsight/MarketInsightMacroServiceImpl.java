@@ -1,5 +1,6 @@
 package net.qixiaowei.strategy.cloud.service.impl.marketInsight;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -628,17 +629,19 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
      * @param marketInsightMacro
      */
     private void packMiMacroDetailAll(List<MiMacroDetailDTO> miMacroDetailDTOS, List<MiMacroDetail> miMacroDetailAddList, List<MiMacroDetail> miMacroDetailUpdateList, MarketInsightMacro marketInsightMacro) {
-        for (MiMacroDetailDTO miMacroDetailDTO : miMacroDetailDTOS) {
-            Long miMacroDetailId = miMacroDetailDTO.getMiMacroDetailId();
+        for (int i = 0; i < miMacroDetailDTOS.size(); i++) {
+            Long miMacroDetailId = miMacroDetailDTOS.get(i).getMiMacroDetailId();
             if (StringUtils.isNotNull(miMacroDetailId)) {
                 MiMacroDetail miMacroDetail = new MiMacroDetail();
-                BeanUtils.copyProperties(miMacroDetailDTO, miMacroDetail);
+                BeanUtils.copyProperties(miMacroDetailDTOS.get(i), miMacroDetail);
+                miMacroDetail.setSort(i+1);
                 miMacroDetail.setUpdateBy(SecurityUtils.getUserId());
                 miMacroDetail.setUpdateTime(DateUtils.getNowDate());
                 miMacroDetailUpdateList.add(miMacroDetail);
             } else {
                 MiMacroDetail miMacroDetail = new MiMacroDetail();
-                BeanUtils.copyProperties(miMacroDetailDTO, miMacroDetail);
+                BeanUtils.copyProperties(miMacroDetailDTOS.get(i), miMacroDetail);
+                miMacroDetail.setSort(i+1);
                 miMacroDetail.setMarketInsightMacroId(marketInsightMacro.getMarketInsightMacroId());
                 miMacroDetail.setCreateBy(SecurityUtils.getUserId());
                 miMacroDetail.setCreateTime(DateUtils.getNowDate());
@@ -806,6 +809,14 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
             for (MiMacroDetailDTO miMacroDetailDTO : miMacroDetailDTOS) {
                 MarketInsightMacroExcel marketInsightMacroExcel = new MarketInsightMacroExcel();
                 BeanUtils.copyProperties(miMacroDetailDTO, marketInsightMacroExcel);
+                marketInsightMacroExcel.setPlanPeriod(String.valueOf(miMacroDetailDTO.getPlanPeriod()));
+                BigDecimal estimateOpportunityAmount = miMacroDetailDTO.getEstimateOpportunityAmount();
+                if (null != estimateOpportunityAmount){
+                    marketInsightMacroExcel.setEstimateOpportunityAmount(String.valueOf(miMacroDetailDTO.getEstimateOpportunityAmount()));
+                }else {
+                    marketInsightMacroExcel.setEstimateOpportunityAmount("0");
+                }
+
                 marketInsightMacroExcelList.add(marketInsightMacroExcel);
             }
         }

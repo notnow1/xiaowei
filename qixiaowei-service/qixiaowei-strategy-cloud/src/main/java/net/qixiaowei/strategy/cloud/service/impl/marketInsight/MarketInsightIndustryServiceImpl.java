@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -443,6 +444,8 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
     private void addData(List<MiIndustryDetailDTO> miIndustryDetailDTOS, List<MiIndustryDetail> miIndustryDetailList, List<MiIndustryAttraction> miIndustryAttractionList, MarketInsightIndustry marketInsightIndustry) {
         if (StringUtils.isNotEmpty(miIndustryDetailDTOS)) {
             for (int i = 0; i < miIndustryDetailDTOS.size(); i++) {
+                //校验数据是否合法
+                this.validBigdecimal(miIndustryDetailDTOS.get(i));
                 MiIndustryDetail miIndustryDetail = new MiIndustryDetail();
                 BeanUtils.copyProperties(miIndustryDetailDTOS.get(i), miIndustryDetail);
                 miIndustryDetail.setMarketInsightIndustryId(marketInsightIndustry.getMarketInsightIndustryId());
@@ -523,6 +526,28 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                     }
                 }
 
+            }
+        }
+    }
+
+    /**
+     * 校验数据是否合法
+     * @param miIndustryDetailDTO
+     */
+    private void validBigdecimal(MiIndustryDetailDTO miIndustryDetailDTO) {
+        //整体空间
+        BigDecimal overallSpace = miIndustryDetailDTO.getOverallSpace();
+        //可参与空间
+        BigDecimal participateSpace = miIndustryDetailDTO.getParticipateSpace();
+        //目标市场空间
+        BigDecimal targetMarketSpace = miIndustryDetailDTO.getTargetMarketSpace();
+        if (null != overallSpace && null != participateSpace && null != targetMarketSpace){
+            if (overallSpace.compareTo(participateSpace)==-1){
+                throw new ServiceException("整体空间不能小于可参与空间！");
+
+            }
+            if (participateSpace.compareTo(targetMarketSpace)==-1){
+                throw new ServiceException("可参与空间不能小于目标市场空间！");
             }
         }
     }
@@ -832,6 +857,8 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
             miIndustryDetailMapper.logicDeleteMiIndustryDetailByMiIndustryDetailIds(miIndustryDetailIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
         }
         for (int i1 = 0; i1 < miIndustryDetailDTOS.size(); i1++) {
+            //校验数据是否合法
+            this.validBigdecimal(miIndustryDetailDTOS.get(i1));
             Long miIndustryDetailId = miIndustryDetailDTOS.get(i1).getMiIndustryDetailId();
             if (null == miIndustryDetailId) {
                 MiIndustryDetail miIndustryDetail = new MiIndustryDetail();
