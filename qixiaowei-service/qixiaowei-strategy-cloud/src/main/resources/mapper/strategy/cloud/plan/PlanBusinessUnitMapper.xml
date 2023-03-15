@@ -39,7 +39,7 @@
             and business_unit_code=#{planBusinessUnit.businessUnitCode}
         </if>
         <if test="planBusinessUnit.businessUnitName != null and planBusinessUnit.businessUnitName != ''">
-            and business_unit_name=#{planBusinessUnit.businessUnitName}
+            and business_unit_name like concat('%', #{planBusinessUnit.businessUnitName}, '%')
         </if>
         <if test="planBusinessUnit.businessUnitDecompose != null and planBusinessUnit.businessUnitDecompose != ''">
             and business_unit_decompose=#{planBusinessUnit.businessUnitDecompose}

@@ -202,9 +202,7 @@
             </trim>
             <trim prefix="indicator_id=case" suffix="end,">
                 <foreach collection="gapAnalysisOperateList" item="item" index="index">
-                    <if test="item.indicatorId != null">
-                        when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.indicatorId}
-                    </if>
+                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.indicatorId}
                 </foreach>
             </trim>
             <trim prefix="operate_year=case" suffix="end,">
@@ -216,16 +214,12 @@
             </trim>
             <trim prefix="target_value=case" suffix="end,">
                 <foreach collection="gapAnalysisOperateList" item="item" index="index">
-                    <if test="item.targetValue != null">
-                        when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.targetValue}
-                    </if>
+                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.targetValue}
                 </foreach>
             </trim>
             <trim prefix="actual_value=case" suffix="end,">
                 <foreach collection="gapAnalysisOperateList" item="item" index="index">
-                    <if test="item.actualValue != null">
-                        when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.actualValue}
-                    </if>
+                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.actualValue}
                 </foreach>
             </trim>
             <trim prefix="sort=case" suffix="end,">

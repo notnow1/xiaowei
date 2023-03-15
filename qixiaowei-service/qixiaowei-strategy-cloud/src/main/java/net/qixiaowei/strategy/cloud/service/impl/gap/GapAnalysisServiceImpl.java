@@ -149,18 +149,19 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                 Long indicatorId = null;
                 for (Integer operateYear : yearListMap.keySet()) {
                     GapAnalysisOperateDTO gapAnalysisOperateDTO = yearListMap.get(operateYear).get(0);
-                    IndicatorDTO indicator =
-                            indicatorDTOS.stream().filter(indicatorDTO ->
-                                    indicatorDTO.getIndicatorId().equals(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList()).get(0);
-                    indicatorName = indicator.getIndicatorName();
-                    indicatorId = indicator.getIndicatorId();
+                    if (StringUtils.isNotNull(gapAnalysisOperateDTO.getIndicatorId())) {
+                        IndicatorDTO indicator =
+                                indicatorDTOS.stream().filter(indicatorDTO ->
+                                        indicatorDTO.getIndicatorId().equals(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList()).get(0);
+                        indicatorName = indicator.getIndicatorName();
+                        indicatorId = indicator.getIndicatorId();
+                    }
                     Map<String, Object> operateMap = new HashMap<>();
                     operateMap.put("operateYear", operateYear);
                     gapAnalysisOperateDTO.setOperateMap(operateMap);
-//                gapAnalysisOperateDTO.setIndicatorName(indicatorName);
                     operateList.add(gapAnalysisOperateDTO);
                 }
-                analysisOperateDTO.setSonGapAnalysisOperateDTOS(operateList);
+                analysisOperateDTO.setSonGapAnalysisOperateDTOS(operateList.stream().sorted(Comparator.comparing(GapAnalysisOperateDTO::getOperateYear).reversed()).collect(Collectors.toList()));
                 analysisOperateDTO.setIndicatorId(indicatorId);
                 analysisOperateDTO.setIndicatorName(indicatorName);
                 GapAnalysisDTOS.add(analysisOperateDTO);
@@ -187,7 +188,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
      * @return List
      */
     private List<IndicatorDTO> getIndicatorDTOS(List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS) {
-        List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).collect(Collectors.toList());
+        List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
         R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
         List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
         if (StringUtils.isNull(indicatorDTOS)) {
@@ -446,18 +447,22 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         if (StringUtils.isNotEmpty(gapAnalysisOperateDTOS)) {
             Integer planYear = gapAnalysisDTO.getPlanYear();
             List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
-            R<List<IndicatorDTO>> indicatorByIdR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
-            List<IndicatorDTO> indicatorById = indicatorByIdR.getData();
-            if (StringUtils.isEmpty(indicatorById)) {
-                throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
+            if (StringUtils.isNotEmpty(indicatorIds)) {
+                R<List<IndicatorDTO>> indicatorByIdR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+                List<IndicatorDTO> indicatorById = indicatorByIdR.getData();
+                if (StringUtils.isEmpty(indicatorById)) {
+                    throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
+                }
+                List<Long> indicatorIdsById = indicatorById.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
+                for (GapAnalysisOperateDTO gapAnalysisOperateDTO : gapAnalysisOperateDTOS) {
+                    if (StringUtils.isNotNull(gapAnalysisOperateDTO.getIndicatorId()) && !indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
+                        throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
+                    }
+                }
             }
-            List<Long> indicatorIdsById = indicatorById.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
             List<GapAnalysisOperateDTO> gapAnalysisOperates = new ArrayList<>();
             for (int i = 0; i < gapAnalysisOperateDTOS.size(); i++) {
                 GapAnalysisOperateDTO gapAnalysisOperateDTO = gapAnalysisOperateDTOS.get(i);
-                if (StringUtils.isNotNull(gapAnalysisOperateDTO.getIndicatorId()) && !indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
-                    throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
-                }
                 Long indicatorId = gapAnalysisOperateDTO.getIndicatorId();
                 List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getSonGapAnalysisOperateDTOS();
                 for (int j = 1; j < gapAnalysisOperateDTOSList.size() + 1; j++) {
@@ -671,58 +676,54 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
         Integer planYear = gapAnalysisDTO.getPlanYear();
         Integer operateHistoryYear = gapAnalysisDTO.getOperateHistoryYear();
-        if (StringUtils.isEmpty(indicatorIds)) {
-            throw new ServiceException("请在历史经营情况列表中选择指标");
-        }
-        R<List<IndicatorDTO>> indicatorByIdR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
-        List<IndicatorDTO> indicatorById = indicatorByIdR.getData();
-        if (StringUtils.isEmpty(indicatorById)) {
-            throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
-        }
-        List<Long> indicatorIdsById = indicatorById.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
-        List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSAfter = new ArrayList<>();
-        for (int i = 0; i < gapAnalysisOperateDTOS.size(); i++) {
-            GapAnalysisOperateDTO gapAnalysisOperateDTO = gapAnalysisOperateDTOS.get(i);
-            if (StringUtils.isNotNull(gapAnalysisOperateDTO.getIndicatorId()) && !indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
+        if (StringUtils.isNotEmpty(indicatorIds)) {
+            R<List<IndicatorDTO>> indicatorByIdR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+            List<IndicatorDTO> indicatorById = indicatorByIdR.getData();
+            if (StringUtils.isEmpty(indicatorById)) {
                 throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
             }
-//            IndicatorDTO matchIndicatorDTO = indicatorById.stream().filter(indicatorDTO //匹配的指标DTO
-//                    -> indicatorDTO.getIndicatorId().equals(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList()).get(0);
-            Long indicatorId = gapAnalysisOperateDTO.getIndicatorId();
-            List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getSonGapAnalysisOperateDTOS();
-            int yearNumber = gapAnalysisById.getPlanYear() - 1;
-            for (int j = 1; j < gapAnalysisOperateDTOSList.size() + 1; j++) {
-                for (GapAnalysisOperateDTO analysisOperateDTO : gapAnalysisOperateDTOSList) {
-                    GapAnalysisOperateDTO gapAnalysisOperate = new GapAnalysisOperateDTO();
-                    gapAnalysisOperate.setOperateYear(planYear - j);
-                    gapAnalysisOperate.setGapAnalysisId(gapAnalysisId);
-                    gapAnalysisOperate.setIndicatorId(indicatorId);
-                    gapAnalysisOperate.setTargetValue(analysisOperateDTO.getTargetValue());
-                    gapAnalysisOperate.setActualValue(analysisOperateDTO.getActualValue());
-                    gapAnalysisOperate.setSort(i);
-                    gapAnalysisOperateDTOSAfter.add(gapAnalysisOperate);
-                    yearNumber--;
+            List<Long> indicatorIdsById = indicatorById.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
+            for (GapAnalysisOperateDTO gapAnalysisOperateDTO : gapAnalysisOperateDTOS) {
+                if (StringUtils.isNotNull(gapAnalysisOperateDTO.getIndicatorId()) && !indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
+                    throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
                 }
             }
         }
+        List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSAfter = new ArrayList<>();
+        for (int i = 0; i < gapAnalysisOperateDTOS.size(); i++) {
+            GapAnalysisOperateDTO gapAnalysisOperateDTO = gapAnalysisOperateDTOS.get(i);
+            List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getSonGapAnalysisOperateDTOS();
+            for (int j = 1; j < gapAnalysisOperateDTOSList.size() + 1; j++) {
+                GapAnalysisOperateDTO analysisOperateDTO = gapAnalysisOperateDTOSList.get(j - 1);
+                GapAnalysisOperateDTO gapAnalysisOperate = new GapAnalysisOperateDTO();
+                gapAnalysisOperate.setGapAnalysisOperateId(analysisOperateDTO.getGapAnalysisOperateId());
+                gapAnalysisOperate.setOperateYear(planYear - j);
+                gapAnalysisOperate.setGapAnalysisId(gapAnalysisId);
+                gapAnalysisOperate.setIndicatorId(gapAnalysisOperateDTO.getIndicatorId());
+                gapAnalysisOperate.setTargetValue(analysisOperateDTO.getTargetValue());
+                gapAnalysisOperate.setActualValue(analysisOperateDTO.getActualValue());
+                gapAnalysisOperate.setSort(i);
+                gapAnalysisOperateDTOSAfter.add(gapAnalysisOperate);
+            }
+        }
         List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSBefore = gapAnalysisOperateService.selectGapAnalysisOperateByGapAnalysisId(gapAnalysisId);
-        Map<Long, List<GapAnalysisOperateDTO>> beforeGroupByIndicatorId = gapAnalysisOperateDTOSBefore.stream().collect(Collectors.groupingBy(GapAnalysisOperateDTO::getIndicatorId));
-        Map<Long, List<GapAnalysisOperateDTO>> afterGroupByIndicatorId = gapAnalysisOperateDTOSAfter.stream().collect(Collectors.groupingBy(GapAnalysisOperateDTO::getIndicatorId));
-        Set<Long> beforeIndicatorIds = beforeGroupByIndicatorId.keySet();
-        Set<Long> afterIndicatorIds = afterGroupByIndicatorId.keySet();
-        List<Long> editIndicatorIds = beforeIndicatorIds.stream().filter(afterIndicatorIds::contains).collect(Collectors.toList());
-        List<Long> addIndicatorIds = beforeIndicatorIds.stream().filter(beforeIndicatorId -> !afterIndicatorIds.contains(beforeIndicatorId)).collect(Collectors.toList());
-        List<Long> delIndicatorIds = afterIndicatorIds.stream().filter(afterIndicatorId -> !beforeIndicatorIds.contains(afterIndicatorId)).collect(Collectors.toList());
+        Map<Integer, List<GapAnalysisOperateDTO>> beforeGroupBySort = gapAnalysisOperateDTOSBefore.stream().collect(Collectors.groupingBy(GapAnalysisOperateDTO::getSort));
+        Map<Integer, List<GapAnalysisOperateDTO>> afterGroupBySort = gapAnalysisOperateDTOSAfter.stream().collect(Collectors.groupingBy(GapAnalysisOperateDTO::getSort));
+        Set<Integer> beforeSorts = beforeGroupBySort.keySet();
+        Set<Integer> afterSorts = afterGroupBySort.keySet();
+        List<Integer> editSorts = beforeSorts.stream().filter(afterSorts::contains).collect(Collectors.toList());
+        List<Integer> addSorts = afterSorts.stream().filter(afterSort -> !beforeSorts.contains(afterSort)).collect(Collectors.toList());
+        List<Integer> delSorts = afterSorts.stream().filter(beforeSort -> !afterSorts.contains(beforeSort)).collect(Collectors.toList());
         //删除List
-        List<GapAnalysisOperateDTO> delAnalysisOperateDTOS = gapAnalysisOperateDTOSBefore.stream().filter(gapAnalysisOperateDTO -> delIndicatorIds.contains(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList());
+        List<GapAnalysisOperateDTO> delAnalysisOperateDTOS = gapAnalysisOperateDTOSBefore.stream().filter(gapAnalysisOperateDTO -> delSorts.contains(gapAnalysisOperateDTO.getSort())).collect(Collectors.toList());
         //新增List
-        List<GapAnalysisOperateDTO> addAnalysisOperateDTOS = gapAnalysisOperateDTOSAfter.stream().filter(gapAnalysisOperateDTO -> addIndicatorIds.contains(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList());
+        List<GapAnalysisOperateDTO> addAnalysisOperateDTOS = gapAnalysisOperateDTOSAfter.stream().filter(gapAnalysisOperateDTO -> addSorts.contains(gapAnalysisOperateDTO.getSort())).collect(Collectors.toList());
         //编辑List
         List<GapAnalysisOperateDTO> editAnalysisOperateDTOS = new ArrayList<>();
 
-        for (Long editIndicatorId : editIndicatorIds) {
-            List<GapAnalysisOperateDTO> editAnalysisOperateDTOSBefore = beforeGroupByIndicatorId.get(editIndicatorId);
-            List<GapAnalysisOperateDTO> editAnalysisOperateDTOSAfter = afterGroupByIndicatorId.get(editIndicatorId);
+        for (Integer editSort : editSorts) {
+            List<GapAnalysisOperateDTO> editAnalysisOperateDTOSBefore = beforeGroupBySort.get(editSort);
+            List<GapAnalysisOperateDTO> editAnalysisOperateDTOSAfter = afterGroupBySort.get(editSort);
             for (int i = planYear - 1; i >= planYear - operateHistoryYear; i--) {
                 List<Integer> integers = new ArrayList<>();
                 integers.add(i);
@@ -730,7 +731,6 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                         && editAnalysisOperateDTOSAfter.stream().map(GapAnalysisOperateDTO::getOperateYear).collect(Collectors.toList()).contains(i)) {
                     GapAnalysisOperateDTO analysisOperateDTOAfter = editAnalysisOperateDTOSAfter.stream().filter(e -> integers.contains(e.getOperateYear())).collect(Collectors.toList()).get(0);
                     GapAnalysisOperateDTO analysisOperateDTOBefore = editAnalysisOperateDTOSBefore.stream().filter(e -> integers.contains(e.getOperateYear())).collect(Collectors.toList()).get(0);
-                    analysisOperateDTOAfter.setGapAnalysisOperateId(analysisOperateDTOBefore.getGapAnalysisOperateId());
                     editAnalysisOperateDTOS.add(analysisOperateDTOAfter);
                 } else if (editAnalysisOperateDTOSBefore.stream().map(GapAnalysisOperateDTO::getOperateYear).collect(Collectors.toList()).contains(i)
                         && !editAnalysisOperateDTOSAfter.stream().map(GapAnalysisOperateDTO::getOperateYear).collect(Collectors.toList()).contains(i)) {

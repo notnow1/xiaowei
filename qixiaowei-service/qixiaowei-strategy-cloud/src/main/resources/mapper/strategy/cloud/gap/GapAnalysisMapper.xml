@@ -115,7 +115,7 @@
         </if>
         <!--规划业务单元名称-->
         <if test="gapAnalysis.params.businessUnitName != null and gapAnalysis.params.businessUnitName != ''">
-            and pbu.business_unit_name like concat('%', #{gapAnalysis.businessUnitName}, '%')
+            and pbu.business_unit_name like concat('%', #{gapAnalysis.params.businessUnitName}, '%')
         </if>
         <!--年份过滤-->
         <if test="gapAnalysis.params.planYearEqual != null and gapAnalysis.params.planYearEqual.size() > 0">
