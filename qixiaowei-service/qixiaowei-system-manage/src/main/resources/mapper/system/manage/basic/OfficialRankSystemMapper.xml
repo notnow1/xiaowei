@@ -78,7 +78,7 @@
             AND
             <foreach item="item"
                      collection="officialRankSystem.params.officialRankSystemNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 official_rank_system_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -113,7 +113,7 @@
             AND
             <foreach item="item"
                      collection="officialRankSystem.params.rankPrefixCodeLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 rank_prefix_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>

@@ -111,7 +111,7 @@
             AND
             <foreach item="item"
                      collection="industry.params.industryCodeLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 i1.industry_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -146,7 +146,7 @@
             AND
             <foreach item="item"
                      collection="industry.params.industryNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 i1.industry_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>

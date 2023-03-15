@@ -90,7 +90,7 @@
             AND
             <foreach item="item"
                      collection="marketInsightMacro.params.planBusinessUnitNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 pbu.business_unit_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>

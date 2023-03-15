@@ -120,7 +120,7 @@
             AND
             <foreach item="item"
                      collection="bonusPayApplication.params.awardCodeLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 bpa.award_code  LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -155,7 +155,7 @@
             AND
             <foreach item="item"
                      collection="bonusPayApplication.params.awardNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 bpa.award_name  LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
