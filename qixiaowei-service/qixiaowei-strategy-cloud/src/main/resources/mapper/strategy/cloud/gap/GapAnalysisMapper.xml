@@ -175,11 +175,11 @@
         </if>
         <if test="gapAnalysis.params.businessUnitNameLike != null and gapAnalysis.params.businessUnitNameLike.size() > 0">
             AND
-            <foreach item="item"
+            (<foreach item="item"
                      collection="gapAnalysis.params.businessUnitNameLike"
                      index="index" open="(" separator="OR" close=")">
                 pbu.business_unit_name LIKE concat('%', #{item}, '%')
-            </foreach>
+            </foreach>)
         </if>
         <if test="gapAnalysis.params.businessUnitNameNotLike != null and gapAnalysis.params.businessUnitNameNotLike.size() > 0">
             AND

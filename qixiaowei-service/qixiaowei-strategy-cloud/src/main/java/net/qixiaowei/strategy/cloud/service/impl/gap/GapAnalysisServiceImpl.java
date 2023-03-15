@@ -845,18 +845,20 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             if (StringUtils.isEmpty(listMap)) {
                 throw new ServiceException("绩效考核Excel没有数据 请检查");
             }
-            List<Integer> operateYearList = new ArrayList<>();
+            Set<Integer> operateYearList = new HashSet<>();
             for (int i = operateYear2 - 1; i >= operateYear2 - operateHistoryYear; i--) {
                 operateYearList.add(i);
             }
+            Set<Object> operateYears = new HashSet<>();
             for (Integer integer : head.keySet()) {
                 String operateYear1 = head.get(integer);
                 if (StringUtils.isEmpty(operateYear1)) {
                     throw new ServiceException("请在规定年份内输入数据");
                 }
-                Integer operateYear = Integer.valueOf(head.get(integer).substring(0, head.get(integer).length() - 1));
-                if (!operateYearList.contains(operateYear))
-                    throw new ServiceException("年份区间与当前情况不匹配 请检查历史经营年份或者重新下载excel模板");
+                operateYears.add(Integer.valueOf(operateYear1.substring(0, operateYear1.length() - 1)));
+            }
+            if (operateYears.size() != operateYearList.size() || !operateYears.containsAll(operateYearList)) {
+                throw new ServiceException("模板格式不正确");
             }
             // 获取指标列表
             List<String> indicatorNames = new ArrayList<>();

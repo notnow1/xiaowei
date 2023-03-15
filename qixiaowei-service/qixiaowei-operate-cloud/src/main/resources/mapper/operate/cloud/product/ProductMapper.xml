@@ -92,7 +92,7 @@
             AND
             <foreach item="item"
                      collection="product.params.productCodeLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 p.product_code  LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
