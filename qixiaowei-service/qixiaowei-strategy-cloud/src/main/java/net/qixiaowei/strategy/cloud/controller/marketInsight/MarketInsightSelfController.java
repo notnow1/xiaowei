@@ -114,7 +114,7 @@ public class MarketInsightSelfController extends BaseController {
         return toAjax(marketInsightSelfService.logicDeleteMarketInsightSelfByMarketInsightSelfIds(marketInsightSelfIds));
     }
     /**
-     * 查询市场洞察自身表列表
+     * 根据规划年度和业务单元查询看对手详情表
      */
     @RequiresPermissions("strategy:cloud:marketInsightSelf:opponentNameList")
     @GetMapping("/opponentNameList")
