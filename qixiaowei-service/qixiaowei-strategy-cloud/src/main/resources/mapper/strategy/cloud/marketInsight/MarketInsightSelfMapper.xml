@@ -110,7 +110,7 @@
             AND
             <foreach item="item"
                      collection="marketInsightSelf.params.planBusinessUnitNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
