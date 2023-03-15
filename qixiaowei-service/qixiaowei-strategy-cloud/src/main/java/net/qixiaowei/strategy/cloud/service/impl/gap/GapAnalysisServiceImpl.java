@@ -458,8 +458,6 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                 if (StringUtils.isNotNull(gapAnalysisOperateDTO.getIndicatorId()) && !indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
                     throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
                 }
-//                IndicatorDTO matchIndicatorDTO = indicatorById.stream().filter(indicatorDTO //匹配的指标DTO
-//                        -> indicatorDTO.getIndicatorId().equals(gapAnalysisOperateDTO.getIndicatorId())).collect(Collectors.toList()).get(0);
                 Long indicatorId = gapAnalysisOperateDTO.getIndicatorId();
                 List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getSonGapAnalysisOperateDTOS();
                 for (int j = 1; j < gapAnalysisOperateDTOSList.size() + 1; j++) {
@@ -589,16 +587,18 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         }
         if (StringUtils.isNotEmpty(gapAnalysisOpportunityDTOListAfter)) {
             List<Long> proposeEmployeeIds = gapAnalysisOpportunityDTOListAfter.stream().map(GapAnalysisOpportunityDTO::getProposeEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
-            R<List<EmployeeDTO>> employeeDTOSR = employeeService.selectByEmployeeIds(proposeEmployeeIds, SecurityConstants.INNER);
-            List<EmployeeDTO> employeeDTOS = employeeDTOSR.getData();
-            if (StringUtils.isEmpty(employeeDTOS)) {
-                throw new ServiceException("当前提出人已不存在 请检查员工配置");
-            }
-            for (GapAnalysisOpportunityDTO gapAnalysisOpportunityDTO : gapAnalysisOpportunityDTOListAfter) {
-                for (EmployeeDTO employeeDTO : employeeDTOS) {
-                    if (employeeDTO.getEmployeeId().equals(gapAnalysisOpportunityDTO.getProposeEmployeeId())) {
-                        gapAnalysisOpportunityDTO.setProposeEmployeeName(employeeDTO.getEmployeeName());
-                        break;
+            if (StringUtils.isNotEmpty(proposeEmployeeIds)) {
+                R<List<EmployeeDTO>> employeeDTOSR = employeeService.selectByEmployeeIds(proposeEmployeeIds, SecurityConstants.INNER);
+                List<EmployeeDTO> employeeDTOS = employeeDTOSR.getData();
+                if (StringUtils.isEmpty(employeeDTOS)) {
+                    throw new ServiceException("当前提出人已不存在 请检查员工配置");
+                }
+                for (GapAnalysisOpportunityDTO gapAnalysisOpportunityDTO : gapAnalysisOpportunityDTOListAfter) {
+                    for (EmployeeDTO employeeDTO : employeeDTOS) {
+                        if (employeeDTO.getEmployeeId().equals(gapAnalysisOpportunityDTO.getProposeEmployeeId())) {
+                            gapAnalysisOpportunityDTO.setProposeEmployeeName(employeeDTO.getEmployeeName());
+                            break;
+                        }
                     }
                 }
             }
