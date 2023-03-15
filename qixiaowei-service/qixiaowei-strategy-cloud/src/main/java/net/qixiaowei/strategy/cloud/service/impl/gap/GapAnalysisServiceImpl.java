@@ -189,12 +189,15 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
      */
     private List<IndicatorDTO> getIndicatorDTOS(List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS) {
         List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
-        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
-        List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
-        if (StringUtils.isNull(indicatorDTOS)) {
-            throw new ServiceException("数据异常 指标不存在 请联系管理员");
+        if (StringUtils.isNotEmpty(indicatorIds)) {
+            R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+            List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
+            if (StringUtils.isNull(indicatorDTOS)) {
+                throw new ServiceException("数据异常 指标不存在 请联系管理员");
+            }
+            return indicatorDTOS;
         }
-        return indicatorDTOS;
+        return new ArrayList<>();
     }
 
     /**
@@ -825,99 +828,110 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
      */
     @Override
     public List<GapAnalysisOperateDTO> excelParseObject(Integer operateHistoryYear, Integer operateYear2, MultipartFile file) {
-        ExcelReaderBuilder read;
         try {
-            read = EasyExcel.read(file.getInputStream());
-        } catch (Exception e) {
-            throw new ServiceException("导入绩效考核表Excel失败");
-        }
-        ExcelReaderSheetBuilder sheet = read.sheet(0);
-        List<Map<Integer, String>> listMap = sheet.doReadSync();
-        Map<Integer, String> head = listMap.get(0);
-        head.remove(0);
-        if (head.containsValue(null)) {
-            throw new ServiceException("请检查excel 表头不可以为空");
-        }
-        if (StringUtils.isEmpty(listMap)) {
-            throw new ServiceException("绩效考核Excel没有数据 请检查");
-        }
-        List<Integer> operateYearList = new ArrayList<>();
-        for (int i = operateYear2 - 1; i >= operateYear2 - operateHistoryYear; i--) {
-            operateYearList.add(i);
-        }
-        for (Integer integer : head.keySet()) {
-            String operateYear1 = head.get(integer);
-            if (StringUtils.isEmpty(operateYear1)) {
-                throw new ServiceException("请在规定年份内输入数据");
+            ExcelReaderBuilder read;
+            try {
+                read = EasyExcel.read(file.getInputStream());
+            } catch (Exception e) {
+                throw new ServiceException("导入绩效考核表Excel失败");
             }
-            Integer operateYear = Integer.valueOf(head.get(integer).substring(0, head.get(integer).length() - 1));
-            if (!operateYearList.contains(operateYear))
-                throw new ServiceException("年份区间与当前情况不匹配 请检查历史经营年份或者重新下载excel模板");
-        }
-        // 获取指标列表
-        List<String> indicatorNames = new ArrayList<>();
-        for (int i = 2; i < listMap.size(); i++) {
-            if (StringUtils.isNull(listMap.get(i).get(0))) {
-                throw new ServiceException("请在新增行内输入指标信息");
+            ExcelReaderSheetBuilder sheet = read.sheet(0);
+            List<Map<Integer, String>> listMap = sheet.doReadSync();
+            Map<Integer, String> head = listMap.get(0);
+            head.remove(0);
+            if (head.containsValue(null)) {
+                throw new ServiceException("请检查excel 表头不可以为空");
             }
-            indicatorNames.add(listMap.get(i).get(0));
-        }
-        R<List<IndicatorDTO>> indicatorByNamesR = indicatorService.selectIndicatorByNames(indicatorNames, SecurityConstants.INNER);
-        List<IndicatorDTO> indicatorByNames = indicatorByNamesR.getData();
-        if (StringUtils.isNull(indicatorByNames)) {
-            throw new ServiceException("当前指标不存在");
-        }
-        List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS = new ArrayList<>();
-        for (int i = 2; i < listMap.size(); i++) {
-            Map<Integer, String> map = listMap.get(i);
-            IndicatorDTO indicator = indicatorByNames.stream().filter(indicatorDTO -> StringUtils.equals(indicatorDTO.getIndicatorName(), map.get(0))).collect(Collectors.toList()).get(0);
-            int timer = 0;
-            GapAnalysisOperateDTO gapAnalysisOperateDTO = new GapAnalysisOperateDTO();
-            gapAnalysisOperateDTO.setSort(i - 2);
-            gapAnalysisOperateDTO.setIndicatorId(indicator.getIndicatorId());
-            gapAnalysisOperateDTO.setIndicatorName(indicator.getIndicatorName());
-            List<GapAnalysisOperateDTO> gapAnalysisOperateDTOList = new ArrayList<>();
-            GapAnalysisOperateDTO analysisOperateDTO = new GapAnalysisOperateDTO();
-            for (int j = 1; j < map.keySet().size(); j++) {
-                String value = map.get(j);
-                if (timer == 0) {
-                    analysisOperateDTO = new GapAnalysisOperateDTO();
-                    if (StringUtils.isEmpty(value)) {
-                        analysisOperateDTO.setTargetValue(BigDecimal.ZERO);
-                    } else {
-                        analysisOperateDTO.setTargetValue(new BigDecimal(value));
-                    }
-                    timer = 1;
-                } else {
-                    if (StringUtils.isEmpty(value)) {
-                        analysisOperateDTO.setActualValue(BigDecimal.ZERO);
-                        analysisOperateDTO.setCompletionRate(BigDecimal.ZERO);
-                    } else {
-                        analysisOperateDTO.setActualValue(new BigDecimal(value));
-                        BigDecimal targetValue = analysisOperateDTO.getTargetValue();
-                        if (targetValue.compareTo(BigDecimal.ZERO) != 0) {
-                            BigDecimal completionRate = analysisOperateDTO.getActualValue().multiply(new BigDecimal(100)).divide(targetValue, 2, RoundingMode.HALF_UP);
-                            analysisOperateDTO.setCompletionRate(completionRate);
-                        } else {
-                            analysisOperateDTO.setActualValue(BigDecimal.ZERO);
-                        }
-                    }
-                    Map<String, Object> operateMap = new HashMap<>();
-                    String operateYear1 = head.get(j);
-                    Integer operateYear = Integer.valueOf(operateYear1.substring(0, operateYear1.length() - 1));
-                    operateMap.put("operateYear", operateYear);
-                    analysisOperateDTO.setOperateMap(operateMap);
-                    analysisOperateDTO.setSort(i - 2);
-                    analysisOperateDTO.setIndicatorId(indicator.getIndicatorId());
-                    analysisOperateDTO.setIndicatorName(indicator.getIndicatorName());
-                    gapAnalysisOperateDTOList.add(analysisOperateDTO);
-                    timer = 0;
+            if (StringUtils.isEmpty(listMap)) {
+                throw new ServiceException("绩效考核Excel没有数据 请检查");
+            }
+            List<Integer> operateYearList = new ArrayList<>();
+            for (int i = operateYear2 - 1; i >= operateYear2 - operateHistoryYear; i--) {
+                operateYearList.add(i);
+            }
+            for (Integer integer : head.keySet()) {
+                String operateYear1 = head.get(integer);
+                if (StringUtils.isEmpty(operateYear1)) {
+                    throw new ServiceException("请在规定年份内输入数据");
+                }
+                Integer operateYear = Integer.valueOf(head.get(integer).substring(0, head.get(integer).length() - 1));
+                if (!operateYearList.contains(operateYear))
+                    throw new ServiceException("年份区间与当前情况不匹配 请检查历史经营年份或者重新下载excel模板");
+            }
+            // 获取指标列表
+            List<String> indicatorNames = new ArrayList<>();
+            for (int i = 2; i < listMap.size(); i++) {
+                if (StringUtils.isNull(listMap.get(i).get(0)))
+                    continue;
+                indicatorNames.add(listMap.get(i).get(0));
+            }
+            List<IndicatorDTO> indicatorByNames = new ArrayList<>();
+            if (StringUtils.isNotEmpty(indicatorNames)) {
+                R<List<IndicatorDTO>> indicatorByNamesR = indicatorService.selectIndicatorByNames(indicatorNames, SecurityConstants.INNER);
+                indicatorByNames = indicatorByNamesR.getData();
+                if (StringUtils.isEmpty(indicatorByNames)) {
+                    throw new ServiceException("当前指标不存在");
                 }
             }
-            gapAnalysisOperateDTO.setSonGapAnalysisOperateDTOS(gapAnalysisOperateDTOList);
-            gapAnalysisOperateDTOS.add(gapAnalysisOperateDTO);
+            List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS = new ArrayList<>();
+            for (int i = 2; i < listMap.size(); i++) {
+                Map<Integer, String> map = listMap.get(i);
+                int timer = 0;
+                IndicatorDTO indicator = new IndicatorDTO();
+                if (StringUtils.isNotNull(map.get(0))) {
+                    indicator = indicatorByNames.stream().filter(indicatorDTO -> StringUtils.equals(indicatorDTO.getIndicatorName(), map.get(0))).collect(Collectors.toList()).get(0);
+                }
+                GapAnalysisOperateDTO gapAnalysisOperateDTO = new GapAnalysisOperateDTO();
+                gapAnalysisOperateDTO.setIndicatorId(indicator.getIndicatorId());
+                gapAnalysisOperateDTO.setIndicatorName(indicator.getIndicatorName());
+                gapAnalysisOperateDTO.setSort(i - 2);
+                List<GapAnalysisOperateDTO> gapAnalysisOperateDTOList = new ArrayList<>();
+                GapAnalysisOperateDTO analysisOperateDTO = new GapAnalysisOperateDTO();
+                for (int j = 1; j < map.keySet().size(); j++) {
+                    String value = map.get(j);
+                    if (timer == 0) {
+                        analysisOperateDTO = new GapAnalysisOperateDTO();
+                        if (StringUtils.isEmpty(value)) {
+                            analysisOperateDTO.setTargetValue(BigDecimal.ZERO);
+                        } else {
+                            analysisOperateDTO.setTargetValue(new BigDecimal(value));
+                        }
+                        timer = 1;
+                    } else {
+                        if (StringUtils.isEmpty(value)) {
+                            analysisOperateDTO.setActualValue(BigDecimal.ZERO);
+                            analysisOperateDTO.setCompletionRate(BigDecimal.ZERO);
+                        } else {
+                            analysisOperateDTO.setActualValue(new BigDecimal(value));
+                            BigDecimal targetValue = analysisOperateDTO.getTargetValue();
+                            if (targetValue.compareTo(BigDecimal.ZERO) != 0) {
+                                BigDecimal completionRate = analysisOperateDTO.getActualValue().multiply(new BigDecimal(100)).divide(targetValue, 2, RoundingMode.HALF_UP);
+                                analysisOperateDTO.setCompletionRate(completionRate);
+                            } else {
+                                analysisOperateDTO.setActualValue(BigDecimal.ZERO);
+                            }
+                        }
+                        Map<String, Object> operateMap = new HashMap<>();
+                        String operateYear1 = head.get(j);
+                        Integer operateYear = Integer.valueOf(operateYear1.substring(0, operateYear1.length() - 1));
+                        operateMap.put("operateYear", operateYear);
+                        analysisOperateDTO.setOperateMap(operateMap);
+                        analysisOperateDTO.setSort(i - 2);
+                        analysisOperateDTO.setIndicatorId(indicator.getIndicatorId());
+                        analysisOperateDTO.setIndicatorName(indicator.getIndicatorName());
+                        gapAnalysisOperateDTOList.add(analysisOperateDTO);
+                        timer = 0;
+                    }
+                }
+                gapAnalysisOperateDTO.setSonGapAnalysisOperateDTOS(gapAnalysisOperateDTOList);
+                gapAnalysisOperateDTOS.add(gapAnalysisOperateDTO);
+            }
+            return gapAnalysisOperateDTOS;
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("模板格式不正确");
         }
-        return gapAnalysisOperateDTOS;
     }
 
     /**
