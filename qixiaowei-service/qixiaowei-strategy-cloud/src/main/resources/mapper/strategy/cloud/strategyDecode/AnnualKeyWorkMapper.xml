@@ -111,7 +111,7 @@
         </if>
         <!-- 创建人等于过滤  -->
         <if test="annualKeyWork.params.createByList != null and annualKeyWork.params.createByList.size() > 0">
-            AND ga.create_by IN
+            AND akw.create_by IN
             <foreach item="item"
                      collection="annualKeyWork.params.createByList"
                      index="index" open="(" separator="," close=")">
@@ -124,7 +124,7 @@
         </if>
         <!--年份过滤-->
         <if test="annualKeyWork.params.planYearEqual != null and annualKeyWork.params.planYearEqual.size() > 0">
-            and ga.plan_year IN
+            and akw.plan_year IN
             <foreach item="item"
                      collection="annualKeyWork.params.planYearEqual"
                      index="index" open="(" separator="," close=")">
@@ -132,32 +132,32 @@
             </foreach>
         </if>
         <if test="annualKeyWork.params.planYearNotEqual != null and annualKeyWork.params.planYearNotEqual.size() > 0">
-            AND (ga.plan_year NOT IN
+            AND (akw.plan_year NOT IN
             <foreach item="item"
                      collection="annualKeyWork.params.planYearNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ga.plan_year IS NULL
+            OR akw.plan_year IS NULL
             )
         </if>
         <if test="annualKeyWork.params.planYearBefore != null and annualKeyWork.params.planYearBefore != ''">
-            AND ga.plan_year &lt; #{annualKeyWork.params.planYearBefore}
+            AND akw.plan_year &lt; #{annualKeyWork.params.planYearBefore}
         </if>
         <if test="annualKeyWork.params.planYearNotBefore != null and annualKeyWork.params.planYearNotBefore != ''"><!-- 开始时间检索 -->
-            AND ga.plan_year &gt;= #{annualKeyWork.params.planYearNotBefore}
+            AND akw.plan_year &gt;= #{annualKeyWork.params.planYearNotBefore}
         </if>
         <if test="annualKeyWork.params.planYearAfter != null and annualKeyWork.params.planYearAfter != ''"><!-- 开始时间检索 -->
-            AND ga.plan_year &gt; #{annualKeyWork.params.planYearAfter}
+            AND akw.plan_year &gt; #{annualKeyWork.params.planYearAfter}
         </if>
         <if test="annualKeyWork.params.planYearNotAfter != null and annualKeyWork.params.planYearNotAfter != ''"><!-- 结束时间检索 -->
-            AND ga.plan_year &lt;= #{annualKeyWork.params.planYearNotAfter}
+            AND akw.plan_year &lt;= #{annualKeyWork.params.planYearNotAfter}
         </if>
         <if test="annualKeyWork.params.planYearStart != null and annualKeyWork.params.planYearStart != ''"><!-- 开始时间检索 -->
-            AND ga.plan_year &gt;= #{annualKeyWork.params.planYearStart}
+            AND akw.plan_year &gt;= #{annualKeyWork.params.planYearStart}
         </if>
         <if test="annualKeyWork.params.planYearEnd != null and annualKeyWork.params.planYearEnd != ''"><!-- 结束时间检索 -->
-            AND ga.plan_year &lt;= #{annualKeyWork.params.planYearEnd}
+            AND akw.plan_year &lt;= #{annualKeyWork.params.planYearEnd}
         </if>
         <!--规划业务单元名称高级搜索-->
         <if test="annualKeyWork.params.businessUnitNameEqual != null and annualKeyWork.params.businessUnitNameEqual.size() > 0">
@@ -196,7 +196,7 @@
         </if>
         <!--行业-->
         <if test="annualKeyWork.params.industryIdEqual != null and annualKeyWork.params.industryIdEqual.size() > 0">
-            and ga.industry_id IN
+            and akw.industry_id IN
             <foreach item="item"
                      collection="annualKeyWork.params.industryIdEqual"
                      index="index" open="(" separator="," close=")">
@@ -204,18 +204,18 @@
             </foreach>
         </if>
         <if test="annualKeyWork.params.industryIdNotEqual != null and annualKeyWork.params.industryIdNotEqual.size() > 0">
-            AND (ga.industry_id NOT IN
+            AND (akw.industry_id NOT IN
             <foreach item="item"
                      collection="annualKeyWork.params.industryIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ga.industry_id IS NULL
+            OR akw.industry_id IS NULL
             )
         </if>
         <!--区域-->
         <if test="annualKeyWork.params.areaIdEqual != null and annualKeyWork.params.areaIdEqual.size() > 0">
-            and ga.area_id IN
+            and akw.area_id IN
             <foreach item="item"
                      collection="annualKeyWork.params.areaIdEqual"
                      index="index" open="(" separator="," close=")">
@@ -223,18 +223,18 @@
             </foreach>
         </if>
         <if test="annualKeyWork.params.areaIdNotEqual != null and annualKeyWork.params.areaIdNotEqual.size() > 0">
-            AND (ga.area_id NOT IN
+            AND (akw.area_id NOT IN
             <foreach item="item"
                      collection="annualKeyWork.params.areaIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ga.area_id IS NULL
+            OR akw.area_id IS NULL
             )
         </if>
         <!--产品-->
         <if test="annualKeyWork.params.productIdEqual != null and annualKeyWork.params.productIdEqual.size() > 0">
-            and ga.product_id IN
+            and akw.product_id IN
             <foreach item="item"
                      collection="annualKeyWork.params.productIdEqual"
                      index="index" open="(" separator="," close=")">
@@ -242,18 +242,18 @@
             </foreach>
         </if>
         <if test="annualKeyWork.params.productIdNotEqual != null and annualKeyWork.params.productIdNotEqual.size() > 0">
-            AND (ga.product_id NOT IN
+            AND (akw.product_id NOT IN
             <foreach item="item"
                      collection="annualKeyWork.params.productIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ga.product_id IS NULL
+            OR akw.product_id IS NULL
             )
         </if>
         <!--部门-->
         <if test="annualKeyWork.params.departmentIdEqual != null and annualKeyWork.params.departmentIdEqual.size() > 0">
-            and ga.department_id IN
+            and akw.department_id IN
             <foreach item="item"
                      collection="annualKeyWork.params.departmentIdEqual"
                      index="index" open="(" separator="," close=")">
@@ -261,13 +261,13 @@
             </foreach>
         </if>
         <if test="annualKeyWork.params.departmentIdNotEqual != null and annualKeyWork.params.departmentIdNotEqual.size() > 0">
-            AND (ga.department_id NOT IN
+            AND (akw.department_id NOT IN
             <foreach item="item"
                      collection="annualKeyWork.params.departmentIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ga.department_id IS NULL
+            OR akw.department_id IS NULL
             )
         </if>
     </select>

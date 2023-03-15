@@ -139,6 +139,23 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
                 }
             }
         }
+        // 部门负责人赋值
+        List<Long> departmentEmployeeIds = annualKeyWorkDetailDTOS.stream().map(AnnualKeyWorkDetailDTO::getDepartmentEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(departmentEmployeeIds)) {
+            R<List<EmployeeDTO>> employeeDTOSR = employeeService.selectByEmployeeIds(departmentEmployeeIds, SecurityConstants.INNER);
+            List<EmployeeDTO> employeeDTOS = employeeDTOSR.getData();
+            if (StringUtils.isNotEmpty(employeeDTOS)) {
+                for (AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO : annualKeyWorkDetailDTOS) {
+                    for (EmployeeDTO employeeDTO : employeeDTOS) {
+                        if (employeeDTO.getEmployeeId().equals(annualKeyWorkDetailDTO.getDepartmentEmployeeId())) {
+                            annualKeyWorkDetailDTO.setDepartmentEmployeeName(employeeDTO.getEmployeeName());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        annualKeyWorkDTO.setAnnualKeyWorkDetailDTOS(annualKeyWorkDetailDTOS);
         return annualKeyWorkDTO;
     }
 
@@ -354,7 +371,7 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
             return annualKeyWorkDTO;
         for (AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO : annualKeyWorkDetailDTOS) {
             if (StringUtils.isNull(annualKeyWorkDetailDTO.getTaskNumber()))
-                throw new ServiceException("未传入员工编号 请联系管理员");
+                throw new ServiceException("未传入任务编号 请联系管理员");
             if (StringUtils.isNull(annualKeyWorkDetailDTO.getTaskName()))
                 throw new ServiceException("请输入任务名称");
             annualKeyWorkDetailDTO.setAnnualKeyWorkId(annualKeyWorkId);
@@ -362,12 +379,12 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
         List<Long> dutyEmployeeIds = annualKeyWorkDetailDTOS.stream().map(AnnualKeyWorkDetailDTO::getDutyEmployeeId).collect(Collectors.toList());
         R<List<EmployeeDTO>> employeeDTOSR = employeeService.selectByEmployeeIds(dutyEmployeeIds, SecurityConstants.INNER);
         List<EmployeeDTO> employeeDTOS = employeeDTOSR.getData();
-        if (StringUtils.isNotEmpty(employeeDTOS))
+        if (StringUtils.isEmpty(employeeDTOS))
             throw new ServiceException("员工信息已不存在 请检查员工配置");
         List<Long> departmentIds = annualKeyWorkDetailDTOS.stream().map(AnnualKeyWorkDetailDTO::getDepartmentId).collect(Collectors.toList());
         R<List<DepartmentDTO>> departmentDTOSR = departmentService.selectdepartmentIds(departmentIds, SecurityConstants.INNER);
         List<DepartmentDTO> departmentDTOS = departmentDTOSR.getData();
-        if (StringUtils.isNotEmpty(departmentDTOS))
+        if (StringUtils.isEmpty(departmentDTOS))
             throw new ServiceException("部门信息已不存在 请检查组织信息配置");
         for (AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO : annualKeyWorkDetailDTOS) {
             if (StringUtils.isNotNull(annualKeyWorkDetailDTO.getDutyEmployeeId())) {
@@ -468,6 +485,34 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
         List<AnnualKeyWorkDetailDTO> annualKeyWorkDetailDTOSAfter = annualKeyWorkDTO.getAnnualKeyWorkDetailDTOS();
         if (StringUtils.isEmpty(annualKeyWorkDetailDTOSAfter))
             return 1;
+        for (AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO : annualKeyWorkDetailDTOSAfter) {
+            if (StringUtils.isNull(annualKeyWorkDetailDTO.getTaskNumber()))
+                throw new ServiceException("未传入任务编号 请联系管理员");
+            if (StringUtils.isNull(annualKeyWorkDetailDTO.getTaskName()))
+                throw new ServiceException("请输入任务名称");
+            annualKeyWorkDetailDTO.setAnnualKeyWorkId(annualKeyWorkId);
+        }
+        List<Long> dutyEmployeeIds = annualKeyWorkDetailDTOSAfter.stream().map(AnnualKeyWorkDetailDTO::getDutyEmployeeId).collect(Collectors.toList());
+        R<List<EmployeeDTO>> employeeDTOSR = employeeService.selectByEmployeeIds(dutyEmployeeIds, SecurityConstants.INNER);
+        List<EmployeeDTO> employeeDTOS = employeeDTOSR.getData();
+        if (StringUtils.isEmpty(employeeDTOS))
+            throw new ServiceException("员工信息已不存在 请检查员工配置");
+        List<Long> departmentIds = annualKeyWorkDetailDTOSAfter.stream().map(AnnualKeyWorkDetailDTO::getDepartmentId).collect(Collectors.toList());
+        R<List<DepartmentDTO>> departmentDTOSR = departmentService.selectdepartmentIds(departmentIds, SecurityConstants.INNER);
+        List<DepartmentDTO> departmentDTOS = departmentDTOSR.getData();
+        if (StringUtils.isEmpty(departmentDTOS))
+            throw new ServiceException("部门信息已不存在 请检查组织信息配置");
+        for (AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO : annualKeyWorkDetailDTOSAfter) {
+            if (StringUtils.isNotNull(annualKeyWorkDetailDTO.getDutyEmployeeId())) {
+                for (EmployeeDTO employeeDTO : employeeDTOS) {
+                    if (annualKeyWorkDetailDTO.getDutyEmployeeId().equals(employeeDTO.getEmployeeId())) {
+                        annualKeyWorkDetailDTO.setDutyEmployeeCode(employeeDTO.getEmployeeCode());
+                        annualKeyWorkDetailDTO.setDutyEmployeeName(employeeDTO.getEmployeeName());
+                        break;
+                    }
+                }
+            }
+        }
         List<AnnualKeyWorkDetailDTO> annualKeyWorkDetailDTOSBefore = annualKeyWorkDetailService.selectAnnualKeyWorkDetailByAnnualKeyWorkId(annualKeyWorkId);
         operateAnnualKeyWorkDetail(annualKeyWorkDetailDTOSAfter, annualKeyWorkDetailDTOSBefore);
         return 1;
@@ -480,7 +525,33 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
      * @param annualKeyWorkDetailDTOSBefore 前
      */
     private void operateAnnualKeyWorkDetail(List<AnnualKeyWorkDetailDTO> annualKeyWorkDetailDTOSAfter, List<AnnualKeyWorkDetailDTO> annualKeyWorkDetailDTOSBefore) {
-
+        List<AnnualKeyWorkDetailDTO> editAnnualKeyWorkS = annualKeyWorkDetailDTOSAfter.stream().filter(gapAnalysisOpportunityDTO ->
+                annualKeyWorkDetailDTOSBefore.stream().map(AnnualKeyWorkDetailDTO::getAnnualKeyWorkDetailId).collect(Collectors.toList())
+                        .contains(gapAnalysisOpportunityDTO.getAnnualKeyWorkDetailId())).collect(Collectors.toList());
+        List<AnnualKeyWorkDetailDTO> delAnnualKeyWorkS = annualKeyWorkDetailDTOSBefore.stream().filter(gapAnalysisOpportunityDTO ->
+                !annualKeyWorkDetailDTOSAfter.stream().map(AnnualKeyWorkDetailDTO::getAnnualKeyWorkDetailId).collect(Collectors.toList())
+                        .contains(gapAnalysisOpportunityDTO.getAnnualKeyWorkDetailId())).collect(Collectors.toList());
+        List<AnnualKeyWorkDetailDTO> addAnnualKeyWorkS = annualKeyWorkDetailDTOSAfter.stream().filter(gapAnalysisOpportunityDTO ->
+                !annualKeyWorkDetailDTOSBefore.stream().map(AnnualKeyWorkDetailDTO::getAnnualKeyWorkDetailId).collect(Collectors.toList())
+                        .contains(gapAnalysisOpportunityDTO.getAnnualKeyWorkDetailId())).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(editAnnualKeyWorkS)) {
+            for (AnnualKeyWorkDetailDTO editAnnualKeyWork : editAnnualKeyWorkS) {
+                for (AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO : annualKeyWorkDetailDTOSBefore) {
+                    if (editAnnualKeyWork.getTaskNumber().equals(annualKeyWorkDetailDTO.getTaskNumber())) {
+                        editAnnualKeyWork.setAnnualKeyWorkDetailId(annualKeyWorkDetailDTO.getAnnualKeyWorkDetailId());
+                        break;
+                    }
+                }
+            }
+            annualKeyWorkDetailService.updateAnnualKeyWorkDetails(editAnnualKeyWorkS);
+        }
+        if (StringUtils.isNotEmpty(delAnnualKeyWorkS)) {
+            List<Long> delAnnualKeyWorkDetailIds = editAnnualKeyWorkS.stream().map(AnnualKeyWorkDetailDTO::getAnnualKeyWorkDetailId).collect(Collectors.toList());
+            annualKeyWorkDetailService.logicDeleteAnnualKeyWorkDetailByAnnualKeyWorkDetailIds(delAnnualKeyWorkDetailIds);
+        }
+        if (StringUtils.isNotEmpty(addAnnualKeyWorkS)) {
+            annualKeyWorkDetailService.insertAnnualKeyWorkDetails(addAnnualKeyWorkS);
+        }
     }
 
     /**
@@ -492,7 +563,18 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
     @Override
     @Transactional
     public int logicDeleteAnnualKeyWorkByAnnualKeyWorkIds(List<Long> annualKeyWorkIds) {
-        return annualKeyWorkMapper.logicDeleteAnnualKeyWorkByAnnualKeyWorkIds(annualKeyWorkIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        if (StringUtils.isEmpty(annualKeyWorkIds))
+            throw new ServiceException("请选择年度重点工作");
+        List<AnnualKeyWorkDTO> annualKeyWorkDTOS = annualKeyWorkMapper.selectAnnualKeyWorkByAnnualKeyWorkIds(annualKeyWorkIds);
+        if (annualKeyWorkDTOS.size() != annualKeyWorkIds.size())
+            throw new ServiceException("部分年度重点工作已不存在");
+        annualKeyWorkMapper.logicDeleteAnnualKeyWorkByAnnualKeyWorkIds(annualKeyWorkIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        List<AnnualKeyWorkDetailDTO> annualKeyWorkDetailDTOS = annualKeyWorkDetailService.selectAnnualKeyWorkDetailByAnnualKeyWorkIds(annualKeyWorkIds);
+        if (StringUtils.isEmpty(annualKeyWorkDetailDTOS))
+            return 1;
+        List<Long> annualKeyWorkDetailIds = annualKeyWorkDetailDTOS.stream().map(AnnualKeyWorkDetailDTO::getAnnualKeyWorkDetailId).collect(Collectors.toList());
+        annualKeyWorkDetailService.logicDeleteAnnualKeyWorkDetailByAnnualKeyWorkDetailIds(annualKeyWorkDetailIds);
+        return 1;
     }
 
     /**
@@ -515,11 +597,21 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
     @Override
     @Transactional
     public int logicDeleteAnnualKeyWorkByAnnualKeyWorkId(AnnualKeyWorkDTO annualKeyWorkDTO) {
+        Long annualKeyWorkId = annualKeyWorkDTO.getAnnualKeyWorkId();
+        AnnualKeyWorkDTO annualKeyWorkById = annualKeyWorkMapper.selectAnnualKeyWorkByAnnualKeyWorkId(annualKeyWorkId);
+        if (StringUtils.isNull(annualKeyWorkById))
+            throw new ServiceException("删除年度重点工作表已不存在");
         AnnualKeyWork annualKeyWork = new AnnualKeyWork();
-        annualKeyWork.setAnnualKeyWorkId(annualKeyWorkDTO.getAnnualKeyWorkId());
+        annualKeyWork.setAnnualKeyWorkId(annualKeyWorkId);
         annualKeyWork.setUpdateTime(DateUtils.getNowDate());
         annualKeyWork.setUpdateBy(SecurityUtils.getUserId());
-        return annualKeyWorkMapper.logicDeleteAnnualKeyWorkByAnnualKeyWorkId(annualKeyWork);
+        annualKeyWorkMapper.logicDeleteAnnualKeyWorkByAnnualKeyWorkId(annualKeyWork);
+        List<AnnualKeyWorkDetailDTO> annualKeyWorkDetailDTOS = annualKeyWorkDetailService.selectAnnualKeyWorkDetailByAnnualKeyWorkId(annualKeyWorkId);
+        if (StringUtils.isEmpty(annualKeyWorkDetailDTOS))
+            return 1;
+        List<Long> annualKeyWorkDetailIds = annualKeyWorkDetailDTOS.stream().map(AnnualKeyWorkDetailDTO::getAnnualKeyWorkDetailId).collect(Collectors.toList());
+        annualKeyWorkDetailService.logicDeleteAnnualKeyWorkDetailByAnnualKeyWorkDetailIds(annualKeyWorkDetailIds);
+        return 1;
     }
 
     /**

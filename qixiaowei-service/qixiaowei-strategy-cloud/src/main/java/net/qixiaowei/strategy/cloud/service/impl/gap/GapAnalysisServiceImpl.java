@@ -156,6 +156,14 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                         indicatorName = indicator.getIndicatorName();
                         indicatorId = indicator.getIndicatorId();
                     }
+                    BigDecimal targetValue = gapAnalysisOperateDTO.getTargetValue();
+                    BigDecimal actualValue = gapAnalysisOperateDTO.getActualValue();
+                    BigDecimal completionRate;
+                    if (StringUtils.isNull(targetValue))
+                        completionRate = BigDecimal.ZERO;
+                    else
+                        completionRate = Optional.ofNullable(actualValue).orElse(BigDecimal.ZERO).multiply(new BigDecimal(100)).divide(targetValue, 2, RoundingMode.HALF_UP);
+                    gapAnalysisOperateDTO.setCompletionRate(completionRate);
                     Map<String, Object> operateMap = new HashMap<>();
                     operateMap.put("operateYear", operateYear);
                     gapAnalysisOperateDTO.setOperateMap(operateMap);
@@ -623,6 +631,14 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                     !gapAnalysisOpportunityBefore.stream().map(GapAnalysisOpportunityDTO::getGapAnalysisOpportunityId).collect(Collectors.toList())
                             .contains(gapAnalysisOpportunityDTO.getGapAnalysisOpportunityId())).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(editOpportunityS)) {
+                for (GapAnalysisOpportunityDTO editOpportunity : editOpportunityS) {
+                    for (GapAnalysisOpportunityDTO gapAnalysisOpportunityDTO : gapAnalysisOpportunityBefore) {
+                        if (editOpportunity.getSort().equals(gapAnalysisOpportunityDTO.getSort())) {
+                            editOpportunity.setGapAnalysisOpportunityId(gapAnalysisOpportunityDTO.getGapAnalysisOpportunityId());
+                            break;
+                        }
+                    }
+                }
                 gapAnalysisOpportunityService.updateGapAnalysisOpportunitys(editOpportunityS);
             }
             if (StringUtils.isNotEmpty(delOpportunityS)) {
@@ -655,6 +671,14 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                     !gapAnalysisPerformanceDTOBefore.stream().map(GapAnalysisPerformanceDTO::getGapAnalysisPerformanceId).collect(Collectors.toList())
                             .contains(gapAnalysisPerformanceDTO.getGapAnalysisPerformanceId())).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(editPerformanceS)) {
+                for (GapAnalysisPerformanceDTO editPerformance : editPerformanceS) {
+                    for (GapAnalysisPerformanceDTO analysisPerformanceDTO : gapAnalysisPerformanceDTOBefore) {
+                        if (editPerformance.getSort().equals(analysisPerformanceDTO.getSort())) {
+                            editPerformance.setGapAnalysisPerformanceId(analysisPerformanceDTO.getGapAnalysisPerformanceId());
+                            break;
+                        }
+                    }
+                }
                 gapAnalysisPerformanceService.updateGapAnalysisPerformances(editPerformanceS);
             }
             if (StringUtils.isNotEmpty(delPerformanceS)) {
@@ -734,6 +758,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                         && editAnalysisOperateDTOSAfter.stream().map(GapAnalysisOperateDTO::getOperateYear).collect(Collectors.toList()).contains(i)) {
                     GapAnalysisOperateDTO analysisOperateDTOAfter = editAnalysisOperateDTOSAfter.stream().filter(e -> integers.contains(e.getOperateYear())).collect(Collectors.toList()).get(0);
                     GapAnalysisOperateDTO analysisOperateDTOBefore = editAnalysisOperateDTOSBefore.stream().filter(e -> integers.contains(e.getOperateYear())).collect(Collectors.toList()).get(0);
+                    analysisOperateDTOAfter.setGapAnalysisOperateId(analysisOperateDTOBefore.getGapAnalysisOperateId());
                     editAnalysisOperateDTOS.add(analysisOperateDTOAfter);
                 } else if (editAnalysisOperateDTOSBefore.stream().map(GapAnalysisOperateDTO::getOperateYear).collect(Collectors.toList()).contains(i)
                         && !editAnalysisOperateDTOSAfter.stream().map(GapAnalysisOperateDTO::getOperateYear).collect(Collectors.toList()).contains(i)) {
