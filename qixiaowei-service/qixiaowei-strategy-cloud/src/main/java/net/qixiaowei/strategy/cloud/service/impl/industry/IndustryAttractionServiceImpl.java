@@ -10,8 +10,10 @@ import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttraction;
 import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttractionElement;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionElementMapper;
 import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionMapper;
+import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiIndustryAttractionMapper;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,9 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     private IndustryAttractionMapper industryAttractionMapper;
     @Autowired
     private IndustryAttractionElementMapper industryAttractionElementMapper;
+    @Autowired
+    private MiIndustryAttractionMapper miIndustryAttractionMapper;
+
     /**
      * 行业吸引力配置主表
      */
@@ -337,6 +342,11 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
                 throw new ServiceException("逻辑批量删除行业吸引力要素失败");
             }
         }
+
+        List<MiIndustryAttractionDTO> miIndustryAttractionDTOS = miIndustryAttractionMapper.selectMiIndustryAttractionByIndustryAttractionIds(industryAttractionIds);
+        if (StringUtils.isNotEmpty(miIndustryAttractionDTOS)){
+            throw new ServiceException("数据被引用！");
+        }
         return i;
     }
 
@@ -438,6 +448,10 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
             } catch (Exception e) {
                 throw new ServiceException("逻辑批量删除行业吸引力要素失败");
             }
+        }
+        List<MiIndustryAttractionDTO> miIndustryAttractionDTOS = miIndustryAttractionMapper.selectMiIndustryAttractionByIndustryAttractionId(industryAttractionDTO.getIndustryAttractionId());
+        if (StringUtils.isNotEmpty(miIndustryAttractionDTOS)){
+            throw new ServiceException("数据被引用！");
         }
         return i;
     }

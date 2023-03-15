@@ -22,6 +22,21 @@ public interface MiIndustryAttractionMapper{
     MiIndustryAttractionDTO selectMiIndustryAttractionByMiIndustryAttractionId(@Param("miIndustryAttractionId")Long miIndustryAttractionId);
 
     /**
+     * 根据行业吸引力表要素表主键查询市场洞察行业吸引力表
+     *
+     * @param industryAttractionId 行业吸引力表要素表主键
+     * @return 市场洞察行业吸引力表
+     */
+    List<MiIndustryAttractionDTO> selectMiIndustryAttractionByIndustryAttractionId(@Param("industryAttractionId")Long industryAttractionId);
+
+    /**
+     * 根据行业吸引力表要素表主键集合查询市场洞察行业吸引力表
+     *
+     * @param industryAttractionIds 行业吸引力表要素表主键集合
+     * @return 市场洞察行业吸引力表
+     */
+    List<MiIndustryAttractionDTO> selectMiIndustryAttractionByIndustryAttractionIds(@Param("industryAttractionIds")List<Long> industryAttractionIds);
+    /**
      * 根据市场洞察行业主表主键查询市场洞察行业吸引力表
      *
      * @param marketInsightIndustryId 市场洞察行业主表主键
