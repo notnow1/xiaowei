@@ -56,7 +56,7 @@
         mis.update_by,
         mis.update_time
         from
-        mis.market_insight_self mis
+        market_insight_self mis
         left join plan_business_unit pbu
         on pbu.plan_business_unit_id=mis.plan_business_unit_id
         and pbu.delete_flag =0
@@ -318,7 +318,7 @@
         </if>
 
         <if test="marketInsightSelf.planBusinessUnitName != null">
-            AND pbu.business_unit_name LIKE concat('%', #{marketInsightOpponent.planBusinessUnitName}, '%')
+            AND pbu.business_unit_name LIKE concat('%', #{marketInsightSelf.planBusinessUnitName}, '%')
         </if>
         <if test="marketInsightSelf.marketInsightSelfId != null">
             and mis.market_insight_self_id=#{marketInsightSelf.marketInsightSelfId}
