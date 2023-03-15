@@ -92,7 +92,7 @@
             AND
             <foreach item="item"
                      collection="product.params.productCodeLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 p.product_code  LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -100,7 +100,7 @@
             AND
             <foreach item="item"
                      collection="product.params.productCodeNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 p.product_code  NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -127,7 +127,7 @@
             AND
             <foreach item="item"
                      collection="product.params.productNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 p.product_name  LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -135,7 +135,7 @@
             AND
             <foreach item="item"
                      collection="product.params.productNameNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 p.product_name  NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -216,7 +216,7 @@
             AND
             <foreach item="item"
                      collection="product.params.productUnitNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 pu.product_unit_name  LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -224,7 +224,7 @@
             AND
             <foreach item="item"
                      collection="product.params.productUnitNameNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 pu.product_unit_name  NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>

@@ -92,7 +92,7 @@
             AND
             <foreach item="item"
                      collection="department.params.departmentCodeLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 dm.department_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -100,7 +100,7 @@
             AND
             <foreach item="item"
                      collection="department.params.departmentCodeNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 dm.department_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -127,7 +127,7 @@
             AND
             <foreach item="item"
                      collection="department.params.departmentNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 dm.department_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -135,7 +135,7 @@
             AND
             <foreach item="item"
                      collection="department.params.departmentNameNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 dm.department_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -345,7 +345,7 @@
             AND
             <foreach item="item"
                      collection="department.params.budgetDepartmentNamesLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 dm.department_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -353,7 +353,7 @@
             AND
             <foreach item="item"
                      collection="department.params.budgetDepartmentNamesNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 dm.department_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>

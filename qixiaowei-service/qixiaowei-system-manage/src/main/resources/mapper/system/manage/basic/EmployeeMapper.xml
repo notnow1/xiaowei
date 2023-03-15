@@ -223,7 +223,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.employeeCodeLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 e.employee_code  LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -231,7 +231,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.employeeCodeNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 e.employee_code  NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -258,7 +258,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.employeeNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 e.employee_name  LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -266,7 +266,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.employeeNameNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 e.employee_name  NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -330,7 +330,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.identityCardLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 e.identity_card  LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -338,7 +338,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.identityCardNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 e.identity_card  NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -571,7 +571,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.postRankNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 case when ors.rank_prefix_code is null then p.post_rank
                 when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank) end LIKE concat('%', #{item}, '%')
             </foreach>
@@ -580,7 +580,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.postRankNameNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 case when ors.rank_prefix_code is null then p.post_rank
                 when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank) end NOT LIKE concat('%', #{item}, '%')
             </foreach>
@@ -611,7 +611,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.employeeRankNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 case when ors.rank_prefix_code is null then e.employee_rank
                 when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end  LIKE concat('%', #{item}, '%')
             </foreach>
@@ -620,7 +620,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.employeeRankNameNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 case when ors.rank_prefix_code is null then e.employee_rank
                 when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end  NOT LIKE concat('%', #{item}, '%')
             </foreach>
@@ -683,7 +683,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.employeeMobileLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 e.employee_mobile  LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -691,7 +691,7 @@
             AND
             <foreach item="item"
                      collection="employee.params.employeeMobileNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 e.employee_mobile  NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -726,7 +726,7 @@
             AND (
             <foreach item="item"
                      collection="employee.params.employeeEmailNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 e.employee_email NOT LIKE concat('%', #{item}, '%')
             </foreach>
             OR e.employee_email = ''
@@ -769,7 +769,7 @@
             AND (
             <foreach item="item"
                      collection="employee.params.wechatCodeNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 ei.wechat_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
             OR ei.wechat_code = ''
