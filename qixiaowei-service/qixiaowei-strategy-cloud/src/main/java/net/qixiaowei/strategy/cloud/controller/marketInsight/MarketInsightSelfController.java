@@ -10,6 +10,7 @@ import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightSelfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -107,9 +108,19 @@ public class MarketInsightSelfController extends BaseController {
     /**
      * 逻辑批量删除市场洞察自身表
      */
-    @RequiresPermissions("strategy:cloud:marketInsightSelf:removes")
+    @RequiresPermissions("strategy:cloud:marketInsightSelf:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> marketInsightSelfIds) {
         return toAjax(marketInsightSelfService.logicDeleteMarketInsightSelfByMarketInsightSelfIds(marketInsightSelfIds));
     }
+    /**
+     * 根据规划年度和业务单元查询看对手详情表
+     */
+    @RequiresPermissions("strategy:cloud:marketInsightSelf:opponentNameList")
+    @GetMapping("/opponentNameList")
+    public AjaxResult opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO) {
+        List<MiOpponentChoiceDTO> miOpponentChoiceDTOList = marketInsightSelfService.opponentNameList(marketInsightSelfDTO);
+        return AjaxResult.success(miOpponentChoiceDTOList);
+    }
+
 }

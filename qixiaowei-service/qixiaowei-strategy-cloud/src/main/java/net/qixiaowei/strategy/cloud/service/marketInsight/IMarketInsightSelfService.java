@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.service.marketInsight;
 
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO;
 
 
 import java.util.List;
@@ -84,4 +85,11 @@ public interface IMarketInsightSelfService{
     * @return 结果
     */
     int deleteMarketInsightSelfByMarketInsightSelfId(Long marketInsightSelfId);
+
+    /**
+     * 根据规划年度和业务单元查询看对手详情表表
+     * @param marketInsightSelfDTO
+     * @return
+     */
+    List<MiOpponentChoiceDTO> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO);
 }

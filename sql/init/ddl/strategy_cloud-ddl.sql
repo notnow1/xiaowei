@@ -195,7 +195,7 @@ CREATE TABLE gap_analysis_opportunity(
 CREATE TABLE gap_analysis_operate(
     gap_analysis_operate_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     gap_analysis_id BIGINT UNSIGNED NOT NULL   COMMENT '差距分析ID' ,
-    indicator_id BIGINT UNSIGNED NOT NULL   COMMENT '指标ID' ,
+    indicator_id BIGINT UNSIGNED    COMMENT '指标ID' ,
     operate_year SMALLINT UNSIGNED    COMMENT '经营年度' ,
     target_value DECIMAL(14,2)    COMMENT '目标值' ,
     actual_value DECIMAL(14,2)    COMMENT '实际值' ,

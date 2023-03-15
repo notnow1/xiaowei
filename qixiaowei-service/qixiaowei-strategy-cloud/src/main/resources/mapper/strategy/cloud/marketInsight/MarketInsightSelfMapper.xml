@@ -102,7 +102,7 @@
             AND
             <foreach item="item"
                      collection="marketInsightSelf.params.planBusinessUnitNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 pbu.business_unit_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -110,7 +110,7 @@
             AND
             <foreach item="item"
                      collection="marketInsightSelf.params.planBusinessUnitNameNotLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -360,6 +360,56 @@
             and mis.update_time=#{marketInsightSelf.updateTime}
         </if>
         order by  mis.create_time desc
+    </select>
+<!--    根据规划年度和业务单元查询看对手详情表表-->
+    <select id="opponentNameList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO">
+        select
+            moc.mi_opponent_choice_id,
+            moc.market_insight_opponent_id,
+            moc.industry_id,
+            moc.opponent_name,
+            moc.comparison_item,
+            moc.ability_assess_score,
+            moc.analysis_opponent_core_ability,
+            moc.own_advantage,
+            moc.own_disadvantage,
+            moc.competitor_category,
+            moc.competition_strategy_type,
+            moc.operate_history_period,
+            moc.sort,
+            moc.delete_flag,
+            moc.create_by,
+            moc.create_time,
+            moc.update_by,
+            moc.update_time,
+            moc.tenant_id
+        from
+            mi_opponent_choice moc
+                inner join market_insight_opponent mio
+                           on mio.market_insight_opponent_id = moc.market_insight_opponent_id
+                               and mio.delete_flag =0
+        where moc.delete_flag =0
+        <if test="marketInsightSelf.planYear != null">
+            and mio.plan_year=#{marketInsightSelf.planYear}
+        </if>
+        <if test="marketInsightSelf.planBusinessUnitId != null">
+            and mio.plan_business_unit_id=#{marketInsightSelf.planBusinessUnitId}
+        </if>
+        <if test="marketInsightSelf.areaId != null">
+            and mio.area_id=#{marketInsightSelf.areaId}
+        </if>
+        <if test="marketInsightSelf.departmentId != null">
+            and mio.department_id=#{marketInsightSelf.departmentId}
+        </if>
+        <if test="marketInsightSelf.productId != null">
+            and mio.product_id=#{marketInsightSelf.productId}
+        </if>
+        <if test="marketInsightSelf.industryId != null">
+            and mio.industry_id=#{marketInsightSelf.industryId}
+        </if>
+        group by moc.opponent_name,  moc.comparison_item
+        order by moc.sort
     </select>
     <!--新增市场洞察自身表-->
     <insert id="insertMarketInsightSelf" useGeneratedKeys="true" keyProperty="marketInsightSelfId">

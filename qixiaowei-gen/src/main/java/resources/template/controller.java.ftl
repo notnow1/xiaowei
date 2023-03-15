@@ -33,6 +33,9 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import net.qixiaowei.integration.security.utils.UserUtils;
 
 
 
@@ -70,6 +73,14 @@ public class ${table.controllerName} extends BaseController
     public TableDataInfo pageList(${entity}DTO ${entity?uncap_first}DTO){
     startPage();
     List<${entity}DTO> list = ${entity?uncap_first}Service.select${entity}List(${entity?uncap_first}DTO);
+    if (StringUtils.isNotEmpty(list)) {
+    Set<Long> userIds = list.stream().map(${entity}DTO::getCreateBy).collect(Collectors.toSet());
+        Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+        list.forEach(entity -> {
+        Long userId = entity.getCreateBy();
+        entity.setCreateByName(employeeNameMap.get(userId));
+        });
+        }
     return getDataTable(list);
     }
 
@@ -118,7 +129,7 @@ public class ${table.controllerName} extends BaseController
     /**
     * 逻辑批量删除${table.comment!}
     */
-    @RequiresPermissions("${packageClass}:${entity?uncap_first}:removes")
+    @RequiresPermissions("${packageClass}:${entity?uncap_first}:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>>  <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s)
     {

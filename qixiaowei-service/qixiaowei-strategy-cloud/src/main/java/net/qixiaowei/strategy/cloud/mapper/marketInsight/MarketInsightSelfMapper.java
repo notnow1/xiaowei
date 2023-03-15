@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.mapper.marketInsight;
 import java.util.List;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MarketInsightSelf;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 
@@ -101,4 +102,11 @@ public interface MarketInsightSelfMapper{
     * @return 结果
     */
     int batchMarketInsightSelf(@Param("marketInsightSelfs")List<MarketInsightSelf> marketInsightSelfs);
+
+    /**
+     * 根据规划年度和业务单元查询看对手详情表表
+     * @param marketInsightSelf
+     * @return
+     */
+    List<MiOpponentChoiceDTO> opponentNameList(MarketInsightSelf marketInsightSelf);
 }
