@@ -3,32 +3,55 @@ package net.qixiaowei.strategy.cloud.service.impl.dashboard;
 
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MarketInsightIndustry;
+import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignAxisConfigDTO;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
+import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
 import net.qixiaowei.strategy.cloud.api.dto.dashboard.StrategyDashboardDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO;
+import net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.MarketInsightIndustryMapper;
 import net.qixiaowei.strategy.cloud.mapper.strategyIntent.StrategyIntentMapper;
+import net.qixiaowei.strategy.cloud.service.businessDesign.IBusinessDesignAxisConfigService;
+import net.qixiaowei.strategy.cloud.service.businessDesign.IBusinessDesignParamService;
 import net.qixiaowei.strategy.cloud.service.businessDesign.IBusinessDesignService;
 import net.qixiaowei.strategy.cloud.service.dashboard.IStrategyDashboardService;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightIndustryService;
+import net.qixiaowei.strategy.cloud.service.plan.IPlanBusinessUnitService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class StrategyDashboardServiceImpl implements IStrategyDashboardService {
 
     @Autowired
     private StrategyIntentMapper strategyIntentMapper;
+
     @Autowired
     private MarketInsightIndustryMapper marketInsightIndustryMapper;
+
     @Autowired
     private IMarketInsightIndustryService marketInsightIndustryService;
+
     @Autowired
     private IBusinessDesignService businessDesignService;
+
+    @Autowired
+    private IBusinessDesignParamService businessDesignParamService;
+
+    @Autowired
+    private IBusinessDesignAxisConfigService businessDesignAxisConfigService;
+
+    @Autowired
+    private IPlanBusinessUnitService planBusinessUnitService;
 
     /**
      * 战略意图仪表盘查询(无数据返回空)第一次进来返回最近一次数据
@@ -44,8 +67,8 @@ public class StrategyDashboardServiceImpl implements IStrategyDashboardService {
     /**
      * 看行业仪表盘查询(无数据返回空)第一次进来返回最近一次数据
      *
-     * @param strategyDashboardDTO
-     * @return
+     * @param strategyDashboardDTO 业务设计DTO
+     * @return 结果
      */
     @Override
     public MarketInsightIndustryDTO dashboardMiIndustryDetailList(StrategyDashboardDTO strategyDashboardDTO) {
@@ -77,18 +100,99 @@ public class StrategyDashboardServiceImpl implements IStrategyDashboardService {
      */
     @Override
     public BusinessDesignDTO dashboardTargetLeaderboardList(StrategyDashboardDTO strategyDashboardDTO) {
-        Long businessDesignId = strategyDashboardDTO.getBusinessDesignId();
+        Long planBusinessUnitId = strategyDashboardDTO.getPlanBusinessUnitId();
         BusinessDesignDTO businessDesignDTO;
-        if (StringUtils.isNull(businessDesignId)) {// 查询最近一次
+        if (StringUtils.isNull(planBusinessUnitId)) {// 查询最近一次
             businessDesignDTO = businessDesignService.selectBusinessDesignRecently();
             if (StringUtils.isNull(businessDesignDTO)) {
-                return null;
+                businessDesignDTO = new BusinessDesignDTO();
+                businessDesignDTO.setBusinessDesignParamDTOS(new ArrayList<>());
+                businessDesignDTO.setBusinessDesignAxisConfigMap(new ArrayList<>());
+                return businessDesignDTO;
             }
         } else {
-            businessDesignDTO = businessDesignService.selectBusinessDesignByBusinessDesignId(businessDesignId);
+            PlanBusinessUnitDTO planBusinessUnitDTO = planBusinessUnitService.selectPlanBusinessUnitByPlanBusinessUnitId(planBusinessUnitId);
+            String businessUnitDecompose = planBusinessUnitDTO.getBusinessUnitDecompose();
+            if (businessUnitDecompose.equals("compare")) {
+                BusinessDesignDTO businessDesignDTOParams = new BusinessDesignDTO();
+                businessDesignDTOParams.setPlanBusinessUnitId(planBusinessUnitId);
+                businessDesignDTO = businessDesignService.selectBusinessDesignList(businessDesignDTOParams).get(0);
+            } else {
+                BusinessDesignDTO businessDesignDTOParams = new BusinessDesignDTO();
+                businessDesignDTOParams.setPlanBusinessUnitId(planBusinessUnitId);
+                businessDesignDTOParams.setAreaId(strategyDashboardDTO.getAreaId());
+                businessDesignDTOParams.setProductId(strategyDashboardDTO.getProductId());
+                businessDesignDTOParams.setIndustryId(strategyDashboardDTO.getIndustryId());
+                businessDesignDTOParams.setDepartmentId(strategyDashboardDTO.getDepartmentId());
+                List<BusinessDesignDTO> businessDesignDTOS = businessDesignService.selectBusinessDesignList(businessDesignDTOParams);
+                if (StringUtils.isEmpty(businessDesignDTOS)) {
+                    businessDesignDTO = new BusinessDesignDTO();
+                    businessDesignDTO.setBusinessDesignParamDTOS(new ArrayList<>());
+                    businessDesignDTO.setBusinessDesignAxisConfigMap(new ArrayList<>());
+                    return businessDesignDTO;
+                } else {
+                    businessDesignDTO = businessDesignDTOS.get(0);
+                }
+            }
         }
-        
 
-        return null;
+        Long businessDesignId = businessDesignDTO.getBusinessDesignId();
+        List<BusinessDesignParamDTO> businessDesignParamDTOS = businessDesignParamService.selectBusinessDesignParamByBusinessDesignId(businessDesignId);
+        // 综合毛利率综合订单额计算
+        if (StringUtils.isNotEmpty(businessDesignParamDTOS)) {
+            for (BusinessDesignParamDTO businessDesignParamDTO : businessDesignParamDTOS) {
+                BigDecimal synthesizeGrossMargin = businessDesignParamDTO.getHistoryAverageRate().multiply(businessDesignParamDTO.getHistoryWeight())
+                        .add(businessDesignParamDTO.getForecastRate().multiply(businessDesignParamDTO.getForecastWeight()));
+                businessDesignParamDTO.setSynthesizeGrossMargin(synthesizeGrossMargin);
+                BigDecimal synthesizeOrderAmount = businessDesignParamDTO.getHistoryOrderAmount().multiply(businessDesignParamDTO.getHistoryOrderWeight())
+                        .add(businessDesignParamDTO.getForecastOrderAmount().multiply(businessDesignParamDTO.getForecastOrderWeight()));
+                businessDesignParamDTO.setSynthesizeOrderAmount(synthesizeOrderAmount);
+                Integer paramDimension = businessDesignParamDTO.getParamDimension();
+                if (StringUtils.isNotNull(paramDimension)) {
+                    switch (paramDimension) {
+                        case 1:
+                            businessDesignParamDTO.setParamDimensionName("产品");
+                            break;
+                        case 2:
+                            businessDesignParamDTO.setParamDimensionName("客户");
+                            break;
+                        case 3:
+                            businessDesignParamDTO.setParamDimensionName("区域");
+                            break;
+                    }
+                }
+            }
+            businessDesignDTO.setBusinessDesignParamDTOS(businessDesignParamDTOS);
+        } else {
+            businessDesignDTO.setBusinessDesignParamDTOS(new ArrayList<>());
+        }
+
+        // 业务设计轴配置表
+        List<BusinessDesignAxisConfigDTO> businessDesignAxisConfigDTOS = businessDesignAxisConfigService.selectBusinessDesignAxisConfigByBusinessDesignId(businessDesignId);
+        if (StringUtils.isNotEmpty(businessDesignAxisConfigDTOS)) {
+            Map<Integer, Map<Integer, List<BusinessDesignAxisConfigDTO>>> groupBusinessDesignAxisConfigDTOS = businessDesignAxisConfigDTOS.stream().
+                    collect(Collectors.groupingBy(BusinessDesignAxisConfigDTO::getParamDimension, Collectors.groupingBy(BusinessDesignAxisConfigDTO::getCoordinateAxis)));
+            List<Map<String, Object>> businessDesignAxisConfigMap = new ArrayList<>();
+            for (Integer groupDesign : groupBusinessDesignAxisConfigDTOS.keySet()) {
+                Map<String, Object> businessDesignAxisMap = new HashMap<>();
+                businessDesignAxisMap.put("paramDimension", groupDesign);
+                Map<Integer, List<BusinessDesignAxisConfigDTO>> groupLargeAxisConfigDTOS = groupBusinessDesignAxisConfigDTOS.get(groupDesign);
+                for (Integer groupLargeDesign : groupLargeAxisConfigDTOS.keySet()) {
+                    BusinessDesignAxisConfigDTO businessDesignAxisConfigDTO = groupLargeAxisConfigDTOS.get(groupLargeDesign).get(0);
+                    if (groupLargeDesign == 1) {
+                        businessDesignAxisMap.put("upperValueX", businessDesignAxisConfigDTO.getUpperValue());
+                        businessDesignAxisMap.put("lowerValueX", businessDesignAxisConfigDTO.getLowerValue());
+                    } else {
+                        businessDesignAxisMap.put("upperValueY", businessDesignAxisConfigDTO.getUpperValue());
+                        businessDesignAxisMap.put("lowerValueY", businessDesignAxisConfigDTO.getLowerValue());
+                    }
+                }
+                businessDesignAxisConfigMap.add(businessDesignAxisMap);
+            }
+            businessDesignDTO.setBusinessDesignAxisConfigMap(businessDesignAxisConfigMap);
+        } else {
+            businessDesignDTO.setBusinessDesignAxisConfigMap(new ArrayList<>());
+        }
+        return businessDesignDTO;
     }
 }

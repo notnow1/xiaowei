@@ -224,6 +224,11 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         if (StringUtils.isEmpty(businessDesignDTOS)) {
             return businessDesignDTOS;
         }
+        // map label value
+        for (BusinessDesignDTO designDTO : businessDesignDTOS) {
+            String businessUnitDecompose = designDTO.getBusinessUnitDecompose();
+            designDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
+        }
         // 赋值员工
         Set<Long> createBys = businessDesignDTOS.stream().map(BusinessDesignDTO::getCreateBy).collect(Collectors.toSet());
         R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);

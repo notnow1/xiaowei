@@ -12,6 +12,7 @@ import net.qixiaowei.strategy.cloud.service.businessDesign.IBusinessDesignServic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,16 @@ public class BusinessDesignController extends BaseController {
     @GetMapping("/list")
     public AjaxResult list(BusinessDesignDTO businessDesignDTO) {
         List<BusinessDesignDTO> list = businessDesignService.selectBusinessDesignList(businessDesignDTO);
-        return AjaxResult.success(list.stream().map(BusinessDesignDTO::getBusinessUnitName).distinct().collect(Collectors.toList()));
+        List<BusinessDesignDTO> businessDesignDTOS = new ArrayList<>();
+        List<Long> businessDesignIds = new ArrayList<>();
+        for (BusinessDesignDTO designDTO : list) {
+            Long planBusinessUnitId = designDTO.getPlanBusinessUnitId();
+            if (!businessDesignIds.contains(planBusinessUnitId)) {
+                businessDesignIds.add(planBusinessUnitId);
+                businessDesignDTOS.add(designDTO);
+            }
+        }
+        return AjaxResult.success(businessDesignDTOS);
     }
 
 
