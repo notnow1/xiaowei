@@ -126,7 +126,7 @@ public class MarketInsightIndustryController extends BaseController {
     @GetMapping("/prefabricateAdd")
     public AjaxResult list() {
         IndustryAttractionDTO industryAttractionDTO = new IndustryAttractionDTO();
-        List<IndustryAttractionDTO> list = industryAttractionService.selectIndustryAttractionList(industryAttractionDTO);
+        List<IndustryAttractionDTO> list = marketInsightIndustryService.selectPreIndustryAttractionList(industryAttractionDTO);
         return AjaxResult.success(list);
     }
 }

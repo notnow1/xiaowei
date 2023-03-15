@@ -1,5 +1,6 @@
 package net.qixiaowei.strategy.cloud.service.marketInsight;
 
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO;
 
 
@@ -85,4 +86,11 @@ public interface IMarketInsightIndustryService{
     * @return 结果
     */
     int deleteMarketInsightIndustryByMarketInsightIndustryId(Long marketInsightIndustryId);
+
+    /**
+     * 预制表头查询行业吸引力表列表
+     * @param industryAttractionDTO
+     * @return
+     */
+    List<IndustryAttractionDTO> selectPreIndustryAttractionList(IndustryAttractionDTO industryAttractionDTO);
 }
