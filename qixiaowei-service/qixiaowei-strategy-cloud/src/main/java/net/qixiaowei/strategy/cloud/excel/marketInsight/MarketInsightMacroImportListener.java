@@ -229,13 +229,18 @@ public class MarketInsightMacroImportListener extends AnalysisEventListener<Mark
     public static List<List<Object>> dataList(List<MarketInsightMacroExcel> marketInsightMacroExcelList) {
         List<List<Object>> list = new ArrayList<List<Object>>();
         for (MarketInsightMacroExcel marketInsightMacroExcel : marketInsightMacroExcelList) {
+            String planPeriod = marketInsightMacroExcel.getPlanPeriod();
             List<Object> data = new ArrayList<Object>();
             data.add(marketInsightMacroExcel.getVisualAngleName());
             data.add(marketInsightMacroExcel.getCompanyRelatedFactor());
             data.add(marketInsightMacroExcel.getChangeTrend());
             data.add(marketInsightMacroExcel.getInfluenceDescription());
             data.add(marketInsightMacroExcel.getRecommendedPractice());
-            data.add(marketInsightMacroExcel.getPlanPeriod());
+            if (StringUtils.isNotBlank(planPeriod)){
+                data.add(marketInsightMacroExcel.getPlanPeriod()+"年");
+            }else {
+                data.add(marketInsightMacroExcel.getPlanPeriod());
+            }
             data.add(marketInsightMacroExcel.getEstimateOpportunityAmount());
             data.add(marketInsightMacroExcel.getProposeEmployeeName());
             data.add(marketInsightMacroExcel.getProposeEmployeeCode());

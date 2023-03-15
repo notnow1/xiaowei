@@ -798,9 +798,9 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
                 marketInsightMacroExcel.setPlanPeriod(String.valueOf(miMacroDetailDTO.getPlanPeriod()));
                 BigDecimal estimateOpportunityAmount = miMacroDetailDTO.getEstimateOpportunityAmount();
                 if (null != estimateOpportunityAmount){
-                    marketInsightMacroExcel.setEstimateOpportunityAmount(String.valueOf(miMacroDetailDTO.getEstimateOpportunityAmount()));
+                    marketInsightMacroExcel.setEstimateOpportunityAmount(String.valueOf(miMacroDetailDTO.getEstimateOpportunityAmount().setScale(2, BigDecimal.ROUND_HALF_UP)));
                 }else {
-                    marketInsightMacroExcel.setEstimateOpportunityAmount("0");
+                    marketInsightMacroExcel.setEstimateOpportunityAmount("0.00");
                 }
 
                 marketInsightMacroExcelList.add(marketInsightMacroExcel);
