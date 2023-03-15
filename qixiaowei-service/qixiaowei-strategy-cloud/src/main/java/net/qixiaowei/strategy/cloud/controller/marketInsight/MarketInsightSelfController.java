@@ -10,6 +10,7 @@ import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightSelfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -112,4 +113,14 @@ public class MarketInsightSelfController extends BaseController {
     public AjaxResult removes(@RequestBody List<Long> marketInsightSelfIds) {
         return toAjax(marketInsightSelfService.logicDeleteMarketInsightSelfByMarketInsightSelfIds(marketInsightSelfIds));
     }
+    /**
+     * 查询市场洞察自身表列表
+     */
+    @RequiresPermissions("strategy:cloud:marketInsightSelf:opponentNameList")
+    @GetMapping("/opponentNameList")
+    public AjaxResult opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO) {
+        List<MiOpponentChoiceDTO> miOpponentChoiceDTOList = marketInsightSelfService.opponentNameList(marketInsightSelfDTO);
+        return AjaxResult.success(miOpponentChoiceDTOList);
+    }
+
 }

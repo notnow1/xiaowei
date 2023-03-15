@@ -453,6 +453,18 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
     }
 
     /**
+     * 根据规划年度和业务单元查询看对手详情表表
+     * @param marketInsightSelfDTO
+     * @return
+     */
+    @Override
+    public List<MiOpponentChoiceDTO> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO) {
+        MarketInsightSelf marketInsightSelf = new MarketInsightSelf();
+        BeanUtils.copyProperties(marketInsightSelfDTO,marketInsightSelf);
+        return marketInsightSelfMapper.opponentNameList(marketInsightSelf);
+    }
+
+    /**
      * 逻辑删除市场洞察自身表信息
      *
      * @param marketInsightSelfDTO 市场洞察自身表
