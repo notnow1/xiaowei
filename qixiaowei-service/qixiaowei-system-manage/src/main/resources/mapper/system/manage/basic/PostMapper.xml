@@ -87,17 +87,17 @@
         left join official_rank_system ors
         on p.official_rank_system_id = ors .official_rank_system_id
         and ors .delete_flag = 0
-<!--        <if test="post.params.departmentNameEqual != null or post.params.departmentNameNotEqual != null
-            or post.params.departmentNameLike != null or post.params.departmentNameNotLike != null
-            post.params.departmentCodeEqual != null or post.params.departmentCodeNotEqual != null
-            or post.params.departmentCodeLike != null or post.params.departmentCodeNotLike != null">
-            left join department_post dp
-            on dp.post_id = p.post_id
-            and dp .delete_flag = 0
-            left join department d
-            on d.department_id = dp.department_id
-            and d.delete_flag = 0
-        </if>-->
+        <!--        <if test="post.params.departmentNameEqual != null or post.params.departmentNameNotEqual != null
+                    or post.params.departmentNameLike != null or post.params.departmentNameNotLike != null
+                    post.params.departmentCodeEqual != null or post.params.departmentCodeNotEqual != null
+                    or post.params.departmentCodeLike != null or post.params.departmentCodeNotLike != null">
+                    left join department_post dp
+                    on dp.post_id = p.post_id
+                    and dp .delete_flag = 0
+                    left join department d
+                    on d.department_id = dp.department_id
+                    and d.delete_flag = 0
+                </if>-->
         where
         p.delete_flag = 0
         <!-- 岗位编码过滤  -->
@@ -121,17 +121,17 @@
         </if>
         <if test="post.params.postCodeLike != null and post.params.postCodeLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="post.params.postCodeLike"
-                     index="index" open="(" separator="OR" close=")">
-                p.post_code LIKE concat('%', #{item}, '%')
-            </foreach>
+            (          <foreach item="item"
+                                collection="post.params.postCodeLike"
+                                index="index" open="(" separator="OR" close=")">
+            p.post_code LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="post.params.postCodeNotLike != null and post.params.postCodeNotLike.size() > 0">
             AND
             <foreach item="item"
                      collection="post.params.postCodeNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 p.post_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -156,17 +156,17 @@
         </if>
         <if test="post.params.postNameLike != null and post.params.postNameLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="post.params.postNameLike"
-                     index="index" open="(" separator="OR" close=")">
-                p.post_name LIKE concat('%', #{item}, '%')
-            </foreach>
+            (    <foreach item="item"
+                          collection="post.params.postNameLike"
+                          index="index" open="(" separator="OR" close=")">
+            p.post_name LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="post.params.postNameNotLike != null and post.params.postNameNotLike.size() > 0">
             AND
             <foreach item="item"
                      collection="post.params.postNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 p.post_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -213,19 +213,19 @@
         </if>
         <if test="post.params.postRankNameLike != null and post.params.postRankNameLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="post.params.postRankNameLike"
-                     index="index" open="(" separator="OR" close=")">
-                case when ors.rank_prefix_code is null then p.post_rank
-                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end LIKE concat('%',
-                #{item}, '%')
-            </foreach>
+            (  <foreach item="item"
+                        collection="post.params.postRankNameLike"
+                        index="index" open="(" separator="OR" close=")">
+            case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end LIKE concat('%',
+            #{item}, '%')
+        </foreach>)
         </if>
         <if test="post.params.postRankNameNotLike != null and post.params.postRankNameNotLike.size() > 0">
             AND
             <foreach item="item"
                      collection="post.params.postRankNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 case when ors.rank_prefix_code is null then p.post_rank
                 when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end NOT LIKE
                 concat('%', #{item}, '%')
@@ -255,19 +255,19 @@
         </if>
         <if test="post.params.postRankUpperNameLike != null and post.params.postRankUpperNameLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="post.params.postRankUpperNameLike"
-                     index="index" open="(" separator="OR" close=")">
-                case when ors.rank_prefix_code is null then p.post_rank_upper
-                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end LIKE
-                concat('%', #{item}, '%')
-            </foreach>
+            (  <foreach item="item"
+                        collection="post.params.postRankUpperNameLike"
+                        index="index" open="(" separator="OR" close=")">
+            case when ors.rank_prefix_code is null then p.post_rank_upper
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end LIKE
+            concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="post.params.postRankUpperNameNotLike != null and post.params.postRankUpperNameNotLike.size() > 0">
             AND
             <foreach item="item"
                      collection="post.params.postRankUpperNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 case when ors.rank_prefix_code is null then p.post_rank_upper
                 when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end NOT LIKE
                 concat('%', #{item}, '%')
@@ -297,19 +297,19 @@
         </if>
         <if test="post.params.postRankLowerNameLike != null and post.params.postRankLowerNameLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="post.params.postRankLowerNameLike"
-                     index="index" open="(" separator="OR" close=")">
-                case when ors.rank_prefix_code is null then p.post_rank_lower
-                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end LIKE
-                concat('%', #{item}, '%')
-            </foreach>
+            ( <foreach item="item"
+                       collection="post.params.postRankLowerNameLike"
+                       index="index" open="(" separator="OR" close=")">
+            case when ors.rank_prefix_code is null then p.post_rank_lower
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end LIKE
+            concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="post.params.postRankLowerNameNotLike != null and post.params.postRankLowerNameNotLike.size() > 0">
             AND
             <foreach item="item"
                      collection="post.params.postRankLowerNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 case when ors.rank_prefix_code is null then p.post_rank_lower
                 when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end NOT LIKE
                 concat('%', #{item}, '%')
