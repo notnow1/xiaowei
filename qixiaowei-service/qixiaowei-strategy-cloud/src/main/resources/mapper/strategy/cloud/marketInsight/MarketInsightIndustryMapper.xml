@@ -20,8 +20,8 @@
                mii.update_time
         FROM market_insight_industry mii
                  left join plan_business_unit pbu
-                           on pbu.plan_business_unit_id=mii.plan_business_unit_id
-                               and pbu.delete_flag =0
+                           on pbu.plan_business_unit_id = mii.plan_business_unit_id
+                               and pbu.delete_flag = 0
         WHERE mii.market_insight_industry_id = #{marketInsightIndustryId}
           and mii.delete_flag = 0
     </select>
@@ -32,17 +32,18 @@
         SELECT
         market_insight_industry_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
         FROM market_insight_industry
-        WHERE  market_insight_industry_id in
-            <foreach item="item"
-                     collection="marketInsightIndustryIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE market_insight_industry_id in
+        <foreach item="item"
+                 collection="marketInsightIndustryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询市场洞察行业表列表-->
-    <select id="selectMarketInsightIndustryList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO">
+    <select id="selectMarketInsightIndustryList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO">
         select
         mii.market_insight_industry_id,
         mii.plan_year,
@@ -103,11 +104,11 @@
         <!-- 规划业务单元  -->
         <if test="marketInsightIndustry.params.planBusinessUnitNameLike != null and marketInsightIndustry.params.planBusinessUnitNameLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="marketInsightIndustry.params.planBusinessUnitNameLike"
-                     index="index" open="(" separator="OR" close=")">
-                pbu.business_unit_name LIKE concat('%', #{item}, '%')
-            </foreach>
+            (      <foreach item="item"
+                            collection="marketInsightIndustry.params.planBusinessUnitNameLike"
+                            index="index" open="(" separator="OR" close=")">
+            pbu.business_unit_name LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="marketInsightIndustry.params.planBusinessUnitNameNotLike != null and marketInsightIndustry.params.planBusinessUnitNameNotLike.size() > 0">
             AND
@@ -220,7 +221,7 @@
             </if>
             <!-- 创建人等于过滤  -->
             <if test="marketInsightIndustry.params.createBys == null">
-                AND  (mii.create_by ='' or mii.create_by is null)
+                AND (mii.create_by ='' or mii.create_by is null)
             </if>
         </if>
         <!-- 创建人不等于过滤  -->
@@ -232,12 +233,13 @@
                          collection="marketInsightIndustry.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (mii.create_by ='' or mii.create_by is null))
+                </foreach>
+                or (mii.create_by ='' or mii.create_by is null))
             </if>
 
             <!-- 创建人不等于过滤  -->
             <if test="marketInsightIndustry.params.createBys == null">
-                AND  (mii.create_by ='' or mii.create_by is null)
+                AND (mii.create_by ='' or mii.create_by is null)
             </if>
         </if>
         <!-- 创建人包含过滤  -->
@@ -253,7 +255,7 @@
             </if>
             <!-- 创建人包含过滤  -->
             <if test="marketInsightIndustry.params.createBys == null">
-                AND  (mii.create_by ='' or mii.create_by is null)
+                AND (mii.create_by ='' or mii.create_by is null)
             </if>
         </if>
         <!-- 创建人不包含过滤  -->
@@ -265,18 +267,19 @@
                          collection="marketInsightIndustry.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (mii.create_by ='' or mii.create_by is null))
+                </foreach>
+                or (mii.create_by ='' or mii.create_by is null))
             </if>
 
             <!-- 创建人不包含过滤  -->
             <if test="marketInsightIndustry.params.createBys == null">
-                AND  (mii.create_by ='' or mii.create_by is null)
+                AND (mii.create_by ='' or mii.create_by is null)
             </if>
         </if>
 
         <!-- 创建时间过滤  -->
         <if test="marketInsightIndustry.params.createTimeEqual != null and marketInsightIndustry.params.createTimeEqual.size() > 0">
-            AND  date_format(mii.create_time,'%Y/%m/%d') IN
+            AND date_format(mii.create_time,'%Y/%m/%d') IN
             <foreach item="item"
                      collection="marketInsightIndustry.params.createTimeEqual"
                      index="index" open="(" separator="," close=")">
@@ -361,83 +364,89 @@
         <if test="marketInsightIndustry.planBusinessUnitName != null">
             AND pbu.business_unit_name LIKE concat('%', #{marketInsightIndustry.planBusinessUnitName}, '%')
         </if>
-        order by  mii.create_time desc
+        order by mii.create_time desc
     </select>
     <!--新增市场洞察行业表-->
     <insert id="insertMarketInsightIndustry" useGeneratedKeys="true" keyProperty="marketInsightIndustryId">
-        INSERT INTO market_insight_industry (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
-        VALUES
-        (#{marketInsightIndustry.planYear},#{marketInsightIndustry.planBusinessUnitId},#{marketInsightIndustry.businessUnitDecompose},#{marketInsightIndustry.areaId},#{marketInsightIndustry.departmentId},#{marketInsightIndustry.productId},#{marketInsightIndustry.industryId},#{marketInsightIndustry.deleteFlag},#{marketInsightIndustry.createBy},#{marketInsightIndustry.createTime},#{marketInsightIndustry.updateBy},#{marketInsightIndustry.updateTime})
+        INSERT INTO market_insight_industry (plan_year, plan_business_unit_id, business_unit_decompose, area_id,
+                                             department_id, product_id, industry_id, delete_flag, create_by,
+                                             create_time, update_by, update_time)
+        VALUES (#{marketInsightIndustry.planYear}, #{marketInsightIndustry.planBusinessUnitId},
+                #{marketInsightIndustry.businessUnitDecompose}, #{marketInsightIndustry.areaId},
+                #{marketInsightIndustry.departmentId}, #{marketInsightIndustry.productId},
+                #{marketInsightIndustry.industryId}, #{marketInsightIndustry.deleteFlag},
+                #{marketInsightIndustry.createBy}, #{marketInsightIndustry.createTime},
+                #{marketInsightIndustry.updateBy}, #{marketInsightIndustry.updateTime})
     </insert>
     <!--修改市场洞察行业表-->
     <update id="updateMarketInsightIndustry">
         UPDATE market_insight_industry
         SET
-                    <if test="marketInsightIndustry.planYear != null">
-                        plan_year=#{marketInsightIndustry.planYear},
-                    </if>
-                    <if test="marketInsightIndustry.planBusinessUnitId != null">
-                        plan_business_unit_id=#{marketInsightIndustry.planBusinessUnitId},
-                    </if>
-                    <if test="marketInsightIndustry.businessUnitDecompose != null and marketInsightIndustry.businessUnitDecompose != ''">
-                        business_unit_decompose=#{marketInsightIndustry.businessUnitDecompose},
-                    </if>
-                    <if test="marketInsightIndustry.areaId != null">
-                        area_id=#{marketInsightIndustry.areaId},
-                    </if>
-                    <if test="marketInsightIndustry.departmentId != null">
-                        department_id=#{marketInsightIndustry.departmentId},
-                    </if>
-                    <if test="marketInsightIndustry.productId != null">
-                        product_id=#{marketInsightIndustry.productId},
-                    </if>
-                    <if test="marketInsightIndustry.industryId != null">
-                        industry_id=#{marketInsightIndustry.industryId},
-                    </if>
-                    <if test="marketInsightIndustry.deleteFlag != null">
-                        delete_flag=#{marketInsightIndustry.deleteFlag},
-                    </if>
-                    <if test="marketInsightIndustry.createBy != null">
-                        create_by=#{marketInsightIndustry.createBy},
-                    </if>
-                    <if test="marketInsightIndustry.createTime != null">
-                        create_time=#{marketInsightIndustry.createTime},
-                    </if>
-                    <if test="marketInsightIndustry.updateBy != null">
-                        update_by=#{marketInsightIndustry.updateBy},
-                    </if>
-                    <if test="marketInsightIndustry.updateTime != null">
-                        update_time=#{marketInsightIndustry.updateTime}
-                    </if>
+        <if test="marketInsightIndustry.planYear != null">
+            plan_year=#{marketInsightIndustry.planYear},
+        </if>
+        <if test="marketInsightIndustry.planBusinessUnitId != null">
+            plan_business_unit_id=#{marketInsightIndustry.planBusinessUnitId},
+        </if>
+        <if test="marketInsightIndustry.businessUnitDecompose != null and marketInsightIndustry.businessUnitDecompose != ''">
+            business_unit_decompose=#{marketInsightIndustry.businessUnitDecompose},
+        </if>
+        <if test="marketInsightIndustry.areaId != null">
+            area_id=#{marketInsightIndustry.areaId},
+        </if>
+        <if test="marketInsightIndustry.departmentId != null">
+            department_id=#{marketInsightIndustry.departmentId},
+        </if>
+        <if test="marketInsightIndustry.productId != null">
+            product_id=#{marketInsightIndustry.productId},
+        </if>
+        <if test="marketInsightIndustry.industryId != null">
+            industry_id=#{marketInsightIndustry.industryId},
+        </if>
+        <if test="marketInsightIndustry.deleteFlag != null">
+            delete_flag=#{marketInsightIndustry.deleteFlag},
+        </if>
+        <if test="marketInsightIndustry.createBy != null">
+            create_by=#{marketInsightIndustry.createBy},
+        </if>
+        <if test="marketInsightIndustry.createTime != null">
+            create_time=#{marketInsightIndustry.createTime},
+        </if>
+        <if test="marketInsightIndustry.updateBy != null">
+            update_by=#{marketInsightIndustry.updateBy},
+        </if>
+        <if test="marketInsightIndustry.updateTime != null">
+            update_time=#{marketInsightIndustry.updateTime}
+        </if>
         WHERE
-                 market_insight_industry_id=#{marketInsightIndustry.marketInsightIndustryId}
+        market_insight_industry_id=#{marketInsightIndustry.marketInsightIndustryId}
     </update>
     <!--逻辑删除市场洞察行业表-->
     <update id="logicDeleteMarketInsightIndustryByMarketInsightIndustryId">
         UPDATE market_insight_industry
-        SET     delete_flag= 1,
-                update_by=#{marketInsightIndustry.updateBy},
-                update_time=#{marketInsightIndustry.updateTime}
-        WHERE
-                market_insight_industry_id=#{marketInsightIndustry.marketInsightIndustryId}
+        SET delete_flag= 1,
+            update_by=#{marketInsightIndustry.updateBy},
+            update_time=#{marketInsightIndustry.updateTime}
+        WHERE market_insight_industry_id = #{marketInsightIndustry.marketInsightIndustryId}
     </update>
     <!--逻辑批量删除市场洞察行业表-->
     <update id="logicDeleteMarketInsightIndustryByMarketInsightIndustryIds">
         UPDATE market_insight_industry
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         market_insight_industry_id IN
-            <foreach item="item"
-                     collection="marketInsightIndustryIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        market_insight_industry_id IN
+        <foreach item="item"
+                 collection="marketInsightIndustryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增市场洞察行业表-->
     <insert id="batchMarketInsightIndustry" useGeneratedKeys="true" keyProperty="marketInsightIndustryId">
-        INSERT INTO market_insight_industry (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO market_insight_industry
+        (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="marketInsightIndustrys"
@@ -448,112 +457,114 @@
 
     <!--物理删除市场洞察行业表-->
     <delete id="deleteMarketInsightIndustryByMarketInsightIndustryId">
-        DELETE FROM market_insight_industry
-        WHERE  market_insight_industry_id=#{marketInsightIndustry}
+        DELETE
+        FROM market_insight_industry
+        WHERE market_insight_industry_id = #{marketInsightIndustry}
 
     </delete>
     <!--物理批量删除市场洞察行业表-->
     <delete id="deleteMarketInsightIndustryByMarketInsightIndustryIds">
         DELETE FROM market_insight_industry
-        WHERE  market_insight_industry_id IN
-            <foreach item="item"
-                     collection="marketInsightIndustryIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE market_insight_industry_id IN
+        <foreach item="item"
+                 collection="marketInsightIndustryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改市场洞察行业表-->
     <update id="updateMarketInsightIndustrys">
         update market_insight_industry
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="plan_year=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.planYear != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.planYear}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="plan_business_unit_id=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.planBusinessUnitId != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.planBusinessUnitId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="business_unit_decompose=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.businessUnitDecompose}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="area_id=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.areaId != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.areaId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="department_id=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.departmentId != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.departmentId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="product_id=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.productId != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.productId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="industry_id=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.industryId != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.industryId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="marketInsightIndustryList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="plan_year=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.planYear != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.planYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="plan_business_unit_id=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.planBusinessUnitId != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.planBusinessUnitId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_unit_decompose=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then
+                        #{item.businessUnitDecompose}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="area_id=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.areaId != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.areaId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_id=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.departmentId != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.departmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_id=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.productId != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.productId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="industry_id=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.industryId != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.industryId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="marketInsightIndustryList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when market_insight_industry_id=#{item.marketInsightIndustryId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="marketInsightIndustryList" separator="or" item="item" index="index">
-                    market_insight_industry_id=#{item.marketInsightIndustryId}
+            market_insight_industry_id=#{item.marketInsightIndustryId}
         </foreach>
     </update>
 </mapper>
