@@ -108,7 +108,7 @@ public class MarketInsightSelfController extends BaseController {
     /**
      * 逻辑批量删除市场洞察自身表
      */
-    @RequiresPermissions("strategy:cloud:marketInsightSelf:removes")
+    @RequiresPermissions("strategy:cloud:marketInsightSelf:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> marketInsightSelfIds) {
         return toAjax(marketInsightSelfService.logicDeleteMarketInsightSelfByMarketInsightSelfIds(marketInsightSelfIds));

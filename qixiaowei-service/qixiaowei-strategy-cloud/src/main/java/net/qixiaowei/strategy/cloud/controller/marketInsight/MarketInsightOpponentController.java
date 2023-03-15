@@ -113,7 +113,7 @@ public class MarketInsightOpponentController extends BaseController
     /**
     * 逻辑批量删除市场洞察对手表
     */
-    @RequiresPermissions("strategy:cloud:marketInsightOpponent:removes")
+    @RequiresPermissions("strategy:cloud:marketInsightOpponent:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  marketInsightOpponentIds)
     {
