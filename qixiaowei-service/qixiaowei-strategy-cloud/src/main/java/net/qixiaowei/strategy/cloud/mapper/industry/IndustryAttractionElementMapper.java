@@ -115,4 +115,11 @@ public interface IndustryAttractionElementMapper{
     * @return 结果
     */
     int batchIndustryAttractionElement(@Param("industryAttractionElements")List<IndustryAttractionElement> industryAttractionElements);
+
+    /**
+     * 预制表头查询行业吸引力表列表
+     * @param industryAttractionIds
+     * @return
+     */
+    List<IndustryAttractionElementDTO> selectPreIndustryAttractionList(@Param("industryAttractionIds") List<Long> industryAttractionIds);
 }

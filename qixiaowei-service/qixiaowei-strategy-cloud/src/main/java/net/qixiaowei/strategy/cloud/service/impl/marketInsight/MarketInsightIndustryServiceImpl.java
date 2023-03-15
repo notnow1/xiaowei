@@ -13,10 +13,13 @@ import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
+import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttraction;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.*;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.*;
 import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionElementMapper;
+import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionMapper;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.*;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightIndustryService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
@@ -58,6 +61,8 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
     private MiIndustryAttractionMapper miIndustryAttractionMapper;
     @Autowired
     private IndustryAttractionElementMapper industryAttractionElementMapper;
+    @Autowired
+    private IndustryAttractionMapper industryAttractionMapper;
 
 
     @Autowired
@@ -1005,6 +1010,36 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
     @Override
     public int deleteMarketInsightIndustryByMarketInsightIndustryId(Long marketInsightIndustryId) {
         return marketInsightIndustryMapper.deleteMarketInsightIndustryByMarketInsightIndustryId(marketInsightIndustryId);
+    }
+
+    /**
+     * 预制表头查询行业吸引力表列表
+     * @param industryAttractionDTO
+     * @return
+     */
+    @Override
+    public List<IndustryAttractionDTO> selectPreIndustryAttractionList(IndustryAttractionDTO industryAttractionDTO) {
+        IndustryAttraction industryAttraction = new IndustryAttraction();
+        BeanUtils.copyProperties(industryAttractionDTO, industryAttraction);
+        List<IndustryAttractionDTO> industryAttractionDTOS = industryAttractionMapper.selectPreIndustryAttractionList(industryAttraction);
+        if (StringUtils.isNotEmpty(industryAttractionDTOS)) {
+            List<Long> industryAttractionIds = industryAttractionDTOS.stream().map(IndustryAttractionDTO::getIndustryAttractionId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(industryAttractionIds)) {
+                List<IndustryAttractionElementDTO> industryAttractionElementDTOList = industryAttractionElementMapper.selectPreIndustryAttractionList(industryAttractionIds);
+                if (StringUtils.isNotEmpty(industryAttractionElementDTOList)) {
+                    for (IndustryAttractionDTO attractionDTO : industryAttractionDTOS) {
+                        List<IndustryAttractionElementDTO> industryAttractionElementDTOS = new ArrayList<>();
+                        for (IndustryAttractionElementDTO industryAttractionElementDTO : industryAttractionElementDTOList) {
+                            if (attractionDTO.getIndustryAttractionId().equals(industryAttractionElementDTO.getIndustryAttractionId())) {
+                                industryAttractionElementDTOS.add(industryAttractionElementDTO);
+                            }
+                        }
+                        attractionDTO.setIndustryAttractionElementDTOS(industryAttractionElementDTOS);
+                    }
+                }
+            }
+        }
+        return industryAttractionDTOS;
     }
 
     /**

@@ -20,8 +20,8 @@
                mim.update_time
         FROM market_insight_macro mim
                  left join plan_business_unit pbu
-                           on pbu.plan_business_unit_id=mim.plan_business_unit_id
-                               and pbu.delete_flag =0
+                           on pbu.plan_business_unit_id = mim.plan_business_unit_id
+                               and pbu.delete_flag = 0
         WHERE mim.market_insight_macro_id = #{marketInsightMacroId}
           and mim.delete_flag = 0
     </select>
@@ -32,17 +32,18 @@
         SELECT
         market_insight_macro_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
         FROM market_insight_macro
-        WHERE  market_insight_macro_id in
-            <foreach item="item"
-                     collection="marketInsightMacroIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE market_insight_macro_id in
+        <foreach item="item"
+                 collection="marketInsightMacroIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询市场洞察宏观表列表-->
-    <select id="selectMarketInsightMacroList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO">
+    <select id="selectMarketInsightMacroList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO">
         select
         mim.market_insight_macro_id,
         mim.plan_year,
@@ -103,17 +104,17 @@
         <!-- 规划业务单元  -->
         <if test="marketInsightMacro.params.planBusinessUnitNameLike != null and marketInsightMacro.params.planBusinessUnitNameLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="marketInsightMacro.params.planBusinessUnitNameLike"
-                     index="index" open="(" separator="OR" close=")">
-                pbu.business_unit_name LIKE concat('%', #{item}, '%')
-            </foreach>
+            (        <foreach item="item"
+                              collection="marketInsightMacro.params.planBusinessUnitNameLike"
+                              index="index" open="(" separator="OR" close=")">
+            pbu.business_unit_name LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="marketInsightMacro.params.planBusinessUnitNameNotLike != null and marketInsightMacro.params.planBusinessUnitNameNotLike.size() > 0">
             AND
             <foreach item="item"
                      collection="marketInsightMacro.params.planBusinessUnitNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -220,7 +221,7 @@
             </if>
             <!-- 创建人等于过滤  -->
             <if test="marketInsightMacro.params.createBys == null">
-                AND  (mim.create_by ='' or mim.create_by is null)
+                AND (mim.create_by ='' or mim.create_by is null)
             </if>
         </if>
         <!-- 创建人不等于过滤  -->
@@ -232,12 +233,13 @@
                          collection="marketInsightMacro.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (mim.create_by ='' or mim.create_by is null))
+                </foreach>
+                or (mim.create_by ='' or mim.create_by is null))
             </if>
 
             <!-- 创建人不等于过滤  -->
             <if test="marketInsightMacro.params.createBys == null">
-                AND  (mim.create_by ='' or mim.create_by is null)
+                AND (mim.create_by ='' or mim.create_by is null)
             </if>
         </if>
         <!-- 创建人包含过滤  -->
@@ -253,7 +255,7 @@
             </if>
             <!-- 创建人包含过滤  -->
             <if test="marketInsightMacro.params.createBys == null">
-                AND  (mim.create_by ='' or mim.create_by is null)
+                AND (mim.create_by ='' or mim.create_by is null)
             </if>
         </if>
         <!-- 创建人不包含过滤  -->
@@ -265,18 +267,19 @@
                          collection="marketInsightMacro.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (mim.create_by ='' or mim.create_by is null))
+                </foreach>
+                or (mim.create_by ='' or mim.create_by is null))
             </if>
 
             <!-- 创建人不包含过滤  -->
             <if test="marketInsightMacro.params.createBys == null">
-                AND  (mim.create_by ='' or mim.create_by is null)
+                AND (mim.create_by ='' or mim.create_by is null)
             </if>
         </if>
 
         <!-- 创建时间过滤  -->
         <if test="marketInsightMacro.params.createTimeEqual != null and marketInsightMacro.params.createTimeEqual.size() > 0">
-            AND  date_format(mim.create_time,'%Y/%m/%d') IN
+            AND date_format(mim.create_time,'%Y/%m/%d') IN
             <foreach item="item"
                      collection="marketInsightMacro.params.createTimeEqual"
                      index="index" open="(" separator="," close=")">
@@ -360,83 +363,88 @@
         <if test="marketInsightMacro.updateTime != null">
             and mim.update_time=#{marketInsightMacro.updateTime}
         </if>
-        order by  mim.create_time desc
+        order by mim.create_time desc
     </select>
     <!--新增市场洞察宏观表-->
     <insert id="insertMarketInsightMacro" useGeneratedKeys="true" keyProperty="marketInsightMacroId">
-        INSERT INTO market_insight_macro (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
-        VALUES
-        (#{marketInsightMacro.planYear},#{marketInsightMacro.planBusinessUnitId},#{marketInsightMacro.businessUnitDecompose},#{marketInsightMacro.areaId},#{marketInsightMacro.departmentId},#{marketInsightMacro.productId},#{marketInsightMacro.industryId},#{marketInsightMacro.deleteFlag},#{marketInsightMacro.createBy},#{marketInsightMacro.createTime},#{marketInsightMacro.updateBy},#{marketInsightMacro.updateTime})
+        INSERT INTO market_insight_macro (plan_year, plan_business_unit_id, business_unit_decompose, area_id,
+                                          department_id, product_id, industry_id, delete_flag, create_by, create_time,
+                                          update_by, update_time)
+        VALUES (#{marketInsightMacro.planYear}, #{marketInsightMacro.planBusinessUnitId},
+                #{marketInsightMacro.businessUnitDecompose}, #{marketInsightMacro.areaId},
+                #{marketInsightMacro.departmentId}, #{marketInsightMacro.productId}, #{marketInsightMacro.industryId},
+                #{marketInsightMacro.deleteFlag}, #{marketInsightMacro.createBy}, #{marketInsightMacro.createTime},
+                #{marketInsightMacro.updateBy}, #{marketInsightMacro.updateTime})
     </insert>
     <!--修改市场洞察宏观表-->
     <update id="updateMarketInsightMacro">
         UPDATE market_insight_macro
         SET
-                    <if test="marketInsightMacro.planYear != null">
-                        plan_year=#{marketInsightMacro.planYear},
-                    </if>
-                    <if test="marketInsightMacro.planBusinessUnitId != null">
-                        plan_business_unit_id=#{marketInsightMacro.planBusinessUnitId},
-                    </if>
-                    <if test="marketInsightMacro.businessUnitDecompose != null and marketInsightMacro.businessUnitDecompose != ''">
-                        business_unit_decompose=#{marketInsightMacro.businessUnitDecompose},
-                    </if>
-                    <if test="marketInsightMacro.areaId != null">
-                        area_id=#{marketInsightMacro.areaId},
-                    </if>
-                    <if test="marketInsightMacro.departmentId != null">
-                        department_id=#{marketInsightMacro.departmentId},
-                    </if>
-                    <if test="marketInsightMacro.productId != null">
-                        product_id=#{marketInsightMacro.productId},
-                    </if>
-                    <if test="marketInsightMacro.industryId != null">
-                        industry_id=#{marketInsightMacro.industryId},
-                    </if>
-                    <if test="marketInsightMacro.deleteFlag != null">
-                        delete_flag=#{marketInsightMacro.deleteFlag},
-                    </if>
-                    <if test="marketInsightMacro.createBy != null">
-                        create_by=#{marketInsightMacro.createBy},
-                    </if>
-                    <if test="marketInsightMacro.createTime != null">
-                        create_time=#{marketInsightMacro.createTime},
-                    </if>
-                    <if test="marketInsightMacro.updateBy != null">
-                        update_by=#{marketInsightMacro.updateBy},
-                    </if>
-                    <if test="marketInsightMacro.updateTime != null">
-                        update_time=#{marketInsightMacro.updateTime}
-                    </if>
+        <if test="marketInsightMacro.planYear != null">
+            plan_year=#{marketInsightMacro.planYear},
+        </if>
+        <if test="marketInsightMacro.planBusinessUnitId != null">
+            plan_business_unit_id=#{marketInsightMacro.planBusinessUnitId},
+        </if>
+        <if test="marketInsightMacro.businessUnitDecompose != null and marketInsightMacro.businessUnitDecompose != ''">
+            business_unit_decompose=#{marketInsightMacro.businessUnitDecompose},
+        </if>
+        <if test="marketInsightMacro.areaId != null">
+            area_id=#{marketInsightMacro.areaId},
+        </if>
+        <if test="marketInsightMacro.departmentId != null">
+            department_id=#{marketInsightMacro.departmentId},
+        </if>
+        <if test="marketInsightMacro.productId != null">
+            product_id=#{marketInsightMacro.productId},
+        </if>
+        <if test="marketInsightMacro.industryId != null">
+            industry_id=#{marketInsightMacro.industryId},
+        </if>
+        <if test="marketInsightMacro.deleteFlag != null">
+            delete_flag=#{marketInsightMacro.deleteFlag},
+        </if>
+        <if test="marketInsightMacro.createBy != null">
+            create_by=#{marketInsightMacro.createBy},
+        </if>
+        <if test="marketInsightMacro.createTime != null">
+            create_time=#{marketInsightMacro.createTime},
+        </if>
+        <if test="marketInsightMacro.updateBy != null">
+            update_by=#{marketInsightMacro.updateBy},
+        </if>
+        <if test="marketInsightMacro.updateTime != null">
+            update_time=#{marketInsightMacro.updateTime}
+        </if>
         WHERE
-                 market_insight_macro_id=#{marketInsightMacro.marketInsightMacroId}
+        market_insight_macro_id=#{marketInsightMacro.marketInsightMacroId}
     </update>
     <!--逻辑删除市场洞察宏观表-->
     <update id="logicDeleteMarketInsightMacroByMarketInsightMacroId">
         UPDATE market_insight_macro
-        SET     delete_flag= 1,
-                update_by=#{marketInsightMacro.updateBy},
-                update_time=#{marketInsightMacro.updateTime}
-        WHERE
-                market_insight_macro_id=#{marketInsightMacro.marketInsightMacroId}
+        SET delete_flag= 1,
+            update_by=#{marketInsightMacro.updateBy},
+            update_time=#{marketInsightMacro.updateTime}
+        WHERE market_insight_macro_id = #{marketInsightMacro.marketInsightMacroId}
     </update>
     <!--逻辑批量删除市场洞察宏观表-->
     <update id="logicDeleteMarketInsightMacroByMarketInsightMacroIds">
         UPDATE market_insight_macro
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         market_insight_macro_id IN
-            <foreach item="item"
-                     collection="marketInsightMacroIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        market_insight_macro_id IN
+        <foreach item="item"
+                 collection="marketInsightMacroIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增市场洞察宏观表-->
     <insert id="batchMarketInsightMacro" useGeneratedKeys="true" keyProperty="marketInsightMacroId">
-        INSERT INTO market_insight_macro (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO market_insight_macro
+        (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="marketInsightMacros"
@@ -447,112 +455,113 @@
 
     <!--物理删除市场洞察宏观表-->
     <delete id="deleteMarketInsightMacroByMarketInsightMacroId">
-        DELETE FROM market_insight_macro
-        WHERE  market_insight_macro_id=#{marketInsightMacro}
+        DELETE
+        FROM market_insight_macro
+        WHERE market_insight_macro_id = #{marketInsightMacro}
 
     </delete>
     <!--物理批量删除市场洞察宏观表-->
     <delete id="deleteMarketInsightMacroByMarketInsightMacroIds">
         DELETE FROM market_insight_macro
-        WHERE  market_insight_macro_id IN
-            <foreach item="item"
-                     collection="marketInsightMacroIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE market_insight_macro_id IN
+        <foreach item="item"
+                 collection="marketInsightMacroIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改市场洞察宏观表-->
     <update id="updateMarketInsightMacros">
         update market_insight_macro
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="plan_year=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.planYear != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.planYear}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="plan_business_unit_id=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.planBusinessUnitId != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.planBusinessUnitId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="business_unit_decompose=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.businessUnitDecompose}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="area_id=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.areaId != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.areaId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="department_id=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.departmentId != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.departmentId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="product_id=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.productId != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.productId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="industry_id=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.industryId != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.industryId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="marketInsightMacroList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="plan_year=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.planYear != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.planYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="plan_business_unit_id=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.planBusinessUnitId != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.planBusinessUnitId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_unit_decompose=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.businessUnitDecompose}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="area_id=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.areaId != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.areaId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_id=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.departmentId != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.departmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_id=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.productId != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.productId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="industry_id=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.industryId != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.industryId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="marketInsightMacroList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when market_insight_macro_id=#{item.marketInsightMacroId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="marketInsightMacroList" separator="or" item="item" index="index">
-                    market_insight_macro_id=#{item.marketInsightMacroId}
+            market_insight_macro_id=#{item.marketInsightMacroId}
         </foreach>
     </update>
 </mapper>
