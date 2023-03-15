@@ -38,7 +38,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService {
 
     private static final List<DictionaryData> MARKET_INSIGHT_CUSTOMER_CUSTOMER_CATEGORY = new ArrayList<>(5);
 
-    private static final List<DictionaryData> MARKET_INSIGHT_OPPONENT_COMPARISON_ITEM = new ArrayList<>(6);
+
 
     private static final List<DictionaryData> MARKET_INSIGHT_OPPONENT_COMPETITOR_CATEGORY = new ArrayList<>(4);
 
@@ -72,13 +72,6 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService {
         MARKET_INSIGHT_CUSTOMER_CUSTOMER_CATEGORY.add(DictionaryData.builder().dictionaryLabel("战略潜在客户").dictionaryValue("3").defaultFlag(0).sort(3).status(BusinessConstants.NORMAL).build());
         MARKET_INSIGHT_CUSTOMER_CUSTOMER_CATEGORY.add(DictionaryData.builder().dictionaryLabel("检验客户（普通客户）").dictionaryValue("4").defaultFlag(0).sort(4).status(BusinessConstants.NORMAL).build());
         MARKET_INSIGHT_CUSTOMER_CUSTOMER_CATEGORY.add(DictionaryData.builder().dictionaryLabel("空白客户（零星客户）").dictionaryValue("5").defaultFlag(0).sort(5).status(BusinessConstants.NORMAL).build());
-        //初始化对比项目
-        MARKET_INSIGHT_OPPONENT_COMPARISON_ITEM.add(DictionaryData.builder().dictionaryLabel("品牌").dictionaryValue("1").defaultFlag(1).sort(1).status(BusinessConstants.NORMAL).build());
-        MARKET_INSIGHT_OPPONENT_COMPARISON_ITEM.add(DictionaryData.builder().dictionaryLabel("客户关系").dictionaryValue("2").defaultFlag(0).sort(2).status(BusinessConstants.NORMAL).build());
-        MARKET_INSIGHT_OPPONENT_COMPARISON_ITEM.add(DictionaryData.builder().dictionaryLabel("技术").dictionaryValue("3").defaultFlag(0).sort(3).status(BusinessConstants.NORMAL).build());
-        MARKET_INSIGHT_OPPONENT_COMPARISON_ITEM.add(DictionaryData.builder().dictionaryLabel("成本").dictionaryValue("4").defaultFlag(0).sort(4).status(BusinessConstants.NORMAL).build());
-        MARKET_INSIGHT_OPPONENT_COMPARISON_ITEM.add(DictionaryData.builder().dictionaryLabel("质量").dictionaryValue("5").defaultFlag(0).sort(5).status(BusinessConstants.NORMAL).build());
-        MARKET_INSIGHT_OPPONENT_COMPARISON_ITEM.add(DictionaryData.builder().dictionaryLabel("服务").dictionaryValue("6").defaultFlag(0).sort(6).status(BusinessConstants.NORMAL).build());
         //初始化竞争对手类别
         MARKET_INSIGHT_OPPONENT_COMPETITOR_CATEGORY.add(DictionaryData.builder().dictionaryLabel("标杆企业").dictionaryValue("1").defaultFlag(1).sort(1).status(BusinessConstants.NORMAL).build());
         MARKET_INSIGHT_OPPONENT_COMPETITOR_CATEGORY.add(DictionaryData.builder().dictionaryLabel("战略合作").dictionaryValue("2").defaultFlag(0).sort(2).status(BusinessConstants.NORMAL).build());
@@ -390,10 +383,6 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService {
             }
             case MARKET_INSIGHT_CUSTOMER_CUSTOMER_CATEGORY: {
                 initDictionaryDataList = MARKET_INSIGHT_CUSTOMER_CUSTOMER_CATEGORY;
-                break;
-            }
-            case MARKET_INSIGHT_OPPONENT_COMPARISON_ITEM: {
-                initDictionaryDataList = MARKET_INSIGHT_OPPONENT_COMPARISON_ITEM;
                 break;
             }
             case MARKET_INSIGHT_OPPONENT_COMPETITOR_CATEGORY: {
