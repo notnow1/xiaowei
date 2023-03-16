@@ -8,31 +8,35 @@ import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 /**
-* 战略意图表
-* @author TANGMICHI
-* @since 2023-02-23
-*/
+ * 战略意图表
+ *
+ * @author TANGMICHI
+ * @since 2023-02-23
+ */
 @Data
 @Accessors(chain = true)
 public class StrategyDashboardDTO extends BaseDTO {
 
     //查询检验
-    public interface QueryStrategyIntentDTO extends Default{
+    public interface QueryStrategyIntentDTO extends Default {
 
     }
+
     //新增检验
-    public interface AddStrategyIntentDTO extends Default{
+    public interface AddStrategyIntentDTO extends Default {
 
     }
 
     //删除检验
-    public interface DeleteStrategyIntentDTO extends Default{
+    public interface DeleteStrategyIntentDTO extends Default {
 
     }
+
     //修改检验
-    public interface UpdateStrategyIntentDTO extends Default{
+    public interface UpdateStrategyIntentDTO extends Default {
 
     }
+
     /**
      * 规划年度
      */
@@ -66,5 +70,10 @@ public class StrategyDashboardDTO extends BaseDTO {
      * 行业ID
      */
     private Long industryId;
+    /**
+     * 业务设计ID
+     */
+    private Long businessDesignId;
+
 }
 

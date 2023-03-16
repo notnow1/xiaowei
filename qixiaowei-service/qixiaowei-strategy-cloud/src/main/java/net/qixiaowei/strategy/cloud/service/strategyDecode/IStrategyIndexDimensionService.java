@@ -41,10 +41,10 @@ public interface IStrategyIndexDimensionService {
     /**
      * 修改战略指标维度表
      *
-     * @param strategyIndexDimensionDTOS 战略指标维度表
+     * @param strategyIndexDimensionDTO 战略指标维度表
      * @return 结果
      */
-    int updateStrategyIndexDimension(List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS);
+    int updateStrategyIndexDimension(StrategyIndexDimensionDTO strategyIndexDimensionDTO);
 
     /**
      * 批量修改战略指标维度表
@@ -126,4 +126,10 @@ public interface IStrategyIndexDimensionService {
      */
     List<Tree<Long>> selectStrategyIndexDimensionOtherList(Long strategyIndexDimensionId);
 
+    /**
+     * 获取层级列表
+     *
+     * @return List
+     */
+    List<Integer> selectStrategyIndexDimensionLevelList();
 }

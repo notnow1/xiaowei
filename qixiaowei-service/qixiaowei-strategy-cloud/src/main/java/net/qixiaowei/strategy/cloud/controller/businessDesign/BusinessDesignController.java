@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -56,7 +57,7 @@ public class BusinessDesignController extends BaseController {
     @GetMapping("/list")
     public AjaxResult list(BusinessDesignDTO businessDesignDTO) {
         List<BusinessDesignDTO> list = businessDesignService.selectBusinessDesignList(businessDesignDTO);
-        return AjaxResult.success(list);
+        return AjaxResult.success(list.stream().map(BusinessDesignDTO::getBusinessUnitName).distinct().collect(Collectors.toList()));
     }
 
 

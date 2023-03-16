@@ -756,6 +756,16 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
     }
 
     /**
+     * 查询最近一次
+     *
+     * @return 结果
+     */
+    @Override
+    public BusinessDesignDTO selectBusinessDesignRecently() {
+        return businessDesignMapper.selectBusinessDesignRecently();
+    }
+
+    /**
      * 逻辑删除业务设计表信息
      *
      * @param businessDesignDTO 业务设计表

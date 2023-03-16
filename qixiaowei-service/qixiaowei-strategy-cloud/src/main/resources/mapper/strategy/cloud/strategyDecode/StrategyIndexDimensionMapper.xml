@@ -63,7 +63,7 @@
             and sid.index_dimension_code=#{strategyIndexDimension.indexDimensionCode}
         </if>
         <if test="strategyIndexDimension.indexDimensionName != null and strategyIndexDimension.indexDimensionName != ''">
-            and sid.index_dimension_name=#{strategyIndexDimension.indexDimensionName}
+            and sid.index_dimension_name like concat('%', #{strategyIndexDimension.indexDimensionName}, '%')
         </if>
         <if test="strategyIndexDimension.sort != null">
             and sid.sort=#{strategyIndexDimension.sort}
@@ -117,6 +117,145 @@
         delete_flag = 0
         AND ( NOT FIND_IN_SET( #{strategyIndexDimensionId}, ancestors ) OR ancestors IS NULL )
         AND strategy_index_dimension_id != #{strategyIndexDimensionId}
+    </select>
+    <!--根据父级id查找子级-->
+    <select id="selectSon" resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE FIND_IN_SET(#{strategyIndexDimensionId},ancestors)
+        AND delete_flag = 0
+    </select>
+    <!--检查唯一校验-->
+    <select id="checkUnique"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE BINARY index_dimension_code=#{strategyIndexDimensionCode}
+        and delete_flag=0
+    </select>
+    <!--根据id查询所有子级数据-->
+    <select id="selectAncestors"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        (
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE
+        delete_flag = 0
+        <if test="strategyIndexDimensionId != null">
+            AND strategy_index_dimension_id = #{strategyIndexDimensionId}
+        </if>
+        UNION
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE
+        delete_flag = 0
+        <if test="strategyIndexDimensionId != null">
+            AND FIND_IN_SET( #{strategyIndexDimensionId}, ancestors )
+        </if>
+        ) AS ancestors
+    </select>
+    <!--获取层级列表-->
+    <select id="selectStrategyIndexDimensionLevelList" resultType="java.lang.Integer">
+        SELECT
+        `LEVEL`
+        FROM
+        strategy_index_dimension
+        WHERE delete_flag=0
+        GROUP BY `LEVEL`
+        ORDER BY `LEVEL`
+    </select>
+    <!--获取最大排序-->
+    <select id="selectMaxSort" resultType="java.lang.Integer">
+        SELECT
+        IFNULL(sort,0) + 1 as sort
+        FROM
+        strategy_index_dimension
+        WHERE
+        delete_flag = 0
+        <if test="level != null">
+            AND level = #{level}
+        </if>
+        <if test="parentStrategyIndexDimensionId != null">
+            AND parent_index_dimension_id = #{parentStrategyIndexDimensionId}
+        </if>
+        ORDER BY sort DESC
+        limit 1
     </select>
     <!--新增战略指标维度表-->
     <insert id="insertStrategyIndexDimension" useGeneratedKeys="true" keyProperty="strategyIndexDimensionId">

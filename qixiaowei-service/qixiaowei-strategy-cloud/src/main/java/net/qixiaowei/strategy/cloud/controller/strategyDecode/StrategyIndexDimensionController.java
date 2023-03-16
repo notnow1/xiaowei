@@ -63,6 +63,15 @@ public class StrategyIndexDimensionController extends BaseController {
     }
 
     /**
+     * 获取层级列表
+     */
+    @RequiresPermissions("strategy:cloud:strategyIndexDimension:list")
+    @GetMapping("/levelList")
+    public AjaxResult levelList() {
+        return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionLevelList());
+    }
+
+    /**
      * 查询战略指标维度表列表
      */
     @RequiresPermissions("strategy:cloud:strategyIndexDimension:list")
@@ -96,8 +105,8 @@ public class StrategyIndexDimensionController extends BaseController {
     @RequiresPermissions("strategy:cloud:strategyIndexDimension:edit")
     @Log(title = "修改战略指标维度表", businessType = BusinessType.STRATEGY_INDEX_DIMENSION, businessId = "strategyIndexDimensionId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS) {
-        return toAjax(strategyIndexDimensionService.updateStrategyIndexDimension(strategyIndexDimensionDTOS));
+    public AjaxResult editSave(@RequestBody StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
+        return toAjax(strategyIndexDimensionService.updateStrategyIndexDimension(strategyIndexDimensionDTO));
     }
 
     /**

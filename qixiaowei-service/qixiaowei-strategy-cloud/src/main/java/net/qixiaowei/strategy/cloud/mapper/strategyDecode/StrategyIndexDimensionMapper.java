@@ -110,4 +110,44 @@ public interface StrategyIndexDimensionMapper {
      * @return list
      */
     List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionOtherList(@Param("strategyIndexDimensionId") Long strategyIndexDimensionId);
+
+    /**
+     * 根据父级id查找子级
+     *
+     * @param strategyIndexDimensionId 战略指标维度表ID
+     * @return list
+     */
+    List<StrategyIndexDimensionDTO> selectSon(@Param("strategyIndexDimensionId") Long strategyIndexDimensionId);
+
+    /**
+     * 检查唯一校验
+     *
+     * @param strategyIndexDimensionCode 战略指标维度编码
+     * @return StrategyIndexDimensionDTO
+     */
+    List<StrategyIndexDimensionDTO> checkUnique(@Param("strategyIndexDimensionCode") String strategyIndexDimensionCode);
+
+    /**
+     * 根据id查询所有子级数据
+     *
+     * @param strategyIndexDimensionId 战略指标维度ID
+     * @return List
+     */
+    List<StrategyIndexDimensionDTO> selectAncestors(@Param("strategyIndexDimensionId") Long strategyIndexDimensionId);
+
+    /**
+     * 获取层级列表
+     *
+     * @return list
+     */
+    List<Integer> selectStrategyIndexDimensionLevelList();
+
+    /**
+     * 获取最大排序
+     *
+     * @param level                          层级
+     * @param parentStrategyIndexDimensionId 父级ID
+     * @return int
+     */
+    Integer selectMaxSort(@Param("level") Integer level, @Param("parentStrategyIndexDimensionId") Long parentStrategyIndexDimensionId);
 }

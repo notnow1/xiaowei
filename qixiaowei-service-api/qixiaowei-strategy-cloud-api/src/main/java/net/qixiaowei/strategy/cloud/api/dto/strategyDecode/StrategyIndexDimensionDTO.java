@@ -1,16 +1,11 @@
 package net.qixiaowei.strategy.cloud.api.dto.strategyDecode;
 
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.Date;
-import java.math.BigDecimal;
 import javax.validation.groups.Default;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +50,7 @@ public class StrategyIndexDimensionDTO {
     /**
      * 父级战略指标维度名称
      */
-    private String  parentIndexDimensionName;
+    private String parentIndexDimensionName;
     /**
      * 别名-父级战略指标维度名称
      */

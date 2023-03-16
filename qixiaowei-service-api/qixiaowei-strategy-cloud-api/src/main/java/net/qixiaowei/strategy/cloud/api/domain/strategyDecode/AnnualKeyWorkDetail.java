@@ -60,6 +60,10 @@ public class AnnualKeyWorkDetail extends TenantEntity {
      */
     private Date taskEndTime;
     /**
+     * sort
+     */
+    private Integer sort;
+    /**
      * 责任人
      */
     private Long dutyEmployeeId;

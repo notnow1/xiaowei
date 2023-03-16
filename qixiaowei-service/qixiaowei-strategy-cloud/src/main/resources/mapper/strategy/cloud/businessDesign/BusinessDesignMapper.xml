@@ -306,6 +306,33 @@
         GROUP BY bd.business_design_id
         ORDER BY bd.update_time ASC
     </select>
+    <!--查询最近一次-->
+    <select id="selectBusinessDesignRecently"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
+        SELECT
+        bd.business_design_id,
+        bd.plan_year,
+        bd.plan_business_unit_id,
+        bd.business_unit_decompose,
+        bd.area_id,
+        bd.department_id,
+        bd.product_id,
+        bd.industry_id,
+        bd.delete_flag,
+        bd.create_by,
+        bd.create_time,
+        bd.update_by,
+        bd.update_time,
+        pbu.business_unit_name
+        FROM business_design bd
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = bd.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE bd.business_design_id=#{businessDesignId}
+        and bd.delete_flag=0
+        ORDER BY bd.update_time DESC
+        limit 1
+    </select>
     <!--新增业务设计表-->
     <insert id="insertBusinessDesign" useGeneratedKeys="true" keyProperty="businessDesignId">
         INSERT INTO business_design

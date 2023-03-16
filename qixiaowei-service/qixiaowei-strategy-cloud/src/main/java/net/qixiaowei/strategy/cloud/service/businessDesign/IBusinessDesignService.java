@@ -100,4 +100,11 @@ public interface IBusinessDesignService {
      * @return 结果
      */
     int deleteBusinessDesignByBusinessDesignId(Long businessDesignId);
+
+    /**
+     * 最近一次的业务设计
+     *
+     * @return 业务设计
+     */
+    BusinessDesignDTO selectBusinessDesignRecently();
 }

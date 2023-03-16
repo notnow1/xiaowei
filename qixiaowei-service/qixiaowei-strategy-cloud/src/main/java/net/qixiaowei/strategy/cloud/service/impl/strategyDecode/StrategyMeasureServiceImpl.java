@@ -168,17 +168,50 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
                 }
             }
         }
-//        Map<Integer, Map<Integer, List<StrategyMeasureDetailVO>>> groupStrategyMeasureDetailVOS =
-//                strategyMeasureDetailVOS.stream().collect(Collectors.groupingBy(StrategyMeasureDetailVO::getSort, Collectors.groupingBy(StrategyMeasureDetailVO::getSerialNumber)));
-//        for (Integer sort : groupStrategyMeasureDetailVOS.keySet()) {
-//            Map<Integer, List<StrategyMeasureDetailVO>> serialStrategyMeasureDetailVOS = groupStrategyMeasureDetailVOS.get(sort);
-//            for (int i = 0; i < serialStrategyMeasureDetailVOS.keySet().size(); i++) {
-//
-//            }
-//
-//        }
+        List<StrategyMeasureDetailVO> strategyMeasureDetailVOSList = getStrategyMeasureDetailVO(strategyMeasureDetailVOS);
         strategyMeasureDTO.setStrategyMeasureDetailVOS(strategyMeasureDetailVOS);
         return strategyMeasureDTO;
+    }
+
+    /**
+     * 赋值-hasCodeAdd
+     *
+     * @param strategyMeasureDetailVOS 战略举措清单详情VOS
+     * @return List
+     */
+    private List<StrategyMeasureDetailVO> getStrategyMeasureDetailVO(List<StrategyMeasureDetailVO> strategyMeasureDetailVOS) {
+        Map<Integer, Map<Integer, List<StrategyMeasureDetailVO>>> groupStrategyMeasureDetailVOS =
+                strategyMeasureDetailVOS.stream().collect(Collectors.groupingBy(StrategyMeasureDetailVO::getSort, LinkedHashMap::new,
+                        Collectors.groupingBy(StrategyMeasureDetailVO::getSerialNumber, LinkedHashMap::new, Collectors.toList())));
+        for (Integer sort : groupStrategyMeasureDetailVOS.keySet()) {
+            Map<Integer, List<StrategyMeasureDetailVO>> serialStrategyMeasureDetailVOS = groupStrategyMeasureDetailVOS.get(sort);
+            int maxSerialNumber = 1;
+            for (Integer serialNumber : serialStrategyMeasureDetailVOS.keySet()) {
+                if (serialNumber > maxSerialNumber)
+                    maxSerialNumber = serialNumber;
+            }
+            for (Integer serialNumber : serialStrategyMeasureDetailVOS.keySet()) {
+                List<StrategyMeasureDetailVO> strategyMeasureDetailVOList = serialStrategyMeasureDetailVOS.get(serialNumber);
+                if (serialNumber == maxSerialNumber) {
+                    strategyMeasureDetailVOList.forEach(s -> {
+                        s.setHasCodeAdd(true);
+                    });
+                } else {
+                    strategyMeasureDetailVOList.forEach(s -> {
+                        s.setHasCodeAdd(false);
+                    });
+                }
+            }
+        }
+        List<StrategyMeasureDetailVO> strategyMeasureDetailVOSList = new ArrayList<>();
+        for (Integer sort : groupStrategyMeasureDetailVOS.keySet()) {
+            Map<Integer, List<StrategyMeasureDetailVO>> serialStrategyMeasureDetailVOS = groupStrategyMeasureDetailVOS.get(sort);
+            for (Integer serialNumber : serialStrategyMeasureDetailVOS.keySet()) {
+                List<StrategyMeasureDetailVO> strategyMeasureDetailVOList = serialStrategyMeasureDetailVOS.get(serialNumber);
+                strategyMeasureDetailVOSList.addAll(strategyMeasureDetailVOList);
+            }
+        }
+        return strategyMeasureDetailVOSList;
     }
 
     /**

@@ -146,7 +146,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                     BigDecimal targetValue = gapAnalysisOperateDTO.getTargetValue();
                     BigDecimal actualValue = gapAnalysisOperateDTO.getActualValue();
                     BigDecimal completionRate;
-                    if (StringUtils.isNull(targetValue))
+                    if (StringUtils.isNull(targetValue) || targetValue.compareTo(BigDecimal.ZERO) == 0)
                         completionRate = BigDecimal.ZERO;
                     else
                         completionRate = Optional.ofNullable(actualValue).orElse(BigDecimal.ZERO).multiply(new BigDecimal(100)).divide(targetValue, 2, RoundingMode.HALF_UP);
