@@ -11,8 +11,10 @@ import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttractionElemen
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO;
 import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionElementMapper;
 import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionMapper;
+import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiIndustryAttractionDataMapper;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiIndustryAttractionMapper;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,8 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     private IndustryAttractionElementMapper industryAttractionElementMapper;
     @Autowired
     private MiIndustryAttractionMapper miIndustryAttractionMapper;
+    @Autowired
+    private MiIndustryAttractionDataMapper miIndustryAttractionDataMapper;
 
     /**
      * 行业吸引力配置主表
@@ -432,11 +436,10 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     @Override
     public int logicDeleteIndustryAttractionElementByIndustryAttractionElementId(IndustryAttractionElementDTO industryAttractionElementDTO) {
         int i = 0;
-        IndustryAttractionElement industryAttractionElement = new IndustryAttractionElement();
-        industryAttractionElement.setIndustryAttractionElementId(industryAttractionElementDTO.getIndustryAttractionElementId());
-        industryAttractionElement.setUpdateBy(SecurityUtils.getUserId());
-        industryAttractionElement.setUpdateTime(DateUtils.getNowDate());
-        i = industryAttractionElementMapper.logicDeleteIndustryAttractionElementByIndustryAttractionElementId(industryAttractionElement);
+        List<MiIndustryAttractionDataDTO> miIndustryAttractionDataDTOS = miIndustryAttractionDataMapper.selectMiIndustryAttractionDataByIndustryAttractionElementId(industryAttractionElementDTO.getIndustryAttractionElementId());
+        if (StringUtils.isNotEmpty(miIndustryAttractionDataDTOS)){
+            i =miIndustryAttractionDataDTOS.size();
+        }
         return i;
     }
 

@@ -21,6 +21,14 @@ public interface MiIndustryAttractionDataMapper{
     */
     MiIndustryAttractionDataDTO selectMiIndustryAttractionDataByMiIndustryAttractionDataId(@Param("miIndustryAttractionDataId")Long miIndustryAttractionDataId);
 
+
+    /**
+     * 根据行业吸引力要素主键查询市场洞察行业吸引力数据表
+     *
+     * @param industryAttractionElementId 行业吸引力要素主键
+     * @return 市场洞察行业吸引力数据表
+     */
+    List<MiIndustryAttractionDataDTO> selectMiIndustryAttractionDataByIndustryAttractionElementId(@Param("industryAttractionElementId")Long industryAttractionElementId);
     /**
      * 根据市场洞察行业详情表主键查询市场洞察行业吸引力数据表
      *

@@ -383,6 +383,7 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
                 Long miSelfAbilityAccessId = miSelfAbilityAccessDTOS.get(i1).getMiSelfAbilityAccessId();
                 if (null == miSelfAbilityAccessId){
                     MiSelfAbilityAccess miSelfAbilityAccess = new MiSelfAbilityAccess();
+                    BeanUtils.copyProperties(miSelfAbilityAccessDTOS.get(i1),miSelfAbilityAccess);
                     miSelfAbilityAccess.setMarketInsightSelfId(marketInsightSelf.getMarketInsightSelfId());
                     miSelfAbilityAccess.setSort(i1+1);
                     miSelfAbilityAccess.setCreateBy(SecurityUtils.getUserId());
@@ -393,6 +394,8 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
                     miSelfAbilityAccessAddList.add(miSelfAbilityAccess);
                 }else {
                     MiSelfAbilityAccess miSelfAbilityAccess = new MiSelfAbilityAccess();
+                    BeanUtils.copyProperties(miSelfAbilityAccessDTOS.get(i1),miSelfAbilityAccess);
+                    miSelfAbilityAccess.setSort(i1+1);
                     miSelfAbilityAccess.setUpdateTime(DateUtils.getNowDate());
                     miSelfAbilityAccess.setUpdateBy(SecurityUtils.getUserId());
                     miSelfAbilityAccessUpdateList.add(miSelfAbilityAccess);

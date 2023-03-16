@@ -109,6 +109,15 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    根据行业吸引力要素主键查询市场洞察行业吸引力数据表-->
+    <select id="selectMiIndustryAttractionDataByIndustryAttractionElementId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
+        SELECT
+            mi_industry_attraction_data_id,market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_attraction_data
+        WHERE  industry_attraction_element_id=#{industryAttractionElementId}
+          and delete_flag=0
+    </select>
     <!--新增市场洞察行业吸引力数据表-->
     <insert id="insertMiIndustryAttractionData" useGeneratedKeys="true" keyProperty="miIndustryAttractionDataId">
         INSERT INTO mi_industry_attraction_data (market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time)
