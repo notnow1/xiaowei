@@ -5,7 +5,7 @@
     <select id="selectAnnualKeyWorkDetailByAnnualKeyWorkDetailId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO">
         SELECT
-        annual_key_work_detail_id,annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time
+        annual_key_work_detail_id,annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM annual_key_work_detail
         WHERE annual_key_work_detail_id=#{annualKeyWorkDetailId}
         and delete_flag=0
@@ -15,7 +15,7 @@
     <select id="selectAnnualKeyWorkDetailByAnnualKeyWorkDetailIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO">
         SELECT
-        annual_key_work_detail_id,annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time
+        annual_key_work_detail_id,annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM annual_key_work_detail
         WHERE annual_key_work_detail_id in
         <foreach item="item"
@@ -30,7 +30,7 @@
     <select id="selectAnnualKeyWorkDetailList"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO">
         SELECT
-        annual_key_work_detail_id,annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time
+        annual_key_work_detail_id,annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM annual_key_work_detail
         WHERE delete_flag=0
         <if test="annualKeyWorkDetail.annualKeyWorkDetailId != null">
@@ -72,6 +72,9 @@
         <if test="annualKeyWorkDetail.dutyEmployeeCode != null and annualKeyWorkDetail.dutyEmployeeCode != ''">
             and duty_employee_code=#{annualKeyWorkDetail.dutyEmployeeCode}
         </if>
+        <if test="annualKeyWorkDetail.sort != null">
+            and sort=#{annualKeyWorkDetail.sort}
+        </if>
         <if test="annualKeyWorkDetail.deleteFlag != null">
             and delete_flag=#{annualKeyWorkDetail.deleteFlag}
         </if>
@@ -92,7 +95,7 @@
     <select id="selectAnnualKeyWorkDetailByAnnualKeyWorkId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO">
         SELECT
-        annual_key_work_detail_id,annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time
+        annual_key_work_detail_id,annual_key_work_id,sort,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time
         FROM annual_key_work_detail
         WHERE delete_flag=0
         AND annual_key_work_id = #{annualKeyWorkId}
@@ -112,9 +115,9 @@
     <!--新增年度重点工作详情表-->
     <insert id="insertAnnualKeyWorkDetail" useGeneratedKeys="true" keyProperty="annualKeyWorkDetailId">
         INSERT INTO annual_key_work_detail
-        (annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time)
+        (annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{annualKeyWorkDetail.annualKeyWorkId},#{annualKeyWorkDetail.taskNumber},#{annualKeyWorkDetail.taskName},#{annualKeyWorkDetail.departmentId},#{annualKeyWorkDetail.departmentEmployeeId},#{annualKeyWorkDetail.taskDescription},#{annualKeyWorkDetail.closeStandard},#{annualKeyWorkDetail.taskStartTime},#{annualKeyWorkDetail.taskEndTime},#{annualKeyWorkDetail.dutyEmployeeId},#{annualKeyWorkDetail.dutyEmployeeName},#{annualKeyWorkDetail.dutyEmployeeCode},#{annualKeyWorkDetail.deleteFlag},#{annualKeyWorkDetail.createBy},#{annualKeyWorkDetail.createTime},#{annualKeyWorkDetail.updateBy},#{annualKeyWorkDetail.updateTime})
+        (#{annualKeyWorkDetail.annualKeyWorkId},#{annualKeyWorkDetail.taskNumber},#{annualKeyWorkDetail.taskName},#{annualKeyWorkDetail.departmentId},#{annualKeyWorkDetail.departmentEmployeeId},#{annualKeyWorkDetail.taskDescription},#{annualKeyWorkDetail.closeStandard},#{annualKeyWorkDetail.taskStartTime},#{annualKeyWorkDetail.taskEndTime},#{annualKeyWorkDetail.dutyEmployeeId},#{annualKeyWorkDetail.dutyEmployeeName},#{annualKeyWorkDetail.dutyEmployeeCode},#{annualKeyWorkDetail.sort},#{annualKeyWorkDetail.deleteFlag},#{annualKeyWorkDetail.createBy},#{annualKeyWorkDetail.createTime},#{annualKeyWorkDetail.updateBy},#{annualKeyWorkDetail.updateTime})
     </insert>
     <!--修改年度重点工作详情表-->
     <update id="updateAnnualKeyWorkDetail">
@@ -155,6 +158,9 @@
         </if>
         <if test="annualKeyWorkDetail.dutyEmployeeCode != null and annualKeyWorkDetail.dutyEmployeeCode != ''">
             duty_employee_code=#{annualKeyWorkDetail.dutyEmployeeCode},
+        </if>
+        <if test="annualKeyWorkDetail.sort != null">
+            sort=#{annualKeyWorkDetail.sort},
         </if>
         <if test="annualKeyWorkDetail.deleteFlag != null">
             delete_flag=#{annualKeyWorkDetail.deleteFlag},
@@ -200,12 +206,12 @@
     <!--批量新增年度重点工作详情表-->
     <insert id="batchAnnualKeyWorkDetail">
         INSERT INTO annual_key_work_detail
-        (annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,delete_flag,create_by,create_time,update_by,update_time)
+        (annual_key_work_id,task_number,task_name,department_id,department_employee_id,task_description,close_standard,task_start_time,task_end_time,duty_employee_id,duty_employee_name,duty_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="annualKeyWorkDetails"
                  separator=",">
-            (#{item.annualKeyWorkId},#{item.taskNumber},#{item.taskName},#{item.departmentId},#{item.departmentEmployeeId},#{item.taskDescription},#{item.closeStandard},#{item.taskStartTime},#{item.taskEndTime},#{item.dutyEmployeeId},#{item.dutyEmployeeName},#{item.dutyEmployeeCode},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.annualKeyWorkId},#{item.taskNumber},#{item.taskName},#{item.departmentId},#{item.departmentEmployeeId},#{item.taskDescription},#{item.closeStandard},#{item.taskStartTime},#{item.taskEndTime},#{item.dutyEmployeeId},#{item.dutyEmployeeName},#{item.dutyEmployeeCode},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -310,6 +316,13 @@
                 <foreach collection="annualKeyWorkDetailList" item="item" index="index">
                     <if test="item.dutyEmployeeCode != null and item.dutyEmployeeCode != ''">
                         when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.dutyEmployeeCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="annualKeyWorkDetailList" item="item" index="index">
+                    <if test="item.sort != null">
+                        when annual_key_work_detail_id=#{item.annualKeyWorkDetailId} then #{item.sort}
                     </if>
                 </foreach>
             </trim>

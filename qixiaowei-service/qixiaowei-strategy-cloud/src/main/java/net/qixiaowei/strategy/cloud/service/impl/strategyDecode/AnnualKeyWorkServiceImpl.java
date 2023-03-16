@@ -4,6 +4,7 @@ import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -100,22 +101,8 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
         }
         String businessUnitDecompose = annualKeyWorkDTO.getBusinessUnitDecompose();
         if (StringUtils.isNotEmpty(businessUnitDecompose)) {
-            StringBuilder businessUnitDecomposeNames = new StringBuilder();
-            List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
-            businessUnitDecomposeList.forEach(decompose -> {
-                if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
-                    businessUnitDecomposeNames.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
-                }
-            });
-            List<Map<String, Object>> businessUnitDecomposes = new ArrayList<>();
-            for (String business : businessUnitDecomposeList) {
-                Map<String, Object> businessUnitDecomposeMap = new HashMap<>();
-                businessUnitDecomposeMap.put("label", BUSINESS_UNIT_DECOMPOSE_MAP.get(business));
-                businessUnitDecomposeMap.put("value", business);
-                businessUnitDecomposes.add(businessUnitDecomposeMap);
-            }
-            annualKeyWorkDTO.setBusinessUnitDecomposes(businessUnitDecomposes);
-            annualKeyWorkDTO.setBusinessUnitDecomposeName(businessUnitDecomposeNames.substring(0, businessUnitDecomposeNames.length() - 1));
+            annualKeyWorkDTO.setBusinessUnitDecomposeName(PlanBusinessUnitCode.getBusinessUnitDecomposeName(businessUnitDecompose));
+            annualKeyWorkDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
         }
         setDecomposeValue(annualKeyWorkDTO, businessUnitDecompose);
         // 详情

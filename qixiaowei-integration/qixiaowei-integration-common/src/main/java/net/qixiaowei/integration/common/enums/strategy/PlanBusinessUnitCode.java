@@ -67,6 +67,31 @@ public enum PlanBusinessUnitCode {
     /**
      * 获取规划业务单元下拉列表
      *
+     * @param decompose 维度
+     * @return List
+     */
+    public static String getBusinessUnitDecomposeName(String decompose) {
+        List<Map<String, String>> dropList = new ArrayList<>();
+        if (StringUtils.isNotNull(decompose)) {
+            StringBuilder businessUnitDecomposeNames = new StringBuilder();
+            String[] decomposeList = decompose.split(";");
+            for (String decomposerValue : decomposeList) {
+                for (PlanBusinessUnitCode item : PlanBusinessUnitCode.values()) {
+                    if (decomposerValue.equals("company"))
+                        return "公司级";
+                    if (item.code.equals(decomposerValue)) {
+                        businessUnitDecomposeNames.append(item.getInfo()).append(";");
+                    }
+                }
+            }
+            return businessUnitDecomposeNames.substring(0, businessUnitDecomposeNames.length() - 1);
+        }
+        return null;
+    }
+
+    /**
+     * 获取规划业务单元下拉列表
+     *
      * @param businessUnitDecompose 维度
      * @return List
      */

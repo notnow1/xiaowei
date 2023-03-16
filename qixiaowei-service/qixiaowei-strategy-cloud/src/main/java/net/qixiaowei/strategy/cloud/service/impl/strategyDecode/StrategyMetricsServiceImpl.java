@@ -4,6 +4,7 @@ import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -121,22 +122,8 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
             strategyMetricsDTO.setPlanPeriodName(planPeriod + "年");
         String businessUnitDecompose = strategyMetricsDTO.getBusinessUnitDecompose();
         if (StringUtils.isNotEmpty(businessUnitDecompose)) {
-            StringBuilder businessUnitDecomposeNames = new StringBuilder();
-            List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
-            businessUnitDecomposeList.forEach(decompose -> {
-                if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
-                    businessUnitDecomposeNames.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
-                }
-            });
-            List<Map<String, Object>> businessUnitDecomposes = new ArrayList<>();
-            for (String business : businessUnitDecomposeList) {
-                Map<String, Object> businessUnitDecomposeMap = new HashMap<>();
-                businessUnitDecomposeMap.put("label", BUSINESS_UNIT_DECOMPOSE_MAP.get(business));
-                businessUnitDecomposeMap.put("value", business);
-                businessUnitDecomposes.add(businessUnitDecomposeMap);
-            }
-            strategyMetricsDTO.setBusinessUnitDecomposes(businessUnitDecomposes);
-            strategyMetricsDTO.setBusinessUnitDecomposeName(businessUnitDecomposeNames.substring(0, businessUnitDecomposeNames.length() - 1));
+            strategyMetricsDTO.setBusinessUnitDecomposeName(PlanBusinessUnitCode.getBusinessUnitDecomposeName(businessUnitDecompose));
+            strategyMetricsDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
         }
         setDecomposeValue(strategyMetricsDTO, businessUnitDecompose);
         // 详情

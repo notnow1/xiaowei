@@ -1,19 +1,24 @@
 package net.qixiaowei.strategy.cloud.api.dto.strategyDecode;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
+import java.util.Date;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.groups.Default;
-import java.time.LocalDate;
 import java.util.Date;
+import java.math.BigDecimal;
+import javax.validation.groups.Default;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Map;
 
 /**
  * 年度重点工作详情表
  *
  * @author Graves
- * @since 2023-03-14
+ * @since 2023-03-16
  */
 @Data
 @Accessors(chain = true)
@@ -80,7 +85,7 @@ public class AnnualKeyWorkDetailDTO {
      */
     private String closeStandard;
     /**
-     * 起止时间
+     * 任务开始时间
      */
     private LocalDate taskStartTime;
     /**
@@ -99,6 +104,10 @@ public class AnnualKeyWorkDetailDTO {
      * 责任人员编码
      */
     private String dutyEmployeeCode;
+    /**
+     * 排序
+     */
+    private Integer sort;
     /**
      * 删除标记:0未删除;1已删除
      */

@@ -4,6 +4,7 @@ import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -118,22 +119,8 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
         }
         String businessUnitDecompose = strategyMeasureDTO.getBusinessUnitDecompose();
         if (StringUtils.isNotEmpty(businessUnitDecompose)) {
-            StringBuilder businessUnitDecomposeNames = new StringBuilder();
-            List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
-            businessUnitDecomposeList.forEach(decompose -> {
-                if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
-                    businessUnitDecomposeNames.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
-                }
-            });
-            List<Map<String, Object>> businessUnitDecomposes = new ArrayList<>();
-            for (String business : businessUnitDecomposeList) {
-                Map<String, Object> businessUnitDecomposeMap = new HashMap<>();
-                businessUnitDecomposeMap.put("label", BUSINESS_UNIT_DECOMPOSE_MAP.get(business));
-                businessUnitDecomposeMap.put("value", business);
-                businessUnitDecomposes.add(businessUnitDecomposeMap);
-            }
-            strategyMeasureDTO.setBusinessUnitDecomposes(businessUnitDecomposes);
-            strategyMeasureDTO.setBusinessUnitDecomposeName(businessUnitDecomposeNames.substring(0, businessUnitDecomposeNames.length() - 1));
+            strategyMeasureDTO.setBusinessUnitDecomposeName(PlanBusinessUnitCode.getBusinessUnitDecomposeName(businessUnitDecompose));
+            strategyMeasureDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
         }
         setDecomposeValue(strategyMeasureDTO, businessUnitDecompose);
         // 详情
@@ -181,6 +168,15 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
                 }
             }
         }
+//        Map<Integer, Map<Integer, List<StrategyMeasureDetailVO>>> groupStrategyMeasureDetailVOS =
+//                strategyMeasureDetailVOS.stream().collect(Collectors.groupingBy(StrategyMeasureDetailVO::getSort, Collectors.groupingBy(StrategyMeasureDetailVO::getSerialNumber)));
+//        for (Integer sort : groupStrategyMeasureDetailVOS.keySet()) {
+//            Map<Integer, List<StrategyMeasureDetailVO>> serialStrategyMeasureDetailVOS = groupStrategyMeasureDetailVOS.get(sort);
+//            for (int i = 0; i < serialStrategyMeasureDetailVOS.keySet().size(); i++) {
+//
+//            }
+//
+//        }
         strategyMeasureDTO.setStrategyMeasureDetailVOS(strategyMeasureDetailVOS);
         return strategyMeasureDTO;
     }
@@ -392,7 +388,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
                     strategyMeasureDetailVOS.stream().collect(Collectors.groupingBy(StrategyMeasureDetailVO::getSort, Collectors.groupingBy(StrategyMeasureDetailVO::getSerialNumber)));
             this.setTaskSortValue(strategyMeasureDetailDTOS, groupDetailMapS);
             List<StrategyMeasureDetail> strategyMeasureDetails = new ArrayList<>();
-            if (StringUtils.isEmpty(strategyMeasureDetailDTOS))
+            if (StringUtils.isNotEmpty(strategyMeasureDetailDTOS))
                 strategyMeasureDetails = strategyMeasureDetailService.insertStrategyMeasureDetails(strategyMeasureDetailDTOS);
             // 新增战略衡量指标详情
             this.addMetricsDetail(strategyMetricsId, strategyMeasureDetails);

@@ -87,6 +87,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         }
         String businessUnitDecompose = businessDesignDTO.getBusinessUnitDecompose();
         if (StringUtils.isNotEmpty(businessUnitDecompose)) {
+            businessDesignDTO.setBusinessUnitDecomposeName(PlanBusinessUnitCode.getBusinessUnitDecomposeName(businessUnitDecompose));
             businessDesignDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
         }
         setDecomposeValue(businessDesignDTO);

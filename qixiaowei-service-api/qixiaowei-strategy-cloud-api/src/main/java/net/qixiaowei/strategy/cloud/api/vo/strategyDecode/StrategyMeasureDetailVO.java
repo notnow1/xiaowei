@@ -61,6 +61,10 @@ public class StrategyMeasureDetailVO {
      * 排序
      */
     private Integer sort;
+    /**
+     * 排序
+     */
+    private Boolean hasCodeAdd;
 
 
     /**
