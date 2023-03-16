@@ -163,7 +163,7 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
                 createByList.add("");
             }
         }
-        marketInsightSelfDTO.setCreateBys(createByList);
+        marketInsightSelf.setCreateBys(createByList);
         List<MarketInsightSelfDTO> marketInsightSelfDTOS = marketInsightSelfMapper.selectMarketInsightSelfList(marketInsightSelf);
         if (StringUtils.isNotEmpty(marketInsightSelfDTOS)) {
             List<Long> productIds = marketInsightSelfDTOS.stream().filter(f -> null != f.getProductId()).map(MarketInsightSelfDTO::getProductId).collect(Collectors.toList());
