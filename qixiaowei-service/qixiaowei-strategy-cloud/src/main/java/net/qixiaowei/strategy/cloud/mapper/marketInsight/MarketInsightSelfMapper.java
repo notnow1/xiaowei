@@ -108,5 +108,5 @@ public interface MarketInsightSelfMapper{
      * @param marketInsightSelf
      * @return
      */
-    List<MiOpponentChoiceDTO> opponentNameList(MarketInsightSelf marketInsightSelf);
+    List<MiOpponentChoiceDTO> opponentNameList(@Param("marketInsightSelf")MarketInsightSelf marketInsightSelf);
 }
