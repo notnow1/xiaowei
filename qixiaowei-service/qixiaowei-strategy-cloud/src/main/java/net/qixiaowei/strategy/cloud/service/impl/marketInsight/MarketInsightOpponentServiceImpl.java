@@ -298,7 +298,7 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
                 createByList.add("");
             }
         }
-        marketInsightOpponentDTO.setCreateBys(createByList);
+        marketInsightOpponent.setCreateBys(createByList);
         List<MarketInsightOpponentDTO> marketInsightOpponentDTOS = marketInsightOpponentMapper.selectMarketInsightOpponentList(marketInsightOpponent);
         if (StringUtils.isNotEmpty(marketInsightOpponentDTOS)) {
             List<Long> productIds = marketInsightOpponentDTOS.stream().filter(f -> null != f.getProductId()).map(MarketInsightOpponentDTO::getProductId).collect(Collectors.toList());

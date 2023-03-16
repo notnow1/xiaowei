@@ -163,7 +163,7 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
                 createByList.add("");
             }
         }
-        marketInsightSelfDTO.setCreateBys(createByList);
+        marketInsightSelf.setCreateBys(createByList);
         List<MarketInsightSelfDTO> marketInsightSelfDTOS = marketInsightSelfMapper.selectMarketInsightSelfList(marketInsightSelf);
         if (StringUtils.isNotEmpty(marketInsightSelfDTOS)) {
             List<Long> productIds = marketInsightSelfDTOS.stream().filter(f -> null != f.getProductId()).map(MarketInsightSelfDTO::getProductId).collect(Collectors.toList());
@@ -459,7 +459,7 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
      * @return
      */
     @Override
-    public List<Map<String, List<MiOpponentChoiceDTO>>> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO) {
+    public Map<String, List<MiOpponentChoiceDTO>> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO) {
         List<Map<String, List<MiOpponentChoiceDTO>>> opponentNameList = new ArrayList<>();
         Map<String, List<MiOpponentChoiceDTO>> opponentNameMap = new HashMap<>();
         MarketInsightSelf marketInsightSelf = new MarketInsightSelf();
@@ -494,7 +494,7 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
             }
         }
 
-        return opponentNameList;
+        return opponentNameMap;
     }
 
     /**
