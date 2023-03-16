@@ -434,7 +434,8 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
                 }
             }
         }
-        strategyMeasureTaskService.insertStrategyMeasureTasks(strategyMeasureTaskDTOS);
+        if (StringUtils.isNotEmpty(strategyMeasureTaskDTOS))
+            strategyMeasureTaskService.insertStrategyMeasureTasks(strategyMeasureTaskDTOS);
     }
 
     /**
@@ -451,7 +452,8 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             strategyMetricsDetailDTO.setStrategyMetricsId(strategyMetricsId);
             strategyMetricsDetailDTOS.add(strategyMetricsDetailDTO);
         }
-        strategyMetricsDetailService.insertStrategyMetricsDetails(strategyMetricsDetailDTOS);
+        if (StringUtils.isNotEmpty(strategyMetricsDetailDTOS))
+            strategyMetricsDetailService.insertStrategyMetricsDetails(strategyMetricsDetailDTOS);
     }
 
     /**
