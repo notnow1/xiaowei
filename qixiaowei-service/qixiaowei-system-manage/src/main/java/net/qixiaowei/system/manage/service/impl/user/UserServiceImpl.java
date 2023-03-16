@@ -24,6 +24,7 @@ import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserStatusDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserUpdatePasswordDTO;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
@@ -560,6 +561,43 @@ public class UserServiceImpl implements IUserService {
         user.setUpdateTime(nowDate);
         user.setUpdateBy(operateUserId);
         return userMapper.updateUser(user);
+    }
+
+    /**
+     * 编辑用户状态
+     *
+     * @param userStatusDTO
+     * @return 结果
+     */
+    @Override
+    public int editUserStatus(UserStatusDTO userStatusDTO) {
+        Set<Long> userIds = userStatusDTO.getUserIds();
+        Integer status = userStatusDTO.getStatus();
+        if (!Arrays.asList(BusinessConstants.NORMAL, BusinessConstants.DISABLE).contains(status)) {
+            throw new ServiceException("状态错误");
+        }
+        boolean disable = BusinessConstants.DISABLE.equals(status);
+        Long userId = SecurityUtils.getUserId();
+        String userAccount = SecurityUtils.getUserAccount();
+        if (disable && userIds.contains(userId)) {
+            throw new ServiceException("当前用户【" + userAccount + "】不能停用");
+        }
+        List<UserDTO> userDTOS = userMapper.selectUserListByUserIds(userIds);
+        if (StringUtils.isEmpty(userDTOS)) {
+            throw new ServiceException("用户状态修改失败，用户不存在");
+        }
+        if (disable) {
+            userDTOS.forEach(userDTO -> {
+                if (userDTO.isAdmin()) {
+                    throw new ServiceException("系统管理员帐号不可停用，请重新勾选。");
+                }
+            });
+        }
+        if (userIds.size() != userDTOS.size()) {
+            userIds = userDTOS.stream().map(UserDTO::getUserId).collect(Collectors.toSet());
+        }
+        Date nowDate = DateUtils.getNowDate();
+        return userMapper.updateUserStatusByUserIds(userIds, status, userId, nowDate);
     }
 
     /**

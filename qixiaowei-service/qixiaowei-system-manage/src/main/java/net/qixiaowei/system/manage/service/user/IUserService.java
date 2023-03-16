@@ -8,6 +8,7 @@ import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserStatusDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserUpdatePasswordDTO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
@@ -154,6 +155,13 @@ public interface IUserService {
      * @return 结果
      */
     int resetPwd(UserDTO userDTO);
+    /**
+     * 编辑用户状态
+     *
+     * @param userStatusDTO
+     * @return 结果
+     */
+    int editUserStatus(UserStatusDTO userStatusDTO);
 
     /**
      * 校验用户是否存在
