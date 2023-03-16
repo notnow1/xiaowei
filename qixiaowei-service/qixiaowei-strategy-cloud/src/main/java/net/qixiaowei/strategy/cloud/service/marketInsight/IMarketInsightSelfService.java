@@ -92,5 +92,5 @@ public interface IMarketInsightSelfService{
      * @param marketInsightSelfDTO
      * @return
      */
-    List<Map<String, List<MiOpponentChoiceDTO>>> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO);
+    Map<String, List<MiOpponentChoiceDTO>> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO);
 }

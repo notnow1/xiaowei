@@ -207,7 +207,7 @@
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR mio.area_id IS NULL)
+            OR mio.industry_id IS NULL)
         </if>
         <!-- 创建人等于过滤  -->
         <if test="marketInsightOpponent.params.createByNameEqual != null">
@@ -222,7 +222,7 @@
             </if>
             <!-- 创建人等于过滤  -->
             <if test="marketInsightOpponent.params.createBys == null">
-                AND (mio.create_by ='' or mio.create_by is null)
+                AND  mio.create_by ='1'
             </if>
         </if>
         <!-- 创建人不等于过滤  -->
@@ -240,7 +240,7 @@
 
             <!-- 创建人不等于过滤  -->
             <if test="marketInsightOpponent.params.createBys == null">
-                AND (mio.create_by ='' or mio.create_by is null)
+                AND  mio.create_by ='1'
             </if>
         </if>
         <!-- 创建人包含过滤  -->
@@ -256,7 +256,7 @@
             </if>
             <!-- 创建人包含过滤  -->
             <if test="marketInsightOpponent.params.createBys == null">
-                AND (mio.create_by ='' or mio.create_by is null)
+                AND  mio.create_by ='1'
             </if>
         </if>
         <!-- 创建人不包含过滤  -->
@@ -274,7 +274,7 @@
 
             <!-- 创建人不包含过滤  -->
             <if test="marketInsightOpponent.params.createBys == null">
-                AND (mio.create_by ='' or mio.create_by is null)
+                AND  mio.create_by ='1'
             </if>
         </if>
         <!-- 创建时间过滤  -->

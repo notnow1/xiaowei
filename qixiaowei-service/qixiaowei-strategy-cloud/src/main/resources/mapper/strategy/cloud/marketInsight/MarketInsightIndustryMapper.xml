@@ -221,7 +221,7 @@
             </if>
             <!-- 创建人等于过滤  -->
             <if test="marketInsightIndustry.params.createBys == null">
-                AND (mii.create_by ='' or mii.create_by is null)
+                AND mii.create_by ='1'
             </if>
         </if>
         <!-- 创建人不等于过滤  -->
@@ -239,7 +239,7 @@
 
             <!-- 创建人不等于过滤  -->
             <if test="marketInsightIndustry.params.createBys == null">
-                AND (mii.create_by ='' or mii.create_by is null)
+                AND mii.create_by ='1'
             </if>
         </if>
         <!-- 创建人包含过滤  -->
@@ -255,7 +255,7 @@
             </if>
             <!-- 创建人包含过滤  -->
             <if test="marketInsightIndustry.params.createBys == null">
-                AND (mii.create_by ='' or mii.create_by is null)
+                AND mii.create_by ='1'
             </if>
         </if>
         <!-- 创建人不包含过滤  -->
@@ -273,7 +273,7 @@
 
             <!-- 创建人不包含过滤  -->
             <if test="marketInsightIndustry.params.createBys == null">
-                AND (mii.create_by ='' or mii.create_by is null)
+                AND mii.create_by ='1'
             </if>
         </if>
 
