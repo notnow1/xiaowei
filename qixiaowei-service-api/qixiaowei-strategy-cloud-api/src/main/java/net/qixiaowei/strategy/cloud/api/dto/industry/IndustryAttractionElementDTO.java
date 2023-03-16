@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import net.qixiaowei.integration.common.domain.dto.BaseDTO;
@@ -40,6 +41,7 @@ public class IndustryAttractionElementDTO extends BaseDTO {
     /**
     * ID
     */
+    @NotNull(message = "id不能为空", groups = {IndustryAttractionElementDTO.UpdateIndustryAttractionElementDTO.class,IndustryAttractionElementDTO.DeleteIndustryAttractionElementDTO.class})
     private  Long industryAttractionElementId;
     /**
     * 行业吸引力ID

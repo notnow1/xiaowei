@@ -425,6 +425,22 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     }
 
     /**
+     * 逻辑删除行业吸引力要素
+     * @param industryAttractionElementDTO
+     * @return
+     */
+    @Override
+    public int logicDeleteIndustryAttractionElementByIndustryAttractionElementId(IndustryAttractionElementDTO industryAttractionElementDTO) {
+        int i = 0;
+        IndustryAttractionElement industryAttractionElement = new IndustryAttractionElement();
+        industryAttractionElement.setIndustryAttractionElementId(industryAttractionElementDTO.getIndustryAttractionElementId());
+        industryAttractionElement.setUpdateBy(SecurityUtils.getUserId());
+        industryAttractionElement.setUpdateTime(DateUtils.getNowDate());
+        i = industryAttractionElementMapper.logicDeleteIndustryAttractionElementByIndustryAttractionElementId(industryAttractionElement);
+        return i;
+    }
+
+    /**
      * 逻辑删除行业吸引力表信息
      *
      * @param industryAttractionDTO 行业吸引力表
