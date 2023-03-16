@@ -105,8 +105,8 @@ public class IndustryAttractionController extends BaseController {
     /**
      * 逻辑删除行业吸引力表
      */
-    @RequiresPermissions("strategy:cloud:industryAttraction:remove")
-    @PostMapping("/remove")
+    @RequiresPermissions("strategy:cloud:industryAttraction:removes1")
+    @PostMapping("/removes1")
     public AjaxResult remove2(@RequestBody @Validated(IndustryAttractionDTO.DeleteIndustryAttractionDTO.class) IndustryAttractionDTO industryAttractionDTO) {
         return toAjax(industryAttractionService.logicDeleteIndustryAttractionByIndustryAttractionId(industryAttractionDTO));
     }
