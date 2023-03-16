@@ -119,8 +119,7 @@ public class MarketInsightSelfController extends BaseController {
     @RequiresPermissions("strategy:cloud:marketInsightSelf:opponentNameList")
     @GetMapping("/opponentNameList")
     public AjaxResult opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO) {
-        List<MiOpponentChoiceDTO> miOpponentChoiceDTOList = marketInsightSelfService.opponentNameList(marketInsightSelfDTO);
-        return AjaxResult.success(miOpponentChoiceDTOList);
+        return AjaxResult.success(marketInsightSelfService.opponentNameList(marketInsightSelfDTO));
     }
 
 }

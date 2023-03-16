@@ -5,6 +5,7 @@ import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO;
 
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -91,5 +92,5 @@ public interface IMarketInsightSelfService{
      * @param marketInsightSelfDTO
      * @return
      */
-    List<MiOpponentChoiceDTO> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO);
+    List<Map<String, List<MiOpponentChoiceDTO>>> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO);
 }

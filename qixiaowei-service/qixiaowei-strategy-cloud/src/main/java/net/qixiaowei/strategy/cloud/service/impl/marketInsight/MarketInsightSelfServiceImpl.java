@@ -15,8 +15,6 @@ import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MarketInsightSelf;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiSelfAbilityAccess;
-import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
-import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightOpponentDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiSelfAbilityAccessDTO;
@@ -461,10 +459,42 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
      * @return
      */
     @Override
-    public List<MiOpponentChoiceDTO> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO) {
+    public List<Map<String, List<MiOpponentChoiceDTO>>> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO) {
+        List<Map<String, List<MiOpponentChoiceDTO>>> opponentNameList = new ArrayList<>();
+        Map<String, List<MiOpponentChoiceDTO>> opponentNameMap = new HashMap<>();
         MarketInsightSelf marketInsightSelf = new MarketInsightSelf();
         BeanUtils.copyProperties(marketInsightSelfDTO,marketInsightSelf);
-        return marketInsightSelfMapper.opponentNameList(marketInsightSelf);
+        List<MiOpponentChoiceDTO> miOpponentChoiceDTOList = marketInsightSelfMapper.opponentNameList(marketInsightSelf);
+        if (StringUtils.isNotEmpty(miOpponentChoiceDTOList)){
+            //能力要素集合
+            List<Long> comparisonItems = miOpponentChoiceDTOList.stream().filter(f -> null != f.getComparisonItem()).map(MiOpponentChoiceDTO::getComparisonItem).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(comparisonItems)) {
+                R<List<DictionaryDataDTO>> dataByDictionaryDataList = remoteDictionaryDataService.selectDictionaryDataByDictionaryDataIds(comparisonItems, SecurityConstants.INNER);
+                List<DictionaryDataDTO> data = dataByDictionaryDataList.getData();
+                if (StringUtils.isNotNull(data)) {
+                    for (MiOpponentChoiceDTO miOpponentChoiceDTO : miOpponentChoiceDTOList) {
+                        if (null != miOpponentChoiceDTO.getComparisonItem()) {
+                            for (DictionaryDataDTO datum : data) {
+                                if (miOpponentChoiceDTO.getComparisonItem().equals(datum.getDictionaryDataId())) {
+                                    miOpponentChoiceDTO.setComparisonItemName(datum.getDictionaryLabel());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            opponentNameMap = miOpponentChoiceDTOList.stream().filter(f -> f.getOpponentName() != null).collect(Collectors.groupingBy(MiOpponentChoiceDTO::getOpponentName));
+            if (StringUtils.isNotEmpty(opponentNameMap)){
+                for (String key : opponentNameMap.keySet()) {
+                    Map<String, List<MiOpponentChoiceDTO>> map = new HashMap<>();
+                    List<MiOpponentChoiceDTO> miOpponentChoiceDTOList1 = opponentNameMap.get(key);
+                    map.put(key,miOpponentChoiceDTOList1);
+                    opponentNameList.add(map);
+                }
+            }
+        }
+
+        return opponentNameList;
     }
 
     /**

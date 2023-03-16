@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 /**
@@ -35,6 +36,7 @@ public class StrategyDashboardDTO extends BaseDTO {
     /**
      * 规划年度
      */
+    @NotNull(message = "规划年度不能为空", groups = {StrategyDashboardDTO.QueryStrategyIntentDTO.class})
     private Integer planYear;
     /**
      * 规划业务单元ID

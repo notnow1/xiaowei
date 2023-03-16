@@ -39,6 +39,14 @@ public interface MarketInsightIndustryMapper{
     List<MarketInsightIndustryDTO> selectMarketInsightIndustryList(@Param("marketInsightIndustry")MarketInsightIndustry marketInsightIndustry);
 
     /**
+     * 查询市场洞察行业表传入年份最近一次数据
+     *
+     * @param marketInsightIndustry 市场洞察行业表
+     * @return 市场洞察行业表集合
+     */
+    MarketInsightIndustryDTO dashboardMiIndustryDetailList(@Param("marketInsightIndustry")MarketInsightIndustry marketInsightIndustry);
+
+    /**
     * 新增市场洞察行业表
     *
     * @param marketInsightIndustry 市场洞察行业表
