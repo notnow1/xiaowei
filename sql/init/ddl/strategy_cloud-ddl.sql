@@ -762,6 +762,7 @@ CREATE TABLE annual_key_work_detail(
     duty_employee_id BIGINT UNSIGNED    COMMENT '责任人' ,
     duty_employee_name VARCHAR(64)    COMMENT '责任人员姓名' ,
     duty_employee_code VARCHAR(32)    COMMENT '责任人员编码' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
     create_time DATETIME NOT NULL   COMMENT '创建时间' ,
