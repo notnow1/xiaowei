@@ -9,6 +9,7 @@ import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,12 +104,12 @@ public class IndustryAttractionController extends BaseController {
     }
 
     /**
-     * 逻辑删除行业吸引力表
+     * 逻辑删除行业吸引力要素
      */
-    @RequiresPermissions("strategy:cloud:industryAttraction:removes1")
-    @PostMapping("/removes1")
-    public AjaxResult remove2(@RequestBody @Validated(IndustryAttractionDTO.DeleteIndustryAttractionDTO.class) IndustryAttractionDTO industryAttractionDTO) {
-        return toAjax(industryAttractionService.logicDeleteIndustryAttractionByIndustryAttractionId(industryAttractionDTO));
+    @RequiresPermissions("strategy:cloud:industryAttraction:remove")
+    @PostMapping("/removeElement")
+    public AjaxResult removeElement(@RequestBody @Validated(IndustryAttractionElementDTO.DeleteIndustryAttractionElementDTO.class) IndustryAttractionElementDTO industryAttractionElementDTO) {
+        return toAjax(industryAttractionService.logicDeleteIndustryAttractionElementByIndustryAttractionElementId(industryAttractionElementDTO));
     }
 
 }

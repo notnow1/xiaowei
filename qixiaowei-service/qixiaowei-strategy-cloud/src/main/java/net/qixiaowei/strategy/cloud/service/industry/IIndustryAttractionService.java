@@ -2,7 +2,7 @@ package net.qixiaowei.strategy.cloud.service.industry;
 
 import java.util.List;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
-
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 
 
 /**
@@ -104,4 +104,11 @@ public interface IIndustryAttractionService{
      * @return
      */
     Boolean initIndustryAttraction();
+
+    /**
+     * 逻辑删除行业吸引力要素
+     * @param industryAttractionElementDTO
+     * @return
+     */
+    int logicDeleteIndustryAttractionElementByIndustryAttractionElementId(IndustryAttractionElementDTO industryAttractionElementDTO);
 }
