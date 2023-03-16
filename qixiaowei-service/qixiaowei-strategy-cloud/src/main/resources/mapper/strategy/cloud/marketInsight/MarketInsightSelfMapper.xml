@@ -221,7 +221,7 @@
             </if>
             <!-- 创建人等于过滤  -->
             <if test="marketInsightSelf.params.createBys == null">
-                AND mis.create_by ='1'
+                AND  mis.create_by is null
             </if>
         </if>
         <!-- 创建人不等于过滤  -->
@@ -234,7 +234,7 @@
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-                or (mis.create_by ='' or mis.create_by is null))
+                or  mis.create_by ='1')
             </if>
 
             <!-- 创建人不等于过滤  -->
@@ -255,7 +255,7 @@
             </if>
             <!-- 创建人包含过滤  -->
             <if test="marketInsightSelf.params.createBys == null">
-                AND mis.create_by ='1'
+                AND  mis.create_by is null
             </if>
         </if>
         <!-- 创建人不包含过滤  -->
@@ -268,7 +268,7 @@
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-                or (mis.create_by ='' or mis.create_by is null))
+                or  mis.create_by ='1')
             </if>
 
             <!-- 创建人不包含过滤  -->

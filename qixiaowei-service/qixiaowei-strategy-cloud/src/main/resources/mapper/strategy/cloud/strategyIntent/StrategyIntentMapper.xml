@@ -115,6 +115,22 @@
                 #{item}
             </foreach>
         </if>
+        <!-- 创建人等于过滤  -->
+        <if test="strategyIntent.params.createByNameEqual != null">
+            <!-- 创建人等于过滤  -->
+            <if test="strategyIntent.params.createBys != null and strategyIntent.params.createBys.size() > 0">
+                AND si.create_by IN
+                <foreach item="item"
+                         collection="strategyIntent.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人等于过滤  -->
+            <if test="strategyIntent.params.createBys == null">
+                AND  si.create_by is null
+            </if>
+        </if>
         <!-- 创建人不等于过滤  -->
         <if test=" strategyIntent.params.createByNameNotEqual != null">
             <!-- 创建人不等于过滤  -->
@@ -124,12 +140,13 @@
                          collection="strategyIntent.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (si.create_by ='' or si.create_by is null))
+                </foreach>
+                or  si.create_by ='1')
             </if>
 
             <!-- 创建人不等于过滤  -->
             <if test="strategyIntent.params.createBys == null">
-                AND  (si.create_by ='' or si.create_by is null)
+                AND si.create_by ='1'
             </if>
         </if>
         <!-- 创建人包含过滤  -->
@@ -145,7 +162,7 @@
             </if>
             <!-- 创建人包含过滤  -->
             <if test="strategyIntent.params.createBys == null">
-                AND  (si.create_by ='' or si.create_by is null)
+                AND  si.create_by is null
             </if>
         </if>
         <!-- 创建人不包含过滤  -->
@@ -157,12 +174,13 @@
                          collection="strategyIntent.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (si.create_by ='' or si.create_by is null))
+                </foreach>
+                or  si.create_by ='1')
             </if>
 
             <!-- 创建人不包含过滤  -->
             <if test="strategyIntent.params.createBys == null">
-                AND  (si.create_by ='' or si.create_by is null)
+                AND si.create_by ='1'
             </if>
         </if>
 
