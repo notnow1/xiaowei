@@ -834,7 +834,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             List<IndicatorDTO> indicatorDTOList = indicatorAllData.getData();
             List<Long> indicatorIds = indicatorDTOList.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(indicatorIds)) {
-                indicatorIds.forEach(i->{
+                indicatorIds.forEach(i -> {
                     remoteIndicatorIds.add(String.valueOf(i));
                 });
             } else {
@@ -2907,7 +2907,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         } else {
-                            EmployeeDTO employeeDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(employeeCount-1))), EmployeeDTO.class);
+                            EmployeeDTO employeeDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(employeeCount - 1))), EmployeeDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setEmployeeName(employeeDTO.getEmployeeName());
                                 targetDecomposeDetailsDTOS.get(i).setEmployeeId(employeeDTO.getEmployeeId());
@@ -2925,7 +2925,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             } else if (StringUtils.equals(key, DecompositionDimension.AREA.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
-                    List<AreaDTO> list2  = (List<AreaDTO>) list.get(0);
+                    List<AreaDTO> list2 = (List<AreaDTO>) list.get(0);
                     int areaCount = list2.size();
                     for (int i = 0; i < Math.max(list2.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
@@ -2938,7 +2938,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         } else {
-                            AreaDTO areaDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list2.get(areaCount-1))), AreaDTO.class);
+                            AreaDTO areaDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list2.get(areaCount - 1))), AreaDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setAreaName(areaDTO.getAreaName());
                                 targetDecomposeDetailsDTOS.get(i).setAreaId(areaDTO.getAreaId());
@@ -2967,7 +2967,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
                         } else {
-                            DepartmentDTO departmentDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(departmentCount-1))), DepartmentDTO.class);
+                            DepartmentDTO departmentDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(departmentCount - 1))), DepartmentDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setDepartmentName(departmentDTO.getDepartmentName());
                                 targetDecomposeDetailsDTOS.get(i).setDepartmentId(departmentDTO.getDepartmentId());
@@ -2997,7 +2997,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
                         } else {
-                            IndustryDTO industryDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(industryCount-1))), IndustryDTO.class);
+                            IndustryDTO industryDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(industryCount - 1))), IndustryDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setIndustryName(industryDTO.getIndustryName());
                                 targetDecomposeDetailsDTOS.get(i).setIndustryId(industryDTO.getIndustryId());
@@ -3028,7 +3028,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         } else {
-                            RegionDTO regionDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(regionCount-1))), RegionDTO.class);
+                            RegionDTO regionDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(regionCount - 1))), RegionDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setRegionName(regionDTO.getProvinceName());
                                 targetDecomposeDetailsDTOS.get(i).setRegionId(regionDTO.getRegionId());
@@ -3058,7 +3058,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
                         } else {
-                            ProductDTO productDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(productCount-1))), ProductDTO.class);
+                            ProductDTO productDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(productCount - 1))), ProductDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setProductName(productDTO.getProductName());
                                 targetDecomposeDetailsDTOS.get(i).setProductId(productDTO.getProductId());
