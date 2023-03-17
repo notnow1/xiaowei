@@ -109,7 +109,7 @@ public class IndustryAttractionController extends BaseController {
     @RequiresPermissions("strategy:cloud:industryAttraction:remove")
     @PostMapping("/removeElement")
     public AjaxResult removeElement(@RequestBody @Validated(IndustryAttractionElementDTO.DeleteIndustryAttractionElementDTO.class) IndustryAttractionElementDTO industryAttractionElementDTO) {
-        return toAjax(industryAttractionService.logicDeleteIndustryAttractionElementByIndustryAttractionElementId(industryAttractionElementDTO));
+        return AjaxResult.success(industryAttractionService.logicDeleteIndustryAttractionElementByIndustryAttractionElementId(industryAttractionElementDTO));
     }
 
 }
