@@ -2907,7 +2907,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         } else {
-                            EmployeeDTO employeeDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(employeeCount))), EmployeeDTO.class);
+                            EmployeeDTO employeeDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(employeeCount-1))), EmployeeDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setEmployeeName(employeeDTO.getEmployeeName());
                                 targetDecomposeDetailsDTOS.get(i).setEmployeeId(employeeDTO.getEmployeeId());
@@ -2938,7 +2938,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         } else {
-                            AreaDTO areaDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list2.get(areaCount))), AreaDTO.class);
+                            AreaDTO areaDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list2.get(areaCount-1))), AreaDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setAreaName(areaDTO.getAreaName());
                                 targetDecomposeDetailsDTOS.get(i).setAreaId(areaDTO.getAreaId());
