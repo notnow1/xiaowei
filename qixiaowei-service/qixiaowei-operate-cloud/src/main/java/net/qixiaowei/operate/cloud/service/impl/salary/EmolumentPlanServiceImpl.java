@@ -386,7 +386,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             //预算年前一年销售收入
             BigDecimal revenueBeforeOne = emolumentPlanDTO.getRevenueBeforeOne();
             if (null != revenueBeforeOne && revenueBeforeOne.compareTo(new BigDecimal("0")) != 0) {
-                revenueBeforeOne = revenueBeforeOne.multiply(new BigDecimal("10000")).setScale(10, BigDecimal.ROUND_HALF_UP);
+                revenueBeforeOne = revenueBeforeOne.setScale(10, BigDecimal.ROUND_HALF_UP);
             }
             BigDecimal emolumentPackageBeforeOne1 = emolumentPlanDTO.getEmolumentPackageBeforeOne();
             if (null != emolumentPackageBeforeOne1 && emolumentPackageBeforeOne1.compareTo(new BigDecimal("0")) != 0){
