@@ -401,7 +401,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                 }
             }
         }
-
+        emolumentPlanDTO.setEmolumentPackageBeforeOne(emolumentPackageBeforeOne);
     }
 
     /**
