@@ -12,8 +12,6 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyIndexDimension;
-import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasure;
-import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMetrics;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
@@ -502,17 +500,31 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         if (strategyIndexDimensionDTOS.size() != strategyIndexDimensionIds.size()) {
             throw new ServiceException("部分战略指标维度已被删除");
         }
+        isQuote(strategyIndexDimensionIds);
+        return strategyIndexDimensionMapper.logicDeleteStrategyIndexDimensionByStrategyIndexDimensionIds(strategyIndexDimensionIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
+     * 判断是否被引用
+     *
+     * @param strategyIndexDimensionIds 战略指标维度ID集合
+     */
+    private void isQuote(List<Long> strategyIndexDimensionIds) {
+        Set<Long> strategyIndexDimensionIdSet = new HashSet<>(strategyIndexDimensionIds);
+        List<StrategyIndexDimensionDTO> sonStrategyIndexDimensionDTOList = strategyIndexDimensionMapper.selectSons(strategyIndexDimensionIds);
+        if (StringUtils.isNotEmpty(sonStrategyIndexDimensionDTOList)) {
+            strategyIndexDimensionIdSet.addAll(sonStrategyIndexDimensionDTOList.stream().map(StrategyIndexDimensionDTO::getStrategyIndexDimensionId).collect(Collectors.toSet()));
+        }
         // 战略举措清单
-        List<StrategyMeasureDTO> strategyMeasureDTOS = strategyMeasureMapper.selectStrategyMeasureByStrategyIndexDimensionIds(strategyIndexDimensionIds);
+        List<StrategyMeasureDTO> strategyMeasureDTOS = strategyMeasureMapper.selectStrategyMeasureByStrategyIndexDimensionIds(new ArrayList<>(strategyIndexDimensionIdSet));
         if (StringUtils.isNotEmpty(strategyMeasureDTOS)) {
             throw new ServiceException("数据被引用！");
         }
         // 战略衡量指标
-        List<StrategyMetricsDTO> strategyMetricsDTOS = strategyMetricsMapper.selectStrategyMetricsByStrategyIndexDimensionIds(strategyIndexDimensionIds);
+        List<StrategyMetricsDTO> strategyMetricsDTOS = strategyMetricsMapper.selectStrategyMetricsByStrategyIndexDimensionIds(new ArrayList<>(strategyIndexDimensionIdSet));
         if (StringUtils.isNotEmpty(strategyMetricsDTOS)) {
             throw new ServiceException("数据被引用！");
         }
-        return strategyIndexDimensionMapper.logicDeleteStrategyIndexDimensionByStrategyIndexDimensionIds(strategyIndexDimensionIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**
@@ -542,18 +554,7 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         if (StringUtils.isNull(strategyIndexDimensionDTOById)) {
             throw new ServiceException("当前战略指标维度已不存在");
         }
-        StrategyMetrics strategyMetrics = new StrategyMetrics();
-        BeanUtils.copyProperties(strategyIndexDimensionDTO, strategyMetrics);
-        List<StrategyMetricsDTO> strategyMetricsDTOS = strategyMetricsMapper.selectStrategyMetricsList(strategyMetrics);
-        if (StringUtils.isNotEmpty(strategyMetricsDTOS)) {
-            throw new ServiceException("数据被引用！");
-        }
-        StrategyMeasure strategyMeasure = new StrategyMeasure();
-        BeanUtils.copyProperties(strategyIndexDimensionDTO, strategyMeasure);
-        List<StrategyMeasureDTO> strategyMeasureDTOS = strategyMeasureMapper.selectStrategyMeasureList(strategyMeasure);
-        if (StringUtils.isNotEmpty(strategyMeasureDTOS)) {
-            throw new ServiceException("数据被引用！");
-        }
+        isQuote(Collections.singletonList(strategyIndexDimensionId));
         StrategyIndexDimension strategyIndexDimension = new StrategyIndexDimension();
         strategyIndexDimension.setStrategyIndexDimensionId(strategyIndexDimensionDTO.getStrategyIndexDimensionId());
         strategyIndexDimension.setUpdateTime(DateUtils.getNowDate());

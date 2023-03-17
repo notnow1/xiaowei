@@ -42,8 +42,7 @@
         sm.create_by,
         sm.create_time,
         sm.update_by,
-        sm.update_time,
-        pbu.business_unit_name
+        sm.update_time
         FROM strategy_measure sm
         LEFT JOIN strategy_measure_detail smd
         ON sm.strategy_measure_id = smd.strategy_measure_id

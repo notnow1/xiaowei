@@ -257,6 +257,32 @@
         ORDER BY sort DESC
         limit 1
     </select>
+    <!--查找子级-->
+    <select id="selectSons"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE
+        <foreach collection="strategyIndexDimensionIds" item="item" index="index" open="(" close=")" separator="OR">
+            FIND_IN_SET(#{item},ancestors)
+        </foreach>
+        AND delete_flag = 0
+    </select>
     <!--新增战略指标维度表-->
     <insert id="insertStrategyIndexDimension" useGeneratedKeys="true" keyProperty="strategyIndexDimensionId">
         INSERT INTO strategy_index_dimension

@@ -349,7 +349,8 @@
         sm.update_time
         FROM strategy_metrics sm
         LEFT JOIN strategy_metrics_detail smd
-        WHERE delete_flag=0
+        AND smd.delete_flag=0
+        WHERE sm.delete_flag=0
         AND smd.strategy_index_dimension_id IN
         <foreach item="item"
                  collection="strategyIndexDimensionIds"

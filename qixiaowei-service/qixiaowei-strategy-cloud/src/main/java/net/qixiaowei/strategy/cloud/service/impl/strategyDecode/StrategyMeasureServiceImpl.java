@@ -768,7 +768,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             }
         }
         // 编辑
-        if (StringUtils.isEmpty(editStrategyMeasureDetailDTOS))
+        if (StringUtils.isNotEmpty(editStrategyMeasureDetailDTOS))
             strategyMeasureDetailService.updateStrategyMeasureDetails(editStrategyMeasureDetailDTOS);
         List<Long> editStrategyMeasureDetailIds = editStrategyMeasureDetailDTOS.stream().map(StrategyMeasureDetailDTO::getStrategyMeasureDetailId).collect(Collectors.toList());
         List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOSBefore = strategyMeasureTaskService.selectStrategyMeasureTaskByStrategyMeasureDetailIds(editStrategyMeasureDetailIds);

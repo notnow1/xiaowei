@@ -150,4 +150,12 @@ public interface StrategyIndexDimensionMapper {
      * @return int
      */
     Integer selectMaxSort(@Param("level") Integer level, @Param("parentStrategyIndexDimensionId") Long parentStrategyIndexDimensionId);
+
+    /**
+     * 查找子级
+     *
+     * @param strategyIndexDimensionIds id集合
+     * @return 结果
+     */
+    List<StrategyIndexDimensionDTO> selectSons(@Param("strategyIndexDimensionIds") List<Long> strategyIndexDimensionIds);
 }
