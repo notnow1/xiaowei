@@ -395,7 +395,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             }
 
             if (null != revenueBeforeOne && revenueBeforeOne.compareTo(new BigDecimal("0")) != 0 && null != emolumentPackageBeforeOne && emolumentPackageBeforeOne.compareTo(new BigDecimal("0")) != 0) {
-                BigDecimal erBeforeOne = emolumentPackageBeforeOne.divide(revenueBeforeOne, 10, BigDecimal.ROUND_HALF_UP);
+                BigDecimal erBeforeOne = emolumentPackageBeforeOne.divide(revenueBeforeOne, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                 if (erBeforeOne.compareTo(new BigDecimal("0")) > 0) {
                     emolumentPlanDTO.setErBeforeOne(erBeforeOne);
                 }
