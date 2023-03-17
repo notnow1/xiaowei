@@ -4,34 +4,33 @@
     <!--    查询产品表-->
     <select id="selectProductByProductId"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT
-            p.product_id,
-            p.parent_product_id,
-            (SELECT p2.product_name FROM product p2 WHERE p2.product_id = p.parent_product_id and p2.delete_flag = 0) AS parentProductName,
-            pu.product_unit_name,
-            p.ancestors,
-            p.product_code,
-            p.product_name,
-            p.level,
-            p.product_unit_id,
-            p.product_category,
-            p.product_description,
-            p.list_price,
-            p.listing_flag,
-            p.delete_flag,
-            p.create_by,
-            p.create_time,
-            p.update_by,
-            p.update_time
-        FROM
-            product p
-                left join product_unit pu
-                          on
-                                      pu.product_unit_id = p.product_unit_id
-                                  and pu.delete_flag = 0
-        WHERE
-                p.product_id =
-                #{productId}
+        SELECT p.product_id,
+               p.parent_product_id,
+               (SELECT p2.product_name
+                FROM product p2
+                WHERE p2.product_id = p.parent_product_id and p2.delete_flag = 0) AS parentProductName,
+               pu.product_unit_name,
+               p.ancestors,
+               p.product_code,
+               p.product_name,
+               p.level,
+               p.product_unit_id,
+               p.product_category,
+               p.product_description,
+               p.list_price,
+               p.listing_flag,
+               p.delete_flag,
+               p.create_by,
+               p.create_time,
+               p.update_by,
+               p.update_time
+        FROM product p
+                 left join product_unit pu
+                           on
+                                       pu.product_unit_id = p.product_unit_id
+                                   and pu.delete_flag = 0
+        WHERE p.product_id =
+              #{productId}
           and p.delete_flag = 0
     </select>
 
@@ -90,19 +89,19 @@
         </if>
         <if test="product.params.productCodeLike != null and product.params.productCodeLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="product.params.productCodeLike"
-                     index="index" open="(" separator="OR" close=")">
-                p.product_code  LIKE concat('%', #{item}, '%')
-            </foreach>
+            ( <foreach item="item"
+                       collection="product.params.productCodeLike"
+                       index="index" open="(" separator="OR" close=")">
+            p.product_code LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="product.params.productCodeNotLike != null and product.params.productCodeNotLike.size() > 0">
-            AND
+            AND(
             <foreach item="item"
                      collection="product.params.productCodeNotLike"
                      index="index" open="(" separator="AND" close=")">
-                p.product_code  NOT LIKE concat('%', #{item}, '%')
-            </foreach>
+                p.product_code NOT LIKE concat('%', #{item}, '%')
+            </foreach>)
         </if>
         <!-- 产品名称过滤  -->
         <if test="product.params.productNameEqual != null and product.params.productNameEqual.size() > 0">
@@ -124,19 +123,19 @@
             )
         </if>
         <if test="product.params.productNameLike != null and product.params.productNameLike.size() > 0">
-            AND
+            AND(
             <foreach item="item"
                      collection="product.params.productNameLike"
-                     index="index" open="(" separator="AND" close=")">
-                p.product_name  LIKE concat('%', #{item}, '%')
-            </foreach>
+                     index="index" open="(" separator="OR" close=")">
+                p.product_name LIKE concat('%', #{item}, '%')
+            </foreach>)
         </if>
         <if test="product.params.productNameNotLike != null and product.params.productNameNotLike.size() > 0">
             AND
             <foreach item="item"
                      collection="product.params.productNameNotLike"
                      index="index" open="(" separator="AND" close=")">
-                p.product_name  NOT LIKE concat('%', #{item}, '%')
+                p.product_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <!-- 上级产品名称过滤  -->
@@ -213,19 +212,19 @@
             )
         </if>
         <if test="product.params.productUnitNameLike != null and product.params.productUnitNameLike.size() > 0">
-            AND
+            AND(
             <foreach item="item"
                      collection="product.params.productUnitNameLike"
-                     index="index" open="(" separator="AND" close=")">
-                pu.product_unit_name  LIKE concat('%', #{item}, '%')
-            </foreach>
+                     index="index" open="(" separator="OR" close=")">
+                pu.product_unit_name LIKE concat('%', #{item}, '%')
+            </foreach>)
         </if>
         <if test="product.params.productUnitNameNotLike != null and product.params.productUnitNameNotLike.size() > 0">
             AND
             <foreach item="item"
                      collection="product.params.productUnitNameNotLike"
-                     index="index" open="(" separator="AND" close=")">
-                pu.product_unit_name  NOT LIKE concat('%', #{item}, '%')
+                     index="index" open="(" separator="OR" close=")">
+                pu.product_unit_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <!-- 产品类别过滤  -->
@@ -241,7 +240,7 @@
             </if>
             <!-- 产品类别过滤  -->
             <if test="product.params.dictionaryDataIds == null">
-                AND  (p.product_category ='' or p.product_category is null)
+                AND (p.product_category ='' or p.product_category is null)
             </if>
         </if>
         <!-- 产品类别过滤  -->
@@ -253,11 +252,12 @@
                          collection="product.params.dictionaryDataIds"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (p.product_category ='' or p.product_category is null))
+                </foreach>
+                or (p.product_category ='' or p.product_category is null))
             </if>
             <!-- 产品类别过滤  -->
             <if test="product.params.dictionaryDataIds == null">
-                AND  (p.product_category ='' or p.product_category is null)
+                AND (p.product_category ='' or p.product_category is null)
             </if>
         </if>
         <!-- 产品状态过滤  -->
@@ -319,37 +319,80 @@
     </select>
 
     <select id="getProductCodes" resultType="java.lang.String">
-        SELECT product_code FROM product WHERE delete_flag=0 AND product_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY product_code ASC
+        SELECT product_code
+        FROM product
+        WHERE delete_flag = 0
+          AND product_code LIKE CONCAT(#{prefixCodeRule}, '%')
+        ORDER BY product_code ASC
     </select>
 
     <!--    根据产品编码查询产品表-->
     <select id="selectProductByProductCode"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT
-            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
-            product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        SELECT product_id,
+               parent_product_id,
+               ancestors,
+               product_code,
+               product_name,
+               level,
+               product_unit_id,
+               product_category,
+               product_description,
+               list_price,
+               listing_flag,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM product
         WHERE BINARY product_code=#{productCode}
           and delete_flag=0
     </select>
     <select id="selectProductByParentProductId"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT
-            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
-            product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        SELECT product_id,
+               parent_product_id,
+               ancestors,
+               product_code,
+               product_name,
+               level,
+               product_unit_id,
+               product_category,
+               product_description,
+               list_price,
+               listing_flag,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM product
-        WHERE parent_product_id=#{parentProductId}
-          and delete_flag=0
+        WHERE parent_product_id = #{parentProductId}
+          and delete_flag = 0
     </select>
     <!--    根据产品单位ID查询产品表-->
     <select id="selectProductByProductUnitId"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT
-            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
-            product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        SELECT product_id,
+               parent_product_id,
+               ancestors,
+               product_code,
+               product_name,
+               level,
+               product_unit_id,
+               product_category,
+               product_description,
+               list_price,
+               listing_flag,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM product
-        WHERE product_unit_id=#{productUnitId}
-          and delete_flag=0
+        WHERE product_unit_id = #{productUnitId}
+          and delete_flag = 0
     </select>
     <!--    根据产品单位ID批量查询产品表-->
     <select id="selectProductByProductUnitIds"
@@ -368,20 +411,32 @@
     </select>
     <!--    查询产品是否用到枚举-->
     <select id="queryProductQuote" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT
-            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
-            product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        SELECT product_id,
+               parent_product_id,
+               ancestors,
+               product_code,
+               product_name,
+               level,
+               product_unit_id,
+               product_category,
+               product_description,
+               list_price,
+               listing_flag,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM product
-        WHERE product_description=#{product.productCategory}
+        WHERE product_description = #{product.productCategory}
            or listing_flag = #{product.listingFlag}
-            and delete_flag=0
+            and delete_flag = 0
     </select>
     <!--    返回产品层级-->
     <select id="selectLevel" resultType="java.lang.Integer">
-        SELECT
-            level
+        SELECT level
         FROM product
-        WHERE delete_flag=0
+        WHERE delete_flag = 0
         group by level
     </select>
     <!--    根据产品IDS返回列表-->
@@ -419,23 +474,23 @@
     </select>
     <!--    产品是否被引用-->
     <select id="selectProductQuote" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT  p.product_id,
-                td.indicator_id ,
-                p.parent_product_id,
-                p.ancestors,
-                p.product_code,
-                p.product_name,
-                p.`level`,
-                p.product_unit_id,
-                p.product_category,
-                p.product_description,
-                p.list_price,
-                p.listing_flag,
-                p.delete_flag,
-                p.create_by,
-                p.create_time,
-                p.update_by,
-                p.update_time
+        SELECT p.product_id,
+               td.indicator_id,
+               p.parent_product_id,
+               p.ancestors,
+               p.product_code,
+               p.product_name,
+               p.`level`,
+               p.product_unit_id,
+               p.product_category,
+               p.product_description,
+               p.list_price,
+               p.listing_flag,
+               p.delete_flag,
+               p.create_by,
+               p.create_time,
+               p.update_by,
+               p.update_time
         FROM product p
                  left join target_decompose_details tdd
                            on p.product_id = tdd.product_id
@@ -449,7 +504,7 @@
     <!--    根据产品code集合查询产品数据-->
     <select id="selectProductByProductCodes"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT  p.product_id,
+        SELECT p.product_id,
         p.parent_product_id,
         p.ancestors,
         p.product_code,
@@ -474,7 +529,7 @@
         </foreach>
         and p.delete_flag = 0
     </select>
-<!--    根据id查询所有子级数据-->
+    <!--    根据id查询所有子级数据-->
     <select id="selectAncestors" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT
         product_id,
@@ -552,9 +607,12 @@
     <!--新增产品表-->
     <insert id="insertProduct" useGeneratedKeys="true" keyProperty="productId">
         INSERT INTO product
-        (parent_product_id,ancestors,product_code,product_name,level,product_unit_id,product_category,product_description,list_price,listing_flag,delete_flag,create_by,create_time,update_by,update_time)
-        VALUES
-            (#{product.parentProductId},#{product.ancestors},#{product.productCode},#{product.productName},#{product.level},#{product.productUnitId},#{product.productCategory},#{product.productDescription},#{product.listPrice},#{product.listingFlag},#{product.deleteFlag},#{product.createBy},#{product.createTime},#{product.updateBy},#{product.updateTime})
+        (parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
+         product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time)
+        VALUES (#{product.parentProductId}, #{product.ancestors}, #{product.productCode}, #{product.productName},
+                #{product.level}, #{product.productUnitId}, #{product.productCategory}, #{product.productDescription},
+                #{product.listPrice}, #{product.listingFlag}, #{product.deleteFlag}, #{product.createBy},
+                #{product.createTime}, #{product.updateBy}, #{product.updateTime})
     </insert>
     <!--修改产品表-->
     <update id="updateProduct">
@@ -614,8 +672,7 @@
         SET delete_flag= 1,
             update_by=#{updateBy},
             update_time=#{updateTime}
-        WHERE
-            product_id=#{product.productId}
+        WHERE product_id = #{product.productId}
     </update>
     <!--逻辑批量删除产品表-->
     <update id="logicDeleteProductByProductIds">
@@ -645,8 +702,9 @@
 
     <!--物理删除产品表-->
     <delete id="deleteProductByProductId">
-        DELETE FROM product
-        WHERE product_id=#{product}
+        DELETE
+        FROM product
+        WHERE product_id = #{product}
 
     </delete>
     <!--物理批量删除产品表-->

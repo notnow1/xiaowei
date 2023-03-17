@@ -8,6 +8,7 @@ import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserStatusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -104,6 +105,16 @@ public class UserController extends BaseController {
     @PostMapping("/resetPwd")
     public AjaxResult resetPwd(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
         return toAjax(userService.resetPwd(userDTO));
+    }
+
+    /**
+     * 用户状态修改
+     */
+    @RequiresPermissions(value = {"system:manage:user:editUserStatus:enable", "system:manage:user:editUserStatus:disable"}, logical = Logical.OR)
+    @PostMapping("/editUserStatus")
+    public AjaxResult editUserStatus(@Validated @RequestBody UserStatusDTO userStatusDTO) {
+        userService.editUserStatus(userStatusDTO);
+        return success();
     }
 
     /**

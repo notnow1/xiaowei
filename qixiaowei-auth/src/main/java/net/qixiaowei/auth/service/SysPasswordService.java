@@ -53,6 +53,16 @@ public class SysPasswordService {
     }
 
     /**
+     * 重置密码错误间隔缓存键名
+     *
+     * @param userAccount 用户帐号
+     * @return 缓存键key
+     */
+    private String getResetIntervalCacheKey(String userAccount) {
+        return CacheConstants.PWD_RESET_INTERVAL_KEY + userAccount;
+    }
+
+    /**
      * 登录账户密码错误次数缓存键名
      *
      * @param userAccount 用户名
@@ -72,6 +82,17 @@ public class SysPasswordService {
      */
     private String getResetCacheKeyContainTenantId(String userAccount, Long tenantId) {
         return this.getResetCacheKey(userAccount) + ":" + tenantId;
+    }
+
+    /**
+     * 重置密码间隔缓存键名
+     *
+     * @param userAccount 用户名
+     * @param tenantId    租户ID
+     * @return 缓存键key
+     */
+    private String getResetIntervalCacheKeyContainTenantId(String userAccount, Long tenantId) {
+        return this.getResetIntervalCacheKey(userAccount) + ":" + tenantId;
     }
 
     public void validate(UserDTO user, String password) {
@@ -109,12 +130,18 @@ public class SysPasswordService {
      * @return: void
      **/
     public void validateOfReset(String userAccount, Long tenantId) {
-        String cacheKey = this.getResetCacheKey(userAccount);
-        if (StringUtils.isNotNull(tenantId)) {
-            cacheKey = this.getResetCacheKeyContainTenantId(userAccount, tenantId);
+        boolean tenantNull = StringUtils.isNull(tenantId);
+        String intervalCacheKey = tenantNull ? this.getResetIntervalCacheKey(userAccount) : this.getResetIntervalCacheKeyContainTenantId(userAccount, tenantId);
+        if (redisService.hasKey(intervalCacheKey)) {
+            long expire = redisService.getExpire(intervalCacheKey);
+            throw new ServiceException("请等待" + expire + "秒后再重置密码。");
         }
+        //发送间隔：10分钟。
+        long keyExpireTime = 10;
+        redisService.setCacheObject(intervalCacheKey, null, keyExpireTime, TimeUnit.MINUTES);
+        String cacheKey = tenantNull ? this.getResetCacheKey(userAccount) : this.getResetCacheKeyContainTenantId(userAccount, tenantId);
         Integer resetRetryCount = redisService.getCacheObject(cacheKey);
-        if (resetRetryCount == null) {
+        if (null == resetRetryCount) {
             resetRetryCount = 0;
         }
         if (resetRetryCount >= Integer.valueOf(maxResetRetryCount).intValue()) {

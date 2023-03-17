@@ -489,6 +489,22 @@
             #{item}
         </foreach>
     </update>
+
+    <update id="updateUserStatusByUserIds">
+        UPDATE user
+        SET
+        status=#{status},
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        user_id IN
+        <foreach item="item"
+                 collection="userIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
     <!--批量新增用户表-->
     <insert id="batchUser">
         INSERT INTO user

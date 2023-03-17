@@ -158,7 +158,7 @@
             AND
             <foreach item="item"
                      collection="indicator.params.indicatorCodeLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 t1.indicator_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -193,7 +193,7 @@
             AND
             <foreach item="item"
                      collection="indicator.params.indicatorNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 t1.indicator_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>

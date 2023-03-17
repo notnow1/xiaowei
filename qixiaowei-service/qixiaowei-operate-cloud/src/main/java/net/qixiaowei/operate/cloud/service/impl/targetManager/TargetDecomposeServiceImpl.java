@@ -2895,7 +2895,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             if (StringUtils.equals(key, DecompositionDimension.EMPLOYEE.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
-                    int employeeCount = list.size()-1;
+                    int employeeCount = list.size();
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list.size() - 1 < i) {
@@ -2926,7 +2926,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             } else if (StringUtils.equals(key, DecompositionDimension.AREA.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
                     List<AreaDTO> list2  = (List<AreaDTO>) list.get(0);
-                    int areaCount = list2.size()-1;
+                    int areaCount = list2.size();
                     for (int i = 0; i < Math.max(list2.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list2.size() - 1 < i) {
@@ -2956,7 +2956,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             } else if (StringUtils.equals(key, DecompositionDimension.DEPARTMENT.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
-                    int departmentCount = list.size()-1;
+                    int departmentCount = list.size();
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list.size() - 1 < i) {
@@ -2986,7 +2986,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             } else if (StringUtils.equals(key, DecompositionDimension.INDUSTRY.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
-                    int industryCount = list.size()-1;
+                    int industryCount = list.size();
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list.size() - 1 < i) {
@@ -3016,7 +3016,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             } else if (StringUtils.equals(key, DecompositionDimension.REGION.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
-                    int regionCount = list.size()-1;
+                    int regionCount = list.size();
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list.size() - 1 < i) {
@@ -3047,7 +3047,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             } else if (StringUtils.equals(key, DecompositionDimension.PRODUCT.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
-                    int productCount = list.size()-1;
+                    int productCount = list.size();
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                         if (list.size() - 1 < i) {
