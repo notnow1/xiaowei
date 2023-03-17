@@ -380,14 +380,20 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
      * @param emolumentPlanDTO
      */
     private void addCalculate(EmolumentPlanDTO emolumentPlanDTO) {
+        //预算年前一年总薪酬包
+        BigDecimal emolumentPackageBeforeOne = new BigDecimal("0");
         if (StringUtils.isNotNull(emolumentPlanDTO)) {
             //预算年前一年销售收入
             BigDecimal revenueBeforeOne = emolumentPlanDTO.getRevenueBeforeOne();
             if (null != revenueBeforeOne && revenueBeforeOne.compareTo(new BigDecimal("0")) != 0) {
                 revenueBeforeOne = revenueBeforeOne.multiply(new BigDecimal("10000")).setScale(10, BigDecimal.ROUND_HALF_UP);
             }
-            //预算年前一年总薪酬包
-            BigDecimal emolumentPackageBeforeOne = emolumentPlanDTO.getEmolumentPackageBeforeOne();
+            BigDecimal emolumentPackageBeforeOne1 = emolumentPlanDTO.getEmolumentPackageBeforeOne();
+            if (null != emolumentPackageBeforeOne1 && emolumentPackageBeforeOne1.compareTo(new BigDecimal("0")) != 0){
+                //预算年前一年总薪酬包
+                emolumentPackageBeforeOne =emolumentPackageBeforeOne1.divide(new BigDecimal("10000"),10,BigDecimal.ROUND_HALF_UP);
+            }
+
             if (null != revenueBeforeOne && revenueBeforeOne.compareTo(new BigDecimal("0")) != 0 && null != emolumentPackageBeforeOne && emolumentPackageBeforeOne.compareTo(new BigDecimal("0")) != 0) {
                 BigDecimal erBeforeOne = emolumentPackageBeforeOne.divide(revenueBeforeOne, 10, BigDecimal.ROUND_HALF_UP);
                 if (erBeforeOne.compareTo(new BigDecimal("0")) > 0) {
