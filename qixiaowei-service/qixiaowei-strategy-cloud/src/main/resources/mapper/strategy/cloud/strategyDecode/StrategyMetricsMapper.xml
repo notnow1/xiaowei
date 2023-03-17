@@ -328,7 +328,7 @@
             #{item}
         </foreach>
     </select>
-    <!--根据ID集合查找-->strategyIndexDimensionIds
+    <!--根据ID集合查找 strategyIndexDimensionIds-->
     <select id="selectStrategyMetricsByStrategyIndexDimensionIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO">
         SELECT

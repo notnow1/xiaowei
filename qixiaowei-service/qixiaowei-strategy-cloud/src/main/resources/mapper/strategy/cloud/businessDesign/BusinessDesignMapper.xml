@@ -26,7 +26,6 @@
         WHERE bd.business_design_id=#{businessDesignId}
         and bd.delete_flag=0
     </select>
-
     <!--    批量查询业务设计表-->
     <select id="selectBusinessDesignByBusinessDesignIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
@@ -41,7 +40,6 @@
         </foreach>
         and delete_flag=0
     </select>
-
     <!--    查询业务设计表列表-->
     <select id="selectBusinessDesignList"
             resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
