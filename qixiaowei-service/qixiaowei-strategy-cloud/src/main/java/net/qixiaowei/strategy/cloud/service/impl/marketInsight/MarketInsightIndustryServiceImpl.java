@@ -250,7 +250,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
             for (MarketInsightIndustryDTO insightIndustryDTO : marketInsightIndustryDTOS) {
                 String businessUnitDecompose = insightIndustryDTO.getBusinessUnitDecompose();
                 List<Map<String, Object>> dropList = PlanBusinessUnitCode.getDropList(businessUnitDecompose);
-                marketInsightIndustryDTO.setBusinessUnitDecomposes(dropList);
+                insightIndustryDTO.setBusinessUnitDecomposes(dropList);
             }
             List<Long> productIds = marketInsightIndustryDTOS.stream().filter(f -> null != f.getProductId()).map(MarketInsightIndustryDTO::getProductId).collect(Collectors.toList());
             List<Long> areaIds = marketInsightIndustryDTOS.stream().filter(f -> null != f.getAreaId()).map(MarketInsightIndustryDTO::getAreaId).collect(Collectors.toList());
