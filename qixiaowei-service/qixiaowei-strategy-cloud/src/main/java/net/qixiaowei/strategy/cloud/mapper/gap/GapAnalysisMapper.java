@@ -105,4 +105,12 @@ public interface GapAnalysisMapper {
      * @return 结果
      */
     int batchGapAnalysis(@Param("gapAnalysiss") List<GapAnalysis> gapAnalysiss);
+
+    /**
+     * 根据维度ID集合查找
+     *
+     * @param planBusinessUnitIds 维度ID集合
+     * @return 结果
+     */
+    List<GapAnalysisDTO> selectGapAnalysisByPlanBusinessUnitIds(@Param("planBusinessUnitIds") List<Long> planBusinessUnitIds);
 }

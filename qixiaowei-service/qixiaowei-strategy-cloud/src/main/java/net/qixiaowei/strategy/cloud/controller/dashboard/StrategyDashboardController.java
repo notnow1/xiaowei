@@ -63,4 +63,13 @@ public class StrategyDashboardController extends BaseController {
         return AjaxResult.success(iStrategyDashboardService.dashboardTargetLeaderboardList(strategyDashboardDTO));
     }
 
+    /**
+     * 业务设计九宫格仪表盘查询下拉最近一次数据
+     */
+    @RequiresPermissions("strategy:cloud:dashboard:businessDesign")
+    @GetMapping("/recentBusinessDesignList")
+    public AjaxResult recentBusinessDesignList(@RequestParam("planYear") Integer planYear) {
+        return AjaxResult.success(iStrategyDashboardService.recentBusinessDesignList(planYear));
+    }
+
 }

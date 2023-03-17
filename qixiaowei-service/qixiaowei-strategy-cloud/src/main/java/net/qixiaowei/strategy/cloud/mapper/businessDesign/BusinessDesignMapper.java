@@ -107,9 +107,18 @@ public interface BusinessDesignMapper {
     int batchBusinessDesign(@Param("businessDesigns") List<BusinessDesign> businessDesigns);
 
     /**
-     * 查询最近一次
+     * 最近一次的业务设计
      *
-     * @return 结果
+     * @param planYear 规划年份
+     * @return 业务设计
      */
-    BusinessDesignDTO selectBusinessDesignRecently();
+    BusinessDesignDTO selectBusinessDesignRecently(@Param("planYear") Integer planYear);
+
+    /**
+     * 根据维度ID集合查询
+     *
+     * @param planBusinessUnitIds 维度ID集合
+     * @return list
+     */
+    List<BusinessDesignDTO> selectBusinessDesignByPlanBusinessUnitIds(@Param("planBusinessUnitIds") List<Long> planBusinessUnitIds);
 }

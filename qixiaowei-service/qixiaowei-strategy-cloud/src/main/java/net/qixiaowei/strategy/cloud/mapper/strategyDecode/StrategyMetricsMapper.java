@@ -121,4 +121,20 @@ public interface StrategyMetricsMapper {
      * @return List
      */
     List<StrategyMetricsDTO> selectStrategyMetricsByStrategyMeasureIds(@Param("strategyMeasureIds") List<Long> strategyMeasureIds);
+
+    /**
+     * 根据维度id集合查询
+     *
+     * @param planBusinessUnitIds 维度id集合
+     * @return list
+     */
+    List<StrategyMetricsDTO> selectStrategyMetricsByPlanBusinessUnitIds(@Param("planBusinessUnitIds") List<Long> planBusinessUnitIds);
+
+    /**
+     * 根据ID集合查找
+     *
+     * @param strategyIndexDimensionIds 战略指标ID集合
+     * @return list
+     */
+    List<StrategyMetricsDTO> selectStrategyMetricsByStrategyIndexDimensionIds(@Param("strategyIndexDimensionIds") List<Long> strategyIndexDimensionIds);
 }

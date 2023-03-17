@@ -27,7 +27,37 @@
         WHERE akw.annual_key_work_id=#{annualKeyWorkId}
         and akw.delete_flag=0
     </select>
-
+    <!--根据维度ID集合查询-->
+    <select id="selectAnnualKeyWorkByPlanBusinessUnitIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO">
+        SELECT
+        akw.annual_key_work_id,
+        akw.plan_year,
+        akw.plan_business_unit_id,
+        akw.business_unit_decompose,
+        akw.area_id,
+        akw.department_id,
+        akw.product_id,
+        akw.industry_id,
+        akw.plan_rank,
+        akw.delete_flag,
+        akw.create_by,
+        akw.create_time,
+        akw.update_by,
+        akw.update_time,
+        pbu.business_unit_name
+        FROM annual_key_work akw
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = akw.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE akw.delete_flag=0
+        AND akw.plan_business_unit_id IN
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--    批量查询年度重点工作表-->
     <select id="selectAnnualKeyWorkByAnnualKeyWorkIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO">

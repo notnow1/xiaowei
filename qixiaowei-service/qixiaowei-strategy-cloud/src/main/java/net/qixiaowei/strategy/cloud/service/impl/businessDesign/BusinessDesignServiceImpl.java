@@ -761,13 +761,14 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
     }
 
     /**
-     * 查询最近一次
+     * 最近一次的业务设计
      *
-     * @return 结果
+     * @param planYear 规划年份
+     * @return 业务设计
      */
     @Override
-    public BusinessDesignDTO selectBusinessDesignRecently() {
-        return businessDesignMapper.selectBusinessDesignRecently();
+    public BusinessDesignDTO selectBusinessDesignRecently(Integer planYear) {
+        return businessDesignMapper.selectBusinessDesignRecently(planYear);
     }
 
     /**

@@ -54,7 +54,7 @@ public class BusinessDesignDTO {
     /**
      * 规划业务单元ID
      */
-    @NotNull(message = "规划年度不能为空", groups = {BusinessDesignDTO.AddBusinessDesignDTO.class})
+    @NotNull(message = "规划业务单元ID不能为空", groups = {BusinessDesignDTO.AddBusinessDesignDTO.class})
     private Long planBusinessUnitId;
     /**
      * 规划业务单元名称

@@ -104,7 +104,8 @@ public interface IBusinessDesignService {
     /**
      * 最近一次的业务设计
      *
+     * @param planYear 规划年份
      * @return 业务设计
      */
-    BusinessDesignDTO selectBusinessDesignRecently();
+    BusinessDesignDTO selectBusinessDesignRecently(Integer planYear);
 }

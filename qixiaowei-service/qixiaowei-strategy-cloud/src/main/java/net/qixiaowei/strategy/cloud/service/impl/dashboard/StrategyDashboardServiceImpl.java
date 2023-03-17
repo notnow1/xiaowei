@@ -1,6 +1,8 @@
 package net.qixiaowei.strategy.cloud.service.impl.dashboard;
 
 
+import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MarketInsightIndustry;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignAxisConfigDTO;
@@ -100,10 +102,11 @@ public class StrategyDashboardServiceImpl implements IStrategyDashboardService {
      */
     @Override
     public BusinessDesignDTO dashboardTargetLeaderboardList(StrategyDashboardDTO strategyDashboardDTO) {
+        Integer planYear = strategyDashboardDTO.getPlanYear();
         Long planBusinessUnitId = strategyDashboardDTO.getPlanBusinessUnitId();
         BusinessDesignDTO businessDesignDTO;
         if (StringUtils.isNull(planBusinessUnitId)) {// 查询最近一次
-            businessDesignDTO = businessDesignService.selectBusinessDesignRecently();
+            businessDesignDTO = businessDesignService.selectBusinessDesignRecently(planYear);
             if (StringUtils.isNull(businessDesignDTO)) {
                 businessDesignDTO = new BusinessDesignDTO();
                 businessDesignDTO.setBusinessDesignParamDTOS(new ArrayList<>());
@@ -113,12 +116,13 @@ public class StrategyDashboardServiceImpl implements IStrategyDashboardService {
         } else {
             PlanBusinessUnitDTO planBusinessUnitDTO = planBusinessUnitService.selectPlanBusinessUnitByPlanBusinessUnitId(planBusinessUnitId);
             String businessUnitDecompose = planBusinessUnitDTO.getBusinessUnitDecompose();
+            BusinessDesignDTO businessDesignDTOParams = new BusinessDesignDTO();
             if (businessUnitDecompose.equals("compare")) {
-                BusinessDesignDTO businessDesignDTOParams = new BusinessDesignDTO();
+                businessDesignDTOParams.setPlanYear(planYear);
                 businessDesignDTOParams.setPlanBusinessUnitId(planBusinessUnitId);
                 businessDesignDTO = businessDesignService.selectBusinessDesignList(businessDesignDTOParams).get(0);
             } else {
-                BusinessDesignDTO businessDesignDTOParams = new BusinessDesignDTO();
+                businessDesignDTOParams.setPlanYear(planYear);
                 businessDesignDTOParams.setPlanBusinessUnitId(planBusinessUnitId);
                 businessDesignDTOParams.setAreaId(strategyDashboardDTO.getAreaId());
                 businessDesignDTOParams.setProductId(strategyDashboardDTO.getProductId());
@@ -135,7 +139,6 @@ public class StrategyDashboardServiceImpl implements IStrategyDashboardService {
                 }
             }
         }
-
         Long businessDesignId = businessDesignDTO.getBusinessDesignId();
         List<BusinessDesignParamDTO> businessDesignParamDTOS = businessDesignParamService.selectBusinessDesignParamByBusinessDesignId(businessDesignId);
         // 综合毛利率综合订单额计算
@@ -194,5 +197,32 @@ public class StrategyDashboardServiceImpl implements IStrategyDashboardService {
             businessDesignDTO.setBusinessDesignAxisConfigMap(new ArrayList<>());
         }
         return businessDesignDTO;
+    }
+
+    /**
+     * 最近一次的业务设计仪表盘列表
+     *
+     * @param planYear 规划年份
+     * @return 结果
+     */
+    @Override
+    public Map<String, Object> recentBusinessDesignList(Integer planYear) {
+        if (StringUtils.isNull(planYear)) {
+            throw new ServiceException("请传入年份");
+        }
+        BusinessDesignDTO businessDesignDTO = businessDesignService.selectBusinessDesignRecently(planYear);
+        Map<String, Object> recentMap = new HashMap<>();
+        if (StringUtils.isNull(businessDesignDTO)) {
+            recentMap.put("businessUnitDecomposes", new ArrayList<>());
+            return recentMap;
+        }
+        List<Map<String, Object>> businessUnitDecomposes = PlanBusinessUnitCode.getDropList(businessDesignDTO.getBusinessUnitDecompose());
+        recentMap.put("areaId", businessDesignDTO.getAreaId());
+        recentMap.put("productId", businessDesignDTO.getProductId());
+        recentMap.put("industryId", businessDesignDTO.getIndustryId());
+        recentMap.put("departmentId", businessDesignDTO.getDepartmentId());
+        recentMap.put("businessUnitDecomposes", businessUnitDecomposes);
+        recentMap.put("planBusinessUnitId", businessDesignDTO.getPlanBusinessUnitId());
+        return recentMap;
     }
 }

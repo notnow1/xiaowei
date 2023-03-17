@@ -104,4 +104,12 @@ public interface AnnualKeyWorkMapper {
      * @return 结果
      */
     int batchAnnualKeyWork(@Param("annualKeyWorks") List<AnnualKeyWork> annualKeyWorks);
+
+    /**
+     * 根据维度ID集合查询
+     *
+     * @param planBusinessUnitIds 维度ID集合
+     * @return list
+     */
+    List<AnnualKeyWorkDTO> selectAnnualKeyWorkByPlanBusinessUnitIds(@Param("planBusinessUnitIds") List<Long> planBusinessUnitIds);
 }

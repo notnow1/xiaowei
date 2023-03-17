@@ -41,7 +41,37 @@
         </foreach>
         and delete_flag=0
     </select>
-
+    <!--根据维度ID集合查找-->
+    <select id="selectGapAnalysisByPlanBusinessUnitIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO">
+        SELECT
+        ga.gap_analysis_id,plan_year,
+        ga.plan_business_unit_id,
+        ga.business_unit_decompose,
+        ga.area_id,
+        ga.department_id,
+        ga.product_id,
+        ga.industry_id,
+        ga.operate_history_year,
+        ga.delete_flag,
+        ga.create_by,
+        ga.create_time,
+        ga.update_by,
+        ga.update_time,
+        pbu.business_unit_code,
+        pbu.business_unit_name
+        FROM gap_analysis ga
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = ga.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE ga.delete_flag=0
+        AND ga.plan_business_unit_id IN
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--    查询差距分析表列表-->
     <select id="selectGapAnalysisList" resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO">
         SELECT
@@ -176,10 +206,10 @@
         <if test="gapAnalysis.params.businessUnitNameLike != null and gapAnalysis.params.businessUnitNameLike.size() > 0">
             AND
             (<foreach item="item"
-                     collection="gapAnalysis.params.businessUnitNameLike"
-                     index="index" open="(" separator="OR" close=")">
-                pbu.business_unit_name LIKE concat('%', #{item}, '%')
-            </foreach>)
+                      collection="gapAnalysis.params.businessUnitNameLike"
+                      index="index" open="(" separator="OR" close=")">
+            pbu.business_unit_name LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="gapAnalysis.params.businessUnitNameNotLike != null and gapAnalysis.params.businessUnitNameNotLike.size() > 0">
             AND

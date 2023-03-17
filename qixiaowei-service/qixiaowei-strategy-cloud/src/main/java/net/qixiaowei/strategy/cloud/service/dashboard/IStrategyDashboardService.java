@@ -4,9 +4,8 @@ import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.dashboard.StrategyDashboardDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
-import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * IDashboardService接口
@@ -39,4 +38,12 @@ public interface IStrategyDashboardService {
      * @return 业务设计
      */
     BusinessDesignDTO dashboardTargetLeaderboardList(StrategyDashboardDTO strategyDashboardDTO);
+
+    /**
+     * 最近一次的业务设计仪表盘列表
+     *
+     * @param planYear 规划年份
+     * @return 结果
+     */
+    Map<String, Object> recentBusinessDesignList(Integer planYear);
 }

@@ -26,7 +26,66 @@
         WHERE sm.strategy_measure_id=#{strategyMeasureId}
         and sm.delete_flag=0
     </select>
-
+    <!--根据举措清单ID集合查找举措清单列表-->
+    <select id="selectStrategyMeasureByStrategyIndexDimensionIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO">
+        SELECT
+        sm.strategy_measure_id,
+        sm.plan_year,
+        sm.plan_business_unit_id,
+        sm.business_unit_decompose,
+        sm.area_id,
+        sm.department_id,
+        sm.product_id,
+        sm.industry_id,
+        sm.delete_flag,
+        sm.create_by,
+        sm.create_time,
+        sm.update_by,
+        sm.update_time,
+        pbu.business_unit_name
+        FROM strategy_measure sm
+        LEFT JOIN strategy_measure_detail smd
+        ON sm.strategy_measure_id = smd.strategy_measure_id
+        AND smd.delete_flag=0
+        WHERE sm.delete_flag=0
+        AND smd.strategy_index_dimension_id IN
+        <foreach item="item"
+                 collection="strategyIndexDimensionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <!--根据维度ID集合查询-->
+    <select id="selectStrategyMeasureByPlanBusinessUnitIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO">
+        SELECT
+        sm.strategy_measure_id,
+        sm.plan_year,
+        sm.plan_business_unit_id,
+        sm.business_unit_decompose,
+        sm.area_id,
+        sm.department_id,
+        sm.product_id,
+        sm.industry_id,
+        sm.delete_flag,
+        sm.create_by,
+        sm.create_time,
+        sm.update_by,
+        sm.update_time,
+        pbu.business_unit_name
+        FROM strategy_measure sm
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = sm.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE sm.delete_flag=0
+        AND sm.plan_business_unit_id IN
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--    批量查询战略举措清单表-->
     <select id="selectStrategyMeasureByStrategyMeasureIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO">
