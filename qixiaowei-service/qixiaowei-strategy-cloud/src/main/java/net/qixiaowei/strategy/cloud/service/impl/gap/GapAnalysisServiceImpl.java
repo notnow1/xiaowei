@@ -721,7 +721,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         Set<Integer> afterSorts = afterGroupBySort.keySet();
         List<Integer> editSorts = beforeSorts.stream().filter(afterSorts::contains).collect(Collectors.toList());
         List<Integer> addSorts = afterSorts.stream().filter(afterSort -> !beforeSorts.contains(afterSort)).collect(Collectors.toList());
-        List<Integer> delSorts = afterSorts.stream().filter(beforeSort -> !afterSorts.contains(beforeSort)).collect(Collectors.toList());
+        List<Integer> delSorts = beforeSorts.stream().filter(beforeSort -> !afterSorts.contains(beforeSort)).collect(Collectors.toList());
         //删除List
         List<GapAnalysisOperateDTO> delAnalysisOperateDTOS = gapAnalysisOperateDTOSBefore.stream().filter(gapAnalysisOperateDTO -> delSorts.contains(gapAnalysisOperateDTO.getSort())).collect(Collectors.toList());
         //新增List

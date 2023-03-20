@@ -545,7 +545,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         StrategyMetricsDTO strategyMetricsDTO = new StrategyMetricsDTO();
         params = new HashMap<>();
         params.put("indicatorIds", indicatorIds);
-        gapAnalysisDTO.setParams(params);
+        strategyMetricsDTO.setParams(params);
         R<List<StrategyMetricsDetailDTO>> strategyMetricsDetailDTOSR = strategyMetricsService.remoteListByIndicator(strategyMetricsDTO, SecurityConstants.INNER);
         List<StrategyMetricsDetailDTO> strategyMetricsDetailDTOS = strategyMetricsDetailDTOSR.getData();
         if (strategyMetricsDetailDTOSR.getCode() != 200) {

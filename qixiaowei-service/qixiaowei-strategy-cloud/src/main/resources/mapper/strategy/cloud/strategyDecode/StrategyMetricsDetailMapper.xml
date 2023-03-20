@@ -69,10 +69,10 @@
         <if test="strategyMetricsDetail.updateTime != null">
             and update_time=#{strategyMetricsDetail.updateTime}
         </if>
-        <if test="strategyMetricsDetail.params.indicatorId != null and strategyMetricsDetail.params.indicatorId.size()>0">
+        <if test="strategyMetricsDetail.params.indicatorIds != null and strategyMetricsDetail.params.indicatorIds.size()>0">
             AND indicator_id IN
             <foreach item="item"
-                     collection="strategyMetricsDetail.params.indicatorId"
+                     collection="strategyMetricsDetail.params.indicatorIds"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>

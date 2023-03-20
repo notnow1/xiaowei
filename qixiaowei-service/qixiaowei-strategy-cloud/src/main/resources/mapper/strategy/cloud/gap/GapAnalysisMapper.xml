@@ -238,6 +238,30 @@
             OR ga.industry_id IS NULL
             )
         </if>
+        <if test="gapAnalysis.params.industryIdIsNull != null">
+            AND ga.industry_id IS NULL or ga.industry_id =''
+        </if>
+        <if test="gapAnalysis.params.industryIdIsNotNull != null">
+            AND ga.industry_id IS NOT NULL or ga.industry_id != ''
+        </if>
+        <if test="gapAnalysis.params.industryIdIsNull != null and gapAnalysis.params.industryIdEqual.size() > 0">
+            and ga.industry_id IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.industryIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.industryIdNotEqual != null and gapAnalysis.params.industryIdNotEqual.size() > 0">
+            AND (ga.industry_id NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.industryIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ga.industry_id IS NULL
+            )
+        </if>
         <!--区域-->
         <if test="gapAnalysis.params.areaIdEqual != null and gapAnalysis.params.areaIdEqual.size() > 0">
             and ga.area_id IN

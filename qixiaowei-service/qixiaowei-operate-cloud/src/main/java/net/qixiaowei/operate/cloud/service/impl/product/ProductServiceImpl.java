@@ -1227,7 +1227,7 @@ public class ProductServiceImpl implements IProductService {
         BusinessDesignParamDTO businessDesignParamDTO = new BusinessDesignParamDTO();
         params = new HashMap<>();
         params.put("productIds", productIds);
-        businessDesignDTO.setParams(params);
+        businessDesignParamDTO.setParams(params);
         R<List<BusinessDesignParamDTO>> businessDesignParamsDTOSR = remoteBusinessDesignService.remoteBusinessDesignParams(businessDesignParamDTO, SecurityConstants.INNER);
         List<BusinessDesignParamDTO> businessDesignParamsDTOS = businessDesignParamsDTOSR.getData();
         if (businessDesignParamsDTOSR.getCode() != 200) {

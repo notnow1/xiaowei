@@ -345,8 +345,7 @@
         smt.update_by,
         smt.update_time
         FROM strategy_measure_task smt
-        WHERE smt.strategy_measure_task_id=#{strategyMeasureTaskId}
-        AND smt.delete_flag=0
+        WHERE smt.delete_flag=0
         <!--责任部门-->
         <if test="strategyMeasureTask.params.dutyDepartmentIds != null and strategyMeasureTask.params.dutyDepartmentIds.size() > 0">
             and smt.duty_department_id IN

@@ -1322,7 +1322,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private void isStrategyQuote(List<Long> employeeIds) {
         GapAnalysisOpportunityDTO gapAnalysisOpportunityDTO = new GapAnalysisOpportunityDTO();
         Map<String, Object> params = new HashMap<>();
-        params.put("employeeIds", employeeIds);
+        params.put("proposeEmployeeIds", employeeIds);
         gapAnalysisOpportunityDTO.setParams(params);
         R<List<GapAnalysisOpportunityDTO>> gapAnalysisOpportunityDTOSR = gapAnalysisService.remoteOpportunityList(gapAnalysisOpportunityDTO, SecurityConstants.INNER);
         List<GapAnalysisOpportunityDTO> gapAnalysisOpportunityDTOS = gapAnalysisOpportunityDTOSR.getData();
@@ -1334,7 +1334,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         }
         GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO = new GapAnalysisPerformanceDTO();
         params = new HashMap<>();
-        params.put("employeeIds", employeeIds);
+        params.put("proposeEmployeeIds", employeeIds);
         gapAnalysisPerformanceDTO.setParams(params);
         R<List<GapAnalysisPerformanceDTO>> gapAnalysisPerformanceDTOSR = gapAnalysisService.remotePerformanceList(gapAnalysisPerformanceDTO, SecurityConstants.INNER);
         List<GapAnalysisPerformanceDTO> gapAnalysisPerformanceDTOS = gapAnalysisPerformanceDTOSR.getData();
