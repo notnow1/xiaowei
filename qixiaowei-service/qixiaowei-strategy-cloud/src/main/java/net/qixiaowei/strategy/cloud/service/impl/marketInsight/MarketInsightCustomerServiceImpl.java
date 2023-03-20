@@ -962,6 +962,18 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
     }
 
     /**
+     * 远程查询看客户是否被引用
+     * @param marketInsightCustomerDTO
+     * @return
+     */
+    @Override
+    public List<MarketInsightCustomerDTO> remoteMarketInsightCustomerList(MarketInsightCustomerDTO marketInsightCustomerDTO) {
+        MarketInsightCustomer marketInsightCustomer = new MarketInsightCustomer();
+        BeanUtils.copyProperties(marketInsightCustomerDTO,marketInsightCustomer);
+        return marketInsightCustomerMapper.remoteMarketInsightCustomerList(marketInsightCustomer);
+    }
+
+    /**
      * 逻辑删除市场洞察客户表信息
      *
      * @param marketInsightCustomerDTO 市场洞察客户表

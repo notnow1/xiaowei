@@ -1049,6 +1049,18 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
     }
 
     /**
+     * 远程查询看行业列表是否被引用
+     * @param marketInsightIndustryDTO
+     * @return
+     */
+    @Override
+    public List<MarketInsightIndustryDTO> remoteMarketInsightCustomerList(MarketInsightIndustryDTO marketInsightIndustryDTO) {
+        MarketInsightIndustry marketInsightIndustry = new MarketInsightIndustry();
+        BeanUtils.copyProperties(marketInsightIndustryDTO,marketInsightIndustry);
+        return marketInsightIndustryMapper.remoteMarketInsightCustomerList(marketInsightIndustry);
+    }
+
+    /**
      * 逻辑删除市场洞察行业表信息
      *
      * @param marketInsightIndustryDTO 市场洞察行业表

@@ -109,4 +109,11 @@ public interface MarketInsightOpponentMapper{
     * @return 结果
     */
     int batchMarketInsightOpponent(@Param("marketInsightOpponents")List<MarketInsightOpponent> marketInsightOpponents);
+
+    /**
+     * 看对手远程查询列表是否被引用
+     * @param marketInsightOpponent
+     * @return
+     */
+    List<MarketInsightOpponentDTO> remoteMarketInsightOpponentList(@Param("marketInsightOpponent")MarketInsightOpponent marketInsightOpponent);
 }

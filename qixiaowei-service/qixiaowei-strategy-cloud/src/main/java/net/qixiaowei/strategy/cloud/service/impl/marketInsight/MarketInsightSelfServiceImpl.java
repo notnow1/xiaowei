@@ -498,6 +498,18 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
     }
 
     /**
+     * 看自身远程调用列表查询是否被引用
+     * @param marketInsightSelfDTO
+     * @return
+     */
+    @Override
+    public List<MarketInsightSelfDTO> remoteMarketInsightSelfList(MarketInsightSelfDTO marketInsightSelfDTO) {
+        MarketInsightSelf marketInsightSelf = new MarketInsightSelf();
+        BeanUtils.copyProperties(marketInsightSelfDTO,marketInsightSelf);
+        return marketInsightSelfMapper.remoteMarketInsightSelfList(marketInsightSelf);
+    }
+
+    /**
      * 逻辑删除市场洞察自身表信息
      *
      * @param marketInsightSelfDTO 市场洞察自身表

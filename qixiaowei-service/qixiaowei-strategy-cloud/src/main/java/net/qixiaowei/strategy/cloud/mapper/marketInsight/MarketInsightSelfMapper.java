@@ -116,4 +116,11 @@ public interface MarketInsightSelfMapper{
      * @return
      */
     List<MiOpponentChoiceDTO> opponentNameList(@Param("marketInsightSelf")MarketInsightSelf marketInsightSelf);
+
+    /**
+     * 看自身远程调用列表查询是否被引用
+     * @param marketInsightSelf
+     * @return
+     */
+    List<MarketInsightSelfDTO> remoteMarketInsightSelfList(@Param("marketInsightSelf")MarketInsightSelf marketInsightSelf);
 }

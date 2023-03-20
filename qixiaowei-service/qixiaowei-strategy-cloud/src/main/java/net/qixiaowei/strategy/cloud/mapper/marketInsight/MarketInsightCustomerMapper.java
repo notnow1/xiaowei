@@ -109,4 +109,11 @@ public interface MarketInsightCustomerMapper{
     * @return 结果
     */
     int batchMarketInsightCustomer(@Param("marketInsightCustomers")List<MarketInsightCustomer> marketInsightCustomers);
+
+    /**
+     * 远程查询看客户是否被引用
+     * @param marketInsightCustomer
+     * @return
+     */
+    List<MarketInsightCustomerDTO> remoteMarketInsightCustomerList(@Param("marketInsightCustomer")MarketInsightCustomer marketInsightCustomer);
 }

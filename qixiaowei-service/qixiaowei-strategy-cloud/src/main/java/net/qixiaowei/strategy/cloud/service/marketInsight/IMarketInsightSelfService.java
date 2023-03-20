@@ -93,4 +93,11 @@ public interface IMarketInsightSelfService{
      * @return
      */
     Map<String, List<MiOpponentChoiceDTO>> opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO);
+
+    /**
+     * 看自身远程调用列表查询是否被引用
+     * @param marketInsightSelfDTO
+     * @return
+     */
+    List<MarketInsightSelfDTO> remoteMarketInsightSelfList(MarketInsightSelfDTO marketInsightSelfDTO);
 }

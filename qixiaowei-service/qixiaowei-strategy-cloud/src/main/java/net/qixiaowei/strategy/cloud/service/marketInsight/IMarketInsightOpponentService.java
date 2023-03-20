@@ -83,4 +83,11 @@ public interface IMarketInsightOpponentService{
     * @return 结果
     */
     int deleteMarketInsightOpponentByMarketInsightOpponentId(Long marketInsightOpponentId);
+
+    /**
+     * 看对手远程查询列表是否被引用
+     * @param marketInsightOpponentDTO
+     * @return
+     */
+    List<MarketInsightOpponentDTO> remoteMarketInsightOpponentList(MarketInsightOpponentDTO marketInsightOpponentDTO);
 }

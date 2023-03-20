@@ -378,6 +378,65 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    看对手远程查询列表是否被引用-->
+    <select id="remoteMarketInsightOpponentList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightOpponentDTO">
+        select
+            mio.market_insight_opponent_id,
+            mio.plan_year,
+            mio.plan_business_unit_id,
+            pbu.business_unit_name as planBusinessUnitName,
+            mio.business_unit_decompose,
+            mio.area_id,
+            mio.department_id,
+            mio.product_id,
+            mio.industry_id,
+            mio.delete_flag,
+            mio.create_by,
+            mio.create_time,
+            mio.update_by,
+            mio.update_time
+        from
+            market_insight_opponent mio
+                left join plan_business_unit pbu
+                          on pbu.plan_business_unit_id=mio.plan_business_unit_id
+                              and pbu.delete_flag =0
+        where
+            mio.delete_flag = 0
+        <if test="marketInsightOpponent.params.productIds != null and marketInsightOpponent.params.productIds.size()>0">
+            AND mio.product_id IN
+            <foreach item="item"
+                     collection="marketInsightOpponent.params.productIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightOpponent.params.industryIds != null and marketInsightOpponent.params.industryIds.size()>0">
+            AND mio.industry_id IN
+            <foreach item="item"
+                     collection="marketInsightOpponent.params.industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightOpponent.params.areaIds != null and marketInsightOpponent.params.areaIds.size()>0">
+            AND  mio.area_id IN
+            <foreach item="item"
+                     collection="marketInsightOpponent.params.areaIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightOpponent.params.departmentIds != null and marketInsightOpponent.params.departmentIds.size()>0">
+            AND mio.department_id IN
+            <foreach item="item"
+                     collection="marketInsightOpponent.params.departmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by mio.create_time desc
+    </select>
     <!--新增市场洞察对手表-->
     <insert id="insertMarketInsightOpponent" useGeneratedKeys="true" keyProperty="marketInsightOpponentId">
         INSERT INTO market_insight_opponent (plan_year, plan_business_unit_id, business_unit_decompose, area_id,

@@ -380,6 +380,65 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    远程查询看客户是否被引用-->
+    <select id="remoteMarketInsightCustomerList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO">
+        select
+        mic.market_insight_customer_id,
+        mic.plan_year,
+        mic.plan_business_unit_id,
+        pbu.business_unit_name as planBusinessUnitName,
+        mic.business_unit_decompose,
+        mic.area_id,
+        mic.department_id,
+        mic.product_id,
+        mic.industry_id,
+        mic.delete_flag,
+        mic.create_by,
+        mic.create_time,
+        mic.update_by,
+        mic.update_time
+        from
+        market_insight_customer mic
+        left join plan_business_unit pbu
+        on pbu.plan_business_unit_id=mic.plan_business_unit_id
+        and pbu.delete_flag =0
+        where
+        mic.delete_flag = 0
+        <if test="marketInsightCustomer.params.productIds != null and marketInsightCustomer.params.productIds.size()>0">
+            AND mic.product_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.productIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.industryIds != null and marketInsightCustomer.params.industryIds.size()>0">
+            AND mic.industry_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.areaIds != null and marketInsightCustomer.params.areaIds.size()>0">
+            AND  mic.area_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.areaIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.departmentIds != null and marketInsightCustomer.params.departmentIds.size()>0">
+            AND mic.department_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.departmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by mic.create_time desc
+    </select>
     <!--新增市场洞察客户表-->
     <insert id="insertMarketInsightCustomer" useGeneratedKeys="true" keyProperty="marketInsightCustomerId">
         INSERT INTO market_insight_customer (plan_year, plan_business_unit_id, business_unit_decompose, area_id,

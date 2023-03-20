@@ -1,5 +1,6 @@
 package net.qixiaowei.strategy.cloud.service.marketInsight;
 
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO;
 
 
@@ -85,4 +86,10 @@ public interface IMarketInsightCustomerService{
     */
     int deleteMarketInsightCustomerByMarketInsightCustomerId(Long marketInsightCustomerId);
 
+    /**
+     * 远程查询看客户是否被引用
+     * @param marketInsightCustomerDTO
+     * @return
+     */
+    List<MarketInsightCustomerDTO> remoteMarketInsightCustomerList(MarketInsightCustomerDTO marketInsightCustomerDTO);
 }

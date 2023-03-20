@@ -808,5 +808,17 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
         }
         return marketInsightMacroExcelList;
     }
+
+    /**
+     * 看宏观远程调用列表查询是否被引用
+     * @param marketInsightMacroDTO
+     * @return
+     */
+    @Override
+    public List<MarketInsightMacroDTO> remoteMarketInsightMacroList(MarketInsightMacroDTO marketInsightMacroDTO) {
+        MarketInsightMacro marketInsightMacro = new MarketInsightMacro();
+        BeanUtils.copyProperties(marketInsightMacroDTO,marketInsightMacro);
+        return marketInsightMacroMapper.remoteMarketInsightMacroList(marketInsightMacro);
+    }
 }
 

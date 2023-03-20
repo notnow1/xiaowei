@@ -411,6 +411,65 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    远程查询看行业列表是否被引用-->
+    <select id="remoteMarketInsightCustomerList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO">
+        select
+            mii.market_insight_industry_id,
+            mii.plan_year,
+            mii.plan_business_unit_id,
+            pbu.business_unit_name as planBusinessUnitName,
+            mii.business_unit_decompose,
+            mii.area_id,
+            mii.department_id,
+            mii.product_id,
+            mii.industry_id,
+            mii.delete_flag,
+            mii.create_by,
+            mii.create_time,
+            mii.update_by,
+            mii.update_time
+        from
+            market_insight_industry mii
+                left join plan_business_unit pbu
+                          on pbu.plan_business_unit_id=mii.plan_business_unit_id
+                              and pbu.delete_flag =0
+        where
+            mii.delete_flag = 0
+        <if test="marketInsightIndustry.params.productIds != null and marketInsightIndustry.params.productIds.size()>0">
+            AND mii.product_id IN
+            <foreach item="item"
+                     collection="marketInsightIndustry.params.productIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightIndustry.params.industryIds != null and marketInsightIndustry.params.industryIds.size()>0">
+            AND mii.industry_id IN
+            <foreach item="item"
+                     collection="marketInsightIndustry.params.industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightIndustry.params.areaIds != null and marketInsightIndustry.params.areaIds.size()>0">
+            AND  mii.area_id IN
+            <foreach item="item"
+                     collection="marketInsightIndustry.params.areaIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightIndustry.params.departmentIds != null and marketInsightIndustry.params.departmentIds.size()>0">
+            AND mii.department_id IN
+            <foreach item="item"
+                     collection="marketInsightIndustry.params.departmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by mii.create_time desc
+    </select>
     <!--新增市场洞察行业表-->
     <insert id="insertMarketInsightIndustry" useGeneratedKeys="true" keyProperty="marketInsightIndustryId">
         INSERT INTO market_insight_industry (plan_year, plan_business_unit_id, business_unit_decompose, area_id,

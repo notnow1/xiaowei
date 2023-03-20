@@ -90,4 +90,11 @@ public interface IMarketInsightMacroService{
     * @return
     */
     List<MarketInsightMacroExcel> exportMarketInsightMacro(MarketInsightMacroDTO marketInsightMacroDTO);
+
+    /**
+     * 看宏观远程调用列表查询是否被引用
+     * @param marketInsightMacroDTO
+     * @return
+     */
+    List<MarketInsightMacroDTO> remoteMarketInsightMacroList(MarketInsightMacroDTO marketInsightMacroDTO);
 }

@@ -429,6 +429,65 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    看自身远程调用列表查询是否被引用-->
+    <select id="remoteMarketInsightSelfList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO">
+        select
+            mis.market_insight_self_id,
+            mis.plan_year,
+            mis.plan_business_unit_id,
+            pbu.business_unit_name as planBusinessUnitName,
+            mis.business_unit_decompose,
+            mis.area_id,
+            mis.department_id,
+            mis.product_id,
+            mis.industry_id,
+            mis.delete_flag,
+            mis.create_by,
+            mis.create_time,
+            mis.update_by,
+            mis.update_time
+        from
+            market_insight_self mis
+                left join plan_business_unit pbu
+                          on pbu.plan_business_unit_id=mis.plan_business_unit_id
+                              and pbu.delete_flag =0
+        where
+            mis.delete_flag = 0
+        <if test="marketInsightSelf.params.productIds != null and marketInsightSelf.params.productIds.size()>0">
+            AND mis.product_id IN
+            <foreach item="item"
+                     collection="marketInsightSelf.params.productIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightSelf.params.industryIds != null and marketInsightSelf.params.industryIds.size()>0">
+            AND mis.industry_id IN
+            <foreach item="item"
+                     collection="marketInsightSelf.params.industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightSelf.params.areaIds != null and marketInsightSelf.params.areaIds.size()>0">
+            AND  mis.area_id IN
+            <foreach item="item"
+                     collection="marketInsightSelf.params.areaIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightSelf.params.departmentIds != null and marketInsightSelf.params.departmentIds.size()>0">
+            AND mis.department_id IN
+            <foreach item="item"
+                     collection="marketInsightSelf.params.departmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by mis.create_time desc
+    </select>
     <!--新增市场洞察自身表-->
     <insert id="insertMarketInsightSelf" useGeneratedKeys="true" keyProperty="marketInsightSelfId">
         INSERT INTO market_insight_self (plan_year, plan_business_unit_id, business_unit_decompose, area_id,

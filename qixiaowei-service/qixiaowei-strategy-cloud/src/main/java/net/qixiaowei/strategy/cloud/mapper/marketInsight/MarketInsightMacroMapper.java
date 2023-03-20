@@ -109,4 +109,11 @@ public interface MarketInsightMacroMapper{
     * @return 结果
     */
     int batchMarketInsightMacro(@Param("marketInsightMacros")List<MarketInsightMacro> marketInsightMacros);
+
+    /**
+     * 看宏观远程调用列表查询是否被引用
+     * @param marketInsightMacro
+     * @return
+     */
+    List<MarketInsightMacroDTO> remoteMarketInsightMacroList(@Param("marketInsightMacro")MarketInsightMacro marketInsightMacro);
 }

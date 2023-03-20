@@ -116,4 +116,11 @@ public interface MarketInsightIndustryMapper{
     * @return 结果
     */
     int batchMarketInsightIndustry(@Param("marketInsightIndustrys")List<MarketInsightIndustry> marketInsightIndustrys);
+
+    /**
+     * 远程查询看行业列表是否被引用
+     * @param marketInsightIndustry
+     * @return
+     */
+    List<MarketInsightIndustryDTO> remoteMarketInsightCustomerList(@Param("marketInsightIndustry")MarketInsightIndustry marketInsightIndustry);
 }

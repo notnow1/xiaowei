@@ -801,6 +801,18 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
     }
 
     /**
+     * 看对手远程查询列表是否被引用
+     * @param marketInsightOpponentDTO
+     * @return
+     */
+    @Override
+    public List<MarketInsightOpponentDTO> remoteMarketInsightOpponentList(MarketInsightOpponentDTO marketInsightOpponentDTO) {
+        MarketInsightOpponent marketInsightOpponent = new MarketInsightOpponent();
+        BeanUtils.copyProperties(marketInsightOpponentDTO,marketInsightOpponent);
+        return marketInsightOpponentMapper.remoteMarketInsightOpponentList(marketInsightOpponent);
+    }
+
+    /**
      * 逻辑删除市场洞察对手表信息
      *
      * @param marketInsightOpponentDTO 市场洞察对手表

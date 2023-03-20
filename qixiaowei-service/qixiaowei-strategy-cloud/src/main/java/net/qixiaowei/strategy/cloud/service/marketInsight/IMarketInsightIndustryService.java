@@ -93,4 +93,11 @@ public interface IMarketInsightIndustryService{
      * @return
      */
     List<IndustryAttractionDTO> selectPreIndustryAttractionList(IndustryAttractionDTO industryAttractionDTO);
+
+    /**
+     * 远程查询看行业列表是否被引用
+     * @param marketInsightIndustryDTO
+     * @return
+     */
+    List<MarketInsightIndustryDTO> remoteMarketInsightCustomerList(MarketInsightIndustryDTO marketInsightIndustryDTO);
 }

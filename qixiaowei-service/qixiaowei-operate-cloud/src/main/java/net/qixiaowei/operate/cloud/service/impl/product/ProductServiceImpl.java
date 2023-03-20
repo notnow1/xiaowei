@@ -1079,41 +1079,44 @@ public class ProductServiceImpl implements IProductService {
         }
         if (StringUtils.isNotEmpty(productDTOS) && productDTOS.get(0) != null) {
             List<ProductDTO> productDTOList = productDTOS.stream().distinct().collect(Collectors.toList());
-            for (ProductDTO productDTO : productDTOList) {
-                //远程职级分解
-                List<Long> productIdList = new ArrayList<>();
-                productIdList.add(productDTO.getProductId());
-                R<List<OfficialRankDecomposeDTO>> officialRankDecomposeDTOList = remoteOfficialRankSystemService.selectOfficialDecomposeByDimensions(productIdList, 4, SecurityConstants.INNER);
-                List<OfficialRankDecomposeDTO> officialRankDecomposeData = officialRankDecomposeDTOList.getData();
-                if (StringUtils.isNotEmpty(officialRankDecomposeData)) {
-                    List<String> officialRankSystemNames = new ArrayList<>();
-                    for (OfficialRankDecomposeDTO officialRankDecomposeDatum : officialRankDecomposeData) {
-                        if (officialRankDecomposeDatum.getDecomposeDimension().equals(productDTO.getProductId())) {
-                            officialRankSystemNames.add(officialRankDecomposeDatum.getOfficialRankSystemName());
-                        }
-                    }
-                    if (StringUtils.isNotEmpty(officialRankSystemNames)) {
-                        decomposeErreo.append("产品" + productDTO.getProductName() + "已被职级体系名称[" + StringUtils.join(",", officialRankSystemNames) + "] 职级分解引用\n");
-                    }
-                }
-                //是否被目标分解引用
-                List<ProductDTO> productDTOList1 = productMapper.selectProductQuote(productDTO.getProductId());
-                //指标名称 远程调用
-                if (StringUtils.isNotEmpty(productDTOList1)) {
-                    List<Long> indicatorIds = productDTOList1.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
-
-                    R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
-                    List<IndicatorDTO> data = listR.getData();
-                    if (StringUtils.isNotEmpty(data)) {
-                        String indicatorName = data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
-                        if (StringUtils.isNotBlank(indicatorName)) {
-                            decomposeErreo.append("产品" + productDTO.getProductName() + "已被目标分解" + indicatorName + "引用\n");
-                        }
-                    }
-                }
-                // 战略云-其他引用
-                isStrategyQuote(productIds);
+            //远程职级分解
+            List<Long> productIdList = new ArrayList<>();
+            if (StringUtils.isNotEmpty(productDTOList)){
+                productIdList= productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList());
             }
+
+            R<List<OfficialRankDecomposeDTO>> officialRankDecomposeDTOList = remoteOfficialRankSystemService.selectOfficialDecomposeByDimensions(productIdList, 4, SecurityConstants.INNER);
+            List<OfficialRankDecomposeDTO> officialRankDecomposeData = officialRankDecomposeDTOList.getData();
+            if (StringUtils.isNotEmpty(officialRankDecomposeData)) {
+                List<String> officialRankSystemNames = new ArrayList<>();
+                for (OfficialRankDecomposeDTO officialRankDecomposeDatum : officialRankDecomposeData) {
+                    if (productIdList.contains(officialRankDecomposeDatum.getDecomposeDimension())) {
+                        officialRankSystemNames.add(officialRankDecomposeDatum.getOfficialRankSystemName());
+                    }
+                }
+                if (StringUtils.isNotEmpty(officialRankSystemNames)) {
+                    throw new ServiceException("数据被引用！");
+                    //decomposeErreo.append("产品" + productDTO.getProductName() + "已被职级体系名称[" + StringUtils.join(",", officialRankSystemNames) + "] 职级分解引用\n");
+                }
+            }
+            //是否被目标分解引用
+            List<ProductDTO> productDTOList1 = productMapper.selectProductQuote(productIdList);
+            //指标名称 远程调用
+            if (StringUtils.isNotEmpty(productDTOList1)) {
+                List<Long> indicatorIds = productDTOList1.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
+
+                R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+                List<IndicatorDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)) {
+                    String indicatorName = data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
+                    if (StringUtils.isNotBlank(indicatorName)) {
+                        throw new ServiceException("数据被引用！");
+                        //decomposeErreo.append("产品" + productDTO.getProductName() + "已被目标分解" + indicatorName + "引用\n");
+                    }
+                }
+            }
+            // 战略云-其他引用
+            isStrategyQuote(productIds);
         }
         productErreo.append(decomposeErreo);
         if (productErreo.length() > 0) {
@@ -1794,39 +1797,41 @@ public class ProductServiceImpl implements IProductService {
         if (StringUtils.isEmpty(productDTOS)) {
             throw new ServiceException("数据不存在！ 请刷新页面重试!");
         }
-        for (ProductDTO dto : productDTOS) {
-            //远程职级分解
-            List<Long> productIds = new ArrayList<>();
-            productIds.add(dto.getProductId());
-            R<List<OfficialRankDecomposeDTO>> officialRankDecomposeDTOList = remoteOfficialRankSystemService.selectOfficialDecomposeByDimensions(productIds, 4, SecurityConstants.INNER);
-            List<OfficialRankDecomposeDTO> officialRankDecomposeData = officialRankDecomposeDTOList.getData();
-            if (StringUtils.isNotEmpty(officialRankDecomposeData)) {
-                List<String> officialRankSystemNames = new ArrayList<>();
-                for (OfficialRankDecomposeDTO officialRankDecomposeDatum : officialRankDecomposeData) {
-                    if (officialRankDecomposeDatum.getDecomposeDimension().equals(dto.getProductId())) {
+        //远程职级分解
+        List<Long> productIds = new ArrayList<>();
+        productIds=productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList());
+        R<List<OfficialRankDecomposeDTO>> officialRankDecomposeDTOList = remoteOfficialRankSystemService.selectOfficialDecomposeByDimensions(productIds, 4, SecurityConstants.INNER);
+        List<OfficialRankDecomposeDTO> officialRankDecomposeData = officialRankDecomposeDTOList.getData();
+        if (StringUtils.isNotEmpty(officialRankDecomposeData)) {
+            List<String> officialRankSystemNames = new ArrayList<>();
+            for (OfficialRankDecomposeDTO officialRankDecomposeDatum : officialRankDecomposeData) {
+                Long decomposeDimension = officialRankDecomposeDatum.getDecomposeDimension();
+                if (null != decomposeDimension){
+                    if (productIds.contains(officialRankDecomposeDatum.getDecomposeDimension())){
                         officialRankSystemNames.add(officialRankDecomposeDatum.getOfficialRankSystemName());
                     }
                 }
-                if (StringUtils.isNotEmpty(officialRankSystemNames)) {
-                    decomposeErreo.append("产品" + dto.getProductName() + "已被职级体系名称[" + StringUtils.join(",", officialRankSystemNames) + "] 职级分解引用\n");
-                }
             }
+            if (StringUtils.isNotEmpty(officialRankSystemNames)) {
+                throw new ServiceException("数据被引用!");
+                //decomposeErreo.append("产品" + dto.getProductName() + "已被职级体系名称[" + StringUtils.join(",", officialRankSystemNames) + "] 职级分解引用\n");
+            }
+        }
 
-            //是否引用
-            List<ProductDTO> productDTOList = productMapper.selectProductQuote(dto.getProductId());
-            //战略云引用
-            isStrategyQuote(productIds);
-            //指标名称远程调用
-            if (StringUtils.isNotEmpty(productDTOList)) {
-                List<Long> indicatorIds = productDTOList.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
-                R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
-                List<IndicatorDTO> data = listR.getData();
-                if (StringUtils.isNotEmpty(data)) {
-                    String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
-                    String indicatorName = StringUtils.join(",", data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()));
-                    if (StringUtils.isNotBlank(indicatorName)) {
-                        decomposeErreo.append("产品" + productName + "已被目标分解" + indicatorName + "引用\n");
-                    }
+        //是否引用
+        List<ProductDTO> productDTOList = productMapper.selectProductQuote(productIds);
+        //战略云引用
+        isStrategyQuote(productIds);
+        //指标名称远程调用
+        if (StringUtils.isNotEmpty(productDTOList)) {
+            List<Long> indicatorIds = productDTOList.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
+            R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+            List<IndicatorDTO> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)) {
+                String indicatorName = StringUtils.join(",", data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()));
+                if (StringUtils.isNotBlank(indicatorName)) {
+                    throw new ServiceException("数据被引用!");
+                   //decomposeErreo.append("产品" + productName + "已被目标分解" + indicatorName + "引用\n");
                 }
             }
         }
