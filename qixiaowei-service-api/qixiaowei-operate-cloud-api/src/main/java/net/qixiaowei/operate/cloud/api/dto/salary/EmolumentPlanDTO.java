@@ -53,22 +53,22 @@ public class EmolumentPlanDTO extends BaseDTO {
     /**
     * 预算年前一年销售收入
     */
-    @NotNull(message = "预算年前一年销售收入不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
+    //@NotNull(message = "预算年前一年销售收入不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
     private BigDecimal revenueBeforeOne;
     /**
     * 预算年销售收入
     */
-    @NotNull(message = "预算年销售收入不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
+    //@NotNull(message = "预算年销售收入不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
     private  BigDecimal revenue;
     /**
     * 预算年后一年销售收入
     */
-    @NotNull(message = "预算年后一年销售收入不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
+    //@NotNull(message = "预算年后一年销售收入不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
     private  BigDecimal revenueAfterOne;
     /**
     * 预算年后二年销售收入
     */
-    @NotNull(message = "预算年后二年销售收入不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
+    //@NotNull(message = "预算年后二年销售收入不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
     private  BigDecimal revenueAfterTwo;
 
     /**
@@ -78,7 +78,7 @@ public class EmolumentPlanDTO extends BaseDTO {
     /**
     * 预算年前一年E/R值(%)
     */
-    @NotNull(message = "预算年前一年E/R值(%)不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
+    //@NotNull(message = "预算年前一年E/R值(%)不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
     private  BigDecimal erBeforeOne;
 
     /**
@@ -97,7 +97,7 @@ public class EmolumentPlanDTO extends BaseDTO {
     /**
     * 预算年E/R值改进率(%)
     */
-    @NotNull(message = "预算年E/R值改进率(%)不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
+    //@NotNull(message = "预算年E/R值改进率(%)不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
     private  BigDecimal emolumentRevenueImprove;
 
     /**
@@ -107,17 +107,17 @@ public class EmolumentPlanDTO extends BaseDTO {
     /**
     * 预算年后一年E/R值改进率(%)
     */
-    @NotNull(message = "预算年后一年E/R值改进率(%)不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
+    //@NotNull(message = "预算年后一年E/R值改进率(%)不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
     private  BigDecimal erImproveAfterOne;
     /**
     * 预算年后二年E/R值改进率(%)
     */
-    @NotNull(message = "预算年后二年E/R值改进率(%)不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
+    //@NotNull(message = "预算年后二年E/R值改进率(%)不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
     private  BigDecimal erImproveAfterTwo;
     /**
     * 预算年前一年总薪酬包
     */
-    @NotNull(message = "预算年前一年总薪酬包不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
+    //@NotNull(message = "预算年前一年总薪酬包不能为空", groups = {EmolumentPlanDTO.AddEmolumentPlanDTO.class})
     private  BigDecimal emolumentPackageBeforeOne;
 
     /**
