@@ -71,6 +71,10 @@ public class MiIndustryAttractionDataDTO extends BaseDTO {
      * 显示颜色
      */
     private  String  displayColor;
+    /**
+     * 字体颜色
+     */
+    private String fontColor;
 
     /**
     * 删除标记:0未删除;1已删除

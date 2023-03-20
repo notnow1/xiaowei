@@ -188,6 +188,7 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
                                 miIndustryAttractionDataDTO.setAssessStandardName(industryAttractionElementDTO.getAssessStandardName());
                                 miIndustryAttractionDataDTO.setAssessStandardDescription(industryAttractionElementDTO.getAssessStandardDescription());
                                 miIndustryAttractionDataDTO.setDisplayColor(industryAttractionElementDTO.getDisplayColor());
+                                miIndustryAttractionDataDTO.setFontColor(industryAttractionElementDTO.getFontColor());
                             }
 
                         }
@@ -612,13 +613,13 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
      * @param miIndustryDetailAddList
      */
     private void packAddAndUpdatemiIndustryAttractionData(MarketInsightIndustry marketInsightIndustry, List<MiIndustryDetailDTO> miIndustryDetailDTOS, List<MiIndustryAttractionDTO> miIndustryAttractionDTOList, List<MiIndustryDetail> miIndustryDetailAddList) {
+        int num = 0;
         for (MiIndustryDetailDTO miIndustryDetailDTO : miIndustryDetailDTOS) {
             //新增市场洞察行业吸引力数据集合
             List<MiIndustryAttractionData> miIndustryAttractionDataAddList = new ArrayList<>();
             //修改市场洞察行业吸引力数据集合
             List<MiIndustryAttractionData> miIndustryAttractionDataUpdateList = new ArrayList<>();
             Long miIndustryDetailId = miIndustryDetailDTO.getMiIndustryDetailId();
-            int num = 0;
             List<Long> miIndustryAttractionDataIds = new ArrayList<>();
             //前台传入数据市场洞察行业吸引力数据集合
             List<MiIndustryAttractionDataDTO> miIndustryAttractionDataDTOS = miIndustryDetailDTO.getMiIndustryAttractionDataDTOS();
