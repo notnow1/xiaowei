@@ -539,11 +539,11 @@ public class MarketInsightIndustryServiceImpl implements IMarketInsightIndustryS
         BigDecimal targetMarketSpace = miIndustryDetailDTO.getTargetMarketSpace();
         if (null != overallSpace && null != participateSpace && null != targetMarketSpace){
             if (overallSpace.compareTo(participateSpace)==-1){
-                throw new ServiceException("整体空间不能小于可参与空间！");
+                throw new ServiceException("金额应满足整体空间≥可参与空间≥目标市场空间,请检查！");
 
             }
             if (participateSpace.compareTo(targetMarketSpace)==-1){
-                throw new ServiceException("可参与空间不能小于目标市场空间！");
+                throw new ServiceException("金额应满足整体空间≥可参与空间≥目标市场空间,请检查！");
             }
         }
     }

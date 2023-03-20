@@ -21,39 +21,39 @@ Set @industry_attraction_id3 = (SELECT industry_attraction_id FROM industry_attr
 -- init of industry_attraction_element
 -- ----------------------------
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id1, '高潜行业', '总产值三年复合增长率达到GDP年均增长率的四倍（约为25-30%）', '#DEEBFF', 1, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id1, '高潜行业', '总产值三年复合增长率达到GDP年均增长率的四倍（约为25-30%）', '#DEEBFF','#0052CC', 1, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id1, '价值行业', '总产值三年复合增长率达到GDP年均增长率的两倍（约为13-15%）', '#DEEBFF', 2, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id1, '价值行业', '总产值三年复合增长率达到GDP年均增长率的两倍（约为13-15%）', '#DEEBFF','#0052CC', 2, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id1, '稳健行业', '总产值三年复合增长率大于等于GDP年均增长率小于两倍', '#DFE1E6', 3, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id1, '稳健行业', '总产值三年复合增长率大于等于GDP年均增长率小于两倍', '#DFE1E6','#182B4E', 3, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id1, '谨慎行业', '总产值三年复合增长率小于GDP年均增长率', '#FFEBE6', 4, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id1, '谨慎行业', '总产值三年复合增长率小于GDP年均增长率', '#FFEBE6','#BF2600', 4, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id2, '超高利润行业', '平均毛利率超过80%', '#DEEBFF', 1, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id2, '超高利润行业', '平均毛利率超过80%', '#DEEBFF','#0052CC', 1, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id2, '高利润行业', '平均毛利率50%-80%', '#DEEBFF', 2, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id2, '高利润行业', '平均毛利率50%-80%', '#DEEBFF','#0052CC', 2, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id2, '平均利润行业', '平均毛利率30%-50%', '#DFE1E6', 3, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id2, '平均利润行业', '平均毛利率30%-50%', '#DFE1E6','#182B4E', 3, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id2, '低利润行业', '平均毛利率低于30%', '#FFEBE6', 4, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id2, '低利润行业', '平均毛利率低于30%', '#FFEBE6','#BF2600', 4, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id3, '极高寡占型', 'CR8 ≥ 70%', '#FFEBE6', 1, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id3, '极高寡占型', 'CR8 ≥ 70%', '#FFEBE6','#BF2600', 1, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id3, '低集中寡占型', '40% ≤ CR8 < 70%', '#DEEBFF', 2, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id3, '低集中寡占型', '40% ≤ CR8 < 70%', '#DEEBFF','#0052CC', 2, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id3, '低集中竞争型', '20% ≤ CR8 < 40%', '#DEEBFF', 3, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id3, '低集中竞争型', '20% ≤ CR8 < 40%', '#DEEBFF','#0052CC', 3, 1, 0, 1, sysdate(), 1, sysdate(), 0);
 INSERT INTO industry_attraction_element
-( industry_attraction_id, assess_standard_name, assess_standard_description, display_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
-VALUES( @industry_attraction_id3, '分散竞争型', 'CR8 < 20%', '#DFE1E6', 4, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES( @industry_attraction_id3, '分散竞争型', 'CR8 < 20%', '#DFE1E6','#182B4E', 4, 1, 0, 1, sysdate(), 1, sysdate(), 0);
