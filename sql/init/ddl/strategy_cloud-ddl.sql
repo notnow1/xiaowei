@@ -40,6 +40,7 @@ CREATE TABLE industry_attraction_element(
     assess_standard_name VARCHAR(64)    COMMENT '评估标准名称' ,
     assess_standard_description VARCHAR(256)    COMMENT '评估标准说明' ,
     display_color VARCHAR(32)    COMMENT '显示颜色' ,
+    font_color VARCHAR(32)    COMMENT '字体颜色' ,
     sort SMALLINT UNSIGNED    COMMENT '排序' ,
     status TINYINT UNSIGNED NOT NULL   COMMENT '状态:0失效;1生效' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
