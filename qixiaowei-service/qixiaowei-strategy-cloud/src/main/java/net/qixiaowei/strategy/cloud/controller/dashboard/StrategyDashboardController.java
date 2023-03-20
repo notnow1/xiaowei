@@ -50,7 +50,8 @@ public class StrategyDashboardController extends BaseController {
     @RequiresPermissions("strategy:cloud:dashboard:strategyIntent")
     @PostMapping("/strategyIntent")
     public AjaxResult dashboardStrategyIntent(@RequestBody @Validated(StrategyDashboardDTO.QueryStrategyIntentDTO.class) StrategyDashboardDTO strategyDashboardDTO) {
-        StrategyIntentDTO strategyIntentDTO = iStrategyDashboardService.dashboardStrategyIntent(strategyDashboardDTO);
+        StrategyIntentDTO strategyIntentDTO = new StrategyIntentDTO();
+         strategyIntentDTO = iStrategyDashboardService.dashboardStrategyIntent(strategyDashboardDTO);
         return AjaxResult.success(strategyIntentDTO);
     }
 
