@@ -5,7 +5,7 @@
     <select id="selectIndustryAttractionElementByIndustryAttractionElementId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO">
         SELECT
-        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
+        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,font_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
         FROM industry_attraction_element
         WHERE  industry_attraction_element_id=#{industryAttractionElementId}
         and delete_flag=0
@@ -15,7 +15,7 @@
     <select id="selectIndustryAttractionElementByIndustryAttractionElementIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO">
         SELECT
-        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
+        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,font_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
         FROM industry_attraction_element
         WHERE  industry_attraction_element_id in
             <foreach item="item"
@@ -29,7 +29,7 @@
     <!--    查询行业吸引力要素表列表-->
     <select id="selectIndustryAttractionElementList" resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO">
         SELECT
-        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
+        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,font_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
         FROM industry_attraction_element
         WHERE delete_flag=0
                         <if test="industryAttractionElement.industryAttractionElementId != null">
@@ -47,6 +47,9 @@
                         <if test="industryAttractionElement.displayColor != null and industryAttractionElement.displayColor != ''">
                             and display_color=#{industryAttractionElement.displayColor}
                         </if>
+        <if test="industryAttractionElement.fontColor != null and industryAttractionElement.fontColor != ''">
+            and font_color=#{industryAttractionElement.fontColor}
+        </if>
                         <if test="industryAttractionElement.sort != null">
                             and sort=#{industryAttractionElement.sort}
                         </if>
@@ -73,7 +76,7 @@
     <select id="selectIndustryAttractionElementByIndustryAttractionId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO">
         SELECT
-            industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
+            industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,font_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
         FROM industry_attraction_element
         WHERE  industry_attraction_id=#{industryAttractionId}
           and delete_flag=0
@@ -82,7 +85,7 @@
     <select id="selectIndustryAttractionElementByIndustryAttractionIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO">
         SELECT
-        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
+        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,font_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
         FROM industry_attraction_element
         WHERE  industry_attraction_id in
         <foreach item="item"
@@ -97,7 +100,7 @@
     <select id="selectPreIndustryAttractionList"
             resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO">
         SELECT
-        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
+        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,font_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
         FROM industry_attraction_element
         WHERE  industry_attraction_id in
         <foreach item="item"
@@ -111,9 +114,9 @@
     </select>
     <!--新增行业吸引力要素表-->
     <insert id="insertIndustryAttractionElement" useGeneratedKeys="true" keyProperty="industryAttractionElementId">
-        INSERT INTO industry_attraction_element (industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO industry_attraction_element (industry_attraction_id,assess_standard_name,assess_standard_description,display_color,font_color,sort,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{industryAttractionElement.industryAttractionId},#{industryAttractionElement.assessStandardName},#{industryAttractionElement.assessStandardDescription},#{industryAttractionElement.displayColor},#{industryAttractionElement.sort},#{industryAttractionElement.status},#{industryAttractionElement.deleteFlag},#{industryAttractionElement.createBy},#{industryAttractionElement.createTime},#{industryAttractionElement.updateBy},#{industryAttractionElement.updateTime})
+        (#{industryAttractionElement.industryAttractionId},#{industryAttractionElement.assessStandardName},#{industryAttractionElement.assessStandardDescription},#{industryAttractionElement.displayColor},#{industryAttractionElement.fontColor},#{industryAttractionElement.sort},#{industryAttractionElement.status},#{industryAttractionElement.deleteFlag},#{industryAttractionElement.createBy},#{industryAttractionElement.createTime},#{industryAttractionElement.updateBy},#{industryAttractionElement.updateTime})
     </insert>
     <!--修改行业吸引力要素表-->
     <update id="updateIndustryAttractionElement">
@@ -131,6 +134,9 @@
                     <if test="industryAttractionElement.displayColor != null and industryAttractionElement.displayColor != ''">
                         display_color=#{industryAttractionElement.displayColor},
                     </if>
+        <if test="industryAttractionElement.fontColor != null and industryAttractionElement.fontColor != ''">
+            font_color=#{industryAttractionElement.fontColor},
+        </if>
                     <if test="industryAttractionElement.sort != null">
                         sort=#{industryAttractionElement.sort},
                     </if>
@@ -180,12 +186,12 @@
     </update>
     <!--批量新增行业吸引力要素表-->
     <insert id="batchIndustryAttractionElement">
-        INSERT INTO industry_attraction_element (industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO industry_attraction_element (industry_attraction_id,assess_standard_name,assess_standard_description,display_color,font_color,sort,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="industryAttractionElements"
                  separator=",">
-            (#{item.industryAttractionId},#{item.assessStandardName},#{item.assessStandardDescription},#{item.displayColor},#{item.sort},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.industryAttractionId},#{item.assessStandardName},#{item.assessStandardDescription},#{item.displayColor},#{item.fontColor},#{item.sort},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -237,6 +243,13 @@
                                 </if>
                         </foreach>
                 </trim>
+            <trim prefix="font_color=case" suffix="end,">
+                <foreach collection="industryAttractionElementList" item="item" index="index">
+                    <if test="item.fontColor != null and item.fontColor != ''">
+                        when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.fontColor}
+                    </if>
+                </foreach>
+            </trim>
                 <trim prefix="sort=case" suffix="end,">
                         <foreach collection="industryAttractionElementList" item="item" index="index">
                                 <if test="item.sort != null">

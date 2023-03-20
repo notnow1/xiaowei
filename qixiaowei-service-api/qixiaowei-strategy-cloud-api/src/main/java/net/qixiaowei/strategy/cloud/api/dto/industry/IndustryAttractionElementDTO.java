@@ -60,6 +60,10 @@ public class IndustryAttractionElementDTO extends BaseDTO {
     */
     private  String displayColor;
     /**
+     * 字体颜色
+     */
+    private String fontColor;
+    /**
     * 排序
     */
     private  Integer sort;
