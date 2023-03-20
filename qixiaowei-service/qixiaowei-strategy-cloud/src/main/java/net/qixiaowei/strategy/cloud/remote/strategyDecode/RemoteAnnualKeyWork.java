@@ -49,8 +49,8 @@ public class RemoteAnnualKeyWork implements RemoteAnnualKeyWorkService {
      */
     @Override
     @InnerAuth
-    @PostMapping("/remoteAnnualKeyWork")
-    public R<List<AnnualKeyWorkDetailDTO>> remoteAnnualKeyWorkDepartment(AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO, String source) {
+    @PostMapping("/remoteAnnualKeyWorkDepartment")
+    public R<List<AnnualKeyWorkDetailDTO>> remoteAnnualKeyWorkDepartment(@RequestBody AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO, String source) {
         return R.ok(iAnnualKeyWorkService.remoteAnnualKeyWorkDepartment(annualKeyWorkDetailDTO));
     }
 }

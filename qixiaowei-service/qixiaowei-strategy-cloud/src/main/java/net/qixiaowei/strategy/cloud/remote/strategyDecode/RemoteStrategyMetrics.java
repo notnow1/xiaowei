@@ -48,6 +48,8 @@ public class RemoteStrategyMetrics implements RemoteStrategyMetricsService {
      * @return 结果
      */
     @Override
+    @InnerAuth
+    @PostMapping("/remoteListByIndicator")
     public R<List<StrategyMetricsDetailDTO>> remoteListByIndicator(StrategyMetricsDTO strategyMetricsDTO, String source) {
         return R.ok(iStrategyMetricsService.remoteListByIndicator(strategyMetricsDTO));
     }

@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO;
 import net.qixiaowei.strategy.cloud.api.factory.industry.RemoteIndustryAttractionFallbackFactory;
+import net.qixiaowei.strategy.cloud.api.factory.strategyDecode.RemoteStrategyMetricsFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * 规划业务单元远程调用
  */
-@FeignClient(contextId = "remoteStrategyMetricsService", value = ServiceNameConstants.STRATEGY_CLOUD_SERVICE, fallbackFactory = RemoteIndustryAttractionFallbackFactory.class)
+@FeignClient(contextId = "remoteStrategyMetricsService", value = ServiceNameConstants.STRATEGY_CLOUD_SERVICE, fallbackFactory = RemoteStrategyMetricsFallbackFactory.class)
 public interface RemoteStrategyMetricsService {
 
     String API_PREFIX_STRATEGY_METRICS = "/strategyMetrics";
@@ -36,5 +37,5 @@ public interface RemoteStrategyMetricsService {
      * @return 结果
      */
     @PostMapping(API_PREFIX_STRATEGY_METRICS + "/remoteListByIndicator")
-    R<List<StrategyMetricsDetailDTO>> remoteListByIndicator(@RequestBody StrategyMetricsDTO strategyMetricsDTO, String source);
+    R<List<StrategyMetricsDetailDTO>> remoteListByIndicator(@RequestBody StrategyMetricsDTO strategyMetricsDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

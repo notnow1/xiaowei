@@ -58,7 +58,7 @@ public class RemoteGapAnalysis implements RemoteGapAnalysisService {
      */
     @Override
     @InnerAuth
-    @PostMapping("/remoteListByIndicatorIds")
+    @PostMapping("/remoteOperateList")
     public R<List<GapAnalysisOperateDTO>> remoteOperateList(@RequestBody GapAnalysisDTO gapAnalysisDTO, String source) {
         return R.ok(iGapAnalysisService.remoteOperateList(gapAnalysisDTO));
     }
@@ -85,7 +85,7 @@ public class RemoteGapAnalysis implements RemoteGapAnalysisService {
     @Override
     @InnerAuth
     @PostMapping("/remotePerformanceList")
-    public R<List<GapAnalysisPerformanceDTO>> remotePerformanceList(GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO, String source) {
+    public R<List<GapAnalysisPerformanceDTO>> remotePerformanceList(@RequestBody GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO, String source) {
         return R.ok(gapAnalysisPerformanceService.selectGapAnalysisPerformanceList(gapAnalysisPerformanceDTO));
     }
 }

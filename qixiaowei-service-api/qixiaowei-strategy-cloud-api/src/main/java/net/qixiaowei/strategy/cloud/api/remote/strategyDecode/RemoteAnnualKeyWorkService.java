@@ -32,6 +32,6 @@ public interface RemoteAnnualKeyWorkService {
     /**
      * 规划业务单元列表
      */
-    @PostMapping(API_PREFIX_ANNUAL_KEY_WORK + "/remoteAnnualKeyWork")
+    @PostMapping(API_PREFIX_ANNUAL_KEY_WORK + "/remoteAnnualKeyWorkDepartment")
     R<List<AnnualKeyWorkDetailDTO>> remoteAnnualKeyWorkDepartment(@RequestBody AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

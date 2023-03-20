@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO;
 import net.qixiaowei.strategy.cloud.api.factory.industry.RemoteIndustryAttractionFallbackFactory;
+import net.qixiaowei.strategy.cloud.api.factory.strategyDecode.RemoteStrategyMeasureFallbackFactory;
 import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * 战略举措清单程调用
  */
-@FeignClient(contextId = "remoteStrategyMeasureService", value = ServiceNameConstants.STRATEGY_CLOUD_SERVICE, fallbackFactory = RemoteIndustryAttractionFallbackFactory.class)
+@FeignClient(contextId = "remoteStrategyMeasureService", value = ServiceNameConstants.STRATEGY_CLOUD_SERVICE, fallbackFactory = RemoteStrategyMeasureFallbackFactory.class)
 public interface RemoteStrategyMeasureService {
 
     String API_PREFIX_STRATEGY_MEASURE = "/strategyMeasure";

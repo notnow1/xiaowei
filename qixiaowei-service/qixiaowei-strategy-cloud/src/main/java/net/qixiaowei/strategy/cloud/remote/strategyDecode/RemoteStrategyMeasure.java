@@ -49,7 +49,9 @@ public class RemoteStrategyMeasure implements RemoteStrategyMeasureService {
      * @return R
      */
     @Override
-    public R<List<StrategyMeasureTaskDTO>> remoteDutyMeasure(StrategyMeasureDetailVO strategyMeasureDetailVO, String source) {
+    @InnerAuth
+    @PostMapping("/remoteDutyMeasure")
+    public R<List<StrategyMeasureTaskDTO>> remoteDutyMeasure(@RequestBody StrategyMeasureDetailVO strategyMeasureDetailVO, String source) {
         return R.ok(iStrategyMeasureService.remoteDutyMeasure(strategyMeasureDetailVO));
     }
 }
