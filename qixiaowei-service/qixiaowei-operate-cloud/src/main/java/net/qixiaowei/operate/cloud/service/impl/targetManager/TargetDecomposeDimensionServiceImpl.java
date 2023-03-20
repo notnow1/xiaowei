@@ -9,8 +9,11 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDimension;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
+import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeDimensionMapper;
+import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeDimensionService;
 import org.apache.ibatis.binding.BindingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,10 @@ import java.util.stream.Collectors;
 public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDimensionService {
     @Autowired
     private TargetDecomposeDimensionMapper targetDecomposeDimensionMapper;
+    @Autowired
+    private RemoteDecomposeService targetDecomposeService;
+    @Autowired
+    private TargetDecomposeMapper targetDecomposeMapper;
 
     /**
      * 查询目标分解维度配置
@@ -316,12 +323,13 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     /**
      * 分解维度引用校验
      *
-     * @param targetDecomposeDimensionIds
-     * @return
+     * @param targetDecomposeDimensionIds 分解维度ID集合
+     * @return boolean
      */
     private boolean isQuote(List<Long> targetDecomposeDimensionIds) {
-        //todo 引用校验
-        return false;
+        // 引用校验
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectListByTargetDecomposeDimensionIds(targetDecomposeDimensionIds);
+        return StringUtils.isNotEmpty(targetDecomposeDTOS);
     }
 }
 

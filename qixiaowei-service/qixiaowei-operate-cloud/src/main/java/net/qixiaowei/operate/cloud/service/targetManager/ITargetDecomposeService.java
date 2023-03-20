@@ -1,11 +1,13 @@
 package net.qixiaowei.operate.cloud.service.targetManager;
 
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -52,6 +54,7 @@ public interface ITargetDecomposeService {
      * @return 目标分解表
      */
     List<TargetDecomposeDTO> selectTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds);
+
     /**
      * 处理返回
      *
@@ -423,6 +426,7 @@ public interface ITargetDecomposeService {
 
     /**
      * 导入解析滚动预测
+     *
      * @param list
      * @param targetDecomposeDTO
      * @return
