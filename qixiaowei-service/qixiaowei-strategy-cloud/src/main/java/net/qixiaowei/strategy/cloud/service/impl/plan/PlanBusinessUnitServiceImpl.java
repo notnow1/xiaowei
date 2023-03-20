@@ -228,6 +228,33 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
         if (planBusinessUnitDTOS.size() != planBusinessUnitIds.size()) {
             throw new ServiceException("部分规划业务单元的数据已不存在");
         }
+        //看客户
+        List<MarketInsightCustomerDTO> marketInsightCustomerDTOS = marketInsightCustomerMapper.selectMarketInsightCustomerByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(marketInsightCustomerDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看行业
+        List<MarketInsightIndustryDTO> marketInsightIndustryDTOS = marketInsightIndustryMapper.selectMarketInsightIndustryByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(marketInsightIndustryDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看宏观
+        List<MarketInsightMacroDTO> marketInsightMacroDTOS = marketInsightMacroMapper.selectMarketInsightMacroByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(marketInsightMacroDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看对手
+        List<MarketInsightOpponentDTO> marketInsightOpponentDTOS = marketInsightOpponentMapper.selectMarketInsightOpponentByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(marketInsightOpponentDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看自身
+        {
+            List<MarketInsightSelfDTO> marketInsightSelfDTOS = marketInsightSelfMapper.selectMarketInsightSelfByPlanBusinessUnitIds(planBusinessUnitIds);
+            if (StringUtils.isNotEmpty(marketInsightSelfDTOS)) {
+                throw new ServiceException("数据被引用！");
+            }
+        }
         // 差距分析
         List<GapAnalysisDTO> gapAnalysisDTOS = gapAnalysisMapper.selectGapAnalysisByPlanBusinessUnitIds(planBusinessUnitIds);
         if (StringUtils.isNotEmpty(gapAnalysisDTOS)) {

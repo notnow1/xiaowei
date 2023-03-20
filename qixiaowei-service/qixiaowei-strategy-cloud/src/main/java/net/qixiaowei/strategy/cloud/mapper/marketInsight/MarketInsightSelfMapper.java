@@ -32,6 +32,13 @@ public interface MarketInsightSelfMapper{
     List<MarketInsightSelfDTO> selectMarketInsightSelfByMarketInsightSelfIds(@Param("marketInsightSelfIds") List<Long> marketInsightSelfIds);
 
     /**
+     * 根据规划业务单元集合批量查询市场洞察自身表
+     *
+     * @param planBusinessUnitIds 规划业务单元集合
+     * @return 市场洞察自身表
+     */
+    List<MarketInsightSelfDTO> selectMarketInsightSelfByPlanBusinessUnitIds(@Param("planBusinessUnitIds") List<Long> planBusinessUnitIds);
+    /**
     * 查询市场洞察自身表列表
     *
     * @param marketInsightSelf 市场洞察自身表

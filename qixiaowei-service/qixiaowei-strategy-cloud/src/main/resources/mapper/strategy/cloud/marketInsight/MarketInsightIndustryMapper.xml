@@ -397,6 +397,20 @@
         order by mii.create_time desc
         limit 1
     </select>
+<!--    根据规划业务单元集合批量查询市场洞察行业表-->
+    <select id="selectMarketInsightIndustryByPlanBusinessUnitIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO">
+        SELECT
+        market_insight_industry_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_industry
+        WHERE plan_business_unit_id in
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增市场洞察行业表-->
     <insert id="insertMarketInsightIndustry" useGeneratedKeys="true" keyProperty="marketInsightIndustryId">
         INSERT INTO market_insight_industry (plan_year, plan_business_unit_id, business_unit_decompose, area_id,

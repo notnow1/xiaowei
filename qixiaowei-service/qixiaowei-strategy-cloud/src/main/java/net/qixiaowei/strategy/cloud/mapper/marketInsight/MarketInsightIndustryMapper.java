@@ -29,6 +29,13 @@ public interface MarketInsightIndustryMapper{
     * @return 市场洞察行业表
     */
     List<MarketInsightIndustryDTO> selectMarketInsightIndustryByMarketInsightIndustryIds(@Param("marketInsightIndustryIds") List<Long> marketInsightIndustryIds);
+    /**
+     * 根据规划业务单元集合批量查询市场洞察行业表
+     *
+     * @param planBusinessUnitIds 规划业务单元集合
+     * @return 市场洞察行业表
+     */
+    List<MarketInsightIndustryDTO> selectMarketInsightIndustryByPlanBusinessUnitIds(@Param("planBusinessUnitIds") List<Long> planBusinessUnitIds);
 
     /**
     * 查询市场洞察行业表列表

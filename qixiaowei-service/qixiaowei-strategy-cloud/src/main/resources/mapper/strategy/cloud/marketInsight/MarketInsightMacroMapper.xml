@@ -365,6 +365,20 @@
         </if>
         order by mim.create_time desc
     </select>
+<!--    根据规划业务单元id集合批量查询市场洞察宏观表-->
+    <select id="selectMarketInsightMacroByPlanBusinessUnitIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO">
+        SELECT
+        market_insight_macro_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_macro
+        WHERE plan_business_unit_id in
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增市场洞察宏观表-->
     <insert id="insertMarketInsightMacro" useGeneratedKeys="true" keyProperty="marketInsightMacroId">
         INSERT INTO market_insight_macro (plan_year, plan_business_unit_id, business_unit_decompose, area_id,

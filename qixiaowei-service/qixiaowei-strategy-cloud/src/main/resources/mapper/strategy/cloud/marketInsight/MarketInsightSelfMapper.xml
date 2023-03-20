@@ -415,6 +415,20 @@
         group by moc.opponent_name, moc.comparison_item
         order by moc.sort
     </select>
+<!--    根据规划业务单元集合批量查询市场洞察自身表-->
+    <select id="selectMarketInsightSelfByPlanBusinessUnitIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO">
+        SELECT
+        market_insight_self_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_self
+        WHERE plan_business_unit_id in
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增市场洞察自身表-->
     <insert id="insertMarketInsightSelf" useGeneratedKeys="true" keyProperty="marketInsightSelfId">
         INSERT INTO market_insight_self (plan_year, plan_business_unit_id, business_unit_decompose, area_id,

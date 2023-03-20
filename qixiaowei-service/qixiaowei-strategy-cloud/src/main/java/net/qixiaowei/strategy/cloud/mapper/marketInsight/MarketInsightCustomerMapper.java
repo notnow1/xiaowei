@@ -31,6 +31,14 @@ public interface MarketInsightCustomerMapper{
     List<MarketInsightCustomerDTO> selectMarketInsightCustomerByMarketInsightCustomerIds(@Param("marketInsightCustomerIds") List<Long> marketInsightCustomerIds);
 
     /**
+     * 根据规划业务单元集合批量查询市场洞察客户表
+     *
+     * @param planBusinessUnitIds 规划业务单元集合
+     * @return 市场洞察客户表
+     */
+    List<MarketInsightCustomerDTO> selectMarketInsightCustomerByPlanBusinessUnitIds(@Param("planBusinessUnitIds") List<Long> planBusinessUnitIds);
+
+    /**
     * 查询市场洞察客户表列表
     *
     * @param marketInsightCustomer 市场洞察客户表

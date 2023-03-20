@@ -30,6 +30,14 @@ public interface MarketInsightOpponentMapper{
     */
     List<MarketInsightOpponentDTO> selectMarketInsightOpponentByMarketInsightOpponentIds(@Param("marketInsightOpponentIds") List<Long> marketInsightOpponentIds);
 
+
+    /**
+     * 根据规划业务单元id批量查询市场洞察对手表
+     *
+     * @param planBusinessUnitIds 规划业务单元id
+     * @return 市场洞察对手表
+     */
+    List<MarketInsightOpponentDTO> selectMarketInsightOpponentByPlanBusinessUnitIds(@Param("planBusinessUnitIds") List<Long> planBusinessUnitIds);
     /**
     * 查询市场洞察对手表列表
     *
