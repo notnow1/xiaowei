@@ -24,8 +24,14 @@ import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteBonusBudgetService;
 import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppraisalService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteSettingService;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO;
+import net.qixiaowei.strategy.cloud.api.remote.gap.RemoteGapAnalysisService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMetricsService;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
@@ -97,6 +103,12 @@ public class IndicatorServiceImpl implements IIndicatorService {
 
     @Autowired
     private RemoteBonusBudgetService bonusBudgetService;
+
+    @Autowired
+    private RemoteGapAnalysisService gapAnalysisService;
+
+    @Autowired
+    private RemoteStrategyMetricsService strategyMetricsService;
 
     @Override
     public Boolean initData() {
@@ -507,7 +519,41 @@ public class IndicatorServiceImpl implements IIndicatorService {
 //        }
         addSons(indicatorIds);
         isQuote(indicatorIds, indicatorByIds);
+        isStrategyQuote(indicatorIds);
         return indicatorMapper.logicDeleteIndicatorByIndicatorIds(indicatorIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
+     * 战略云校验
+     *
+     * @param indicatorIds 指标ID集合
+     */
+    private void isStrategyQuote(List<Long> indicatorIds) {
+        Map<String, Object> params;
+        GapAnalysisDTO gapAnalysisDTO = new GapAnalysisDTO();
+        params = new HashMap<>();
+        params.put("indicatorIds", indicatorIds);
+        gapAnalysisDTO.setParams(params);
+        R<List<GapAnalysisOperateDTO>> gapAnalysisOperateDTOSR = gapAnalysisService.remoteOperateList(gapAnalysisDTO, SecurityConstants.INNER);
+        List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS = gapAnalysisOperateDTOSR.getData();
+        if (gapAnalysisOperateDTOSR.getCode() != 200) {
+            throw new ServiceException("远程调用差距分析失败");
+        }
+        if (StringUtils.isNotEmpty(gapAnalysisOperateDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        StrategyMetricsDTO strategyMetricsDTO = new StrategyMetricsDTO();
+        params = new HashMap<>();
+        params.put("indicatorIds", indicatorIds);
+        gapAnalysisDTO.setParams(params);
+        R<List<StrategyMetricsDetailDTO>> strategyMetricsDetailDTOSR = strategyMetricsService.remoteListByIndicator(strategyMetricsDTO, SecurityConstants.INNER);
+        List<StrategyMetricsDetailDTO> strategyMetricsDetailDTOS = strategyMetricsDetailDTOSR.getData();
+        if (strategyMetricsDetailDTOSR.getCode() != 200) {
+            throw new ServiceException("远程调用战略衡量指标失败");
+        }
+        if (StringUtils.isNotEmpty(strategyMetricsDetailDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
     }
 
     /**
@@ -924,9 +970,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Transactional
     @Override
     public int logicDeleteIndicatorByIndicatorId(Long indicatorId) {
-        ArrayList<Long> indicatorIds = new ArrayList<>();
-        indicatorIds.add(indicatorId);
-        return logicDeleteIndicatorByIndicatorIds(indicatorIds);
+        return logicDeleteIndicatorByIndicatorIds(Collections.singletonList(indicatorId));
     }
 
     /**

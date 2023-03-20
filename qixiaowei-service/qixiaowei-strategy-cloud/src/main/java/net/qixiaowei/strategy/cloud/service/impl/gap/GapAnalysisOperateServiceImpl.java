@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -50,6 +51,8 @@ public class GapAnalysisOperateServiceImpl implements IGapAnalysisOperateService
     public List<GapAnalysisOperateDTO> selectGapAnalysisOperateList(GapAnalysisOperateDTO gapAnalysisOperateDTO) {
         GapAnalysisOperate gapAnalysisOperate = new GapAnalysisOperate();
         BeanUtils.copyProperties(gapAnalysisOperateDTO, gapAnalysisOperate);
+        Map<String, Object> params = gapAnalysisOperateDTO.getParams();
+        gapAnalysisOperate.setParams(params);
         return gapAnalysisOperateMapper.selectGapAnalysisOperateList(gapAnalysisOperate);
     }
 

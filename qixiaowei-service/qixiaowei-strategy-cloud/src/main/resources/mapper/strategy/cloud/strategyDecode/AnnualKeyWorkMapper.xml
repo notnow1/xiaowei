@@ -211,10 +211,10 @@
         <if test="annualKeyWork.params.businessUnitNameLike != null and annualKeyWork.params.businessUnitNameLike.size() > 0">
             OR
             (<foreach item="item"
-                     collection="annualKeyWork.params.businessUnitNameLike"
-                     index="index" open="(" separator="OR" close=")">
-                pbu.business_unit_name LIKE concat('%', #{item}, '%')
-            </foreach>)
+                      collection="annualKeyWork.params.businessUnitNameLike"
+                      index="index" open="(" separator="OR" close=")">
+            pbu.business_unit_name LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="annualKeyWork.params.businessUnitNameNotLike != null and annualKeyWork.params.businessUnitNameNotLike.size() > 0">
             AND
@@ -299,6 +299,56 @@
             </foreach>
             OR akw.department_id IS NULL
             )
+        </if>
+    </select>
+    <!--年度重点工作获取部门是否引用-->
+    <select id="remoteAnnualKeyWorkDepartment"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO">
+        SELECT
+        akd.annual_key_work_detail_id,
+        akd.annual_key_work_id,
+        akd.task_number,
+        akd.task_name,
+        akd.department_id,
+        akd.department_employee_id,
+        akd.task_description,
+        akd.close_standard,
+        akd.task_start_time,
+        akd.task_end_time,
+        akd.duty_employee_id,
+        akd.duty_employee_name,
+        akd.duty_employee_code,
+        akd.sort,
+        akd.delete_flag,
+        akd.create_by,
+        akd.create_time,
+        akd.update_by,
+        akd.update_time
+        FROM annual_key_work_detail akd
+        WHERE akd.delete_flag=0
+        <if test="annualKeyWorkDetail.params.departmentIds!=null and annualKeyWorkDetail.params.departmentIds.size()>0">
+            and akd.department_id IN
+            <foreach item="item"
+                     collection="annualKeyWorkDetail.params.departmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="annualKeyWorkDetail.params.employeeIds!=null and annualKeyWorkDetail.params.employeeIds.size()>0">
+            and (akd.duty_employee_id IN
+            <foreach item="item"
+                     collection="annualKeyWorkDetail.params.employeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="annualKeyWorkDetail.params.employeeIds!=null and annualKeyWorkDetail.params.employeeIds.size()>0">
+            OR akd.department_employee_id IN
+            <foreach item="item"
+                     collection="annualKeyWorkDetail.params.employeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>)
         </if>
     </select>
     <!--新增年度重点工作表-->

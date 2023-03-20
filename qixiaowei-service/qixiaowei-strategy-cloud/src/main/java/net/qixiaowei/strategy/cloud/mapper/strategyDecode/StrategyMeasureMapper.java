@@ -1,12 +1,15 @@
 package net.qixiaowei.strategy.cloud.mapper.strategyDecode;
 
-import java.util.List;
-
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasure;
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasureTask;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO;
+import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -121,4 +124,12 @@ public interface StrategyMeasureMapper {
      * @return 结果
      */
     List<StrategyMeasureDTO> selectStrategyMeasureByStrategyIndexDimensionIds(@Param("strategyIndexDimensionIds") List<Long> strategyIndexDimensionIds);
+
+    /**
+     * 远程引用查询详情
+     *
+     * @param strategyMeasureTask 详情VO
+     * @return 结果
+     */
+    List<StrategyMeasureTaskDTO> remoteDutyMeasure(@Param("strategyMeasureTask") StrategyMeasureTask strategyMeasureTask);
 }

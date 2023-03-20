@@ -19,7 +19,21 @@ import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductExportExcel;
 import net.qixiaowei.operate.cloud.mapper.product.*;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
-import net.qixiaowei.system.manage.api.dto.basic.*;
+import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
+import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
+import net.qixiaowei.strategy.cloud.api.remote.businessDesign.RemoteBusinessDesignService;
+import net.qixiaowei.strategy.cloud.api.remote.gap.RemoteGapAnalysisService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteAnnualKeyWorkService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMeasureService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMetricsService;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
@@ -60,6 +74,17 @@ public class ProductServiceImpl implements IProductService {
     private RemoteIndicatorService remoteIndicatorService;
     @Autowired
     private RemoteOfficialRankSystemService remoteOfficialRankSystemService;
+    @Autowired
+    private RemoteAnnualKeyWorkService remoteAnnualKeyWorkService;
+    @Autowired
+    private RemoteStrategyMeasureService remoteStrategyMeasureService;
+    @Autowired
+    private RemoteStrategyMetricsService remoteStrategyMetricsService;
+    @Autowired
+    private RemoteGapAnalysisService remoteGapAnalysisService;
+    @Autowired
+    private RemoteBusinessDesignService remoteBusinessDesignService;
+
 
     /**
      * 查询产品表
@@ -620,29 +645,29 @@ public class ProductServiceImpl implements IProductService {
                 product.setAncestors(productDTO2.getAncestors() + "," + productDTO2.getParentProductId());
             }
         }
-        Map<Long,Integer> map = new HashMap<>();
+        Map<Long, Integer> map = new HashMap<>();
         List<ProductDTO> productDTOList = productMapper.selectAncestors(product.getProductId());
         for (int i1 = 0; i1 < productDTOList.size(); i1++) {
-            map.put(productDTOList.get(i1).getProductId(),i1);
+            map.put(productDTOList.get(i1).getProductId(), i1);
         }
-        if (StringUtils.isNotEmpty(productDTOList) && productDTOList.size()>1) {
+        if (StringUtils.isNotEmpty(productDTOList) && productDTOList.size() > 1) {
             for (int i1 = 1; i1 < productDTOList.size(); i1++) {
-                if (i1 == 1){
+                if (i1 == 1) {
                     Product product2 = new Product();
                     if (StringUtils.isBlank(product.getAncestors())) {
                         productDTOList.get(i1).setAncestors(product.getParentProductId() + "," + product.getProductId());
                     } else {
                         productDTOList.get(i1).setAncestors(product.getAncestors() + "," + product.getProductId());
                     }
-                    productDTOList.get(i1).setLevel(product.getLevel()+1);
+                    productDTOList.get(i1).setLevel(product.getLevel() + 1);
 
                     productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                     productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                     productDTOList.get(i1).setParentProductId(product.getProductId());
-                    BeanUtils.copyProperties(productDTOList.get(i1),product2);
+                    BeanUtils.copyProperties(productDTOList.get(i1), product2);
                     productList.add(product2);
-                }else {
-                    if (productDTOList.get(i1 - 1).getProductId().equals(productDTOList.get(i1).getParentProductId())){
+                } else {
+                    if (productDTOList.get(i1 - 1).getProductId().equals(productDTOList.get(i1).getParentProductId())) {
                         Product product2 = new Product();
                         //父级
                         ProductDTO productDTO2 = productDTOList.get(i1 - 1);
@@ -651,13 +676,13 @@ public class ProductServiceImpl implements IProductService {
                         } else {
                             productDTOList.get(i1).setAncestors(productDTO2.getAncestors() + "," + productDTO2.getProductId());
                         }
-                        productDTOList.get(i1).setLevel(productDTO2.getLevel()+1);
+                        productDTOList.get(i1).setLevel(productDTO2.getLevel() + 1);
                         productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                         productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                         productDTOList.get(i1).setParentProductId(productDTO2.getProductId());
-                        BeanUtils.copyProperties(productDTOList.get(i1),product2);
+                        BeanUtils.copyProperties(productDTOList.get(i1), product2);
                         productList.add(product2);
-                    }else {
+                    } else {
                         Product product2 = new Product();
 
                         //父级
@@ -667,11 +692,11 @@ public class ProductServiceImpl implements IProductService {
                         } else {
                             productDTOList.get(i1).setAncestors(productDTO2.getAncestors() + "," + productDTO2.getProductId());
                         }
-                        productDTOList.get(i1).setLevel(productDTO2.getLevel()+1);
+                        productDTOList.get(i1).setLevel(productDTO2.getLevel() + 1);
                         productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                         productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                         productDTOList.get(i1).setParentProductId(productDTO2.getProductId());
-                        BeanUtils.copyProperties(productDTOList.get(i1),product2);
+                        BeanUtils.copyProperties(productDTOList.get(i1), product2);
                         productList.add(product2);
                     }
                 }
@@ -703,7 +728,7 @@ public class ProductServiceImpl implements IProductService {
         //修改产品文件表数据
         this.updateProductFile(productFileDTOList, productDTO);
         num = productMapper.updateProduct(product);
-        if (StringUtils.isNotEmpty(productList)){
+        if (StringUtils.isNotEmpty(productList)) {
             try {
                 productMapper.updateProducts(productList);
             } catch (Exception e) {
@@ -1086,6 +1111,8 @@ public class ProductServiceImpl implements IProductService {
                         }
                     }
                 }
+                // 战略云-其他引用
+                isStrategyQuote(productIds);
             }
         }
         productErreo.append(decomposeErreo);
@@ -1125,6 +1152,87 @@ public class ProductServiceImpl implements IProductService {
             throw new ServiceException("删除产品文件表失败");
         }
         return i;
+    }
+
+    /**
+     * 产品战略云引用
+     *
+     * @param productIds 产品ID集合
+     */
+    private void isStrategyQuote(List<Long> productIds) {
+        Map<String, Object> params;
+        AnnualKeyWorkDTO annualKeyWorkDTO = new AnnualKeyWorkDTO();
+        params = new HashMap<>();
+        params.put("productIdEqual", productIds);
+        annualKeyWorkDTO.setParams(params);
+        R<List<AnnualKeyWorkDTO>> remoteAnnualKeyWorkR = remoteAnnualKeyWorkService.remoteAnnualKeyWork(annualKeyWorkDTO, SecurityConstants.INNER);
+        List<AnnualKeyWorkDTO> annualKeyWorkDTOS = remoteAnnualKeyWorkR.getData();
+        if (remoteAnnualKeyWorkR.getCode() != 200) {
+            throw new ServiceException("远程调用年度重点工作失败");
+        }
+        if (StringUtils.isNotEmpty(annualKeyWorkDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        StrategyMeasureDTO strategyMeasureDTO = new StrategyMeasureDTO();
+        params = new HashMap<>();
+        params.put("productIdEqual", productIds);
+        strategyMeasureDTO.setParams(params);
+        R<List<StrategyMeasureDTO>> remoteStrategyMeasureR = remoteStrategyMeasureService.remoteStrategyMeasure(strategyMeasureDTO, SecurityConstants.INNER);
+        List<StrategyMeasureDTO> strategyMeasureDTOS = remoteStrategyMeasureR.getData();
+        if (remoteStrategyMeasureR.getCode() != 200) {
+            throw new ServiceException("远程调用战略举措清单失败");
+        }
+        if (StringUtils.isNotEmpty(strategyMeasureDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        StrategyMetricsDTO strategyMetricsDTO = new StrategyMetricsDTO();
+        params = new HashMap<>();
+        params.put("productIdEqual", productIds);
+        strategyMetricsDTO.setParams(params);
+        R<List<StrategyMetricsDTO>> remoteStrategyMetricsR = remoteStrategyMetricsService.remoteStrategyMetrics(strategyMetricsDTO, SecurityConstants.INNER);
+        List<StrategyMetricsDTO> strategyMetricsDTOS = remoteStrategyMetricsR.getData();
+        if (remoteStrategyMetricsR.getCode() != 200) {
+            throw new ServiceException("远程调用战略衡量指标失败");
+        }
+        if (StringUtils.isNotEmpty(strategyMetricsDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        GapAnalysisDTO gapAnalysisDTO = new GapAnalysisDTO();
+        params = new HashMap<>();
+        params.put("productIdEqual", productIds);
+        gapAnalysisDTO.setParams(params);
+        R<List<GapAnalysisDTO>> remoteGapAnalysisR = remoteGapAnalysisService.remoteGapAnalysis(gapAnalysisDTO, SecurityConstants.INNER);
+        List<GapAnalysisDTO> gapAnalysisDTOS = remoteGapAnalysisR.getData();
+        if (remoteGapAnalysisR.getCode() != 200) {
+            throw new ServiceException("远程调用差距分析失败");
+        }
+        if (StringUtils.isNotEmpty(gapAnalysisDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        BusinessDesignDTO businessDesignDTO = new BusinessDesignDTO();
+        params = new HashMap<>();
+        params.put("productIdEqual", productIds);
+        businessDesignDTO.setParams(params);
+        R<List<BusinessDesignDTO>> remoteBusinessDesignR = remoteBusinessDesignService.remoteBusinessDesign(businessDesignDTO, SecurityConstants.INNER);
+        List<BusinessDesignDTO> businessDesignDTOS = remoteBusinessDesignR.getData();
+        if (remoteBusinessDesignR.getCode() != 200) {
+            throw new ServiceException("远程调用业务设计失败");
+        }
+        if (StringUtils.isNotEmpty(businessDesignDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        BusinessDesignParamDTO businessDesignParamDTO = new BusinessDesignParamDTO();
+        params = new HashMap<>();
+        params.put("productIds", productIds);
+        businessDesignDTO.setParams(params);
+        R<List<BusinessDesignParamDTO>> businessDesignParamsDTOSR = remoteBusinessDesignService.remoteBusinessDesignParams(businessDesignParamDTO, SecurityConstants.INNER);
+        List<BusinessDesignParamDTO> businessDesignParamsDTOS = businessDesignParamsDTOSR.getData();
+        if (businessDesignParamsDTOSR.getCode() != 200) {
+            throw new ServiceException("远程调用业务设计失败");
+        }
+        if (StringUtils.isNotEmpty(businessDesignParamsDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
     }
 
     /**
@@ -1654,7 +1762,7 @@ public class ProductServiceImpl implements IProductService {
             }
             if (StringUtils.isBlank(productUnitName)) {
                 validEmployeeErreo.append("产品量纲不能为空");
-            }else {
+            } else {
                 //产品量纲不存在
                 if (StringUtils.isNotEmpty(productUnitDTOS)) {
                     List<ProductUnitDTO> productUnitNames = productUnitDTOS.stream().filter(f -> StringUtils.equals(productUnitName, f.getProductUnitName())).collect(Collectors.toList());
@@ -1706,6 +1814,8 @@ public class ProductServiceImpl implements IProductService {
 
             //是否引用
             List<ProductDTO> productDTOList = productMapper.selectProductQuote(dto.getProductId());
+            //战略云引用
+            isStrategyQuote(productIds);
             //指标名称远程调用
             if (StringUtils.isNotEmpty(productDTOList)) {
                 List<Long> indicatorIds = productDTOList.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());

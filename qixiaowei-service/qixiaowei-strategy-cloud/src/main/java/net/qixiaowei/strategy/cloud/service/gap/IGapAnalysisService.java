@@ -121,4 +121,20 @@ public interface IGapAnalysisService {
      * @param file               excel文件
      */
     List<GapAnalysisOperateDTO> excelParseObject(Integer operateHistoryYear, Integer operateYear, MultipartFile file);
+
+    /**
+     * 远程获取列表
+     *
+     * @param gapAnalysisDTO 差距分析DTO
+     * @return 结果
+     */
+    List<GapAnalysisDTO> remoteGapAnalysis(GapAnalysisDTO gapAnalysisDTO);
+
+    /**
+     * 差距分析远程指标引用
+     *
+     * @param gapAnalysisDTO 差距分析
+     * @return 结果
+     */
+    List<GapAnalysisOperateDTO> remoteOperateList(GapAnalysisDTO gapAnalysisDTO);
 }

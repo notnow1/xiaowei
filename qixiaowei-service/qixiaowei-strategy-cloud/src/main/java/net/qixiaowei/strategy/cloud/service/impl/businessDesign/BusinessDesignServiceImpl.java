@@ -772,6 +772,21 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
     }
 
     /**
+     * 业务设计
+     *
+     * @param businessDesignDTO 业务设计
+     * @return 结果
+     */
+    @Override
+    public List<BusinessDesignDTO> remoteBusinessDesign(BusinessDesignDTO businessDesignDTO) {
+        BusinessDesign businessDesign = new BusinessDesign();
+        Map<String, Object> params = businessDesignDTO.getParams();
+        businessDesign.setParams(params);
+        BeanUtils.copyProperties(businessDesignDTO, businessDesign);
+        return businessDesignMapper.selectBusinessDesignList(businessDesign);
+    }
+
+    /**
      * 逻辑删除业务设计表信息
      *
      * @param businessDesignDTO 业务设计表

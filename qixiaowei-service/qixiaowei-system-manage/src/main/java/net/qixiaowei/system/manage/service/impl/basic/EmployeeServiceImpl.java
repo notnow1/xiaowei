@@ -24,6 +24,19 @@ import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppra
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisPerformanceDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO;
+import net.qixiaowei.strategy.cloud.api.remote.gap.RemoteGapAnalysisService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteAnnualKeyWorkService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMeasureService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMetricsService;
+import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 import net.qixiaowei.system.manage.api.domain.basic.*;
 import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
@@ -93,6 +106,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private RemoteBonusPayApplicationService remoteBonusPayApplicationService;
     @Autowired
     private RemoteSalaryItemService salaryPayService;
+    @Autowired
+    private RemoteGapAnalysisService gapAnalysisService;
+    @Autowired
+    private RemoteStrategyMeasureService strategyMeasureService;
+    @Autowired
+    private RemoteAnnualKeyWorkService annualKeyWorkService;
 
 
     /**
@@ -108,7 +127,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Override
     public List<EmployeeDTO> selectEmployeeByEmployeeIds(List<Long> employeeIds) {
-        if (StringUtils.isEmpty(employeeIds)){
+        if (StringUtils.isEmpty(employeeIds)) {
             return null;
         }
         return employeeMapper.selectEmployeeByEmployeeIds(employeeIds);
@@ -1290,7 +1309,65 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (erreoEmp.length() > 0) {
             throw new ServiceException(erreoEmp.toString());
         }
+        // 战略云引用校验
+        isStrategyQuote(Collections.singletonList(employeeId));
         return employee;
+    }
+
+    /**
+     * 战略云引用校验
+     *
+     * @param employeeIds 人员id集合
+     */
+    private void isStrategyQuote(List<Long> employeeIds) {
+        GapAnalysisOpportunityDTO gapAnalysisOpportunityDTO = new GapAnalysisOpportunityDTO();
+        Map<String, Object> params = new HashMap<>();
+        params.put("employeeIds", employeeIds);
+        gapAnalysisOpportunityDTO.setParams(params);
+        R<List<GapAnalysisOpportunityDTO>> gapAnalysisOpportunityDTOSR = gapAnalysisService.remoteOpportunityList(gapAnalysisOpportunityDTO, SecurityConstants.INNER);
+        List<GapAnalysisOpportunityDTO> gapAnalysisOpportunityDTOS = gapAnalysisOpportunityDTOSR.getData();
+        if (gapAnalysisOpportunityDTOSR.getCode() != 200) {
+            throw new ServiceException("远程调用差距分析机会差距失败");
+        }
+        if (StringUtils.isNotEmpty(gapAnalysisOpportunityDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO = new GapAnalysisPerformanceDTO();
+        params = new HashMap<>();
+        params.put("employeeIds", employeeIds);
+        gapAnalysisPerformanceDTO.setParams(params);
+        R<List<GapAnalysisPerformanceDTO>> gapAnalysisPerformanceDTOSR = gapAnalysisService.remotePerformanceList(gapAnalysisPerformanceDTO, SecurityConstants.INNER);
+        List<GapAnalysisPerformanceDTO> gapAnalysisPerformanceDTOS = gapAnalysisPerformanceDTOSR.getData();
+        if (gapAnalysisPerformanceDTOSR.getCode() != 200) {
+            throw new ServiceException("远程调用差距分析业绩差距失败");
+        }
+        if (StringUtils.isNotEmpty(gapAnalysisPerformanceDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        StrategyMeasureDetailVO strategyMeasureDetailVO = new StrategyMeasureDetailVO();
+        params = new HashMap<>();
+        params.put("dutyEmployeeIds", employeeIds);
+        strategyMeasureDetailVO.setParams(params);
+        R<List<StrategyMeasureTaskDTO>> strategyMeasureTaskDTOSR = strategyMeasureService.remoteDutyMeasure(strategyMeasureDetailVO, SecurityConstants.INNER);
+        List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = strategyMeasureTaskDTOSR.getData();
+        if (strategyMeasureTaskDTOSR.getCode() != 200) {
+            throw new ServiceException("远程调用战略举措清单失败");
+        }
+        if (StringUtils.isNotEmpty(strategyMeasureTaskDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO = new AnnualKeyWorkDetailDTO();
+        params = new HashMap<>();
+        params.put("employeeIds", employeeIds);
+        annualKeyWorkDetailDTO.setParams(params);
+        R<List<AnnualKeyWorkDetailDTO>> annualKeyWorkDetailDTOSR = annualKeyWorkService.remoteAnnualKeyWorkDepartment(annualKeyWorkDetailDTO, SecurityConstants.INNER);
+        List<AnnualKeyWorkDetailDTO> annualKeyWorkDetailDTOS = annualKeyWorkDetailDTOSR.getData();
+        if (annualKeyWorkDetailDTOSR.getCode() != 200) {
+            throw new ServiceException("远程调用年度重点工作失败");
+        }
+        if (StringUtils.isNotEmpty(annualKeyWorkDetailDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
     }
 
     /**

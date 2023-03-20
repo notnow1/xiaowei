@@ -69,6 +69,14 @@
         <if test="gapAnalysisOperate.updateTime != null">
             and update_time=#{gapAnalysisOperate.updateTime}
         </if>
+        <if test="gapAnalysisOperate.params.indicatorIds != null and gapAnalysisOperate.params.indicatorIds.size()>0">
+            AND indicator_id IN
+            <foreach item="item"
+                     collection="gapAnalysisOperate.params.indicatorIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
     <!--根据差距分析ID查询分析经营情况-->
     <select id="selectGapAnalysisOperateByGapAnalysisId"

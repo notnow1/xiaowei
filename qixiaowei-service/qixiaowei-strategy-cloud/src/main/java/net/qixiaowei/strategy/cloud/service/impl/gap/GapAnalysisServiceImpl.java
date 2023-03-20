@@ -3,7 +3,6 @@ package net.qixiaowei.strategy.cloud.service.impl.gap;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
-import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -18,6 +17,7 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysis;
+import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysisOperate;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
@@ -95,12 +95,6 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
     @Autowired
     private RemoteUserService remoteUserService;
 
-    public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.of(
-            "region", "区域",
-            "department", "部门",
-            "product", "产品",
-            "industry", "行业"
-    );
 
     /**
      * 查询差距分析表
@@ -946,6 +940,35 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         } catch (Exception e) {
             throw new ServiceException("模板格式不正确");
         }
+    }
+
+    /**
+     * 远程获取列表
+     *
+     * @param gapAnalysisDTO 差距分析DTO
+     * @return 结果
+     */
+    @Override
+    public List<GapAnalysisDTO> remoteGapAnalysis(GapAnalysisDTO gapAnalysisDTO) {
+        GapAnalysis gapAnalysis = new GapAnalysis();
+        Map<String, Object> params = gapAnalysisDTO.getParams();
+        gapAnalysis.setParams(params);
+        BeanUtils.copyProperties(gapAnalysisDTO, gapAnalysis);
+        return gapAnalysisMapper.selectGapAnalysisList(gapAnalysis);
+    }
+
+    /**
+     * 差距分析远程指标引用
+     *
+     * @param gapAnalysisDTO 差距分析
+     * @return 结果
+     */
+    @Override
+    public List<GapAnalysisOperateDTO> remoteOperateList(GapAnalysisDTO gapAnalysisDTO) {
+        GapAnalysisOperateDTO analysisOperateDTO = new GapAnalysisOperateDTO();
+        Map<String, Object> params = gapAnalysisDTO.getParams();
+        analysisOperateDTO.setParams(params);
+        return gapAnalysisOperateService.selectGapAnalysisOperateList(analysisOperateDTO);
     }
 
     /**

@@ -1,2 +1,7 @@
 net.qixiaowei.strategy.cloud.api.factory.industry.RemoteIndustryAttractionFallbackFactory
 net.qixiaowei.strategy.cloud.api.factory.RemoteStrategyCloudInitDataFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.businessDesign.RemoteBusinessDesignFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.gap.RemoteGapAnalysisFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.strategyDecode.RemoteAnnualKeyWorkFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.strategyDecode.RemoteStrategyMeasureFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.strategyDecode.RemoteStrategyMetricsFallbackFactory

@@ -325,6 +325,47 @@
             )
         </if>
     </select>
+    <!--远程引用查询详情-->
+    <select id="remoteDutyMeasure"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO">
+        SELECT
+        smt.strategy_measure_task_id,
+        smt.strategy_measure_id,
+        smt.strategy_measure_detail_id,
+        smt.key_task,
+        smt.close_standard,
+        smt.duty_department_id,
+        smt.duty_employee_id,
+        smt.duty_employee_name,
+        smt.duty_employee_code,
+        smt.sort,
+        smt.delete_flag,
+        smt.create_by,
+        smt.create_time,
+        smt.update_by,
+        smt.update_time
+        FROM strategy_measure_task smt
+        WHERE smt.strategy_measure_task_id=#{strategyMeasureTaskId}
+        AND smt.delete_flag=0
+        <!--责任部门-->
+        <if test="strategyMeasureTask.params.dutyDepartmentIds != null and strategyMeasureTask.params.dutyDepartmentIds.size() > 0">
+            and smt.duty_department_id IN
+            <foreach item="item"
+                     collection="strategyMeasureTask.params.dutyDepartmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!--责任人-->
+        <if test="strategyMeasureTask.params.dutyEmployeeIds != null and strategyMeasureTask.params.dutyEmployeeIds.size() > 0">
+            and smt.duty_employee_id IN
+            <foreach item="item"
+                     collection="strategyMeasureTask.params.dutyEmployeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
     <!--新增战略举措清单表-->
     <insert id="insertStrategyMeasure" useGeneratedKeys="true" keyProperty="strategyMeasureId">
         INSERT INTO strategy_measure

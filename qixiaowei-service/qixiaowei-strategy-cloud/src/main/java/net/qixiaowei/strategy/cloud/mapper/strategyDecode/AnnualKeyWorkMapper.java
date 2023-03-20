@@ -1,7 +1,9 @@
 package net.qixiaowei.strategy.cloud.mapper.strategyDecode;
 
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.AnnualKeyWork;
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.AnnualKeyWorkDetail;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -112,4 +114,12 @@ public interface AnnualKeyWorkMapper {
      * @return list
      */
     List<AnnualKeyWorkDTO> selectAnnualKeyWorkByPlanBusinessUnitIds(@Param("planBusinessUnitIds") List<Long> planBusinessUnitIds);
+
+    /**
+     * 年度重点工作获取部门是否引用
+     *
+     * @param annualKeyWorkDetail 年度重点工作详情表
+     * @return list
+     */
+    List<AnnualKeyWorkDetailDTO> remoteAnnualKeyWorkDepartment(@Param("annualKeyWorkDetail") AnnualKeyWorkDetail annualKeyWorkDetail);
 }

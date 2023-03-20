@@ -108,4 +108,12 @@ public interface IBusinessDesignService {
      * @return 业务设计
      */
     BusinessDesignDTO selectBusinessDesignRecently(Integer planYear);
+
+    /**
+     * 业务设计
+     *
+     * @param businessDesignDTO 业务设计
+     * @return 结果
+     */
+    List<BusinessDesignDTO> remoteBusinessDesign(BusinessDesignDTO businessDesignDTO);
 }

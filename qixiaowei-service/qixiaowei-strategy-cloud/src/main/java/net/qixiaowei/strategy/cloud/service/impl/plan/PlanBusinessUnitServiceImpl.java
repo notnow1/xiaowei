@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.service.impl.plan;
 import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
+import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -69,13 +70,6 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
     @Autowired
     private StrategyMetricsMapper strategyMetricsMapper;//战略衡量指标
 
-    public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.<String, String>of(
-            "region", "区域",
-            "department", "部门",
-            "product", "产品",
-            "industry", "行业",
-            "company", "公司级"
-    );
 
     /**
      * 查询规划业务单元
@@ -94,15 +88,8 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
         }
         String businessUnitDecompose = planBusinessUnitDTO.getBusinessUnitDecompose();
         if (StringUtils.isNotNull(businessUnitDecompose)) {
-            StringBuilder businessUnitDecomposeName = new StringBuilder("");
-            List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
-            businessUnitDecomposeList.forEach(decompose -> {
-                if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
-                    businessUnitDecomposeName.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
-                }
-            });
-            if (StringUtils.isNotEmpty(businessUnitDecomposeName))
-                planBusinessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
+            planBusinessUnitDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
+            planBusinessUnitDTO.setBusinessUnitDecomposeName(PlanBusinessUnitCode.getBusinessUnitDecomposeName(businessUnitDecompose));
         }
         return planBusinessUnitDTO;
     }
@@ -123,24 +110,8 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
         for (PlanBusinessUnitDTO businessUnitDTO : planBusinessUnitDTOS) {
             String businessUnitDecompose = businessUnitDTO.getBusinessUnitDecompose();
             if (StringUtils.isNotNull(businessUnitDecompose)) {
-                StringBuilder businessUnitDecomposeName = new StringBuilder("");
-                List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
-                businessUnitDecomposeList.forEach(decompose -> {
-                    if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
-                        businessUnitDecomposeName.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
-                    }
-                });
-                if (StringUtils.isNotEmpty(businessUnitDecomposeName))
-                    businessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
-                List<String> businessUnitDecomposeNames = Arrays.asList(businessUnitDecomposeName.toString().split(";"));
-                List<Map<String, Object>> businessUnitDecomposes = new ArrayList<>();
-                for (int i = 0; i < businessUnitDecomposeList.size(); i++) {
-                    Map<String, Object> businessUnitDecomposeMap = new HashMap<>();
-                    businessUnitDecomposeMap.put("label", businessUnitDecomposeNames.get(i));
-                    businessUnitDecomposeMap.put("value", businessUnitDecomposeList.get(i));
-                    businessUnitDecomposes.add(businessUnitDecomposeMap);
-                }
-                businessUnitDTO.setBusinessUnitDecomposes(businessUnitDecomposes);
+                planBusinessUnitDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
+                planBusinessUnitDTO.setBusinessUnitDecomposeName(PlanBusinessUnitCode.getBusinessUnitDecomposeName(businessUnitDecompose));
             }
         }
         return planBusinessUnitDTOS;
@@ -173,7 +144,7 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
         }
         List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
         businessUnitDecomposeList.forEach(business -> {
-            if (!BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(business))
+            if (!PlanBusinessUnitCode.contains(business) && !business.equals("company"))
                 throw new ServiceException("规划业务单元维度标识不匹配 请检查");
         });
         // 名称重复校验

@@ -1,6 +1,9 @@
 package net.qixiaowei.strategy.cloud.service.strategyDecode;
 
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO;
+import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 
 import java.util.List;
 
@@ -100,4 +103,20 @@ public interface IStrategyMeasureService {
      * @return 结果
      */
     int deleteStrategyMeasureByStrategyMeasureId(Long strategyMeasureId);
+
+    /**
+     * 远程获取列表
+     *
+     * @param strategyMeasureDTO 战略举措清单表
+     * @return List
+     */
+    List<StrategyMeasureDTO> remoteStrategyMeasure(StrategyMeasureDTO strategyMeasureDTO);
+
+    /**
+     * 远程责任人
+     *
+     * @param strategyMeasureDetailVO 详情VO
+     * @return R
+     */
+    List<StrategyMeasureTaskDTO> remoteDutyMeasure(StrategyMeasureDetailVO strategyMeasureDetailVO);
 }

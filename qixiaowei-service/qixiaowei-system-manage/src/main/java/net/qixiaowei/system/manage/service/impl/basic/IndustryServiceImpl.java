@@ -18,6 +18,16 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
+import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
+import net.qixiaowei.strategy.cloud.api.remote.businessDesign.RemoteBusinessDesignService;
+import net.qixiaowei.strategy.cloud.api.remote.gap.RemoteGapAnalysisService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteAnnualKeyWorkService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMeasureService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMetricsService;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
 import net.qixiaowei.system.manage.api.dto.basic.ConfigDTO;
@@ -58,7 +68,20 @@ public class IndustryServiceImpl implements IIndustryService {
 
     @Autowired
     private RemoteDecomposeService targetDecomposeService;
+    @Autowired
+    private RemoteAnnualKeyWorkService remoteAnnualKeyWorkService;
 
+    @Autowired
+    private RemoteStrategyMeasureService remoteStrategyMeasureService;
+
+    @Autowired
+    private RemoteStrategyMetricsService remoteStrategyMetricsService;
+
+    @Autowired
+    private RemoteGapAnalysisService remoteGapAnalysisService;
+
+    @Autowired
+    private RemoteBusinessDesignService remoteBusinessDesignService;
 
     /**
      * 查询行业 行业启用：1系统；2自定义
@@ -421,6 +444,75 @@ public class IndustryServiceImpl implements IIndustryService {
     }
 
     /**
+     * 战略云引用校验
+     *
+     * @param industryIds 行业ID集合
+     */
+    private void isStrategyQuote(List<Long> industryIds) {
+        Map<String, Object> params;
+        AnnualKeyWorkDTO annualKeyWorkDTO = new AnnualKeyWorkDTO();
+        params = new HashMap<>();
+        params.put("industryIdEqual", industryIds);
+        annualKeyWorkDTO.setParams(params);
+        R<List<AnnualKeyWorkDTO>> remoteAnnualKeyWorkR = remoteAnnualKeyWorkService.remoteAnnualKeyWork(annualKeyWorkDTO, SecurityConstants.INNER);
+        List<AnnualKeyWorkDTO> annualKeyWorkDTOS = remoteAnnualKeyWorkR.getData();
+        if (remoteAnnualKeyWorkR.getCode() != 200) {
+            throw new ServiceException("远程调用年度重点工作失败");
+        }
+        if (StringUtils.isNotEmpty(annualKeyWorkDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        StrategyMeasureDTO strategyMeasureDTO = new StrategyMeasureDTO();
+        params = new HashMap<>();
+        params.put("industryIdEqual", industryIds);
+        strategyMeasureDTO.setParams(params);
+        R<List<StrategyMeasureDTO>> remoteStrategyMeasureR = remoteStrategyMeasureService.remoteStrategyMeasure(strategyMeasureDTO, SecurityConstants.INNER);
+        List<StrategyMeasureDTO> strategyMeasureDTOS = remoteStrategyMeasureR.getData();
+        if (remoteStrategyMeasureR.getCode() != 200) {
+            throw new ServiceException("远程调用战略举措清单失败");
+        }
+        if (StringUtils.isNotEmpty(strategyMeasureDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        StrategyMetricsDTO strategyMetricsDTO = new StrategyMetricsDTO();
+        params = new HashMap<>();
+        params.put("industryIdEqual", industryIds);
+        strategyMetricsDTO.setParams(params);
+        R<List<StrategyMetricsDTO>> remoteStrategyMetricsR = remoteStrategyMetricsService.remoteStrategyMetrics(strategyMetricsDTO, SecurityConstants.INNER);
+        List<StrategyMetricsDTO> strategyMetricsDTOS = remoteStrategyMetricsR.getData();
+        if (remoteStrategyMetricsR.getCode() != 200) {
+            throw new ServiceException("远程调用战略衡量指标失败");
+        }
+        if (StringUtils.isNotEmpty(strategyMetricsDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        GapAnalysisDTO gapAnalysisDTO = new GapAnalysisDTO();
+        params = new HashMap<>();
+        params.put("industryIdEqual", industryIds);
+        gapAnalysisDTO.setParams(params);
+        R<List<GapAnalysisDTO>> remoteGapAnalysisR = remoteGapAnalysisService.remoteGapAnalysis(gapAnalysisDTO, SecurityConstants.INNER);
+        List<GapAnalysisDTO> gapAnalysisDTOS = remoteGapAnalysisR.getData();
+        if (remoteGapAnalysisR.getCode() != 200) {
+            throw new ServiceException("远程调用差距分析失败");
+        }
+        if (StringUtils.isNotEmpty(gapAnalysisDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        BusinessDesignDTO businessDesignDTO = new BusinessDesignDTO();
+        params = new HashMap<>();
+        params.put("industryIdEqual", industryIds);
+        businessDesignDTO.setParams(params);
+        R<List<BusinessDesignDTO>> remoteBusinessDesignR = remoteBusinessDesignService.remoteBusinessDesign(businessDesignDTO, SecurityConstants.INNER);
+        List<BusinessDesignDTO> businessDesignDTOS = remoteBusinessDesignR.getData();
+        if (remoteBusinessDesignR.getCode() != 200) {
+            throw new ServiceException("远程调用业务设计失败");
+        }
+        if (StringUtils.isNotEmpty(businessDesignDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+    }
+
+    /**
      * 逻辑批量删除行业
      *
      * @param industryIds 需要删除的行业主键
@@ -435,6 +527,7 @@ public class IndustryServiceImpl implements IIndustryService {
         }
         addSons(industryIds);
         isQuote(industryIds, industryByIds);
+        isStrategyQuote(industryIds);
         return industryMapper.logicDeleteIndustryByIndustryIds(industryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -504,9 +597,7 @@ public class IndustryServiceImpl implements IIndustryService {
     @Transactional
     @Override
     public int logicDeleteIndustryByIndustryId(Long industryId) {
-        ArrayList<Long> industryIds = new ArrayList<>();
-        industryIds.add(industryId);
-        return logicDeleteIndustryByIndustryIds(industryIds);
+        return logicDeleteIndustryByIndustryIds(Collections.singletonList(industryId));
     }
 
     /**

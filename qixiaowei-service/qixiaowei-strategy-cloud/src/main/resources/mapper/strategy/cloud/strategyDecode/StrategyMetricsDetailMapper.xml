@@ -69,6 +69,14 @@
         <if test="strategyMetricsDetail.updateTime != null">
             and update_time=#{strategyMetricsDetail.updateTime}
         </if>
+        <if test="strategyMetricsDetail.params.indicatorId != null and strategyMetricsDetail.params.indicatorId.size()>0">
+            AND indicator_id IN
+            <foreach item="item"
+                     collection="strategyMetricsDetail.params.indicatorId"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
     <!--根据主表ID查询详情-->
     <select id="selectStrategyMetricsDetailByStrategyMetricsId"

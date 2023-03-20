@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -47,6 +48,8 @@ public class GapAnalysisPerformanceServiceImpl implements IGapAnalysisPerformanc
     public List<GapAnalysisPerformanceDTO> selectGapAnalysisPerformanceList(GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO) {
         GapAnalysisPerformance gapAnalysisPerformance = new GapAnalysisPerformance();
         BeanUtils.copyProperties(gapAnalysisPerformanceDTO, gapAnalysisPerformance);
+        Map<String, Object> params = gapAnalysisPerformanceDTO.getParams();
+        gapAnalysisPerformance.setParams(params);
         return gapAnalysisPerformanceMapper.selectGapAnalysisPerformanceList(gapAnalysisPerformance);
     }
 

@@ -1,6 +1,5 @@
 package net.qixiaowei.strategy.cloud.service.impl.strategyDecode;
 
-import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -55,13 +54,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
-
-    public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.of(
-            "region", "区域",
-            "department", "部门",
-            "product", "产品",
-            "industry", "行业"
-    );
 
     @Autowired
     private StrategyMetricsMapper strategyMetricsMapper;
@@ -746,6 +738,29 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
     @Override
     public List<StrategyMetricsDTO> selectStrategyMetricsByStrategyMeasureIds(List<Long> strategyMeasureIds) {
         return strategyMetricsMapper.selectStrategyMetricsByStrategyMeasureIds(strategyMeasureIds);
+    }
+
+    /**
+     * 获取远程列表
+     *
+     * @param strategyMetricsDTO 衡量指标DTO
+     * @return List
+     */
+    @Override
+    public List<StrategyMetricsDTO> remoteStrategyMetrics(StrategyMetricsDTO strategyMetricsDTO) {
+        StrategyMetrics strategyMetrics = new StrategyMetrics();
+        Map<String, Object> params = strategyMetricsDTO.getParams();
+        strategyMetrics.setParams(params);
+        BeanUtils.copyProperties(strategyMetricsDTO, strategyMetrics);
+        return strategyMetricsMapper.selectStrategyMetricsList(strategyMetrics);
+    }
+
+    @Override
+    public List<StrategyMetricsDetailDTO> remoteListByIndicator(StrategyMetricsDTO strategyMetricsDTO) {
+        StrategyMetricsDetailDTO strategyMetricsDetailDTO = new StrategyMetricsDetailDTO();
+        Map<String, Object> params = strategyMetricsDTO.getParams();
+        strategyMetricsDetailDTO.setParams(params);
+        return strategyMetricsDetailService.selectStrategyMetricsDetailList(strategyMetricsDetailDTO);
     }
 
     /**

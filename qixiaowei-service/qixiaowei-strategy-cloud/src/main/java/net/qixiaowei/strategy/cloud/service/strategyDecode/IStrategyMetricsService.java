@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.service.strategyDecode;
 
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO;
 
 import java.util.List;
 
@@ -123,4 +124,20 @@ public interface IStrategyMetricsService {
      * @return List
      */
     List<StrategyMetricsDTO> selectStrategyMetricsByStrategyMeasureIds(List<Long> strategyMeasureIds);
+
+    /**
+     * 获取远程列表
+     *
+     * @param strategyMetricsDTO 衡量指标DTO
+     * @return List
+     */
+    List<StrategyMetricsDTO> remoteStrategyMetrics(StrategyMetricsDTO strategyMetricsDTO);
+
+    /**
+     * 远程根据指标ID集合查找战略衡量指标
+     *
+     * @param strategyMetricsDTO 战略衡量指标
+     * @return 结果
+     */
+    List<StrategyMetricsDetailDTO> remoteListByIndicator(StrategyMetricsDTO strategyMetricsDTO);
 }

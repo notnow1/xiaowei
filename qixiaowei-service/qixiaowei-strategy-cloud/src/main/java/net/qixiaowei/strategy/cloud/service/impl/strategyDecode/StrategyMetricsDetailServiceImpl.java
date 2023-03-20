@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -47,6 +48,8 @@ public class StrategyMetricsDetailServiceImpl implements IStrategyMetricsDetailS
     @Override
     public List<StrategyMetricsDetailDTO> selectStrategyMetricsDetailList(StrategyMetricsDetailDTO strategyMetricsDetailDTO) {
         StrategyMetricsDetail strategyMetricsDetail = new StrategyMetricsDetail();
+        Map<String, Object> params = strategyMetricsDetailDTO.getParams();
+        strategyMetricsDetail.setParams(params);
         BeanUtils.copyProperties(strategyMetricsDetailDTO, strategyMetricsDetail);
         return strategyMetricsDetailMapper.selectStrategyMetricsDetailList(strategyMetricsDetail);
     }

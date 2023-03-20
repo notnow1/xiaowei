@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.service.strategyDecode;
 
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO;
 
 import java.util.List;
 
@@ -100,4 +101,20 @@ public interface IAnnualKeyWorkService {
      * @return 结果
      */
     int deleteAnnualKeyWorkByAnnualKeyWorkId(Long annualKeyWorkId);
+
+    /**
+     * 查询列表
+     *
+     * @param annualKeyWorkDTO 年度重点工作表
+     * @return List
+     */
+    List<AnnualKeyWorkDTO> remoteAnnualKeyWork(AnnualKeyWorkDTO annualKeyWorkDTO);
+
+    /**
+     * 年度重点工作获取部门是否引用
+     *
+     * @param annualKeyWorkDetailDTO 年度重点工作详情表
+     * @return list
+     */
+    List<AnnualKeyWorkDetailDTO> remoteAnnualKeyWorkDepartment(AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO);
 }

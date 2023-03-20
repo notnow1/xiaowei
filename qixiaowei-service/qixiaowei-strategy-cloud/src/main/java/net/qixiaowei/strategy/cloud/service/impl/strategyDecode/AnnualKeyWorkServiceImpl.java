@@ -1,6 +1,5 @@
 package net.qixiaowei.strategy.cloud.service.impl.strategyDecode;
 
-import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -15,6 +14,7 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.AnnualKeyWork;
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.AnnualKeyWorkDetail;
 import net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO;
@@ -46,13 +46,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
-
-    public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.of(
-            "region", "区域",
-            "department", "部门",
-            "product", "产品",
-            "industry", "行业"
-    );
 
     @Autowired
     private AnnualKeyWorkMapper annualKeyWorkMapper;
@@ -577,6 +570,36 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
     @Override
     public int deleteAnnualKeyWorkByAnnualKeyWorkId(Long annualKeyWorkId) {
         return annualKeyWorkMapper.deleteAnnualKeyWorkByAnnualKeyWorkId(annualKeyWorkId);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param annualKeyWorkDTO 年度重点工作表
+     * @return List
+     */
+    @Override
+    public List<AnnualKeyWorkDTO> remoteAnnualKeyWork(AnnualKeyWorkDTO annualKeyWorkDTO) {
+        AnnualKeyWork annualKeyWork = new AnnualKeyWork();
+        Map<String, Object> params = annualKeyWorkDTO.getParams();
+        annualKeyWork.setParams(params);
+        BeanUtils.copyProperties(annualKeyWorkDTO, annualKeyWork);
+        return annualKeyWorkMapper.selectAnnualKeyWorkList(annualKeyWork);
+    }
+
+    /**
+     * 年度重点工作获取部门是否引用
+     *
+     * @param annualKeyWorkDetailDTO 年度重点工作详情表
+     * @return list
+     */
+    @Override
+    public List<AnnualKeyWorkDetailDTO> remoteAnnualKeyWorkDepartment(AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO) {
+        Map<String, Object> params = annualKeyWorkDetailDTO.getParams();
+        AnnualKeyWorkDetail annualKeyWorkDetail = new AnnualKeyWorkDetail();
+        annualKeyWorkDetail.setParams(params);
+        BeanUtils.copyProperties(annualKeyWorkDetailDTO, annualKeyWorkDetail);
+        return annualKeyWorkMapper.remoteAnnualKeyWorkDepartment(annualKeyWorkDetail);
     }
 
     /**

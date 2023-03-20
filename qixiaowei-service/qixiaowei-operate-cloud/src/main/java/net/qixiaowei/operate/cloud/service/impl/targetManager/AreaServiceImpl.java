@@ -16,6 +16,17 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsD
 import net.qixiaowei.operate.cloud.mapper.targetManager.AreaMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.IAreaService;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
+import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
+import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
+import net.qixiaowei.strategy.cloud.api.remote.businessDesign.RemoteBusinessDesignService;
+import net.qixiaowei.strategy.cloud.api.remote.gap.RemoteGapAnalysisService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteAnnualKeyWorkService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMeasureService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMetricsService;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
@@ -46,6 +57,21 @@ public class AreaServiceImpl implements IAreaService {
 
     @Autowired
     private RemoteRegionService regionService;
+
+    @Autowired
+    private RemoteAnnualKeyWorkService remoteAnnualKeyWorkService;
+
+    @Autowired
+    private RemoteStrategyMeasureService remoteStrategyMeasureService;
+
+    @Autowired
+    private RemoteStrategyMetricsService remoteStrategyMetricsService;
+
+    @Autowired
+    private RemoteGapAnalysisService remoteGapAnalysisService;
+
+    @Autowired
+    private RemoteBusinessDesignService remoteBusinessDesignService;
 
     /**
      * 查询区域表
@@ -313,6 +339,90 @@ public class AreaServiceImpl implements IAreaService {
         if (quoteReminder.length() != 0) {
             throw new ServiceException(quoteReminder.toString());
         }
+        // 战略云引用
+        isStrategyQuote(areaIds);
+    }
+
+    /**
+     * 战略云引用
+     *
+     * @param areaIds 区域ID集合
+     */
+    private void isStrategyQuote(List<Long> areaIds) {
+        Map<String, Object> params;
+        AnnualKeyWorkDTO annualKeyWorkDTO = new AnnualKeyWorkDTO();
+        params = new HashMap<>();
+        params.put("areaIdEqual", areaIds);
+        annualKeyWorkDTO.setParams(params);
+        R<List<AnnualKeyWorkDTO>> remoteAnnualKeyWorkR = remoteAnnualKeyWorkService.remoteAnnualKeyWork(annualKeyWorkDTO, SecurityConstants.INNER);
+        List<AnnualKeyWorkDTO> annualKeyWorkDTOS = remoteAnnualKeyWorkR.getData();
+        if (remoteAnnualKeyWorkR.getCode() != 200) {
+            throw new ServiceException("远程调用年度重点工作失败");
+        }
+        if (StringUtils.isNotEmpty(annualKeyWorkDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        StrategyMeasureDTO strategyMeasureDTO = new StrategyMeasureDTO();
+        params = new HashMap<>();
+        params.put("areaIdEqual", areaIds);
+        strategyMeasureDTO.setParams(params);
+        R<List<StrategyMeasureDTO>> remoteStrategyMeasureR = remoteStrategyMeasureService.remoteStrategyMeasure(strategyMeasureDTO, SecurityConstants.INNER);
+        List<StrategyMeasureDTO> strategyMeasureDTOS = remoteStrategyMeasureR.getData();
+        if (remoteStrategyMeasureR.getCode() != 200) {
+            throw new ServiceException("远程调用战略举措清单失败");
+        }
+        if (StringUtils.isNotEmpty(strategyMeasureDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        StrategyMetricsDTO strategyMetricsDTO = new StrategyMetricsDTO();
+        params = new HashMap<>();
+        params.put("areaIdEqual", areaIds);
+        strategyMetricsDTO.setParams(params);
+        R<List<StrategyMetricsDTO>> remoteStrategyMetricsR = remoteStrategyMetricsService.remoteStrategyMetrics(strategyMetricsDTO, SecurityConstants.INNER);
+        List<StrategyMetricsDTO> strategyMetricsDTOS = remoteStrategyMetricsR.getData();
+        if (remoteStrategyMetricsR.getCode() != 200) {
+            throw new ServiceException("远程调用战略衡量指标失败");
+        }
+        if (StringUtils.isNotEmpty(strategyMetricsDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        GapAnalysisDTO gapAnalysisDTO = new GapAnalysisDTO();
+        params = new HashMap<>();
+        params.put("areaIdEqual", areaIds);
+        gapAnalysisDTO.setParams(params);
+        R<List<GapAnalysisDTO>> remoteGapAnalysisR = remoteGapAnalysisService.remoteGapAnalysis(gapAnalysisDTO, SecurityConstants.INNER);
+        List<GapAnalysisDTO> gapAnalysisDTOS = remoteGapAnalysisR.getData();
+        if (remoteGapAnalysisR.getCode() != 200) {
+            throw new ServiceException("远程调用差距分析失败");
+        }
+        if (StringUtils.isNotEmpty(gapAnalysisDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        BusinessDesignDTO businessDesignDTO = new BusinessDesignDTO();
+        params = new HashMap<>();
+        params.put("areaIdEqual", areaIds);
+        businessDesignDTO.setParams(params);
+        R<List<BusinessDesignDTO>> remoteBusinessDesignR = remoteBusinessDesignService.remoteBusinessDesign(businessDesignDTO, SecurityConstants.INNER);
+        List<BusinessDesignDTO> businessDesignDTOS = remoteBusinessDesignR.getData();
+        if (remoteBusinessDesignR.getCode() != 200) {
+            throw new ServiceException("远程调用业务设计失败");
+        }
+        if (StringUtils.isNotEmpty(businessDesignDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+        BusinessDesignParamDTO businessDesignParamDTO = new BusinessDesignParamDTO();
+        params = new HashMap<>();
+        params.put("areaIds", areaIds);
+        businessDesignParamDTO.setParams(params);
+        R<List<BusinessDesignParamDTO>> BusinessDesignParamDTOSR = remoteBusinessDesignService.remoteBusinessDesignParams(businessDesignParamDTO, SecurityConstants.INNER);
+        List<BusinessDesignParamDTO> BusinessDesignParamDTOS = BusinessDesignParamDTOSR.getData();
+        if (BusinessDesignParamDTOSR.getCode() != 200) {
+            throw new ServiceException("远程调用失败");
+        }
+        if (StringUtils.isNotEmpty(BusinessDesignParamDTOS)) {
+            throw new ServiceException("数据被引用!");
+        }
+
     }
 
     /**

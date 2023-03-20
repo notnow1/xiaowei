@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * 战略举措清单VO
@@ -131,4 +132,8 @@ public class StrategyMeasureDetailVO {
      * 租户ID
      */
     private Long tenantId;
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 }

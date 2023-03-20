@@ -1,6 +1,5 @@
 package net.qixiaowei.strategy.cloud.service.impl.strategyDecode;
 
-import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -16,6 +15,7 @@ import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasure;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasureDetail;
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasureTask;
 import net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.*;
 import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
@@ -49,13 +49,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
-
-    public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.of(
-            "region", "区域",
-            "department", "部门",
-            "product", "产品",
-            "industry", "行业"
-    );
 
     @Autowired
     private StrategyMeasureMapper strategyMeasureMapper;
@@ -958,6 +951,36 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
     @Override
     public int deleteStrategyMeasureByStrategyMeasureId(Long strategyMeasureId) {
         return strategyMeasureMapper.deleteStrategyMeasureByStrategyMeasureId(strategyMeasureId);
+    }
+
+    /**
+     * 远程获取列表
+     *
+     * @param strategyMeasureDTO 战略举措清单表
+     * @return List
+     */
+    @Override
+    public List<StrategyMeasureDTO> remoteStrategyMeasure(StrategyMeasureDTO strategyMeasureDTO) {
+        StrategyMeasure strategyMeasure = new StrategyMeasure();
+        Map<String, Object> params = strategyMeasureDTO.getParams();
+        strategyMeasure.setParams(params);
+        BeanUtils.copyProperties(strategyMeasureDTO, strategyMeasure);
+        return strategyMeasureMapper.selectStrategyMeasureList(strategyMeasure);
+    }
+
+    /**
+     * 远程引用查询详情
+     *
+     * @param strategyMeasureDetailVO 详情VO
+     * @return 结果
+     */
+    @Override
+    public List<StrategyMeasureTaskDTO> remoteDutyMeasure(StrategyMeasureDetailVO strategyMeasureDetailVO) {
+        StrategyMeasureTask strategyMeasureTask = new StrategyMeasureTask();
+        Map<String, Object> params = strategyMeasureDetailVO.getParams();
+        strategyMeasureTask.setParams(params);
+        BeanUtils.copyProperties(strategyMeasureDetailVO, strategyMeasureTask);
+        return strategyMeasureMapper.remoteDutyMeasure(strategyMeasureTask);
     }
 
     /**
