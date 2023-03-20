@@ -2,13 +2,8 @@ package net.qixiaowei.strategy.cloud.remote.marketInsight;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
-import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
-import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO;
-import net.qixiaowei.strategy.cloud.api.remote.industry.RemoteIndustryAttractionService;
 import net.qixiaowei.strategy.cloud.api.remote.marketInsight.RemoteMarketInsightIndustryService;
-import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
-import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightCustomerService;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
