@@ -243,6 +243,12 @@
             OR akw.industry_id IS NULL
             )
         </if>
+        <if test="annualKeyWork.params.industryIdIsNull != null">
+            AND (akw.industry_id IS NULL or akw.industry_id ='')
+        </if>
+        <if test="annualKeyWork.params.industryIdIsNotNull != null">
+            AND (akw.industry_id IS NOT NULL or akw.industry_id != '')
+        </if>
         <!--区域-->
         <if test="annualKeyWork.params.areaIdEqual != null and annualKeyWork.params.areaIdEqual.size() > 0">
             and akw.area_id IN
@@ -261,6 +267,12 @@
             </foreach>
             OR akw.area_id IS NULL
             )
+        </if>
+        <if test="annualKeyWork.params.areaIdIsNull != null">
+            AND (akw.area_id IS NULL or akw.area_id ='')
+        </if>
+        <if test="annualKeyWork.params.areaIdIsNotNull != null">
+            AND (akw.area_id IS NOT NULL or akw.area_id != '')
         </if>
         <!--产品-->
         <if test="annualKeyWork.params.productIdEqual != null and annualKeyWork.params.productIdEqual.size() > 0">
@@ -281,6 +293,12 @@
             OR akw.product_id IS NULL
             )
         </if>
+        <if test="annualKeyWork.params.productIdIsNull != null">
+            AND (akw.product_id IS NULL or akw.product_id ='')
+        </if>
+        <if test="annualKeyWork.params.productIdIsNotNull != null">
+            AND (akw.product_id IS NOT NULL or akw.product_id != '')
+        </if>
         <!--部门-->
         <if test="annualKeyWork.params.departmentIdEqual != null and annualKeyWork.params.departmentIdEqual.size() > 0">
             and akw.department_id IN
@@ -299,6 +317,12 @@
             </foreach>
             OR akw.department_id IS NULL
             )
+        </if>
+        <if test="annualKeyWork.params.departmentIdIsNull != null">
+            AND (akw.department_id IS NULL or akw.department_id ='')
+        </if>
+        <if test="annualKeyWork.params.departmentIdIsNotNull != null">
+            AND (akw.department_id IS NOT NULL or akw.department_id != '')
         </if>
     </select>
     <!--年度重点工作获取部门是否引用-->

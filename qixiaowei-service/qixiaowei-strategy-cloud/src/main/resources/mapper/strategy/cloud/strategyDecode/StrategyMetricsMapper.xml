@@ -249,6 +249,12 @@
             OR sm.industry_id IS NULL
             )
         </if>
+        <if test="strategyMetrics.params.industryIdIsNull != null">
+            AND (sm.industry_id IS NULL or sm.industry_id ='')
+        </if>
+        <if test="strategyMetrics.params.industryIdIsNotNull != null">
+            AND (sm.industry_id IS NOT NULL or sm.industry_id != '')
+        </if>
         <!--区域-->
         <if test="strategyMetrics.params.areaIdEqual != null and strategyMetrics.params.areaIdEqual.size() > 0">
             and sm.area_id IN
@@ -267,6 +273,12 @@
             </foreach>
             OR sm.area_id IS NULL
             )
+        </if>
+        <if test="strategyMetrics.params.areaIdIsNull != null">
+            AND (sm.area_id IS NULL or sm.area_id ='')
+        </if>
+        <if test="strategyMetrics.params.areaIdIsNotNull != null">
+            AND (sm.area_id IS NOT NULL or sm.area_id != '')
         </if>
         <!--产品-->
         <if test="strategyMetrics.params.productIdEqual != null and strategyMetrics.params.productIdEqual.size() > 0">
@@ -287,6 +299,12 @@
             OR sm.product_id IS NULL
             )
         </if>
+        <if test="strategyMetrics.params.productIdIsNull != null">
+            AND (sm.product_id IS NULL or sm.product_id ='')
+        </if>
+        <if test="strategyMetrics.params.productIdIsNotNull != null">
+            AND (sm.product_id IS NOT NULL or sm.product_id != '')
+        </if>
         <!--部门-->
         <if test="strategyMetrics.params.departmentIdEqual != null and strategyMetrics.params.departmentIdEqual.size() > 0">
             and sm.department_id IN
@@ -305,6 +323,12 @@
             </foreach>
             OR sm.department_id IS NULL
             )
+        </if>
+        <if test="strategyMetrics.params.departmentIdIsNull != null">
+            AND (sm.department_id IS NULL or sm.department_id ='')
+        </if>
+        <if test="strategyMetrics.params.departmentIdIsNotNull != null">
+            AND (sm.department_id IS NOT NULL or sm.department_id != '')
         </if>
     </select>
     <!--根据清单ID查询战略衡量指标-->

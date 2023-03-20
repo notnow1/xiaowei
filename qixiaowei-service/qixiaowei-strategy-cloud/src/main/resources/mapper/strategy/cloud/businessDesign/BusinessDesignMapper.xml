@@ -244,6 +244,12 @@
             OR bd.industry_id IS NULL
             )
         </if>
+        <if test="businessDesign.params.industryIdIsNull != null">
+            AND (bd.industry_id IS NULL or bd.industry_id ='')
+        </if>
+        <if test="businessDesign.params.industryIdIsNotNull != null">
+            AND (bd.industry_id IS NOT NULL or bd.industry_id != '')
+        </if>
         <!--区域-->
         <if test="businessDesign.params.areaIdEqual != null and businessDesign.params.areaIdEqual.size() > 0">
             and bd.area_id IN
@@ -262,6 +268,12 @@
             </foreach>
             OR bd.area_id IS NULL
             )
+        </if>
+        <if test="businessDesign.params.areaIdIsNull != null">
+            AND (bd.area_id IS NULL or bd.area_id ='')
+        </if>
+        <if test="businessDesign.params.areaIdIsNotNull != null">
+            AND (bd.area_id IS NOT NULL or bd.area_id != '')
         </if>
         <!--产品-->
         <if test="businessDesign.params.productIdEqual != null and businessDesign.params.productIdEqual.size() > 0">
@@ -282,6 +294,12 @@
             OR bd.product_id IS NULL
             )
         </if>
+        <if test="businessDesign.params.productIdIsNull != null">
+            AND (bd.product_id IS NULL or bd.product_id ='')
+        </if>
+        <if test="businessDesign.params.productIdIsNotNull != null">
+            AND (bd.product_id IS NOT NULL or bd.product_id != '')
+        </if>
         <!--部门-->
         <if test="businessDesign.params.departmentIdEqual != null and businessDesign.params.departmentIdEqual.size() > 0">
             and bd.department_id IN
@@ -300,6 +318,12 @@
             </foreach>
             OR bd.department_id IS NULL
             )
+        </if>
+        <if test="businessDesign.params.departmentIdIsNull != null">
+            AND (bd.department_id IS NULL or bd.department_id ='')
+        </if>
+        <if test="businessDesign.params.departmentIdIsNotNull != null">
+            AND (bd.department_id IS NOT NULL or bd.department_id != '')
         </if>
         GROUP BY bd.business_design_id
         ORDER BY bd.update_time ASC

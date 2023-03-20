@@ -239,28 +239,10 @@
             )
         </if>
         <if test="gapAnalysis.params.industryIdIsNull != null">
-            AND ga.industry_id IS NULL or ga.industry_id =''
+            AND (ga.industry_id IS NULL or ga.industry_id ='')
         </if>
         <if test="gapAnalysis.params.industryIdIsNotNull != null">
-            AND ga.industry_id IS NOT NULL or ga.industry_id != ''
-        </if>
-        <if test="gapAnalysis.params.industryIdIsNull != null and gapAnalysis.params.industryIdEqual.size() > 0">
-            and ga.industry_id IN
-            <foreach item="item"
-                     collection="gapAnalysis.params.industryIdEqual"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="gapAnalysis.params.industryIdNotEqual != null and gapAnalysis.params.industryIdNotEqual.size() > 0">
-            AND (ga.industry_id NOT IN
-            <foreach item="item"
-                     collection="gapAnalysis.params.industryIdNotEqual"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-            OR ga.industry_id IS NULL
-            )
+            AND (ga.industry_id IS NOT NULL or ga.industry_id != '')
         </if>
         <!--区域-->
         <if test="gapAnalysis.params.areaIdEqual != null and gapAnalysis.params.areaIdEqual.size() > 0">
@@ -281,6 +263,12 @@
             OR ga.area_id IS NULL
             )
         </if>
+        <if test="gapAnalysis.params.areaIdIsNull != null">
+            AND (ga.area_id IS NULL or ga.area_id ='')
+        </if>
+        <if test="gapAnalysis.params.areaIdIsNotNull != null">
+            AND (ga.area_id IS NOT NULL or ga.area_id != '')
+        </if>
         <!--产品-->
         <if test="gapAnalysis.params.productIdEqual != null and gapAnalysis.params.productIdEqual.size() > 0">
             and ga.product_id IN
@@ -300,6 +288,12 @@
             OR ga.product_id IS NULL
             )
         </if>
+        <if test="gapAnalysis.params.productIdIsNull != null">
+            AND (ga.product_id IS NULL or ga.product_id ='')
+        </if>
+        <if test="gapAnalysis.params.productIdIsNotNull != null">
+            AND (ga.product_id IS NOT NULL or ga.product_id != '')
+        </if>
         <!--部门-->
         <if test="gapAnalysis.params.departmentIdEqual != null and gapAnalysis.params.departmentIdEqual.size() > 0">
             and ga.department_id IN
@@ -318,6 +312,12 @@
             </foreach>
             OR ga.department_id IS NULL
             )
+        </if>
+        <if test="gapAnalysis.params.departmentIdIsNull != null">
+            AND (ga.department_id IS NULL or ga.department_id ='')
+        </if>
+        <if test="gapAnalysis.params.departmentIdIsNotNull != null">
+            AND (ga.department_id IS NOT NULL or ga.department_id != '')
         </if>
     </select>
     <!--新增差距分析表-->

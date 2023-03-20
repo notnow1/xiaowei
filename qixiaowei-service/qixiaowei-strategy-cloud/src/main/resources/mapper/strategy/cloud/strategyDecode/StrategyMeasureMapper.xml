@@ -267,6 +267,12 @@
             OR sm.industry_id IS NULL
             )
         </if>
+        <if test="strategyMeasure.params.industryIdIsNull != null">
+            AND (sm.industry_id IS NULL or sm.industry_id ='')
+        </if>
+        <if test="strategyMeasure.params.industryIdIsNotNull != null">
+            AND (sm.industry_id IS NOT NULL or sm.industry_id != '')
+        </if>
         <!--区域-->
         <if test="strategyMeasure.params.areaIdEqual != null and strategyMeasure.params.areaIdEqual.size() > 0">
             and sm.area_id IN
@@ -285,6 +291,12 @@
             </foreach>
             OR sm.area_id IS NULL
             )
+        </if>
+        <if test="strategyMeasure.params.areaIdIsNull != null">
+            AND (sm.area_id IS NULL or sm.area_id ='')
+        </if>
+        <if test="strategyMeasure.params.areaIdIsNotNull != null">
+            AND (sm.area_id IS NOT NULL or sm.area_id != '')
         </if>
         <!--产品-->
         <if test="strategyMeasure.params.productIdEqual != null and strategyMeasure.params.productIdEqual.size() > 0">
@@ -305,6 +317,12 @@
             OR sm.product_id IS NULL
             )
         </if>
+        <if test="strategyMeasure.params.productIdIsNull != null">
+            AND (sm.product_id IS NULL or sm.product_id ='')
+        </if>
+        <if test="strategyMeasure.params.productIdIsNotNull != null">
+            AND (sm.product_id IS NOT NULL or sm.product_id != '')
+        </if>
         <!--部门-->
         <if test="strategyMeasure.params.departmentIdEqual != null and strategyMeasure.params.departmentIdEqual.size() > 0">
             and sm.department_id IN
@@ -323,6 +341,12 @@
             </foreach>
             OR sm.department_id IS NULL
             )
+        </if>
+        <if test="strategyMeasure.params.departmentIdIsNull != null">
+            AND (sm.department_id IS NULL or sm.department_id ='')
+        </if>
+        <if test="strategyMeasure.params.departmentIdIsNotNull != null">
+            AND (sm.department_id IS NOT NULL or sm.department_id != '')
         </if>
     </select>
     <!--远程引用查询详情-->

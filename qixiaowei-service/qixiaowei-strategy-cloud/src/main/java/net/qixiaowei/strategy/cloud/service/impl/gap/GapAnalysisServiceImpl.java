@@ -18,6 +18,7 @@ import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysis;
 import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysisOperate;
+import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
@@ -270,6 +271,11 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         List<GapAnalysisDTO> gapAnalysisDTOS = gapAnalysisMapper.selectGapAnalysisList(gapAnalysis);
         if (StringUtils.isEmpty(gapAnalysisDTOS)) {
             return gapAnalysisDTOS;
+        }
+        // map label value
+        for (GapAnalysisDTO gapAnalysisDTO1 : gapAnalysisDTOS) {
+            String businessUnitDecompose = gapAnalysisDTO1.getBusinessUnitDecompose();
+            gapAnalysisDTO1.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
         }
         // 赋值员工
         Set<Long> createBys = gapAnalysisDTOS.stream().map(GapAnalysisDTO::getCreateBy).collect(Collectors.toSet());

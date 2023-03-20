@@ -110,8 +110,8 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
         for (PlanBusinessUnitDTO businessUnitDTO : planBusinessUnitDTOS) {
             String businessUnitDecompose = businessUnitDTO.getBusinessUnitDecompose();
             if (StringUtils.isNotNull(businessUnitDecompose)) {
-                planBusinessUnitDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
-                planBusinessUnitDTO.setBusinessUnitDecomposeName(PlanBusinessUnitCode.getBusinessUnitDecomposeName(businessUnitDecompose));
+                businessUnitDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
+                businessUnitDTO.setBusinessUnitDecomposeName(PlanBusinessUnitCode.getBusinessUnitDecomposeName(businessUnitDecompose));
             }
         }
         return planBusinessUnitDTOS;
