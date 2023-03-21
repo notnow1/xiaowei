@@ -325,6 +325,108 @@
         <if test="businessDesign.params.departmentIdIsNotNull != null">
             AND (bd.department_id IS NOT NULL or bd.department_id != '')
         </if>
+        <!-- 创建人等于过滤  -->
+        <if test="businessDesign.params.createByNameEqual != null">
+            <!-- 创建人等于过滤  -->
+            <if test="businessDesign.params.createBys != null and businessDesign.params.createBys.size() > 0">
+                AND bd.create_by IN
+                <foreach item="item"
+                         collection="businessDesign.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人等于过滤  -->
+            <if test="businessDesign.params.createBys == null">
+                AND  bd.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不等于过滤  -->
+        <if test=" businessDesign.params.createByNameNotEqual != null">
+            <!-- 创建人不等于过滤  -->
+            <if test="businessDesign.params.createBys != null and businessDesign.params.createBys.size() > 0">
+                AND (bd.create_by IN
+                <foreach item="item"
+                         collection="businessDesign.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不等于过滤  -->
+            <if test="businessDesign.params.createBys == null">
+                AND bd.create_by is null
+            </if>
+        </if>
+        <!-- 创建人包含过滤  -->
+        <if test="businessDesign.params.createByNameLike != null">
+            <!-- 创建人包含过滤  -->
+            <if test="businessDesign.params.createBys != null and businessDesign.params.createBys.size() > 0">
+                AND bd.create_by IN
+                <foreach item="item"
+                         collection="businessDesign.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人包含过滤  -->
+            <if test="businessDesign.params.createBys == null">
+                AND  bd.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不包含过滤  -->
+        <if test=" businessDesign.params.createByNameNotLike != null">
+            <!-- 创建人不包含过滤  -->
+            <if test="businessDesign.params.createBys != null and businessDesign.params.createBys.size() > 0">
+                AND (bd.create_by IN
+                <foreach item="item"
+                         collection="businessDesign.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不包含过滤  -->
+            <if test="businessDesign.params.createBys == null">
+                AND bd.create_by is null
+            </if>
+        </if>
+
+        <!-- 创建时间过滤  -->
+        <if test="businessDesign.params.createTimeEqual != null and businessDesign.params.createTimeEqual.size() > 0">
+            AND date_format(bd.create_time,'%Y/%m/%d') IN
+            <foreach item="item"
+                     collection="businessDesign.params.createTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.createTimeNotEqual != null and businessDesign.params.createTimeNotEqual.size() > 0">
+            AND date_format(bd.create_time,'%Y/%m/%d') NOT IN
+            <foreach item="item"
+                     collection="businessDesign.params.createTimeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.createTimeBefore != null and businessDesign.params.createTimeBefore != ''">
+            AND date_format(bd.create_time,'%Y/%m/%d') &lt; #{businessDesign.params.createTimeBefore}
+        </if>
+        <if test="businessDesign.params.createTimeNotBefore != null and businessDesign.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
+            AND date_format(bd.create_time,'%Y/%m/%d') &gt;= #{businessDesign.params.createTimeNotBefore}
+        </if>
+        <if test="businessDesign.params.createTimeAfter != null and businessDesign.params.createTimeAfter != ''"><!-- 开始时间检索 -->
+            AND date_format(bd.create_time,'%Y/%m/%d') &gt; #{businessDesign.params.createTimeAfter}
+        </if>
+        <if test="businessDesign.params.createTimeNotAfter != null and businessDesign.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
+            AND date_format(bd.create_time,'%Y/%m/%d') &lt;= #{businessDesign.params.createTimeNotAfter}
+        </if>
+        <if test="businessDesign.params.createTimeStart != null and businessDesign.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(bd.create_time,'%Y/%m/%d') &gt;= #{businessDesign.params.createTimeStart}
+        </if>
+        <if test="businessDesign.params.createTimeEnd != null and businessDesign.params.createTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(bd.create_time,'%Y/%m/%d') &lt;= #{businessDesign.params.createTimeEnd}
+        </if>
         GROUP BY bd.business_design_id
         ORDER BY bd.update_time ASC
     </select>

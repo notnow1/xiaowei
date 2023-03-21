@@ -316,44 +316,46 @@ public class AreaServiceImpl implements IAreaService {
      * @param areaByIds 区域DTO
      */
     private void isQuote(List<Long> areaIds, List<AreaDTO> areaByIds) {
-        StringBuilder quoteReminder = new StringBuilder("");
+//        StringBuilder quoteReminder = new StringBuilder("");
         R<List<OfficialRankDecomposeDTO>> listR = officialRankSystemService.selectOfficialDecomposeByDimensions(areaIds, 2, SecurityConstants.INNER);
         if (listR.getCode() != 200) {
             throw new ServiceException("远程调用职级分解失败 请联系管理员");
         }
         List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = listR.getData();
         if (StringUtils.isNotEmpty(officialRankDecomposeDTOS)) {
-            StringBuilder areaNames = new StringBuilder("");
-            for (AreaDTO areaById : areaByIds) {
-                for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
-                    if (officialRankDecomposeDTO.getDecomposeDimension().equals(areaById.getAreaId())) {
-                        areaNames.append(areaById.getAreaName()).append(",");
-                        break;
-                    }
-                }
-            }
-            quoteReminder.append("区域配置【").append(areaNames.deleteCharAt(areaNames.length() - 1)).append("】已被职级配置中的【职级分解】引用 无法删除\n");
+            throw new ServiceException("数据被引用!");
+//            StringBuilder areaNames = new StringBuilder("");
+//            for (AreaDTO areaById : areaByIds) {
+//                for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+//                    if (officialRankDecomposeDTO.getDecomposeDimension().equals(areaById.getAreaId())) {
+//                        areaNames.append(areaById.getAreaName()).append(",");
+//                        break;
+//                    }
+//                }
+//            }
+//            quoteReminder.append("区域配置【").append(areaNames.deleteCharAt(areaNames.length() - 1)).append("】已被职级配置中的【职级分解】引用 无法删除\n");
         }
         Map<Integer, List<Long>> map = new HashMap<>();
         map.put(2, areaIds);
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeService.selectByIds(map);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
-            StringBuilder areaNames = new StringBuilder("");
-            for (AreaDTO areaById : areaByIds) {
-                for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
-                    if (targetDecomposeDetailsDTO.getAreaId().equals(areaById.getAreaId())) {
-                        areaNames.append(areaById.getAreaName()).append(",");
-                        break;
-                    }
-                }
-            }
-            quoteReminder.append("区域配置【").append(areaNames.deleteCharAt(areaNames.length() - 1)).append("】正在被目标分解中的【分解维度-区域】引用 无法删除\n");
+            throw new ServiceException("数据被引用!");
+//            StringBuilder areaNames = new StringBuilder("");
+//            for (AreaDTO areaById : areaByIds) {
+//                for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+//                    if (targetDecomposeDetailsDTO.getAreaId().equals(areaById.getAreaId())) {
+//                        areaNames.append(areaById.getAreaName()).append(",");
+//                        break;
+//                    }
+//                }
+//            }
+//            quoteReminder.append("区域配置【").append(areaNames.deleteCharAt(areaNames.length() - 1)).append("】正在被目标分解中的【分解维度-区域】引用 无法删除\n");
         }
-        if (quoteReminder.length() != 0) {
-            throw new ServiceException(quoteReminder.toString());
-        }
-        // 战略云引用
         isStrategyQuote(areaIds);
+//        if (quoteReminder.length() != 0) {
+//            throw new ServiceException(quoteReminder.toString());
+//        }
+        // 战略云引用
     }
 
     /**
@@ -443,7 +445,7 @@ public class AreaServiceImpl implements IAreaService {
         //看客户远程查询是否引用
         R<List<MarketInsightCustomerDTO>> marketInsightCustomerList = remoteMarketInsightCustomerService.remoteMarketInsightCustomerList(marketInsightCustomerDTO, SecurityConstants.INNER);
         List<MarketInsightCustomerDTO> marketInsightCustomerListData = marketInsightCustomerList.getData();
-        if (StringUtils.isNotEmpty(marketInsightCustomerListData)){
+        if (StringUtils.isNotEmpty(marketInsightCustomerListData)) {
             throw new ServiceException("数据被引用！");
         }
 
@@ -454,7 +456,7 @@ public class AreaServiceImpl implements IAreaService {
         //看行业远程查询是否引用
         R<List<MarketInsightIndustryDTO>> marketInsightIndustryList = remoteMarketInsightIndustryService.remoteMarketInsightIndustryList(marketInsightIndustryDTO, SecurityConstants.INNER);
         List<MarketInsightIndustryDTO> marketInsightIndustryListData = marketInsightIndustryList.getData();
-        if (StringUtils.isNotEmpty(marketInsightIndustryListData)){
+        if (StringUtils.isNotEmpty(marketInsightIndustryListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightMacroDTO marketInsightMacroDTO = new MarketInsightMacroDTO();
@@ -464,7 +466,7 @@ public class AreaServiceImpl implements IAreaService {
         //看宏观远程查询是否引用
         R<List<MarketInsightMacroDTO>> marketInsightMacroList = remoteMarketInsightMacroService.remoteMarketInsightMacroList(marketInsightMacroDTO, SecurityConstants.INNER);
         List<MarketInsightMacroDTO> marketInsightMacroListData = marketInsightMacroList.getData();
-        if (StringUtils.isNotEmpty(marketInsightMacroListData)){
+        if (StringUtils.isNotEmpty(marketInsightMacroListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightOpponentDTO marketInsightOpponentDTO = new MarketInsightOpponentDTO();
@@ -474,7 +476,7 @@ public class AreaServiceImpl implements IAreaService {
         //看对手远程查询是否引用
         R<List<MarketInsightOpponentDTO>> marketInsightOpponentList = remoteMarketInsightOpponentService.remoteMarketInsightOpponentList(marketInsightOpponentDTO, SecurityConstants.INNER);
         List<MarketInsightOpponentDTO> marketInsightOpponentListData = marketInsightOpponentList.getData();
-        if (StringUtils.isNotEmpty(marketInsightOpponentListData)){
+        if (StringUtils.isNotEmpty(marketInsightOpponentListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightSelfDTO marketInsightSelfDTO = new MarketInsightSelfDTO();
@@ -484,7 +486,7 @@ public class AreaServiceImpl implements IAreaService {
         //看自身远程查询是否引用
         R<List<MarketInsightSelfDTO>> marketInsightSelfList = remoteMarketInsightSelfService.remoteMarketInsightSelfList(marketInsightSelfDTO, SecurityConstants.INNER);
         List<MarketInsightSelfDTO> marketInsightSelfListData = marketInsightSelfList.getData();
-        if (StringUtils.isNotEmpty(marketInsightSelfListData)){
+        if (StringUtils.isNotEmpty(marketInsightSelfListData)) {
             throw new ServiceException("数据被引用！");
         }
 

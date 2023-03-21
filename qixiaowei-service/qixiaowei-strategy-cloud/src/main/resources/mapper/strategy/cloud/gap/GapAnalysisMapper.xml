@@ -319,6 +319,109 @@
         <if test="gapAnalysis.params.departmentIdIsNotNull != null">
             AND (ga.department_id IS NOT NULL or ga.department_id != '')
         </if>
+        <!-- 创建人等于过滤  -->
+        <if test="gapAnalysis.params.createByNameEqual != null">
+            <!-- 创建人等于过滤  -->
+            <if test="gapAnalysis.params.createBys != null and gapAnalysis.params.createBys.size() > 0">
+                AND ga.create_by IN
+                <foreach item="item"
+                         collection="gapAnalysis.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人等于过滤  -->
+            <if test="gapAnalysis.params.createBys == null">
+                AND ga.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不等于过滤  -->
+        <if test=" gapAnalysis.params.createByNameNotEqual != null">
+            <!-- 创建人不等于过滤  -->
+            <if test="gapAnalysis.params.createBys != null and gapAnalysis.params.createBys.size() > 0">
+                AND (ga.create_by IN
+                <foreach item="item"
+                         collection="gapAnalysis.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不等于过滤  -->
+            <if test="gapAnalysis.params.createBys == null">
+                AND ga.create_by is null
+            </if>
+        </if>
+        <!-- 创建人包含过滤  -->
+        <if test="gapAnalysis.params.createByNameLike != null">
+            <!-- 创建人包含过滤  -->
+            <if test="gapAnalysis.params.createBys != null and gapAnalysis.params.createBys.size() > 0">
+                AND ga.create_by IN
+                <foreach item="item"
+                         collection="gapAnalysis.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人包含过滤  -->
+            <if test="gapAnalysis.params.createBys == null">
+                AND ga.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不包含过滤  -->
+        <if test=" gapAnalysis.params.createByNameNotLike != null">
+            <!-- 创建人不包含过滤  -->
+            <if test="gapAnalysis.params.createBys != null and gapAnalysis.params.createBys.size() > 0">
+                AND (ga.create_by IN
+                <foreach item="item"
+                         collection="gapAnalysis.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不包含过滤  -->
+            <if test="gapAnalysis.params.createBys == null">
+                AND ga.create_by is null
+            </if>
+        </if>
+
+        <!-- 创建时间过滤  -->
+        <if test="gapAnalysis.params.createTimeEqual != null and gapAnalysis.params.createTimeEqual.size() > 0">
+            AND date_format(ga.create_time,'%Y/%m/%d') IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.createTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.createTimeNotEqual != null and gapAnalysis.params.createTimeNotEqual.size() > 0">
+            AND date_format(ga.create_time,'%Y/%m/%d') NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.createTimeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.createTimeBefore != null and gapAnalysis.params.createTimeBefore != ''">
+            AND date_format(ga.create_time,'%Y/%m/%d') &lt; #{gapAnalysis.params.createTimeBefore}
+        </if>
+        <if test="gapAnalysis.params.createTimeNotBefore != null and gapAnalysis.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
+            AND date_format(ga.create_time,'%Y/%m/%d') &gt;= #{gapAnalysis.params.createTimeNotBefore}
+        </if>
+        <if test="gapAnalysis.params.createTimeAfter != null and gapAnalysis.params.createTimeAfter != ''"><!-- 开始时间检索 -->
+            AND date_format(ga.create_time,'%Y/%m/%d') &gt; #{gapAnalysis.params.createTimeAfter}
+        </if>
+        <if test="gapAnalysis.params.createTimeNotAfter != null and gapAnalysis.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
+            AND date_format(ga.create_time,'%Y/%m/%d') &lt;= #{gapAnalysis.params.createTimeNotAfter}
+        </if>
+        <if test="gapAnalysis.params.createTimeStart != null and gapAnalysis.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(ga.create_time,'%Y/%m/%d') &gt;= #{gapAnalysis.params.createTimeStart}
+        </if>
+        <if test="gapAnalysis.params.createTimeEnd != null and gapAnalysis.params.createTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(ga.create_time,'%Y/%m/%d') &lt;= #{gapAnalysis.params.createTimeEnd}
+        </if>
+        ORDER BY ga.update_time ASC
     </select>
     <!--新增差距分析表-->
     <insert id="insertGapAnalysis" useGeneratedKeys="true" keyProperty="gapAnalysisId">

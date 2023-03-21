@@ -324,6 +324,109 @@
         <if test="annualKeyWork.params.departmentIdIsNotNull != null">
             AND (akw.department_id IS NOT NULL or akw.department_id != '')
         </if>
+        <!-- 创建人等于过滤  -->
+        <if test="annualKeyWork.params.createByNameEqual != null">
+            <!-- 创建人等于过滤  -->
+            <if test="annualKeyWork.params.createBys != null and annualKeyWork.params.createBys.size() > 0">
+                AND akw.create_by IN
+                <foreach item="item"
+                         collection="annualKeyWork.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人等于过滤  -->
+            <if test="annualKeyWork.params.createBys == null">
+                AND  akw.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不等于过滤  -->
+        <if test=" annualKeyWork.params.createByNameNotEqual != null">
+            <!-- 创建人不等于过滤  -->
+            <if test="annualKeyWork.params.createBys != null and annualKeyWork.params.createBys.size() > 0">
+                AND (akw.create_by IN
+                <foreach item="item"
+                         collection="annualKeyWork.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不等于过滤  -->
+            <if test="annualKeyWork.params.createBys == null">
+                AND akw.create_by is null
+            </if>
+        </if>
+        <!-- 创建人包含过滤  -->
+        <if test="annualKeyWork.params.createByNameLike != null">
+            <!-- 创建人包含过滤  -->
+            <if test="annualKeyWork.params.createBys != null and annualKeyWork.params.createBys.size() > 0">
+                AND akw.create_by IN
+                <foreach item="item"
+                         collection="annualKeyWork.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人包含过滤  -->
+            <if test="annualKeyWork.params.createBys == null">
+                AND  akw.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不包含过滤  -->
+        <if test=" annualKeyWork.params.createByNameNotLike != null">
+            <!-- 创建人不包含过滤  -->
+            <if test="annualKeyWork.params.createBys != null and annualKeyWork.params.createBys.size() > 0">
+                AND (akw.create_by IN
+                <foreach item="item"
+                         collection="annualKeyWork.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不包含过滤  -->
+            <if test="annualKeyWork.params.createBys == null">
+                AND akw.create_by is null
+            </if>
+        </if>
+
+        <!-- 创建时间过滤  -->
+        <if test="annualKeyWork.params.createTimeEqual != null and annualKeyWork.params.createTimeEqual.size() > 0">
+            AND date_format(akw.create_time,'%Y/%m/%d') IN
+            <foreach item="item"
+                     collection="annualKeyWork.params.createTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="annualKeyWork.params.createTimeNotEqual != null and annualKeyWork.params.createTimeNotEqual.size() > 0">
+            AND date_format(akw.create_time,'%Y/%m/%d') NOT IN
+            <foreach item="item"
+                     collection="annualKeyWork.params.createTimeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="annualKeyWork.params.createTimeBefore != null and annualKeyWork.params.createTimeBefore != ''">
+            AND date_format(akw.create_time,'%Y/%m/%d') &lt; #{annualKeyWork.params.createTimeBefore}
+        </if>
+        <if test="annualKeyWork.params.createTimeNotBefore != null and annualKeyWork.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
+            AND date_format(akw.create_time,'%Y/%m/%d') &gt;= #{annualKeyWork.params.createTimeNotBefore}
+        </if>
+        <if test="annualKeyWork.params.createTimeAfter != null and annualKeyWork.params.createTimeAfter != ''"><!-- 开始时间检索 -->
+            AND date_format(akw.create_time,'%Y/%m/%d') &gt; #{annualKeyWork.params.createTimeAfter}
+        </if>
+        <if test="annualKeyWork.params.createTimeNotAfter != null and annualKeyWork.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
+            AND date_format(akw.create_time,'%Y/%m/%d') &lt;= #{annualKeyWork.params.createTimeNotAfter}
+        </if>
+        <if test="annualKeyWork.params.createTimeStart != null and annualKeyWork.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(akw.create_time,'%Y/%m/%d') &gt;= #{annualKeyWork.params.createTimeStart}
+        </if>
+        <if test="annualKeyWork.params.createTimeEnd != null and annualKeyWork.params.createTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(akw.create_time,'%Y/%m/%d') &lt;= #{annualKeyWork.params.createTimeEnd}
+        </if>
+        ORDER BY akw.update_time ASC
     </select>
     <!--年度重点工作获取部门是否引用-->
     <select id="remoteAnnualKeyWorkDepartment"

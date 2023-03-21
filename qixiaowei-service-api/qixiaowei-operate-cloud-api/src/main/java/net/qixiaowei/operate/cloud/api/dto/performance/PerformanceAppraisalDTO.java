@@ -60,12 +60,12 @@ public class PerformanceAppraisalDTO extends BaseDTO {
     /**
      * 考核年度
      */
-    @NotNull(message = "考核年度不能为空", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
+    @NotNull(message = "请选择考核年度", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
     private Integer appraisalYear;
     /**
      * 考核名称
      */
-    @NotBlank(message = "考核名称不能为空", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
+    @NotBlank(message = "请输入考核名称", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
     private String appraisalName;
     /**
      * 周期性考核标记:0否;1是

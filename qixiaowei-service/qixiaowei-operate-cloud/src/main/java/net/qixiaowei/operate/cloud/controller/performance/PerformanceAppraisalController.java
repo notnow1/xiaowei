@@ -66,7 +66,7 @@ public class PerformanceAppraisalController extends BaseController {
     @RequiresPermissions("operate:cloud:performanceAppraisal:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(PerformanceAppraisalDTO.AddPerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {
-        return AjaxResult.success(performanceAppraisalService.insertPerformanceAppraisal(performanceAppraisalDTO));
+        return AjaxResult.success("新增成功", performanceAppraisalService.insertPerformanceAppraisal(performanceAppraisalDTO));
     }
 
     /**
@@ -118,7 +118,7 @@ public class PerformanceAppraisalController extends BaseController {
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgDevelop:edit")
     @PostMapping("/orgDevelop/edit")
     public AjaxResult editOrgDevelop(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
-        return AjaxResult.success(performanceAppraisalService.updateOrgDevelopPerformanceAppraisal(performanceAppraisalObjectsDTO));
+        return AjaxResult.success("保存成功", performanceAppraisalService.updateOrgDevelopPerformanceAppraisal(performanceAppraisalObjectsDTO));
     }
 
     /**

@@ -858,7 +858,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalListByName(appraisalName);
         if (StringUtils.isNotEmpty(performanceAppraisalDTOS)) {
-            throw new ServiceException("考核任务名称重复");
+            throw new ServiceException("考核任务名称已存在");
         }
         // 人员-组织 对象
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalDTO.getPerformanceAppraisalObjectsDTOS();
@@ -866,7 +866,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         // 顺便排序
         int sort = 0;
         if (StringUtils.isEmpty(performanceAppraisalObjectsDTOS)) {
-            throw new ServiceException("请选择考核任务范围");
+            throw new ServiceException("考核任务范围不能为空");
         }
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
             Long objectId = performanceAppraisalObjectsDTO.getAppraisalObjectId();
@@ -986,7 +986,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 }
             }
             if (j) {
-                throw new ServiceException("未找到匹配到的部门信息");
+                throw new ServiceException("考核任务范围不能为空");
             }
         }
         return performanceAppraisalObjectsDTOS;

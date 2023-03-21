@@ -282,6 +282,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             }
         }
         params.put("createByList", createByList);
+        this.queryEmployeeName(params);
         strategyMeasure.setParams(params);
         List<StrategyMeasureDTO> strategyMeasureDTOS = strategyMeasureMapper.selectStrategyMeasureList(strategyMeasure);
         if (StringUtils.isEmpty(strategyMeasureDTOS)) {
@@ -374,6 +375,51 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             }
         }
         return strategyMeasureDTOS;
+    }
+
+    /**
+     * 封装高级查询人员id
+     *
+     * @param params 参数
+     */
+    private void queryEmployeeName(Map<String, Object> params) {
+        Map<String, Object> params2 = new HashMap<>();
+        if (StringUtils.isNotEmpty(params)) {
+            for (String key : params.keySet()) {
+                switch (key) {
+                    case "createByNameEqual":
+                        params2.put("employeeNameEqual", params.get("createByNameEqual"));
+                        break;
+                    case "createByNameNotEqual":
+                        params2.put("employeeNameNotEqual", params.get("createByNameNotEqual"));
+                        break;
+                    case "createByNameLike":
+                        params2.put("employeeNameLike", params.get("createByNameLike"));
+                        break;
+                    case "createByNameNotLike":
+                        params2.put("employeeNameNotLike", params.get("createByNameNotLike"));
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (StringUtils.isNotEmpty(params2)) {
+                EmployeeDTO employeeDTO = new EmployeeDTO();
+                employeeDTO.setParams(params2);
+                R<List<EmployeeDTO>> listR = employeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
+                List<EmployeeDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)) {
+                    List<Long> employeeIds = data.stream().filter(f -> f.getEmployeeId() != null).map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(employeeIds)) {
+                        R<List<UserDTO>> usersByUserIds = remoteUserService.selectByemployeeIds(employeeIds, SecurityConstants.INNER);
+                        List<UserDTO> data1 = usersByUserIds.getData();
+                        if (StringUtils.isNotEmpty(data1)) {
+                            params.put("createBys", data1.stream().map(UserDTO::getUserId).collect(Collectors.toList()));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

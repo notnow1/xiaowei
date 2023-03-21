@@ -330,6 +330,108 @@
         <if test="strategyMetrics.params.departmentIdIsNotNull != null">
             AND (sm.department_id IS NOT NULL or sm.department_id != '')
         </if>
+        <!-- 创建人等于过滤  -->
+        <if test="strategyMetrics.params.createByNameEqual != null">
+            <!-- 创建人等于过滤  -->
+            <if test="strategyMetrics.params.createBys != null and strategyMetrics.params.createBys.size() > 0">
+                AND sm.create_by IN
+                <foreach item="item"
+                         collection="strategyMetrics.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人等于过滤  -->
+            <if test="strategyMetrics.params.createBys == null">
+                AND  sm.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不等于过滤  -->
+        <if test=" strategyMetrics.params.createByNameNotEqual != null">
+            <!-- 创建人不等于过滤  -->
+            <if test="strategyMetrics.params.createBys != null and strategyMetrics.params.createBys.size() > 0">
+                AND (sm.create_by IN
+                <foreach item="item"
+                         collection="strategyMetrics.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+            <!-- 创建人不等于过滤  -->
+            <if test="strategyMetrics.params.createBys == null">
+                AND sm.create_by is null
+            </if>
+        </if>
+        <!-- 创建人包含过滤  -->
+        <if test="strategyMetrics.params.createByNameLike != null">
+            <!-- 创建人包含过滤  -->
+            <if test="strategyMetrics.params.createBys != null and strategyMetrics.params.createBys.size() > 0">
+                AND sm.create_by IN
+                <foreach item="item"
+                         collection="strategyMetrics.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人包含过滤  -->
+            <if test="strategyMetrics.params.createBys == null">
+                AND  sm.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不包含过滤  -->
+        <if test=" strategyMetrics.params.createByNameNotLike != null">
+            <!-- 创建人不包含过滤  -->
+            <if test="strategyMetrics.params.createBys != null and strategyMetrics.params.createBys.size() > 0">
+                AND (sm.create_by IN
+                <foreach item="item"
+                         collection="strategyMetrics.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不包含过滤  -->
+            <if test="strategyMetrics.params.createBys == null">
+                AND sm.create_by is null
+            </if>
+        </if>
+
+        <!-- 创建时间过滤  -->
+        <if test="strategyMetrics.params.createTimeEqual != null and strategyMetrics.params.createTimeEqual.size() > 0">
+            AND date_format(sm.create_time,'%Y/%m/%d') IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.createTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyMetrics.params.createTimeNotEqual != null and strategyMetrics.params.createTimeNotEqual.size() > 0">
+            AND date_format(sm.create_time,'%Y/%m/%d') NOT IN
+            <foreach item="item"
+                     collection="strategyMetrics.params.createTimeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyMetrics.params.createTimeBefore != null and strategyMetrics.params.createTimeBefore != ''">
+            AND date_format(sm.create_time,'%Y/%m/%d') &lt; #{strategyMetrics.params.createTimeBefore}
+        </if>
+        <if test="strategyMetrics.params.createTimeNotBefore != null and strategyMetrics.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
+            AND date_format(sm.create_time,'%Y/%m/%d') &gt;= #{strategyMetrics.params.createTimeNotBefore}
+        </if>
+        <if test="strategyMetrics.params.createTimeAfter != null and strategyMetrics.params.createTimeAfter != ''"><!-- 开始时间检索 -->
+            AND date_format(sm.create_time,'%Y/%m/%d') &gt; #{strategyMetrics.params.createTimeAfter}
+        </if>
+        <if test="strategyMetrics.params.createTimeNotAfter != null and strategyMetrics.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
+            AND date_format(sm.create_time,'%Y/%m/%d') &lt;= #{strategyMetrics.params.createTimeNotAfter}
+        </if>
+        <if test="strategyMetrics.params.createTimeStart != null and strategyMetrics.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(sm.create_time,'%Y/%m/%d') &gt;= #{strategyMetrics.params.createTimeStart}
+        </if>
+        <if test="strategyMetrics.params.createTimeEnd != null and strategyMetrics.params.createTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(sm.create_time,'%Y/%m/%d') &lt;= #{strategyMetrics.params.createTimeEnd}
+        </if>
+        ORDER BY sm.update_time ASC
     </select>
     <!--根据清单ID查询战略衡量指标-->
     <select id="selectStrategyMetricsByStrategyMeasureId"

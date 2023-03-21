@@ -30,10 +30,12 @@ import net.qixiaowei.strategy.cloud.service.strategyDecode.IStrategyMetricsDetai
 import net.qixiaowei.strategy.cloud.service.strategyDecode.IStrategyMetricsPlanService;
 import net.qixiaowei.strategy.cloud.service.strategyDecode.IStrategyMetricsService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
@@ -96,6 +98,9 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
 
     @Autowired
     private RemoteUserService remoteUserService;
+
+    @Autowired
+    private RemoteEmployeeService employeeService;
 
     /**
      * 查询战略衡量指标表
@@ -245,6 +250,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
             }
         }
         params.put("createByList", createByList);
+        this.queryEmployeeName(params);
         strategyMetrics.setParams(params);
         List<StrategyMetricsDTO> strategyMetricsDTOS = strategyMetricsMapper.selectStrategyMetricsList(strategyMetrics);
         if (StringUtils.isEmpty(strategyMetricsDTOS)) {
@@ -337,6 +343,51 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
             }
         }
         return strategyMetricsDTOS;
+    }
+
+    /**
+     * 封装高级查询人员id
+     *
+     * @param params 参数
+     */
+    private void queryEmployeeName(Map<String, Object> params) {
+        Map<String, Object> params2 = new HashMap<>();
+        if (StringUtils.isNotEmpty(params)) {
+            for (String key : params.keySet()) {
+                switch (key) {
+                    case "createByNameEqual":
+                        params2.put("employeeNameEqual", params.get("createByNameEqual"));
+                        break;
+                    case "createByNameNotEqual":
+                        params2.put("employeeNameNotEqual", params.get("createByNameNotEqual"));
+                        break;
+                    case "createByNameLike":
+                        params2.put("employeeNameLike", params.get("createByNameLike"));
+                        break;
+                    case "createByNameNotLike":
+                        params2.put("employeeNameNotLike", params.get("createByNameNotLike"));
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (StringUtils.isNotEmpty(params2)) {
+                EmployeeDTO employeeDTO = new EmployeeDTO();
+                employeeDTO.setParams(params2);
+                R<List<EmployeeDTO>> listR = employeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
+                List<EmployeeDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)) {
+                    List<Long> employeeIds = data.stream().filter(f -> f.getEmployeeId() != null).map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(employeeIds)) {
+                        R<List<UserDTO>> usersByUserIds = remoteUserService.selectByemployeeIds(employeeIds, SecurityConstants.INNER);
+                        List<UserDTO> data1 = usersByUserIds.getData();
+                        if (StringUtils.isNotEmpty(data1)) {
+                            params.put("createBys", data1.stream().map(UserDTO::getUserId).collect(Collectors.toList()));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

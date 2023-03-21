@@ -702,16 +702,17 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         //岗位配置-职级体系
         List<PostDTO> postDTOS = postMapper.selectPostByOfficialRankSystemIds(officialRankSystemIds);
         if (StringUtils.isNotEmpty(postDTOS)) {
-            StringBuilder officialNames = new StringBuilder("");
-            for (PostDTO postDTO : postDTOS) {
-                for (OfficialRankSystemDTO officialRankSystemDTO : existByOfficialRankSystemDTOS) {
-                    if (officialRankSystemDTO.getOfficialRankSystemId().equals(postDTO.getOfficialRankSystemId())) {
-                        officialNames.append(officialRankSystemDTO.getOfficialRankSystemName()).append(",");
-                        break;
-                    }
-                }
-            }
-            quoteReminder.append("职级配置【").append(officialNames.deleteCharAt(officialNames.length() - 1)).append("】已被岗位配置中的【职级体系】引用 无法删除\n");
+            throw new ServiceException("数据被引用!");
+//            StringBuilder officialNames = new StringBuilder("");
+//            for (PostDTO postDTO : postDTOS) {
+//                for (OfficialRankSystemDTO officialRankSystemDTO : existByOfficialRankSystemDTOS) {
+//                    if (officialRankSystemDTO.getOfficialRankSystemId().equals(postDTO.getOfficialRankSystemId())) {
+//                        officialNames.append(officialRankSystemDTO.getOfficialRankSystemName()).append(",");
+//                        break;
+//                    }
+//                }
+//            }
+//            quoteReminder.append("职级配置【").append(officialNames.deleteCharAt(officialNames.length() - 1)).append("】已被岗位配置中的【职级体系】引用 无法删除\n");
         }
         //人力预算调控-职级体系
         R<List<EmployeeBudgetDTO>> employeeBudgetR = employeeBudgetService.selectBySystemIds(officialRankSystemIds, SecurityConstants.INNER);
@@ -720,16 +721,17 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         }
         List<EmployeeBudgetDTO> employeeBudgetDTOS = employeeBudgetR.getData();
         if (StringUtils.isNotEmpty(employeeBudgetDTOS)) {
-            StringBuilder officialNames = new StringBuilder("");
-            for (EmployeeBudgetDTO employeeBudgetDTO : employeeBudgetDTOS) {
-                for (OfficialRankSystemDTO officialRankSystemDTO : existByOfficialRankSystemDTOS) {
-                    if (officialRankSystemDTO.getOfficialRankSystemId().equals(employeeBudgetDTO.getOfficialRankSystemId())) {
-                        officialNames.append(officialRankSystemDTO.getOfficialRankSystemName()).append(",");
-                        break;
-                    }
-                }
-            }
-            quoteReminder.append("职级配置【").append(officialNames.deleteCharAt(officialNames.length() - 1)).append("】已被人力预算调控中的【职级体系】引用 无法删除\n");
+            throw new ServiceException("数据被引用!");
+//            StringBuilder officialNames = new StringBuilder("");
+//            for (EmployeeBudgetDTO employeeBudgetDTO : employeeBudgetDTOS) {
+//                for (OfficialRankSystemDTO officialRankSystemDTO : existByOfficialRankSystemDTOS) {
+//                    if (officialRankSystemDTO.getOfficialRankSystemId().equals(employeeBudgetDTO.getOfficialRankSystemId())) {
+//                        officialNames.append(officialRankSystemDTO.getOfficialRankSystemName()).append(",");
+//                        break;
+//                    }
+//                }
+//            }
+//            quoteReminder.append("职级配置【").append(officialNames.deleteCharAt(officialNames.length() - 1)).append("】已被人力预算调控中的【职级体系】引用 无法删除\n");
         }
         //个人调薪计划-本次调整-调整职级
         R<List<EmpSalaryAdjustPlanDTO>> listR = remoteSalaryAdjustPlanService.selectBySystemIds(officialRankSystemIds, SecurityConstants.INNER);
@@ -738,20 +740,21 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         }
         List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = listR.getData();
         if (StringUtils.isNotEmpty(empSalaryAdjustPlanDTOS)) {
-            StringBuilder officialNames = new StringBuilder("");
-            for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
-                for (OfficialRankSystemDTO officialRankSystemDTO : existByOfficialRankSystemDTOS) {
-                    if (officialRankSystemDTO.getOfficialRankSystemId().equals(empSalaryAdjustPlanDTO.getAdjustOfficialRankSystemId())) {
-                        officialNames.append(officialRankSystemDTO.getOfficialRankSystemName()).append(",");
-                        break;
-                    }
-                }
-            }
-            quoteReminder.append("职级配置【").append(officialNames.deleteCharAt(officialNames.length() - 1)).append("】已被个人调薪中的【调整职级】引用 无法删除\n");
+            throw new ServiceException("数据被引用!");
+//            StringBuilder officialNames = new StringBuilder("");
+//            for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
+//                for (OfficialRankSystemDTO officialRankSystemDTO : existByOfficialRankSystemDTOS) {
+//                    if (officialRankSystemDTO.getOfficialRankSystemId().equals(empSalaryAdjustPlanDTO.getAdjustOfficialRankSystemId())) {
+//                        officialNames.append(officialRankSystemDTO.getOfficialRankSystemName()).append(",");
+//                        break;
+//                    }
+//                }
+//            }
+//            quoteReminder.append("职级配置【").append(officialNames.deleteCharAt(officialNames.length() - 1)).append("】已被个人调薪中的【调整职级】引用 无法删除\n");
         }
-        if (quoteReminder.length() != 0) {
-            throw new ServiceException(quoteReminder.toString());
-        }
+//        if (quoteReminder.length() != 0) {
+//            throw new ServiceException(quoteReminder.toString());
+//        }
     }
 
     /**
