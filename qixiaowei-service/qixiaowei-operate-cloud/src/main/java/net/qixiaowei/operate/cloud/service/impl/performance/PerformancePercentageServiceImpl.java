@@ -182,7 +182,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
         List<Map<String, String>> receiveList = performancePercentageDTO.getReceiveList();
         int count = performancePercentageMapper.isUnique(performancePercentageName);
         if (count > 0) {
-            throw new ServiceException("该绩效比例名称重复");
+            throw new ServiceException("绩效比例名称已存在");
         }
         // todo 校验组织和个人绩效等级是否存在且对应
         PerformancePercentage performancePercentage = new PerformancePercentage();
@@ -214,7 +214,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
         List<Map<String, String>> receiveList = performancePercentageDTO.getReceiveList();
         PerformancePercentageDTO percentageDTO = performancePercentageMapper.selectPerformancePercentageByPerformancePercentageName(performancePercentageName);
         if (StringUtils.isNotNull(percentageDTO) && !percentageDTO.getPerformancePercentageId().equals(performancePercentageId)) {
-            throw new ServiceException("该绩效比例名称重复");
+            throw new ServiceException("绩效比例名称已存在");
         }
         // todo 校验组织和个人绩效等级是否存在且对应
         PerformancePercentage performancePercentage = new PerformancePercentage();

@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -152,7 +151,6 @@ public class TargetOutcomeController extends BaseController {
                 .doWrite(TargetOutcomeImportListener.dataList(targetOutcomeExcelList));
     }
 
-
     /**
      * 查询目标结果表列表
      */
@@ -167,8 +165,7 @@ public class TargetOutcomeController extends BaseController {
      */
     //@RequiresPermissions("operate:cloud:targetOutcome:getResultIndicator")
     @PostMapping("/getResultIndicator")
-    public AjaxResult getResultIndicator(@RequestBody List<StrategyIntentOperateVO> strategyIntentOperateVOS)
-    {
+    public AjaxResult getResultIndicator(@RequestBody List<StrategyIntentOperateVO> strategyIntentOperateVOS) {
         return AjaxResult.success(targetOutcomeService.getResultIndicator(strategyIntentOperateVOS));
     }
 

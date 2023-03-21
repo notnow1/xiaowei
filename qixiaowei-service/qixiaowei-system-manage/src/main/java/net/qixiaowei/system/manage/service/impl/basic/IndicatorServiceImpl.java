@@ -334,7 +334,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         IndicatorDTO indicatorByCode = indicatorMapper.getIndicatorByCode(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
-            throw new ServiceException("指标编码重复");
+            throw new ServiceException("指标编码已存在");
         }
         if (StringUtils.isNull(indicatorType)) {
             throw new ServiceException("指标类型不可以为空");
@@ -397,12 +397,12 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         IndicatorDTO indicatorById = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
         if (StringUtils.isNull(indicatorById)) {
-            throw new ServiceException("该指标不存在");
+            throw new ServiceException("当前指标已不存在");
         }
         IndicatorDTO indicatorByCode = indicatorMapper.getIndicatorByCode(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             if (!indicatorByCode.getIndicatorId().equals(indicatorId)) {
-                throw new ServiceException("更新指标" + indicatorDTO.getIndicatorName() + "失败,指标编码重复");
+                throw new ServiceException("指标编码已存在");
             }
         }
         String ancestors = "";//仅在非一级指标时有用

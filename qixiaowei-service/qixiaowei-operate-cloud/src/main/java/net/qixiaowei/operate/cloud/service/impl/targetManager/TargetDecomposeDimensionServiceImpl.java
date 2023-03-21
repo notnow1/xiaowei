@@ -115,7 +115,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
             throw new ServiceException("分解维度不能为空");
         }
         if (checkUnique(decompositionDimension)) {
-            throw new ServiceException("分解维度不能重复");
+            throw new ServiceException("分解维度已存在");
         }
         String[] targetDecomposeDimensions = decompositionDimension.split(",");
         for (String target : targetDecomposeDimensions) {

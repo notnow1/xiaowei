@@ -105,15 +105,6 @@ public class PlanBusinessUnitController extends BaseController {
     }
 
     /**
-     * 批量新增规划业务单元
-     */
-    @RequiresPermissions("strategy:cloud:planBusinessUnit:insertPlanBusinessUnits")
-    @PostMapping("/insertPlanBusinessUnits")
-    public AjaxResult insertPlanBusinessUnits(@RequestBody List<PlanBusinessUnitDTO> planBusinessUnitDtos) {
-        return toAjax(planBusinessUnitService.insertPlanBusinessUnits(planBusinessUnitDtos));
-    }
-
-    /**
      * 逻辑批量删除规划业务单元
      */
     @RequiresPermissions("strategy:cloud:planBusinessUnit:remove")

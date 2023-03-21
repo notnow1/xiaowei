@@ -81,7 +81,7 @@ public class TargetSettingDTO {
     /**
      * 目标年度
      */
-    @NotNull(message = "目标年度不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
+    @NotNull(message = "目标年度不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class, TargetSettingDTO.QueryTargetSettingDTO.class})
     private Integer targetYear;
     /**
      * 百分比(%)
