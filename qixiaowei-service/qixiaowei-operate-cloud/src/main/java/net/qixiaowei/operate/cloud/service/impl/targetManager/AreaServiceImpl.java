@@ -19,11 +19,13 @@ import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.*;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
 import net.qixiaowei.strategy.cloud.api.remote.businessDesign.RemoteBusinessDesignService;
 import net.qixiaowei.strategy.cloud.api.remote.gap.RemoteGapAnalysisService;
+import net.qixiaowei.strategy.cloud.api.remote.marketInsight.*;
 import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteAnnualKeyWorkService;
 import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMeasureService;
 import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMetricsService;
@@ -72,6 +74,16 @@ public class AreaServiceImpl implements IAreaService {
 
     @Autowired
     private RemoteBusinessDesignService remoteBusinessDesignService;
+    @Autowired
+    private RemoteMarketInsightCustomerService remoteMarketInsightCustomerService;
+    @Autowired
+    private RemoteMarketInsightIndustryService remoteMarketInsightIndustryService;
+    @Autowired
+    private RemoteMarketInsightMacroService remoteMarketInsightMacroService;
+    @Autowired
+    private RemoteMarketInsightOpponentService remoteMarketInsightOpponentService;
+    @Autowired
+    private RemoteMarketInsightSelfService remoteMarketInsightSelfService;
 
     /**
      * 查询区域表
@@ -290,7 +302,8 @@ public class AreaServiceImpl implements IAreaService {
         areaByIds.add(areaById);
         List<Long> areaIds = new ArrayList<>();
         areaIds.add(areaId);
-        isQuote(areaIds, areaByIds);
+        //是否被引用
+        this.isQuote(areaIds, areaByIds);
         Area area = new Area();
         BeanUtils.copyProperties(areaDTO, area);
         return areaMapper.logicDeleteAreaByAreaId(area, SecurityUtils.getUserId(), DateUtils.getNowDate());
@@ -421,6 +434,58 @@ public class AreaServiceImpl implements IAreaService {
         }
         if (StringUtils.isNotEmpty(BusinessDesignParamDTOS)) {
             throw new ServiceException("数据被引用!");
+        }
+
+        MarketInsightCustomerDTO marketInsightCustomerDTO = new MarketInsightCustomerDTO();
+        params = new HashMap<>();
+        params.put("areaIds", areaIds);
+        marketInsightCustomerDTO.setParams(params);
+        //看客户远程查询是否引用
+        R<List<MarketInsightCustomerDTO>> marketInsightCustomerList = remoteMarketInsightCustomerService.remoteMarketInsightCustomerList(marketInsightCustomerDTO, SecurityConstants.INNER);
+        List<MarketInsightCustomerDTO> marketInsightCustomerListData = marketInsightCustomerList.getData();
+        if (StringUtils.isNotEmpty(marketInsightCustomerListData)){
+            throw new ServiceException("数据被引用！");
+        }
+
+        MarketInsightIndustryDTO marketInsightIndustryDTO = new MarketInsightIndustryDTO();
+        params = new HashMap<>();
+        params.put("areaIds", areaIds);
+        marketInsightIndustryDTO.setParams(params);
+        //看行业远程查询是否引用
+        R<List<MarketInsightIndustryDTO>> marketInsightIndustryList = remoteMarketInsightIndustryService.remoteMarketInsightIndustryList(marketInsightIndustryDTO, SecurityConstants.INNER);
+        List<MarketInsightIndustryDTO> marketInsightIndustryListData = marketInsightIndustryList.getData();
+        if (StringUtils.isNotEmpty(marketInsightIndustryListData)){
+            throw new ServiceException("数据被引用！");
+        }
+        MarketInsightMacroDTO marketInsightMacroDTO = new MarketInsightMacroDTO();
+        params = new HashMap<>();
+        params.put("areaIds", areaIds);
+        marketInsightMacroDTO.setParams(params);
+        //看宏观远程查询是否引用
+        R<List<MarketInsightMacroDTO>> marketInsightMacroList = remoteMarketInsightMacroService.remoteMarketInsightMacroList(marketInsightMacroDTO, SecurityConstants.INNER);
+        List<MarketInsightMacroDTO> marketInsightMacroListData = marketInsightMacroList.getData();
+        if (StringUtils.isNotEmpty(marketInsightMacroListData)){
+            throw new ServiceException("数据被引用！");
+        }
+        MarketInsightOpponentDTO marketInsightOpponentDTO = new MarketInsightOpponentDTO();
+        params = new HashMap<>();
+        params.put("areaIds", areaIds);
+        marketInsightOpponentDTO.setParams(params);
+        //看对手远程查询是否引用
+        R<List<MarketInsightOpponentDTO>> marketInsightOpponentList = remoteMarketInsightOpponentService.remoteMarketInsightOpponentList(marketInsightOpponentDTO, SecurityConstants.INNER);
+        List<MarketInsightOpponentDTO> marketInsightOpponentListData = marketInsightOpponentList.getData();
+        if (StringUtils.isNotEmpty(marketInsightOpponentListData)){
+            throw new ServiceException("数据被引用！");
+        }
+        MarketInsightSelfDTO marketInsightSelfDTO = new MarketInsightSelfDTO();
+        params = new HashMap<>();
+        params.put("areaIds", areaIds);
+        marketInsightSelfDTO.setParams(params);
+        //看自身远程查询是否引用
+        R<List<MarketInsightSelfDTO>> marketInsightSelfList = remoteMarketInsightSelfService.remoteMarketInsightSelfList(marketInsightSelfDTO, SecurityConstants.INNER);
+        List<MarketInsightSelfDTO> marketInsightSelfListData = marketInsightSelfList.getData();
+        if (StringUtils.isNotEmpty(marketInsightSelfListData)){
+            throw new ServiceException("数据被引用！");
         }
 
     }

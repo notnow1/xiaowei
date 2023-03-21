@@ -455,9 +455,13 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 R<List<EmployeeDTO>> listR = remoteEmployeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
                 List<EmployeeDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
-                    List<Long> employeeIds = data.stream().filter(f ->f.getUserId() != null).map(EmployeeDTO::getUserId).collect(Collectors.toList());
+                    Set<Long> employeeIds = data.stream().filter(f -> f.getUserId() != null).map(EmployeeDTO::getUserId).collect(Collectors.toSet());
                     if (StringUtils.isNotEmpty(employeeIds)) {
-                        params.put("createBys", employeeIds);
+                        R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(employeeIds, SecurityConstants.INNER);
+                        List<UserDTO> data1 = usersByUserIds.getData();
+                        if (StringUtils.isNotEmpty(data1)){
+                            params.put("createBys", data1.stream().map(UserDTO::getUserId).collect(Collectors.toList()));
+                        }
                     }
                 }
             }
@@ -971,6 +975,18 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
         MarketInsightCustomer marketInsightCustomer = new MarketInsightCustomer();
         BeanUtils.copyProperties(marketInsightCustomerDTO,marketInsightCustomer);
         return marketInsightCustomerMapper.remoteMarketInsightCustomerList(marketInsightCustomer);
+    }
+
+    /**
+     * 远程查询看客户投资计划详情是否被引用
+     * @param miCustomerInvestDetailDTO
+     * @return
+     */
+    @Override
+    public List<MiCustomerInvestDetailDTO> remoteMiCustomerInvestDetailList(MiCustomerInvestDetailDTO miCustomerInvestDetailDTO) {
+        MiCustomerInvestDetail miCustomerInvestDetail = new MiCustomerInvestDetail();
+        BeanUtils.copyProperties(miCustomerInvestDetailDTO,miCustomerInvestDetail);
+        return miCustomerInvestDetailMapper.remoteMiCustomerInvestDetailList(miCustomerInvestDetail);
     }
 
     /**

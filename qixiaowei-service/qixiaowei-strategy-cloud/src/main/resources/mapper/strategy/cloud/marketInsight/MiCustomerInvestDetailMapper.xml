@@ -99,6 +99,23 @@
         and delete_flag=0
      order by sort
     </select>
+<!--    远程查询看客户投资计划详情是否被引用-->
+    <select id="remoteMiCustomerInvestDetailList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO">
+        SELECT
+        mi_customer_invest_detail_id,market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_invest_detail
+        WHERE delete_flag=0
+        <if test="miCustomerInvestDetail.params.productIds != null and miCustomerInvestDetail.params.productIds.size()>0">
+            AND product_id IN
+            <foreach item="item"
+                     collection="miCustomerInvestDetail.params.productIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by create_time desc
+    </select>
     <!--新增市场洞察客户投资详情表-->
     <insert id="insertMiCustomerInvestDetail" useGeneratedKeys="true" keyProperty="miCustomerInvestDetailId">
         INSERT INTO mi_customer_invest_detail (market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time)

@@ -206,7 +206,7 @@
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR mis.area_id IS NULL)
+            OR mis.industry_id IS NULL)
         </if>
         <!-- 创建人等于过滤  -->
         <if test="marketInsightSelf.params.createByNameEqual != null">

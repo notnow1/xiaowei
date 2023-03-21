@@ -410,9 +410,13 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
                 R<List<EmployeeDTO>> listR = remoteEmployeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
                 List<EmployeeDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
-                    List<Long> employeeIds = data.stream().filter(f ->f.getUserId() != null).map(EmployeeDTO::getUserId).collect(Collectors.toList());
+                    Set<Long> employeeIds = data.stream().filter(f -> f.getUserId() != null).map(EmployeeDTO::getUserId).collect(Collectors.toSet());
                     if (StringUtils.isNotEmpty(employeeIds)) {
-                        params.put("createBys", employeeIds);
+                        R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(employeeIds, SecurityConstants.INNER);
+                        List<UserDTO> data1 = usersByUserIds.getData();
+                        if (StringUtils.isNotEmpty(data1)){
+                            params.put("createBys", data1.stream().map(UserDTO::getUserId).collect(Collectors.toList()));
+                        }
                     }
                 }
             }

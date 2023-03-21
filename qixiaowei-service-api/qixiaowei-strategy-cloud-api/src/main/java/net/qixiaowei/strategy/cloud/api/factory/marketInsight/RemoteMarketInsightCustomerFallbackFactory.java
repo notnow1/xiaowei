@@ -5,6 +5,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO;
 import net.qixiaowei.strategy.cloud.api.remote.businessDesign.RemoteBusinessDesignService;
 import net.qixiaowei.strategy.cloud.api.remote.marketInsight.RemoteMarketInsightCustomerService;
 import org.slf4j.Logger;
@@ -28,6 +29,11 @@ public class RemoteMarketInsightCustomerFallbackFactory implements FallbackFacto
             @Override
             public R<List<MarketInsightCustomerDTO>> remoteMarketInsightCustomerList(MarketInsightCustomerDTO marketInsightCustomerDTO, String source) {
                 return R.fail("远程调用看客户列表失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<MiCustomerInvestDetailDTO>> remoteMiCustomerInvestDetailList(MiCustomerInvestDetailDTO miCustomerInvestDetailDTO, String source) {
+                return R.fail("远程查询看客户投资计划详情是否被引用失败:" + throwable.getMessage());
             }
         };
     }

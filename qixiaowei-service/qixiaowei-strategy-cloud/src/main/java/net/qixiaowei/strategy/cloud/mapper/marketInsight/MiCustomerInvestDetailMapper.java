@@ -115,4 +115,11 @@ public interface MiCustomerInvestDetailMapper{
     * @return 结果
     */
     int batchMiCustomerInvestDetail(@Param("miCustomerInvestDetails")List<MiCustomerInvestDetail> miCustomerInvestDetails);
+
+    /**
+     * 远程查询看客户投资计划详情是否被引用
+     * @param miCustomerInvestDetail
+     * @return
+     */
+    List<MiCustomerInvestDetailDTO> remoteMiCustomerInvestDetailList(@Param("miCustomerInvestDetail")MiCustomerInvestDetail miCustomerInvestDetail);
 }
