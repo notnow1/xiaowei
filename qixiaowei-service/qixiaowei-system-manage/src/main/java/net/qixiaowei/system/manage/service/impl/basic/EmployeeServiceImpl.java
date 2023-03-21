@@ -1225,7 +1225,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (StringUtils.isNotEmpty(employeeIds)) {
             //查询数据
             List<EmployeeDTO> employeeDTOList1 = employeeMapper.selectEmployeeByEmployeeIds(employeeIds);
-            if (StringUtils.isNotEmpty(employeeDTOList1)) {
+            if (StringUtils.isEmpty(employeeDTOList1)) {
                 throw new ServiceException("数据不存在无法删除！");
             }
             // todo 校检是否被引用 被引用无法删除
