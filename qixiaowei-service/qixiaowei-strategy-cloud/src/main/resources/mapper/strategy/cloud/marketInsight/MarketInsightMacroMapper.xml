@@ -233,13 +233,12 @@
                          collection="marketInsightMacro.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach>
-                or  mim.create_by ='1')
+                </foreach>)
             </if>
 
             <!-- 创建人不等于过滤  -->
             <if test="marketInsightMacro.params.createBys == null">
-                AND mim.create_by ='1'
+                AND mim.create_by is null
             </if>
         </if>
         <!-- 创建人包含过滤  -->
@@ -267,13 +266,12 @@
                          collection="marketInsightMacro.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach>
-                or  mim.create_by ='1')
+                </foreach>)
             </if>
 
             <!-- 创建人不包含过滤  -->
             <if test="marketInsightMacro.params.createBys == null">
-                AND mim.create_by ='1'
+                AND mim.create_by is null
             </if>
         </if>
 

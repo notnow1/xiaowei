@@ -233,13 +233,12 @@
                          collection="marketInsightSelf.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach>
-                or  mis.create_by ='1')
+                </foreach>)
             </if>
 
             <!-- 创建人不等于过滤  -->
             <if test="marketInsightSelf.params.createBys == null">
-                AND mis.create_by ='1'
+                AND mis.create_by is null
             </if>
         </if>
         <!-- 创建人包含过滤  -->
@@ -267,13 +266,12 @@
                          collection="marketInsightSelf.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach>
-                or  mis.create_by ='1')
+                </foreach>)
             </if>
 
             <!-- 创建人不包含过滤  -->
             <if test="marketInsightSelf.params.createBys == null">
-                AND mis.create_by ='1'
+                AND mis.create_by is null
             </if>
         </if>
         <!-- 创建时间过滤  -->

@@ -234,12 +234,12 @@
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-                or  mii.create_by ='1')
+                )
             </if>
 
             <!-- 创建人不等于过滤  -->
             <if test="marketInsightIndustry.params.createBys == null">
-                AND mii.create_by ='1'
+                AND mii.create_by is null
             </if>
         </if>
         <!-- 创建人包含过滤  -->
@@ -267,13 +267,12 @@
                          collection="marketInsightIndustry.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach>
-                or  mii.create_by ='1')
+                </foreach>)
             </if>
 
             <!-- 创建人不包含过滤  -->
             <if test="marketInsightIndustry.params.createBys == null">
-                AND mii.create_by ='1'
+                AND mii.create_by is null
             </if>
         </if>
 
