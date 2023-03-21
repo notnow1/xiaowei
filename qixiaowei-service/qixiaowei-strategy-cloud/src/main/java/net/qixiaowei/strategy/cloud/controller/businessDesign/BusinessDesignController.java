@@ -54,7 +54,6 @@ public class BusinessDesignController extends BaseController {
     /**
      * 查询业务设计表列表
      */
-    @RequiresPermissions("strategy:cloud:businessDesign:list")
     @GetMapping("/list")
     public AjaxResult list(BusinessDesignDTO businessDesignDTO) {
         List<BusinessDesignDTO> list = businessDesignService.selectBusinessDesignList(businessDesignDTO);

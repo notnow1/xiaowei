@@ -381,7 +381,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
         Integer rankDecomposeDimension = officialRankSystem.getRankDecomposeDimension();
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDtos) {
             if (StringUtils.isNull(officialRankDecomposeDTO.getSalaryFactor())) {
-                throw new ServiceException("职级分解系数不可以为空");
+                throw new ServiceException("职级分解的工资系数不能为空");
             }
             OfficialRankDecompose officialRankDecompose = new OfficialRankDecompose();
             BeanUtils.copyProperties(officialRankDecomposeDTO, officialRankDecompose);

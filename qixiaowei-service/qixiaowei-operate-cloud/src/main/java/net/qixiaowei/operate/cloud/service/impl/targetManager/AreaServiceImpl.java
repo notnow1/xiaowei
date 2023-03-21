@@ -182,7 +182,7 @@ public class AreaServiceImpl implements IAreaService {
         }
         AreaDTO areaByCode = areaMapper.checkUnique(areaCode);
         if (StringUtils.isNotNull(areaByCode)) {
-            throw new ServiceException("区域编码不可重复");
+            throw new ServiceException("区域编码已存在");
         }
 //        String[] regionIdList = regionIds.split(",");
 //        Set<Long> regionIdSet = new HashSet<>();
@@ -235,7 +235,7 @@ public class AreaServiceImpl implements IAreaService {
         AreaDTO areaByCode = areaMapper.checkUnique(areaCode);
         if (StringUtils.isNotNull(areaByCode)) {
             if (!areaByCode.getAreaId().equals(areaId)) {
-                throw new ServiceException("区域编码不可重复");
+                throw new ServiceException("区域编码已存在");
             }
         }
         Area area = new Area();

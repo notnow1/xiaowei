@@ -120,4 +120,11 @@ public interface DeptSalaryAdjustPlanMapper {
      * @return Integer
      */
     Integer selectMaxYear();
+
+    /**
+     * 获取已存在的年份
+     *
+     * @return List
+     */
+    List<Integer> getExistYear();
 }

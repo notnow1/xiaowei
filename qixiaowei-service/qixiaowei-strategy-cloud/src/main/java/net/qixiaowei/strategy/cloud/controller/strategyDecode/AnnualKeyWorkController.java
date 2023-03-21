@@ -52,7 +52,6 @@ public class AnnualKeyWorkController extends BaseController {
     /**
      * 查询年度重点工作表列表
      */
-    @RequiresPermissions("strategy:cloud:annualKeyWork:list")
     @GetMapping("/list")
     public AjaxResult list(AnnualKeyWorkDTO annualKeyWorkDTO) {
         List<AnnualKeyWorkDTO> list = annualKeyWorkService.selectAnnualKeyWorkList(annualKeyWorkDTO);
@@ -93,7 +92,7 @@ public class AnnualKeyWorkController extends BaseController {
     /**
      * 逻辑批量删除年度重点工作表
      */
-    @RequiresPermissions("strategy:cloud:annualKeyWork:removes")
+    @RequiresPermissions("strategy:cloud:annualKeyWork:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> annualKeyWorkIds) {
         return toAjax(annualKeyWorkService.logicDeleteAnnualKeyWorkByAnnualKeyWorkIds(annualKeyWorkIds));

@@ -242,15 +242,19 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public IndustryDTO insertIndustry(IndustryDTO industryDTO) {
         String industryCode = industryDTO.getIndustryCode();
+        String industryName = industryDTO.getIndustryName();
         if (StringUtils.isEmpty(industryCode)) {
-            throw new ServiceException("行业编码不能为空");
+            throw new ServiceException("请输入行业编码");
+        }
+        if (StringUtils.isEmpty(industryName)) {
+            throw new ServiceException("请输入行业名称");
         }
         String parentAncestors = "";//仅在非一级行业时有用
         Integer parentLevel = 1;
         Long parentIndustryId = industryDTO.getParentIndustryId();
         IndustryDTO industryByCode = industryMapper.checkUnique(industryCode);
         if (StringUtils.isNotNull(industryByCode)) {
-            throw new ServiceException("新增行业" + industryDTO.getIndustryName() + "失败,行业编码重复");
+            throw new ServiceException("行业编码已存在");
         }
         if (parentIndustryId != 0L) {
             IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(parentIndustryId);
@@ -295,10 +299,14 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public int updateIndustry(IndustryDTO industryDTO) {
         String industryCode = industryDTO.getIndustryCode();
+        String industryName = industryDTO.getIndustryName();
         Long industryId = industryDTO.getIndustryId();
         IndustryDTO industryById = industryMapper.selectIndustryByIndustryId(industryId);
         if (StringUtils.isEmpty(industryCode)) {
-            throw new ServiceException("行业编码不能为空");
+            throw new ServiceException("请输入行业编码");
+        }
+        if (StringUtils.isEmpty(industryName)) {
+            throw new ServiceException("请输入行业名称");
         }
         if (StringUtils.isNull(industryById)) {
             throw new ServiceException("该行业不存在");
@@ -306,7 +314,7 @@ public class IndustryServiceImpl implements IIndustryService {
         IndustryDTO industryByCode = industryMapper.checkUnique(industryCode);
         if (StringUtils.isNotNull(industryByCode)) {
             if (!industryByCode.getIndustryId().equals(industryId)) {
-                throw new ServiceException("更新行业" + industryDTO.getIndustryName() + "失败,行业编码重复");
+                throw new ServiceException("行业编码已存在");
             }
         }
         Industry industry = new Industry();

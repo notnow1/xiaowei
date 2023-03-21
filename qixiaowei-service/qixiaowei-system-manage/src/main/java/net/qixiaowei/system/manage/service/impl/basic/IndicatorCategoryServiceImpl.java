@@ -137,7 +137,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         }
         IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkCodeUnique(indicatorCategoryCode);
         if (StringUtils.isNotNull(indicatorCategoryByCode)) {
-            throw new ServiceException("指标类型编码重复");
+            throw new ServiceException("指标类型编码已存在");
         }
         IndicatorCategoryDTO indicatorCategoryByName = indicatorCategoryMapper.checkNameUnique(indicatorCategoryName);
         if (StringUtils.isNotNull(indicatorCategoryByName)) {
@@ -181,11 +181,11 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         }
         IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkCodeUnique(indicatorCategoryCode);
         if ((StringUtils.isNotNull(indicatorCategoryByCode)) && !indicatorCategoryByCode.getIndicatorCategoryId().equals(indicatorCategoryId)) {
-            throw new ServiceException("更新指标" + indicatorCategoryName + "失败,指标编码重复");
+            throw new ServiceException("指标类型编码已存在");
         }
         IndicatorCategoryDTO indicatorCategoryByName = indicatorCategoryMapper.checkNameUnique(indicatorCategoryName);
         if (StringUtils.isNotNull(indicatorCategoryByName) && !indicatorCategoryByName.getIndicatorCategoryId().equals(indicatorCategoryId)) {
-            throw new ServiceException("更新指标" + indicatorCategoryName + "失败,指标编码重复");
+            throw new ServiceException("指标类型名称已存在");
         }
 
         IndicatorCategory indicatorCategory = new IndicatorCategory();

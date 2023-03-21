@@ -131,6 +131,14 @@ public class DeptSalaryAdjustPlanController extends BaseController {
         return AjaxResult.success(deptSalaryAdjustPlanService.getMaxYear());
     }
 
+    /**
+     * 获取已存在的年份
+     */
+    @GetMapping("/getExistYear")
+    public AjaxResult getExistYear() {
+        return AjaxResult.success(deptSalaryAdjustPlanService.getExistYear());
+    }
+
 
     //==============================其他==================================//
 

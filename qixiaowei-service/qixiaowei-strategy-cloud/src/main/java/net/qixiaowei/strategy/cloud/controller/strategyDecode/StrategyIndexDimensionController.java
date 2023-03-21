@@ -55,7 +55,6 @@ public class StrategyIndexDimensionController extends BaseController {
     /**
      * 查询战略指标维度表列表
      */
-    @RequiresPermissions("strategy:cloud:strategyIndexDimension:list")
     @GetMapping("/list")
     public AjaxResult list(StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
         List<StrategyIndexDimensionDTO> list = strategyIndexDimensionService.selectStrategyIndexDimensionList(strategyIndexDimensionDTO);
@@ -65,7 +64,7 @@ public class StrategyIndexDimensionController extends BaseController {
     /**
      * 获取层级列表
      */
-    @RequiresPermissions("strategy:cloud:strategyIndexDimension:list")
+    @RequiresPermissions("strategy:cloud:strategyIndexDimension:pageList")
     @GetMapping("/levelList")
     public AjaxResult levelList() {
         return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionLevelList());
@@ -74,7 +73,7 @@ public class StrategyIndexDimensionController extends BaseController {
     /**
      * 查询战略指标维度表列表
      */
-    @RequiresPermissions("strategy:cloud:strategyIndexDimension:list")
+    @RequiresPermissions("strategy:cloud:strategyMeasure:add")
     @GetMapping("/rootList")
     public AjaxResult rootList() {
         return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionRootList());
@@ -83,7 +82,7 @@ public class StrategyIndexDimensionController extends BaseController {
     /**
      * 规划业务单元列表-不带本身
      */
-    @RequiresPermissions("strategy:cloud:strategyIndexDimension:list")
+    @RequiresPermissions("strategy:cloud:strategyIndexDimension:add")
     @GetMapping("/otherList")
     public AjaxResult otherList(@RequestParam("strategyIndexDimensionId") Long strategyIndexDimensionId) {
         return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionOtherList(strategyIndexDimensionId));
@@ -121,7 +120,7 @@ public class StrategyIndexDimensionController extends BaseController {
     /**
      * 逻辑批量删除战略指标维度表
      */
-    @RequiresPermissions("strategy:cloud:strategyIndexDimension:removes")
+    @RequiresPermissions("strategy:cloud:strategyIndexDimension:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> strategyIndexDimensionIds) {
         return toAjax(strategyIndexDimensionService.logicDeleteStrategyIndexDimensionByStrategyIndexDimensionIds(strategyIndexDimensionIds));

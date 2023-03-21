@@ -414,6 +414,27 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     @Transactional
     public int updateTargetOutcome(TargetOutcomeDTO targetOutcomeDTO) {
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDTO.getTargetOutcomeDetailsDTOList();
+        setMonthValue(targetOutcomeDetailsDTOList);
+        TargetOutcome targetOutcome = new TargetOutcome();
+        BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
+        targetOutcome.setUpdateTime(DateUtils.getNowDate());
+        targetOutcome.setUpdateBy(SecurityUtils.getUserId());
+        //  更新 targetOutcomeDetail
+        if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList)) {
+            for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+                targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
+            }
+            targetOutcomeDetailsService.updateTargetOutcomeDetailss(targetOutcomeDetailsDTOList);
+        }
+        return targetOutcomeMapper.updateTargetOutcome(targetOutcome);
+    }
+
+    /**
+     * 未目标结果详情表月份赋值
+     *
+     * @param targetOutcomeDetailsDTOList 目标结果详情表
+     */
+    private static void setMonthValue(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList) {
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
             List<BigDecimal> monthValue = targetOutcomeDetailsDTO.getMonthValue();
             for (int i = 0; i < monthValue.size(); i++) {
@@ -457,18 +478,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                 }
             }
         }
-        TargetOutcome targetOutcome = new TargetOutcome();
-        BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
-        targetOutcome.setUpdateTime(DateUtils.getNowDate());
-        targetOutcome.setUpdateBy(SecurityUtils.getUserId());
-        // todo 更新 targetOutcomeDetail
-        if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList)) {
-            for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
-                targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
-            }
-            targetOutcomeDetailsService.updateTargetOutcomeDetailss(targetOutcomeDetailsDTOList);
-        }
-        return targetOutcomeMapper.updateTargetOutcome(targetOutcome);
     }
 
     /**
@@ -823,7 +832,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                                     operateYear = key;
 
                                 }
-                                if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList1)){
+                                if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList1)) {
                                     for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
                                         Integer targetYear = targetOutcomeDetailsDTO.getTargetYear();
                                         if (null != operateYear && (targetYear.equals(operateYear))) {

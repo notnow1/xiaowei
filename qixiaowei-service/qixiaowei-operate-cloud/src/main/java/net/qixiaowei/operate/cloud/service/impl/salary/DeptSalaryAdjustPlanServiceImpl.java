@@ -479,6 +479,16 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
     }
 
     /**
+     * 获取已存在的年份
+     *
+     * @return list
+     */
+    @Override
+    public List<Integer> getExistYear() {
+        return deptSalaryAdjustPlanMapper.getExistYear();
+    }
+
+    /**
      * 获取指标数据
      *
      * @return IndicatorDTO
@@ -731,6 +741,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         List<DeptSalaryAdjustPlanExcel> deptSalaryAdjustPlanExcelList = new ArrayList<>();
         return deptSalaryAdjustPlanExcelList;
     }
+
     @Override
     public void handleResult(List<DeptSalaryAdjustPlanDTO> result) {
         if (StringUtils.isNotEmpty(result)) {

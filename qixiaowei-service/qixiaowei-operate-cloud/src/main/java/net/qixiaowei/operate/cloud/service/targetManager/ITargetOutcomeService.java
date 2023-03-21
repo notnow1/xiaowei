@@ -33,6 +33,7 @@ public interface ITargetOutcomeService {
      * @return 目标结果表集合
      */
     List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO);
+
     /**
      * 处理返回
      *
@@ -166,9 +167,9 @@ public interface ITargetOutcomeService {
 
     /**
      * 战略云获取指标实际值
+     *
      * @param strategyIntentOperateVOS
      * @return
      */
     List<StrategyIntentOperateVO> getResultIndicator(List<StrategyIntentOperateVO> strategyIntentOperateVOS);
-
 }

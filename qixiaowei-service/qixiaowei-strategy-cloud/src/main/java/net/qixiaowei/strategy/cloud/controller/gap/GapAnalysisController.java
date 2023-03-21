@@ -71,7 +71,6 @@ public class GapAnalysisController extends BaseController {
     /**
      * 查询差距分析表列表
      */
-    @RequiresPermissions("strategy:cloud:gapAnalysis:list")
     @GetMapping("/list")
     public AjaxResult list(GapAnalysisDTO gapAnalysisDTO) {
         List<GapAnalysisDTO> list = gapAnalysisService.selectGapAnalysisList(gapAnalysisDTO);
@@ -122,7 +121,7 @@ public class GapAnalysisController extends BaseController {
      * 下载模板表
      */
     @SneakyThrows
-    @RequiresPermissions(value = {"strategy:cloud:gapAnalysis:edit", "operate:cloud:gapAnalysis:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"strategy:cloud:gapAnalysis:edit", "strategy:cloud:gapAnalysis:add"}, logical = Logical.OR)
     @GetMapping("export-template")
     public void exportTemplate(@RequestParam("operateHistoryYear") Integer operateHistoryYear, @RequestParam("operateYear") Integer operateYear, HttpServletResponse response) {
         if (StringUtils.isNull(operateHistoryYear)) {
@@ -157,7 +156,7 @@ public class GapAnalysisController extends BaseController {
     /**
      * 解析Excel
      */
-    @RequiresPermissions(value = {"strategy:cloud:gapAnalysis:edit", "operate:cloud:gapAnalysis:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"strategy:cloud:gapAnalysis:edit", "strategy:cloud:gapAnalysis:add"}, logical = Logical.OR)
     @PostMapping("/excelParseObject")
     public AjaxResult excelParseObject(@RequestParam("operateHistoryYear") Integer operateHistoryYear, @RequestParam("operateYear") Integer operateYear, MultipartFile file) {
         String filename = file.getOriginalFilename();

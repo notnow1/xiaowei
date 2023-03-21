@@ -107,7 +107,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         }
         int count = performanceRankMapper.checkUniqueName(performanceRankName, performanceRankCategory);
         if (count > 0) {
-            throw new ServiceException("绩效等级名称不能重复");
+            throw new ServiceException("绩效等级名称已存在");
         }
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceRankDTO.getPerformanceRankFactorDTOS();
         if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
@@ -142,7 +142,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
             throw new ServiceException("绩效等级配置id不能为空");
         }
         if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
-            throw new ServiceException("等级系数信息不可以为空");
+            throw new ServiceException("等级系数信息不能为空");
         }
         int count = performanceRankMapper.checkUniqueName(performanceRankName, performanceRankCategory);
         PerformanceRank performanceRank = new PerformanceRank();

@@ -52,7 +52,6 @@ public class StrategyMetricsController extends BaseController {
     /**
      * 查询战略衡量指标表列表
      */
-    @RequiresPermissions("strategy:cloud:strategyMetrics:list")
     @GetMapping("/list")
     public AjaxResult list(StrategyMetricsDTO strategyMetricsDTO) {
         List<StrategyMetricsDTO> list = strategyMetricsService.selectStrategyMetricsList(strategyMetricsDTO);

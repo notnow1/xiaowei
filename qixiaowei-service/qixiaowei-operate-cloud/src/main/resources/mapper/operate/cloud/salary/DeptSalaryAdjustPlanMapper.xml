@@ -72,6 +72,20 @@
         FROM dept_salary_adjust_plan
         WHERE delete_flag=0
     </select>
+    <!--获取已存在的年份-->
+    <select id="getExistYear" resultType="java.lang.Integer">
+        SELECT
+        plan_year
+        FROM
+        dept_salary_adjust_plan
+        WHERE
+        plan_year IS NOT NULL
+        AND delete_flag = 0
+        GROUP BY
+        plan_year
+        ORDER BY
+        plan_year
+    </select>
     <!--新增部门调薪计划表-->
     <insert id="insertDeptSalaryAdjustPlan" useGeneratedKeys="true" keyProperty="deptSalaryAdjustPlanId">
         INSERT INTO dept_salary_adjust_plan (plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time)
