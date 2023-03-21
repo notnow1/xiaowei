@@ -754,6 +754,10 @@ public class DepartmentServiceImpl implements IDepartmentService {
         if (StringUtils.isNotEmpty(marketInsightCustomerListData)){
             throw new ServiceException("数据被引用！");
         }
+        MarketInsightIndustryDTO marketInsightIndustryDTO = new MarketInsightIndustryDTO();
+        params = new HashMap<>();
+        params.put("departmentIds", departmentIds);
+        marketInsightIndustryDTO.setParams(params);
         //看行业远程查询是否引用
         R<List<MarketInsightIndustryDTO>> marketInsightIndustryList = remoteMarketInsightIndustryService.remoteMarketInsightIndustryList(marketInsightIndustryDTO, SecurityConstants.INNER);
         List<MarketInsightIndustryDTO> marketInsightIndustryListData = marketInsightIndustryList.getData();
