@@ -155,7 +155,7 @@ public class RoleServiceImpl implements IRoleService {
         Set<Long> menuIds = roleDTO.getMenuIds();
         RoleDTO roleByCode = roleMapper.selectRoleByRoleCode(roleCode);
         if (StringUtils.isNotNull(roleByCode)) {
-            throw new ServiceException("新增角色" + roleDTO.getRoleName() + "失败，角色编码已存在");
+            throw new ServiceException("角色编码已存在");
         }
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
@@ -187,11 +187,11 @@ public class RoleServiceImpl implements IRoleService {
         String roleCode = roleDTO.getRoleCode();
         RoleDTO roleByCode = roleMapper.selectRoleByRoleCode(roleCode);
         if (StringUtils.isNotNull(roleByCode) && !roleByCode.getRoleId().equals(roleId)) {
-            throw new ServiceException("修改角色" + roleDTO.getRoleName() + "失败，角色编码已存在");
+            throw new ServiceException("角色编码已存在");
         }
         RoleDTO roleByRoleId = roleMapper.selectRoleByRoleId(roleId);
         if (StringUtils.isNull(roleByRoleId)) {
-            throw new ServiceException("修改角色失败，角色不存在");
+            throw new ServiceException("角色不存在");
         }
         if (roleByRoleId.isAdmin()) {
             throw new ServiceException("系统管理员角色不可操作。");
