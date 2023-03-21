@@ -2,19 +2,12 @@ package net.qixiaowei.operate.cloud.remote.bonus;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
-import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayObjects;
-import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteBonusPayApplicationService;
-import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteEmployeeAnnualBonusService;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusPayApplicationService;
-import net.qixiaowei.operate.cloud.service.bonus.IEmployeeAnnualBonusService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,14 +37,14 @@ public class RemoteBonusPayApplication implements RemoteBonusPayApplicationServi
 
     /**
      * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)
-     * @param departmentId
+     * @param departmentIds
      * @param source
      * @return
      */
     @Override
     @InnerAuth
-    @GetMapping("/queryDepartmentIdBonusPayApplication")
-    public R<List<BonusPayApplicationDTO>> selectBonusPayApplicationByDepartmentId(@RequestParam("departmentId")Long departmentId, String source) {
-        return R.ok(bonusPayApplicationService.selectBonusPayApplicationByDepartmentId(departmentId));
+    @PostMapping("/queryDepartmentIdBonusPayApplication")
+    public R<List<BonusPayApplicationDTO>> selectBonusPayApplicationByDepartmentIds(@RequestBody List<Long> departmentIds, String source) {
+        return R.ok(bonusPayApplicationService.selectBonusPayApplicationByDepartmentIds(departmentIds));
     }
 }

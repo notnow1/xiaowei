@@ -117,7 +117,7 @@
           and delete_flag=0
     </select>
 <!--    根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)-->
-    <select id="selectBonusPayApplicationByDepartmentId"
+    <select id="selectBonusPayApplicationByDepartmentIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
         SELECT
         DISTINCT
@@ -152,8 +152,18 @@
                                and bpbd.delete_flag =0
         WHERE bpa.apply_department_id=#{departmentId}
             and bpa.delete_flag = 0
-           or  bpo.bonus_pay_object_id=#{departmentId}
-           or  bpbd.department_id =#{departmentId}
+           or  bpo.bonus_pay_object_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+           or  bpbd.department_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
     <!--新增奖金发放对象表-->
     <insert id="insertBonusPayObjects" useGeneratedKeys="true" keyProperty="bonusPayObjectsId">

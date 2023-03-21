@@ -32,7 +32,7 @@ public class RemoteBonusPayApplicationFallbackFactory implements FallbackFactory
             }
 
             @Override
-            public R<List<BonusPayApplicationDTO>> selectBonusPayApplicationByDepartmentId(Long departmentId, String source) {
+            public R<List<BonusPayApplicationDTO>> selectBonusPayApplicationByDepartmentIds(List<Long> departmentIds, String source) {
                 return R.fail("根据部门id查询奖金发放申请失败:" + throwable.getMessage());
             }
         };

@@ -141,8 +141,8 @@ public interface BonusPayObjectsMapper{
 
     /**
      * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
-    List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentId(@Param("departmentId")Long departmentId);
+    List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentIds(@Param("departmentIds")List<Long> departmentIds);
 }

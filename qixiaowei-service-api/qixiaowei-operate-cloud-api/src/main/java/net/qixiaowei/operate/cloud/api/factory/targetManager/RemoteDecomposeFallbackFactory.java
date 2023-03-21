@@ -46,7 +46,7 @@ public class RemoteDecomposeFallbackFactory implements FallbackFactory<RemoteDec
             }
 
             @Override
-            public R<List<TargetDecompose>> queryDeptDecompose(Long departmentId) {
+            public R<List<TargetDecompose>> queryDeptDecompose(List<Long> departmentIds,String source) {
                 return R.fail("根据表字段条件获取目标分解详细信息失败:" + throwable.getMessage());
             }
 

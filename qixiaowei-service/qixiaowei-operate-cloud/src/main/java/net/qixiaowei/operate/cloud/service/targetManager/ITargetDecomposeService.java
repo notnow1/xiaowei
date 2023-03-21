@@ -379,10 +379,10 @@ public interface ITargetDecomposeService {
     /**
      * 目标分解是否被引用
      *
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
-    List<TargetDecompose> queryDeptDecompose(Long departmentId);
+    List<TargetDecompose> queryDeptDecompose(List<Long> departmentIds);
 
     /**
      * 查询目标分解预制数据年份

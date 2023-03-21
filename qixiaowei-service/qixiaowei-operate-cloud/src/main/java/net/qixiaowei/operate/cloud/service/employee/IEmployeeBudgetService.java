@@ -152,8 +152,8 @@ public interface IEmployeeBudgetService {
 
     /**
      * 远程 根据部门ID集合查询预算表
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
-    List<EmployeeBudgetDTO> selectByDepartmentId(Long departmentId);
+    List<EmployeeBudgetDTO> selectByDepartmentIds(List<Long> departmentIds);
 }

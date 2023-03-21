@@ -278,7 +278,7 @@
           and delete_flag = 0
     </select>
     <!--    根据部门id查询个人年终奖 (一级部门,申请部门)-->
-    <select id="selectEmployeeAnnualBonusByDepartmentId"
+    <select id="selectEmployeeAnnualBonusByDepartmentIds"
             resultType="net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus">
         SELECT DISTINCT employee_annual_bonus_id,
                         annual_bonus_year,
@@ -301,8 +301,18 @@
                         update_by,
                         update_time
         FROM employee_annual_bonus
-        WHERE apply_department_id = #{departmentId}
-           or department_id = #{departmentId}
+        WHERE apply_department_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+           or department_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
             and delete_flag = 0
     </select>
     <!--新增个人年终奖表-->

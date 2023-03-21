@@ -864,12 +864,12 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
     /**
      * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)
      *
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
     @Override
-    public List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentId(Long departmentId) {
-        return bonusPayObjectsMapper.selectBonusPayApplicationByDepartmentId(departmentId);
+    public List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentIds(List<Long> departmentIds) {
+        return bonusPayObjectsMapper.selectBonusPayApplicationByDepartmentIds(departmentIds);
     }
 
     /**

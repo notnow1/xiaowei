@@ -27,8 +27,8 @@ public class RemoteEmployeeAnnualBonusFallbackFactory implements FallbackFactory
             }
 
             @Override
-            public R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByDepartmentId(Long departmentId, String source) {
-                return R.fail("根据部门id查询个人年终奖失败:" + throwable.getMessage());
+            public R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByDepartmentIds(List<Long> departmentIds, String source) {
+                return R.fail("根据部门id集合查询个人年终奖失败:" + throwable.getMessage());
             }
         };
     }

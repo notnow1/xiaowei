@@ -164,10 +164,10 @@ public interface DepartmentMapper{
 
     /**
      * 查询组织关联岗位信息
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
-    List<DepartmentPostDTO> selectDeptAndPost(@Param("departmentId")Long departmentId);
+    List<DepartmentPostDTO> selectDeptAndPost(@Param("departmentIds")List<Long> departmentIds);
 
     /**
      * 分页查询部门人员表列表
@@ -175,6 +175,13 @@ public interface DepartmentMapper{
      * @return
      */
     List<EmployeeDTO> queryDeptEmployee(@Param("departmentId") Long departmentId);
+
+    /**
+     * 查询部门是否被人员引用！
+     * @param departmentIds
+     * @return
+     */
+    List<EmployeeDTO> queryDeptEmployees(@Param("departmentIds") List<Long> departmentIds);
 
     List<DepartmentDTO> deleteFlagEmployees(@Param("collect")List<Long> collect);
 

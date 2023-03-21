@@ -2417,12 +2417,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     /**
      * 目标分解是否被引用
      *
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
     @Override
-    public List<TargetDecompose> queryDeptDecompose(Long departmentId) {
-        List<TargetDecompose> targetDecomposes = targetDecomposeMapper.queryDeptDecompose(departmentId);
+    public List<TargetDecompose> queryDeptDecompose(List<Long> departmentIds) {
+        List<TargetDecompose> targetDecomposes = targetDecomposeMapper.queryDeptDecompose(departmentIds);
         if (StringUtils.isNotEmpty(targetDecomposes)) {
             //指标id集合
             List<Long> collect = targetDecomposes.stream().map(TargetDecompose::getIndicatorId).filter(Objects::nonNull).distinct().collect(Collectors.toList());

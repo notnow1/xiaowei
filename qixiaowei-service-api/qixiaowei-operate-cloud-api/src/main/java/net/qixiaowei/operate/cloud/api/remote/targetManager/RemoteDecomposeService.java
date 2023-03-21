@@ -65,11 +65,11 @@ public interface RemoteDecomposeService {
     /**
      * 目标分解是否被引用
      *
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
-    @GetMapping("/targetDecompose/remote/decomposeDetails/queryDeptDecompose")
-    R<List<TargetDecompose>> queryDeptDecompose(Long departmentId);
+    @PostMapping("/targetDecompose/remote/decomposeDetails/queryDeptDecompose")
+    R<List<TargetDecompose>> queryDeptDecompose(@RequestBody List<Long> departmentIds,@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 根据分解维度ID集合查询目标分解数据

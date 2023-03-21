@@ -128,10 +128,10 @@ public interface TargetDecomposeMapper {
     /**
      * 目标分解是否被引用
      *
-     * @param departmentId 部门ID
+     * @param departmentIds 部门ID
      * @return
      */
-    List<TargetDecompose> queryDeptDecompose(@Param("departmentId") Long departmentId);
+    List<TargetDecompose> queryDeptDecompose(@Param("departmentIds") List<Long> departmentIds);
 
     /**
      * 查询目标分解预制数据年份

@@ -1075,12 +1075,12 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     /**
      * 根据部门id查询个人年终奖 (一级部门,申请部门)
      *
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
     @Override
-    public List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByDepartmentId(Long departmentId) {
-        return employeeAnnualBonusMapper.selectEmployeeAnnualBonusByDepartmentId(departmentId);
+    public List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByDepartmentIds(List<Long> departmentIds) {
+        return employeeAnnualBonusMapper.selectEmployeeAnnualBonusByDepartmentIds(departmentIds);
     }
 
     /**

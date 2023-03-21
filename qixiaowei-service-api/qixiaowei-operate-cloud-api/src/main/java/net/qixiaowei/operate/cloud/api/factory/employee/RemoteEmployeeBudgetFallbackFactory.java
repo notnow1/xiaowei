@@ -29,7 +29,7 @@ public class RemoteEmployeeBudgetFallbackFactory implements FallbackFactory<Remo
             }
 
             @Override
-            public R<List<EmployeeBudgetDTO>> selectByDepartmentId(Long departmentId, String source) {
+            public R<List<EmployeeBudgetDTO>> selectByDepartmentIds(List<Long> departmentIds, String source) {
                 return R.fail("根据部门ID集合查询预算表失败:" + throwable.getMessage());
             }
         };

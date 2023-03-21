@@ -481,7 +481,10 @@
         left join target_decompose td
         on td.target_decompose_id = tdd.target_decompose_id
         and td.delete_flag = 0
-        where tdd.department_id = #{departmentId}
+        where tdd.department_id in
+        <foreach collection="departmentIds" separator="," open="(" close=")" item="item" index="index">
+            #{item}
+        </foreach>
         and tdd.delete_flag = 0
     </select>
     <!--    查询目标分解预制数据年份-->

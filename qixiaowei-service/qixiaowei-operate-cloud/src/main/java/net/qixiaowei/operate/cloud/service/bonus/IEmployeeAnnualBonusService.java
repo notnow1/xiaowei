@@ -154,8 +154,8 @@ public interface IEmployeeAnnualBonusService{
 
     /**
      * 根据部门id查询个人年终奖 (一级部门,申请部门)
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
-    List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByDepartmentId(Long departmentId);
+    List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByDepartmentIds(List<Long> departmentIds);
 }
