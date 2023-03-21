@@ -455,9 +455,9 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
                 R<List<EmployeeDTO>> listR = remoteEmployeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
                 List<EmployeeDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
-                    Set<Long> employeeIds = data.stream().filter(f -> f.getUserId() != null).map(EmployeeDTO::getUserId).collect(Collectors.toSet());
+                    List<Long> employeeIds = data.stream().filter(f -> f.getEmployeeId() != null).map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(employeeIds)) {
-                        R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(employeeIds, SecurityConstants.INNER);
+                        R<List<UserDTO>> usersByUserIds = remoteUserService.selectByemployeeIds(employeeIds, SecurityConstants.INNER);
                         List<UserDTO> data1 = usersByUserIds.getData();
                         if (StringUtils.isNotEmpty(data1)){
                             params.put("createBys", data1.stream().map(UserDTO::getUserId).collect(Collectors.toList()));
