@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightSelfDTO;
@@ -116,7 +117,7 @@ public class MarketInsightSelfController extends BaseController {
     /**
      * 根据规划年度和业务单元查询看对手详情表
      */
-    @RequiresPermissions("strategy:cloud:marketInsightSelf:opponentNameList")
+    @RequiresPermissions(value = {"strategy:cloud:marketInsightSelf:add", "strategy:cloud:marketInsightSelf:edit","strategy:cloud:marketInsightSelf:info"}, logical = Logical.OR)
     @GetMapping("/opponentNameList")
     public AjaxResult opponentNameList(MarketInsightSelfDTO marketInsightSelfDTO) {
         return AjaxResult.success(marketInsightSelfService.opponentNameList(marketInsightSelfDTO));

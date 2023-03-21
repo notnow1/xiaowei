@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
@@ -122,7 +123,7 @@ public class MarketInsightIndustryController extends BaseController {
     /**
      * 预制表头查询行业吸引力表列表
      */
-    @RequiresPermissions("strategy:cloud:marketInsightIndustry:prefabricateAdd")
+    @RequiresPermissions("strategy:cloud:marketInsightIndustry:add")
     @GetMapping("/prefabricateAdd")
     public AjaxResult list() {
         IndustryAttractionDTO industryAttractionDTO = new IndustryAttractionDTO();
