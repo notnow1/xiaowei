@@ -47,7 +47,7 @@ public class StrategyDashboardController extends BaseController {
     /**
      * 战略意图仪表盘查询(无数据返回空)第一次进来返回最近一次数据
      */
-    @RequiresPermissions("strategy:cloud:dashboard:strategyIntent")
+    @RequiresPermissions("strategy:cloud:dashboard:strategyMap")
     @PostMapping("/strategyIntent")
     public AjaxResult dashboardStrategyIntent(@RequestBody @Validated(StrategyDashboardDTO.QueryStrategyIntentDTO.class) StrategyDashboardDTO strategyDashboardDTO) {
         StrategyIntentDTO strategyIntentDTO = new StrategyIntentDTO();
@@ -58,7 +58,7 @@ public class StrategyDashboardController extends BaseController {
     /**
      * 看行业仪表盘查询(无数据返回空)第一次进来返回最近一次数据
      */
-    @RequiresPermissions("strategy:cloud:dashboard:miIndustryDetailList")
+    @RequiresPermissions("strategy:cloud:dashboard:strategyMap")
     @PostMapping("/miIndustryDetailList")
     public AjaxResult targetAchieveAnalysisList(@RequestBody @Validated(StrategyDashboardDTO.QueryStrategyIntentDTO.class) StrategyDashboardDTO strategyDashboardDTO) {
         return AjaxResult.success(iStrategyDashboardService.dashboardMiIndustryDetailList(strategyDashboardDTO));
@@ -66,7 +66,7 @@ public class StrategyDashboardController extends BaseController {
     /**
      * 看行业仪表盘下拉框
      */
-    @RequiresPermissions("strategy:cloud:dashboard:miIndustryDetailBoxList")
+    @RequiresPermissions("strategy:cloud:dashboard:strategyMap")
     @GetMapping("/miIndustryDetailBoxList")
     public AjaxResult miIndustryDetailBoxList(MarketInsightIndustryDTO marketInsightIndustryDTO) {
         //根据属性去重
@@ -87,7 +87,7 @@ public class StrategyDashboardController extends BaseController {
     /**
      * 业务设计九宫格仪表盘查询(无数据返回空)第一次进来返回最近一次数据
      */
-    @RequiresPermissions("strategy:cloud:dashboard:businessDesign")
+    @RequiresPermissions("strategy:cloud:dashboard:strategyMap")
     @PostMapping("/businessDesignList")
     public AjaxResult targetLeaderboardList(@RequestBody @Validated(StrategyDashboardDTO.QueryStrategyIntentDTO.class) StrategyDashboardDTO strategyDashboardDTO) {
         return AjaxResult.success(iStrategyDashboardService.dashboardTargetLeaderboardList(strategyDashboardDTO));
@@ -96,7 +96,7 @@ public class StrategyDashboardController extends BaseController {
     /**
      * 业务设计九宫格仪表盘查询下拉最近一次数据
      */
-    @RequiresPermissions("strategy:cloud:dashboard:businessDesign")
+    @RequiresPermissions("strategy:cloud:dashboard:strategyMap")
     @GetMapping("/recentBusinessDesignList")
     public AjaxResult recentBusinessDesignList(@RequestParam("planYear") Integer planYear) {
         return AjaxResult.success(iStrategyDashboardService.recentBusinessDesignList(planYear));
