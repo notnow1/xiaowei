@@ -477,7 +477,7 @@ public class UserServiceImpl implements IUserService {
             }
         }
         if (userIds.contains(userId)) {
-            throw new ServiceException("当前用户【" + userAccount + "】不能删除");
+            throw new ServiceException("不能删除当前用户");
         }
         List<UserDTO> userDTOS = userMapper.selectUserListByUserIds(userIds);
         if (StringUtils.isEmpty(userDTOS)) {
@@ -553,7 +553,7 @@ public class UserServiceImpl implements IUserService {
         Long operateUserId = SecurityUtils.getUserId();
         UserDTO userByUserId = userMapper.selectUserByUserId(userId);
         if (StringUtils.isNull(userByUserId)) {
-            throw new ServiceException("重置密码失败，当前用户不存在");
+            throw new ServiceException("当前用户不存在");
         }
         User user = new User();
         user.setUserId(userId);
@@ -632,7 +632,7 @@ public class UserServiceImpl implements IUserService {
             throw new ServiceException("原密码错误，请重新输入");
         }
         if (SecurityUtils.matchesPassword(newPassword, password)) {
-            throw new ServiceException("新密码与原密码相同，请重新输入");
+            throw new ServiceException("新密码与原密码一致，请重新输入");
         }
         newPassword = SecurityUtils.encryptPassword(newPassword);
         User user = new User();
@@ -761,34 +761,28 @@ public class UserServiceImpl implements IUserService {
         List<UserDTO> userDTOS = userMapper.checkUserUnique(userDTO);
         Long userId = userDTO.getUserId();
         if (StringUtils.isNotEmpty(userDTOS)) {
-            boolean addFlag = true;
             if (StringUtils.isNotNull(userId)) {
                 userDTOS = userDTOS.stream().filter(user -> !userId.equals(user.getUserId())).collect(Collectors.toList());
-                addFlag = false;
             }
             if (StringUtils.isNotEmpty(userDTOS)) {
-                StringBuilder resultMessage = new StringBuilder();
-                resultMessage.append(addFlag ? "新增用户" : "修改用户");
-                resultMessage.append("失败，已存在:");
                 userDTOS.forEach(user -> {
                     Long employeeId = user.getEmployeeId();
                     String userAccount = user.getUserAccount();
                     String mobilePhone = user.getMobilePhone();
                     String email = user.getEmail();
                     if (StringUtils.isNotNull(employeeId) && employeeId.equals(userDTO.getEmployeeId())) {
-                        resultMessage.append("｛员工帐号｝");
+                        throw new ServiceException("账号已存在");
                     }
                     if (StringUtils.isNotEmpty(userAccount) && userAccount.equals(userDTO.getUserAccount())) {
-                        resultMessage.append("｛帐号｝");
+                        throw new ServiceException("账号已存在");
                     }
                     if (StringUtils.isNotEmpty(mobilePhone) && mobilePhone.equals(userDTO.getMobilePhone())) {
-                        resultMessage.append("｛手机号码｝");
+                        throw new ServiceException("手机号码已存在");
                     }
                     if (StringUtils.isNotEmpty(email) && email.equals(userDTO.getEmail())) {
-                        resultMessage.append("｛邮箱｝");
+                        throw new ServiceException("邮箱已存在");
                     }
                 });
-                throw new ServiceException(resultMessage.toString());
             }
         }
     }
