@@ -114,4 +114,11 @@ public interface MiCustomerChoiceMapper{
     * @return 结果
     */
     int batchMiCustomerChoice(@Param("miCustomerChoices")List<MiCustomerChoice> miCustomerChoices);
+
+    /**
+     * 远程查询看市场洞察客户选择集合是否被引用
+     * @param miCustomerChoice
+     * @return
+     */
+    List<MiCustomerChoiceDTO> remoteMiCustomerChoiceList(@Param("miCustomerChoice")MiCustomerChoice miCustomerChoice);
 }

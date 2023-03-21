@@ -5,6 +5,7 @@ import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO;
 import net.qixiaowei.strategy.cloud.api.remote.industry.RemoteIndustryAttractionService;
 import net.qixiaowei.strategy.cloud.api.remote.marketInsight.RemoteMarketInsightMacroService;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
@@ -39,5 +40,18 @@ public class RemoteMarketInsightMacro implements RemoteMarketInsightMacroService
     @PostMapping("/remoteMarketInsightMacroList")
     public R<List<MarketInsightMacroDTO>> remoteMarketInsightMacroList(@RequestBody MarketInsightMacroDTO marketInsightMacroDTO, String source) {
         return R.ok(marketInsightMacroService.remoteMarketInsightMacroList(marketInsightMacroDTO));
+    }
+
+    /**
+     * 看宏观远程调用列表查询是否被引用
+     * @param miMacroDetailDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/remoteMiMacroDetailList")
+    public R<List<MiMacroDetailDTO>> remoteMiMacroDetailList(@RequestBody MiMacroDetailDTO miMacroDetailDTO, String source) {
+        return R.ok(marketInsightMacroService.remoteMiMacroDetailList(miMacroDetailDTO));
     }
 }

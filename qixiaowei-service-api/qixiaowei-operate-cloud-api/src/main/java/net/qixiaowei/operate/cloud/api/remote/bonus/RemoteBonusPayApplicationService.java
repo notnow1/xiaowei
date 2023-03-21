@@ -20,8 +20,8 @@ public interface RemoteBonusPayApplicationService {
     /**
      * 根据人员id查询个人年终奖 奖金发放对象ID(员工id)
      */
-    @GetMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryEmployeeIdBonusPayApplication")
-    R<List<BonusPayObjectsDTO>> selectBonusPayApplicationByEmployeeId(@RequestParam("employeeId") Long employeeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @PostMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryEmployeeIdBonusPayApplication")
+    R<List<BonusPayObjectsDTO>> selectBonusPayApplicationByEmployeeIds(@RequestBody List<Long> employeeIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)

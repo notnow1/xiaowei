@@ -817,6 +817,30 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
     }
 
     /**
+     * 看对手竞争对手财务详情远程查询列表是否被引用
+     * @param miOpponentFinanceDTO
+     * @return
+     */
+    @Override
+    public List<MiOpponentFinanceDTO> remoteMiOpponentFinanceList(MiOpponentFinanceDTO miOpponentFinanceDTO) {
+        MiOpponentFinance miOpponentFinance = new MiOpponentFinance();
+        BeanUtils.copyProperties(miOpponentFinanceDTO,miOpponentFinance);
+        return miOpponentFinanceMapper.remoteMiOpponentFinanceList(miOpponentFinance);
+    }
+
+    /**
+     * 市场洞察对手选择远程查询列表是否被引用
+     * @param miOpponentChoiceDTO
+     * @return
+     */
+    @Override
+    public List<MiOpponentChoiceDTO> remoteMiOpponentChoiceList(MiOpponentChoiceDTO miOpponentChoiceDTO) {
+        MiOpponentChoice miOpponentChoice = new MiOpponentChoice();
+        BeanUtils.copyProperties(miOpponentChoiceDTO,miOpponentChoice);
+        return miOpponentChoiceMapper.remoteMiOpponentChoiceList(miOpponentChoice);
+    }
+
+    /**
      * 逻辑删除市场洞察对手表信息
      *
      * @param marketInsightOpponentDTO 市场洞察对手表

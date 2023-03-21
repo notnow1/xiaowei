@@ -2,7 +2,9 @@ package net.qixiaowei.strategy.cloud.service.marketInsight;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestPlanDTO;
 
 
 import java.util.List;
@@ -100,4 +102,18 @@ public interface IMarketInsightCustomerService{
      * @return
      */
     List<MiCustomerInvestDetailDTO> remoteMiCustomerInvestDetailList(MiCustomerInvestDetailDTO miCustomerInvestDetailDTO);
+
+    /**
+     * 远程查询看市场洞察客户选择集合是否被引用
+     * @param miCustomerChoiceDTO
+     * @return
+     */
+    List<MiCustomerChoiceDTO> remoteMiCustomerChoiceList(MiCustomerChoiceDTO miCustomerChoiceDTO);
+
+    /**
+     * 远程查询市场洞察客户投资计划集合是否被引用
+     * @param miCustomerInvestPlanDTO
+     * @return
+     */
+    List<MiCustomerInvestPlanDTO> remoteMiCustomerInvestPlanList(MiCustomerInvestPlanDTO miCustomerInvestPlanDTO);
 }

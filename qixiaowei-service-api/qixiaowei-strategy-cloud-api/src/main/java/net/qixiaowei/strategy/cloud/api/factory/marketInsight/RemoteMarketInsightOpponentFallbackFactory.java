@@ -5,6 +5,8 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightOpponentDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO;
 import net.qixiaowei.strategy.cloud.api.remote.marketInsight.RemoteMarketInsightOpponentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,16 @@ public class RemoteMarketInsightOpponentFallbackFactory implements FallbackFacto
             @Override
             public R<List<MarketInsightOpponentDTO>> remoteMarketInsightOpponentList(MarketInsightOpponentDTO marketInsightOpponentDTO, String source) {
                 return R.fail("远程调用看对手列表是否被引用失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<MiOpponentFinanceDTO>> remoteMiOpponentFinanceList(MiOpponentFinanceDTO miOpponentFinanceDTO, String source) {
+                return R.fail("看对手竞争对手财务详情远程查询列表是否被引用失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<MiOpponentChoiceDTO>> remoteMiOpponentChoiceList(MiOpponentChoiceDTO miOpponentChoiceDTO, String source) {
+                return R.fail("市场洞察对手选择远程查询列表是否被引用失败:" + throwable.getMessage());
             }
         };
     }

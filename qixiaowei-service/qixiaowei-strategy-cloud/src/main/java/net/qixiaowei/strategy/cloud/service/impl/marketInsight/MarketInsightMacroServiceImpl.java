@@ -824,5 +824,17 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
         BeanUtils.copyProperties(marketInsightMacroDTO,marketInsightMacro);
         return marketInsightMacroMapper.remoteMarketInsightMacroList(marketInsightMacro);
     }
+
+    /**
+     * 看宏观远程调用列表查询是否被引用
+     * @param miMacroDetailDTO
+     * @return
+     */
+    @Override
+    public List<MiMacroDetailDTO> remoteMiMacroDetailList(MiMacroDetailDTO miMacroDetailDTO) {
+        MiMacroDetail miMacroDetail = new MiMacroDetail();
+        BeanUtils.copyProperties(miMacroDetailDTO,miMacroDetail);
+        return   miMacroDetailMapper.remoteMiMacroDetailList(miMacroDetail);
+    }
 }
 

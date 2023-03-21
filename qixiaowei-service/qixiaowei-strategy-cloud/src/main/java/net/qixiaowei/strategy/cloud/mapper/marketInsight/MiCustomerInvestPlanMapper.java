@@ -116,4 +116,11 @@ public interface MiCustomerInvestPlanMapper{
     * @return 结果
     */
     int batchMiCustomerInvestPlan(@Param("miCustomerInvestPlans")List<MiCustomerInvestPlan> miCustomerInvestPlans);
+
+    /**
+     * 远程查询市场洞察客户投资计划集合是否被引用
+     * @param miCustomerInvestPlan
+     * @return
+     */
+    List<MiCustomerInvestPlanDTO> remoteMiCustomerInvestPlanList(@Param("miCustomerInvestPlan")MiCustomerInvestPlan miCustomerInvestPlan);
 }

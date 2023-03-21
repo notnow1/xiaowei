@@ -116,4 +116,11 @@ public interface MiOpponentFinanceMapper{
     * @return 结果
     */
     int batchMiOpponentFinance(@Param("miOpponentFinances")List<MiOpponentFinance> miOpponentFinances);
+
+    /**
+     * 看对手竞争对手财务详情远程查询列表是否被引用
+     * @param miOpponentFinance
+     * @return
+     */
+    List<MiOpponentFinanceDTO> remoteMiOpponentFinanceList(@Param("miOpponentFinance")MiOpponentFinance miOpponentFinance);
 }

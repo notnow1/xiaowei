@@ -102,6 +102,22 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    远程查询市场洞察客户投资计划集合是否被引用-->
+    <select id="remoteMiCustomerInvestPlanList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestPlanDTO">
+        SELECT
+            mi_customer_invest_plan_id,market_insight_customer_id,industry_id,customer_name,customer_category,exist_market_share,previous_year_sales,plan_period,future_part_market_space,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_invest_plan
+        WHERE delete_flag=0
+        <if test="miCustomerInvestPlan.params.industryIds != null and miCustomerInvestPlan.params.industryIds.size()>0">
+            AND industry_id IN
+            <foreach item="item"
+                     collection="miCustomerInvestPlan.params.industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
     <!--新增市场洞察客户投资计划表-->
     <insert id="insertMiCustomerInvestPlan" useGeneratedKeys="true" keyProperty="miCustomerInvestPlanId">
         INSERT INTO mi_customer_invest_plan (market_insight_customer_id,industry_id,customer_name,customer_category,exist_market_share,previous_year_sales,plan_period,future_part_market_space,sort,delete_flag,create_by,create_time,update_by,update_time)

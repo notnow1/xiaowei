@@ -56,6 +56,14 @@
                 #{item}
             </foreach>
         </if>
+        <if test="null != targetDecomposeDetails.principalEmployeeIds and targetDecomposeDetails.principalEmployeeIds.size > 0">
+            and principal_employee_id in
+            <foreach item="item"
+                     collection="targetDecomposeDetails.principalEmployeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="null != targetDecomposeDetails.areaIds and targetDecomposeDetails.areaIds.size > 0">
             and area_id in
             <foreach item="item"

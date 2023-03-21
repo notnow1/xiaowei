@@ -117,4 +117,11 @@ public interface MiIndustryDetailMapper{
     * @return 结果
     */
     int batchMiIndustryDetail(@Param("miIndustryDetails")List<MiIndustryDetail> miIndustryDetails);
+
+    /**
+     * 远程查询市场洞察行业详情是否被引用
+     * @param miIndustryDetail
+     * @return
+     */
+    List<MiIndustryDetailDTO> remoteMiIndustryDetailList(@Param("miIndustryDetail")MiIndustryDetail miIndustryDetail);
 }

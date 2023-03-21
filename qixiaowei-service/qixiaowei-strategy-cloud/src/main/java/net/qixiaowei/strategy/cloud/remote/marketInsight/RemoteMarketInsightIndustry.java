@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.remote.marketInsight;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryDetailDTO;
 import net.qixiaowei.strategy.cloud.api.remote.marketInsight.RemoteMarketInsightIndustryService;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +36,18 @@ public class RemoteMarketInsightIndustry implements RemoteMarketInsightIndustryS
     @PostMapping("/remoteMarketInsightIndustryList")
     public R<List<MarketInsightIndustryDTO>> remoteMarketInsightIndustryList(@RequestBody MarketInsightIndustryDTO marketInsightIndustryDTO, String source) {
         return R.ok(marketInsightIndustryService.remoteMarketInsightCustomerList(marketInsightIndustryDTO));
+    }
+
+    /**
+     * 远程查询市场洞察行业详情是否被引用
+     * @param miIndustryDetailDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/remoteMiIndustryDetailList")
+    public R<List<MiIndustryDetailDTO>> remoteMiIndustryDetailList(@RequestBody MiIndustryDetailDTO miIndustryDetailDTO, String source) {
+        return R.ok(marketInsightIndustryService.remoteMiIndustryDetailList(miIndustryDetailDTO));
     }
 }

@@ -5,6 +5,8 @@ import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightOpponentDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO;
 import net.qixiaowei.strategy.cloud.api.remote.industry.RemoteIndustryAttractionService;
 import net.qixiaowei.strategy.cloud.api.remote.marketInsight.RemoteMarketInsightOpponentService;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
@@ -39,5 +41,31 @@ public class RemoteMarketInsightOpponent implements RemoteMarketInsightOpponentS
     @PostMapping("/remoteMarketInsightOpponentList")
     public R<List<MarketInsightOpponentDTO>> remoteMarketInsightOpponentList(@RequestBody MarketInsightOpponentDTO marketInsightOpponentDTO, String source) {
         return R.ok(marketInsightOpponentService.remoteMarketInsightOpponentList(marketInsightOpponentDTO));
+    }
+
+    /**
+     * 看对手竞争对手财务详情远程查询列表是否被引用
+     * @param miOpponentFinanceDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/remoteMiOpponentFinanceList")
+    public R<List<MiOpponentFinanceDTO>> remoteMiOpponentFinanceList(@RequestBody MiOpponentFinanceDTO miOpponentFinanceDTO, String source) {
+        return R.ok(marketInsightOpponentService.remoteMiOpponentFinanceList(miOpponentFinanceDTO));
+    }
+
+    /**
+     * 市场洞察对手选择远程查询列表是否被引用
+     * @param miOpponentChoiceDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/remoteMiOpponentChoiceList")
+    public R<List<MiOpponentChoiceDTO>> remoteMiOpponentChoiceList(@RequestBody MiOpponentChoiceDTO miOpponentChoiceDTO, String source) {
+        return R.ok(marketInsightOpponentService.remoteMiOpponentChoiceList(miOpponentChoiceDTO));
     }
 }

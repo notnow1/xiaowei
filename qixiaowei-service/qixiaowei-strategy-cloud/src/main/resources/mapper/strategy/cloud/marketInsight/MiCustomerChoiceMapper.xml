@@ -93,6 +93,22 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    远程查询看市场洞察客户选择集合是否被引用-->
+    <select id="remoteMiCustomerChoiceList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO">
+        SELECT
+            mi_customer_choice_id,market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_choice
+        WHERE delete_flag=0
+        <if test="miCustomerChoice.params.industryIds != null and miCustomerChoice.params.industryIds.size()>0">
+            AND industry_id IN
+            <foreach item="item"
+                     collection="miCustomerChoice.params.industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
     <!--新增市场洞察客户选择表-->
     <insert id="insertMiCustomerChoice" useGeneratedKeys="true" keyProperty="miCustomerChoiceId">
         INSERT INTO mi_customer_choice (market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time)

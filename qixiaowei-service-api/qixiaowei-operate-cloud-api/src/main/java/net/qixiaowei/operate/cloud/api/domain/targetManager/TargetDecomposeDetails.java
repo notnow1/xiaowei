@@ -83,6 +83,10 @@ public class TargetDecomposeDetails extends TenantEntity {
      */
     private Long principalEmployeeId;
     /**
+     * 负责人ID集合
+     */
+    private List<Long> principalEmployeeIds;
+    /**
      * 汇总目标值
      */
     private BigDecimal amountTarget;

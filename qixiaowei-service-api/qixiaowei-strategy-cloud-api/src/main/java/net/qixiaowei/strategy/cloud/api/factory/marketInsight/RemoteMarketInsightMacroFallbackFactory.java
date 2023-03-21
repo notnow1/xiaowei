@@ -5,6 +5,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO;
 import net.qixiaowei.strategy.cloud.api.remote.marketInsight.RemoteMarketInsightMacroService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,11 @@ public class RemoteMarketInsightMacroFallbackFactory implements FallbackFactory<
             @Override
             public R<List<MarketInsightMacroDTO>> remoteMarketInsightMacroList(MarketInsightMacroDTO marketInsightMacroDTO, String source) {
                 return R.fail("远程调用看宏观列表是否引用失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<MiMacroDetailDTO>> remoteMiMacroDetailList(MiMacroDetailDTO marketInsightMacroDTO, String source) {
+                return R.fail("看宏观详情远程调用提出人姓名查询是否被引用失败:" + throwable.getMessage());
             }
         };
     }

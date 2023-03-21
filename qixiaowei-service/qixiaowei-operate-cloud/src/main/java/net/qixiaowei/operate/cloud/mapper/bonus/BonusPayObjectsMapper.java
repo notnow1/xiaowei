@@ -134,10 +134,10 @@ public interface BonusPayObjectsMapper{
 
     /**
      * 根据人员id查询个人年终奖 奖金发放对象ID(员工id)
-     * @param employeeId
+     * @param employeeIds
      * @return
      */
-    List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeId(@Param("employeeId") Long employeeId);
+    List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeIds(@Param("employeeIds") List<Long> employeeIds);
 
     /**
      * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)

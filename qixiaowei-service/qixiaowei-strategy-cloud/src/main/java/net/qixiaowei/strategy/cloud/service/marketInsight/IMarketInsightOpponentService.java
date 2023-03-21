@@ -1,6 +1,8 @@
 package net.qixiaowei.strategy.cloud.service.marketInsight;
 
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightOpponentDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO;
 
 import java.util.List;
 
@@ -90,4 +92,18 @@ public interface IMarketInsightOpponentService{
      * @return
      */
     List<MarketInsightOpponentDTO> remoteMarketInsightOpponentList(MarketInsightOpponentDTO marketInsightOpponentDTO);
+
+    /**
+     * 看对手竞争对手财务详情远程查询列表是否被引用
+     * @param miOpponentFinanceDTO
+     * @return
+     */
+    List<MiOpponentFinanceDTO> remoteMiOpponentFinanceList(MiOpponentFinanceDTO miOpponentFinanceDTO);
+
+    /**
+     * 市场洞察对手选择远程查询列表是否被引用
+     * @param miOpponentChoiceDTO
+     * @return
+     */
+    List<MiOpponentChoiceDTO> remoteMiOpponentChoiceList(MiOpponentChoiceDTO miOpponentChoiceDTO);
 }
