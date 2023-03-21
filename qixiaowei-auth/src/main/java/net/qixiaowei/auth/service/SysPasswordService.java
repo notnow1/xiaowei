@@ -91,7 +91,7 @@ public class SysPasswordService {
      * @param tenantId    租户ID
      * @return 缓存键key
      */
-    private String getResetIntervalCacheKeyContainTenantId(String userAccount, Long tenantId) {
+    public String getResetIntervalCacheKeyContainTenantId(String userAccount, Long tenantId) {
         return this.getResetIntervalCacheKey(userAccount) + ":" + tenantId;
     }
 
@@ -131,14 +131,6 @@ public class SysPasswordService {
      **/
     public void validateOfReset(String userAccount, Long tenantId) {
         boolean tenantNull = StringUtils.isNull(tenantId);
-        String intervalCacheKey = tenantNull ? this.getResetIntervalCacheKey(userAccount) : this.getResetIntervalCacheKeyContainTenantId(userAccount, tenantId);
-        if (redisService.hasKey(intervalCacheKey)) {
-            long expire = redisService.getExpire(intervalCacheKey);
-            throw new ServiceException("请等待" + expire + "秒后再重置密码。");
-        }
-        //发送间隔：10分钟。
-        long keyExpireTime = 10;
-        redisService.setCacheObject(intervalCacheKey, null, keyExpireTime, TimeUnit.MINUTES);
         String cacheKey = tenantNull ? this.getResetCacheKey(userAccount) : this.getResetCacheKeyContainTenantId(userAccount, tenantId);
         Integer resetRetryCount = redisService.getCacheObject(cacheKey);
         if (null == resetRetryCount) {

@@ -129,7 +129,8 @@ public class SysLoginService {
         }
         LoginUserVO userInfo = userResult.getData();
         UserDTO user = userInfo.getUserDTO();
-        passwordService.validateOfReset(userAccount, user.getTenantId());
+        Long tenantId = user.getTenantId();
+        passwordService.validateOfReset(userAccount, tenantId);
         if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag())) {
             throw new ServiceException("账号与邮箱不匹配，请重新输入。");
         }
@@ -149,6 +150,14 @@ public class SysLoginService {
         }
         //发送邮件
         this.sendEmail(userId, emailOfUser, password);
+        String intervalCacheKey =  passwordService.getResetIntervalCacheKeyContainTenantId(userAccount, tenantId);
+        if (redisService.hasKey(intervalCacheKey)) {
+            long expire = redisService.getExpire(intervalCacheKey);
+            throw new ServiceException("请等待" + expire + "秒后再重置密码。");
+        }
+        //发送间隔：10分钟。
+        long keyExpireTime = 10;
+        redisService.setCacheObject(intervalCacheKey, null, keyExpireTime, TimeUnit.MINUTES);
     }
 
     /**
