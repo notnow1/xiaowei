@@ -244,10 +244,10 @@
             OR bd.industry_id IS NULL
             )
         </if>
-        <if test="businessDesign.params.industryIdIsNull != null">
+        <if test="businessDesign.params.industryIdNull != null">
             AND (bd.industry_id IS NULL or bd.industry_id ='')
         </if>
-        <if test="businessDesign.params.industryIdIsNotNull != null">
+        <if test="businessDesign.params.industryIdNotNull != null">
             AND (bd.industry_id IS NOT NULL or bd.industry_id != '')
         </if>
         <!--区域-->
@@ -269,10 +269,10 @@
             OR bd.area_id IS NULL
             )
         </if>
-        <if test="businessDesign.params.areaIdIsNull != null">
+        <if test="businessDesign.params.areaIdNull != null">
             AND (bd.area_id IS NULL or bd.area_id ='')
         </if>
-        <if test="businessDesign.params.areaIdIsNotNull != null">
+        <if test="businessDesign.params.areaIdNotNull != null">
             AND (bd.area_id IS NOT NULL or bd.area_id != '')
         </if>
         <!--产品-->
@@ -294,10 +294,10 @@
             OR bd.product_id IS NULL
             )
         </if>
-        <if test="businessDesign.params.productIdIsNull != null">
+        <if test="businessDesign.params.productIdNull != null">
             AND (bd.product_id IS NULL or bd.product_id ='')
         </if>
-        <if test="businessDesign.params.productIdIsNotNull != null">
+        <if test="businessDesign.params.productIdNotNull != null">
             AND (bd.product_id IS NOT NULL or bd.product_id != '')
         </if>
         <!--部门-->
@@ -319,10 +319,10 @@
             OR bd.department_id IS NULL
             )
         </if>
-        <if test="businessDesign.params.departmentIdIsNull != null">
+        <if test="businessDesign.params.departmentIdNull != null">
             AND (bd.department_id IS NULL or bd.department_id ='')
         </if>
-        <if test="businessDesign.params.departmentIdIsNotNull != null">
+        <if test="businessDesign.params.departmentIdNotNull != null">
             AND (bd.department_id IS NOT NULL or bd.department_id != '')
         </if>
         <!-- 创建人等于过滤  -->

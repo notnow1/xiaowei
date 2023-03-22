@@ -249,10 +249,10 @@
             OR sm.industry_id IS NULL
             )
         </if>
-        <if test="strategyMetrics.params.industryIdIsNull != null">
+        <if test="strategyMetrics.params.industryIdNull != null">
             AND (sm.industry_id IS NULL or sm.industry_id ='')
         </if>
-        <if test="strategyMetrics.params.industryIdIsNotNull != null">
+        <if test="strategyMetrics.params.industryIdNotNull != null">
             AND (sm.industry_id IS NOT NULL or sm.industry_id != '')
         </if>
         <!--区域-->
@@ -274,10 +274,10 @@
             OR sm.area_id IS NULL
             )
         </if>
-        <if test="strategyMetrics.params.areaIdIsNull != null">
+        <if test="strategyMetrics.params.areaIdNull != null">
             AND (sm.area_id IS NULL or sm.area_id ='')
         </if>
-        <if test="strategyMetrics.params.areaIdIsNotNull != null">
+        <if test="strategyMetrics.params.areaIdNotNull != null">
             AND (sm.area_id IS NOT NULL or sm.area_id != '')
         </if>
         <!--产品-->
@@ -299,10 +299,10 @@
             OR sm.product_id IS NULL
             )
         </if>
-        <if test="strategyMetrics.params.productIdIsNull != null">
+        <if test="strategyMetrics.params.productIdNull != null">
             AND (sm.product_id IS NULL or sm.product_id ='')
         </if>
-        <if test="strategyMetrics.params.productIdIsNotNull != null">
+        <if test="strategyMetrics.params.productIdNotNull != null">
             AND (sm.product_id IS NOT NULL or sm.product_id != '')
         </if>
         <!--部门-->
@@ -324,10 +324,10 @@
             OR sm.department_id IS NULL
             )
         </if>
-        <if test="strategyMetrics.params.departmentIdIsNull != null">
+        <if test="strategyMetrics.params.departmentIdNull != null">
             AND (sm.department_id IS NULL or sm.department_id ='')
         </if>
-        <if test="strategyMetrics.params.departmentIdIsNotNull != null">
+        <if test="strategyMetrics.params.departmentIdNotNull != null">
             AND (sm.department_id IS NOT NULL or sm.department_id != '')
         </if>
         <!-- 创建人等于过滤  -->
