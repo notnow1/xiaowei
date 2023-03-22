@@ -181,40 +181,6 @@
                 AND si.create_by is null
             </if>
         </if>
-        <!-- 区域ID为空  -->
-        <if test="strategyIntent.params.areaIdNull != null">
-            AND si.area_id is null
-        </if>
-        <!-- 区域ID不为空  -->
-        <if test="strategyIntent.params.areaIdNotNull != null">
-            AND si.area_id is not null
-        </if>
-
-        <!-- 部门ID为空  -->
-        <if test="strategyIntent.params.departmentIdNull != null">
-            AND si.department_id is null
-        </if>
-        <!-- 部门ID不为空  -->
-        <if test="strategyIntent.params.departmentIdNotNull != null">
-            AND si.department_id is not null
-        </if>
-        <!-- 产品ID为空  -->
-        <if test="strategyIntent.params.productIdNull != null">
-            AND si.product_id is null
-        </if>
-        <!-- 产品ID不为空  -->
-        <if test="strategyIntent.params.productIdNotNull != null">
-            AND si.product_id is not null
-        </if>
-
-        <!-- 行业ID为空  -->
-        <if test="strategyIntent.params.industryIdNull != null">
-            AND si.industry_id is null
-        </if>
-        <!-- 行业ID不为空  -->
-        <if test="strategyIntent.params.industryIdNotNull != null">
-            AND si.industry_id is not null
-        </if>
         <!-- 创建日期过滤  -->
         <if test="strategyIntent.params.createTimeEqual != null and strategyIntent.params.createTimeEqual.size() > 0">
             AND date_format(si.create_time,'%Y/%m/%d') IN
