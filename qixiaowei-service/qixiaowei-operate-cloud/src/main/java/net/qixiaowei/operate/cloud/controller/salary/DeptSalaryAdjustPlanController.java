@@ -119,7 +119,7 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:add")
     @GetMapping("/getRaiseSalary")
     public AjaxResult getRaiseSalary(@RequestParam("planYear") Integer planYear) {
-        return AjaxResult.success(deptSalaryAdjustPlanService.getRaiseSalary(planYear));
+        return AjaxResult.success("nihao", deptSalaryAdjustPlanService.getRaiseSalary(planYear));
     }
 
     /**

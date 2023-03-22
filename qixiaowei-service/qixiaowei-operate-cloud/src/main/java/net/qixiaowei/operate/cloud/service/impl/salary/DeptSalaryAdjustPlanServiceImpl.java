@@ -265,7 +265,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         Integer planYear = deptSalaryAdjustPlanDTO.getPlanYear();
         DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanByYear = deptSalaryAdjustPlanMapper.selectDeptSalaryAdjustPlanByYear(planYear);
         if (StringUtils.isNotNull(deptSalaryAdjustPlanByYear)) {
-            throw new ServiceException("当前年份数据已存在 请前往编辑页面修改");
+            throw new ServiceException(planYear + "年部门调薪计划已存在");
         }
         DeptSalaryAdjustPlan deptSalaryAdjustPlan = addDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO);
         Long deptSalaryAdjustPlanId = deptSalaryAdjustPlan.getDeptSalaryAdjustPlanId();

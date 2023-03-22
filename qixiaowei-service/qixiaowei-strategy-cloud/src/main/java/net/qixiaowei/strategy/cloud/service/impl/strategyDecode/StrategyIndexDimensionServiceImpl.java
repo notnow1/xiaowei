@@ -43,6 +43,27 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
     private StrategyMetricsMapper strategyMetricsMapper;//战略衡量指标
 
     /**
+     * 行业吸引力配置预制详情集中度
+     */
+    private static final List<StrategyIndexDimension> INIT_STRATEGY_INDEX_DIMENSION_PAR = new ArrayList<>(4);
+    private static final List<StrategyIndexDimension> INIT_STRATEGY_INDEX_DIMENSION_SON_1 = new ArrayList<>(3);
+    private static final List<StrategyIndexDimension> INIT_STRATEGY_INDEX_DIMENSION_SON_2 = new ArrayList<>(4);
+
+    static {
+        INIT_STRATEGY_INDEX_DIMENSION_PAR.add(StrategyIndexDimension.builder().indexDimensionName("财务层面").indexDimensionCode("F").parentIndexDimensionId(0L).ancestors("").sort(1).level(1).status(1).build());
+        INIT_STRATEGY_INDEX_DIMENSION_PAR.add(StrategyIndexDimension.builder().indexDimensionName("客户层面").indexDimensionCode("C").parentIndexDimensionId(0L).ancestors("").sort(2).level(1).status(1).build());
+        INIT_STRATEGY_INDEX_DIMENSION_PAR.add(StrategyIndexDimension.builder().indexDimensionName("内部经营层面").indexDimensionCode("I").parentIndexDimensionId(0L).ancestors("").sort(3).level(1).status(1).build());
+        INIT_STRATEGY_INDEX_DIMENSION_PAR.add(StrategyIndexDimension.builder().indexDimensionName("学习与成长层面").indexDimensionCode("L").parentIndexDimensionId(0L).ancestors("").sort(4).level(1).status(1).build());
+        INIT_STRATEGY_INDEX_DIMENSION_SON_1.add(StrategyIndexDimension.builder().indexDimensionName("客户管理").indexDimensionCode("I").sort(1).level(2).status(1).build());
+        INIT_STRATEGY_INDEX_DIMENSION_SON_1.add(StrategyIndexDimension.builder().indexDimensionName("产品创新").indexDimensionCode("I").sort(2).level(2).status(1).build());
+        INIT_STRATEGY_INDEX_DIMENSION_SON_1.add(StrategyIndexDimension.builder().indexDimensionName("运营管理").indexDimensionCode("I").sort(3).level(2).status(1).build());
+        INIT_STRATEGY_INDEX_DIMENSION_SON_1.add(StrategyIndexDimension.builder().indexDimensionName("负责的公民").indexDimensionCode("I").sort(4).level(2).status(1).build());
+        INIT_STRATEGY_INDEX_DIMENSION_SON_2.add(StrategyIndexDimension.builder().indexDimensionName("人力资本").indexDimensionCode("L").sort(1).level(2).status(1).build());
+        INIT_STRATEGY_INDEX_DIMENSION_SON_2.add(StrategyIndexDimension.builder().indexDimensionName("信息资本").indexDimensionCode("L").sort(2).level(2).status(1).build());
+        INIT_STRATEGY_INDEX_DIMENSION_SON_2.add(StrategyIndexDimension.builder().indexDimensionName("组织资本").indexDimensionCode("L").sort(3).level(2).status(1).build());
+    }
+
+    /**
      * 查询战略指标维度表
      *
      * @param strategyIndexDimensionId 战略指标维度表主键
@@ -158,6 +179,73 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
     @Override
     public List<Integer> selectStrategyIndexDimensionLevelList() {
         return strategyIndexDimensionMapper.selectStrategyIndexDimensionLevelList();
+    }
+
+    /**
+     * 初始化战略指标维度
+     *
+     * @return 真假
+     */
+    @Override
+    @Transactional
+    public boolean initStrategyIndexDimension() {
+        int i = 0;
+        boolean initSuccess = false;
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
+        //战略指标维度主表
+        List<StrategyIndexDimension> strategyIndexDimensions = new ArrayList<>();
+        for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_PAR) {
+            strategyIndexDimension.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            strategyIndexDimension.setCreateBy(userId);
+            strategyIndexDimension.setUpdateBy(userId);
+            strategyIndexDimension.setCreateTime(nowDate);
+            strategyIndexDimension.setUpdateTime(nowDate);
+            strategyIndexDimensions.add(strategyIndexDimension);
+        }
+        try {
+            strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensions);
+        } catch (Exception e) {
+            throw new ServiceException("插入战略指标维度主表失败！！！");
+        }
+        StrategyIndexDimension strategyIndexDimension1 = strategyIndexDimensions.get(2);
+        StrategyIndexDimension strategyIndexDimension2 = strategyIndexDimensions.get(3);
+        if (StringUtils.isNull(strategyIndexDimension1) || StringUtils.isNull(strategyIndexDimension2)) {
+            throw new ServiceException("初始化父级战略指标维度失败！！！");
+        }
+        List<StrategyIndexDimension> strategyIndexDimensionSon1 = new ArrayList<>();
+        for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_SON_1) {
+            strategyIndexDimension.setParentIndexDimensionId(strategyIndexDimension1.getStrategyIndexDimensionId());
+            strategyIndexDimension.setAncestors(strategyIndexDimension1.getStrategyIndexDimensionId().toString());
+            strategyIndexDimension.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            strategyIndexDimension.setCreateBy(userId);
+            strategyIndexDimension.setUpdateBy(userId);
+            strategyIndexDimension.setCreateTime(nowDate);
+            strategyIndexDimension.setUpdateTime(nowDate);
+            strategyIndexDimensionSon1.add(strategyIndexDimension);
+        }
+        try {
+            strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensionSon1);
+        } catch (Exception e) {
+            throw new ServiceException("插入战略指标维度主表失败！！！");
+        }
+        List<StrategyIndexDimension> strategyIndexDimensionSon2 = new ArrayList<>();
+        for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_SON_2) {
+            strategyIndexDimension.setParentIndexDimensionId(strategyIndexDimension2.getStrategyIndexDimensionId());
+            strategyIndexDimension.setAncestors(strategyIndexDimension2.getStrategyIndexDimensionId().toString());
+            strategyIndexDimension.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            strategyIndexDimension.setCreateBy(userId);
+            strategyIndexDimension.setUpdateBy(userId);
+            strategyIndexDimension.setCreateTime(nowDate);
+            strategyIndexDimension.setUpdateTime(nowDate);
+            strategyIndexDimensionSon2.add(strategyIndexDimension);
+        }
+        try {
+            strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensionSon2);
+        } catch (Exception e) {
+            throw new ServiceException("插入战略指标维度主表失败！！！");
+        }
+        return initSuccess;
     }
 
 

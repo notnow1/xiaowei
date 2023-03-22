@@ -132,4 +132,11 @@ public interface IStrategyIndexDimensionService {
      * @return List
      */
     List<Integer> selectStrategyIndexDimensionLevelList();
+
+    /**
+     * 初始化战略指标维度
+     *
+     * @return 真假
+     */
+    boolean initStrategyIndexDimension();
 }

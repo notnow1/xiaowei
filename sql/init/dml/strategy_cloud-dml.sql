@@ -1,4 +1,4 @@
-USE `strategy_cloud`;
+USE strategy_cloud;
 SET NAMES utf8mb4;
 
 -- init of industry_attraction
@@ -57,3 +57,41 @@ VALUES( @industry_attraction_id3, '低集中竞争型', '20% ≤ CR8 < 40%', '#D
 INSERT INTO industry_attraction_element
 ( industry_attraction_id, assess_standard_name, assess_standard_description, display_color,font_color, sort, status, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
 VALUES( @industry_attraction_id3, '分散竞争型', 'CR8 < 20%', '#DFE1E6','#182B4E', 4, 1, 0, 1, sysdate(), 1, sysdate(), 0);
+
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (0, '', 'F', '财务层面', 1, 1, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (0, '', 'C', '客户层面', 2, 1, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (0, '', 'I', '内部经营层面', 3, 1, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (0, '', 'L', '学习与成长层面', 4, 1, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);
+
+Set @strategy_index_dimension_id1 = (SELECT strategy_index_dimension_id FROM strategy_index_dimension where index_dimension_name='内部经营层面' and tenant_id = 0);
+Set @strategy_index_dimension_id2 = (SELECT strategy_index_dimension_id FROM strategy_index_dimension where index_dimension_name='学习与成长层面' and tenant_id = 0);
+
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (@strategy_index_dimension_id1, @strategy_index_dimension_id1, 'I', '客户管理', 1, 2, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (@strategy_index_dimension_id1, @strategy_index_dimension_id1, 'I', '产品创新', 2, 2, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (@strategy_index_dimension_id1, @strategy_index_dimension_id1, 'I', '运营管理', 3, 2, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (@strategy_index_dimension_id1, @strategy_index_dimension_id1, 'I', '负责的公民', 4, 2, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (@strategy_index_dimension_id2, @strategy_index_dimension_id2, 'L', '人力资本', 1, 2, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (@strategy_index_dimension_id2, @strategy_index_dimension_id2, 'L', '信息资本', 2, 2, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);
+INSERT INTO strategy_index_dimension
+( parent_index_dimension_id, ancestors, index_dimension_code, index_dimension_name, sort, `level`, status, remark, delete_flag, create_by, create_time, update_by, update_time, tenant_id)
+VALUES (@strategy_index_dimension_id2, @strategy_index_dimension_id2, 'L', '组织资本', 3, 2, 1, NULL, 0, 0, sysdate(), 0, sysdate(), 0);

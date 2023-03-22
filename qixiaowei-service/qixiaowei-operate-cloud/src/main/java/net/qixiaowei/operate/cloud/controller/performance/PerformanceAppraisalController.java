@@ -149,7 +149,7 @@ public class PerformanceAppraisalController extends BaseController {
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgReview:edit")
     @PostMapping("/orgReview/edit")
     public AjaxResult editOrgReview(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
-        return AjaxResult.success(performanceAppraisalService.updateOrgReviewPerformanceAppraisal(performanceAppraisalObjectsDTO));
+        return AjaxResult.success("保存成功", performanceAppraisalService.updateOrgReviewPerformanceAppraisal(performanceAppraisalObjectsDTO));
     }
 
     /**
@@ -227,7 +227,7 @@ public class PerformanceAppraisalController extends BaseController {
         } else {
             performanceAppraisalService.importCustomOrgPerformanceAppraisal(performanceAppraisalDTO, file);
         }
-        return AjaxResult.success("操作成功");
+        return AjaxResult.success("导入成功");
     }
 
     /**
@@ -333,7 +333,7 @@ public class PerformanceAppraisalController extends BaseController {
     @RequiresPermissions("operate:cloud:performanceAppraisal:perDevelop:edit")
     @PostMapping("/perDevelop/edit")
     public AjaxResult editPerDevelop(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
-        return AjaxResult.success(performanceAppraisalService.updatePerDevelopPerformanceAppraisal(performanceAppraisalObjectsDTO));
+        return AjaxResult.success("保存成功", performanceAppraisalService.updatePerDevelopPerformanceAppraisal(performanceAppraisalObjectsDTO));
     }
     //==============================个人绩效评议==================================//
 
@@ -364,7 +364,7 @@ public class PerformanceAppraisalController extends BaseController {
     @RequiresPermissions("operate:cloud:performanceAppraisal:perReview:edit")
     @PostMapping("/perReview/edit")
     public AjaxResult editPerReview(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
-        return AjaxResult.success(performanceAppraisalService.updatePerReviewPerformanceAppraisal(performanceAppraisalObjectsDTO));
+        return AjaxResult.success("保存成功", performanceAppraisalService.updatePerReviewPerformanceAppraisal(performanceAppraisalObjectsDTO));
     }
 
     //==============================个人绩效排名==================================//
@@ -526,7 +526,7 @@ public class PerformanceAppraisalController extends BaseController {
     @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:orgReview:withdraw", "operate:cloud:performanceAppraisal:perReview:withdraw"}, logical = Logical.OR)
     @GetMapping("/withdraw/{performAppraisalObjectsId}")
     public AjaxResult withdraw(@PathVariable Long performAppraisalObjectsId) {
-        return AjaxResult.success(performanceAppraisalService.withdraw(performAppraisalObjectsId));
+        return AjaxResult.success("撤回成功", performanceAppraisalService.withdraw(performAppraisalObjectsId));
     }
 
     //==============================其他==================================//
