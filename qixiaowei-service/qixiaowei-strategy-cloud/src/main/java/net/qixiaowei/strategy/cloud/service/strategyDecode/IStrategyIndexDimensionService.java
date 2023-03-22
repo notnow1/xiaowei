@@ -116,7 +116,7 @@ public interface IStrategyIndexDimensionService {
      *
      * @return List
      */
-    List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionRootList();
+    List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionRootList(StrategyIndexDimensionDTO strategyIndexDimensionDTO);
 
     /**
      * 规划业务单元列表-不带本身

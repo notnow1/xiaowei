@@ -209,20 +209,22 @@
             )
         </if>
         <if test="annualKeyWork.params.businessUnitNameLike != null and annualKeyWork.params.businessUnitNameLike.size() > 0">
-            OR
-            (<foreach item="item"
-                      collection="annualKeyWork.params.businessUnitNameLike"
-                      index="index" open="(" separator="OR" close=")">
-            pbu.business_unit_name LIKE concat('%', #{item}, '%')
-        </foreach>)
+            AND (
+            <foreach item="item"
+                     collection="annualKeyWork.params.businessUnitNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                pbu.business_unit_name LIKE concat('%', #{item}, '%')
+            </foreach>
+            )
         </if>
         <if test="annualKeyWork.params.businessUnitNameNotLike != null and annualKeyWork.params.businessUnitNameNotLike.size() > 0">
-            AND
+            AND (
             <foreach item="item"
                      collection="annualKeyWork.params.businessUnitNameNotLike"
                      index="index" open="(" separator="AND" close=")">
-                pbu.business_unit_name NOT LIKE concat('%', #{item}, '%'))
+                pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
+            )
         </if>
         <!--行业-->
         <if test="annualKeyWork.params.industryIdEqual != null and annualKeyWork.params.industryIdEqual.size() > 0">
@@ -337,7 +339,7 @@
             </if>
             <!-- 创建人等于过滤  -->
             <if test="annualKeyWork.params.createBys == null">
-                AND  akw.create_by is null
+                AND akw.create_by is null
             </if>
         </if>
         <!-- 创建人不等于过滤  -->
@@ -370,7 +372,7 @@
             </if>
             <!-- 创建人包含过滤  -->
             <if test="annualKeyWork.params.createBys == null">
-                AND  akw.create_by is null
+                AND akw.create_by is null
             </if>
         </if>
         <!-- 创建人不包含过滤  -->
@@ -426,7 +428,7 @@
         <if test="annualKeyWork.params.createTimeEnd != null and annualKeyWork.params.createTimeEnd != ''"><!-- 结束时间检索 -->
             AND date_format(akw.create_time,'%Y/%m/%d') &lt;= #{annualKeyWork.params.createTimeEnd}
         </if>
-        ORDER BY akw.update_time ASC
+        ORDER BY akw.create_time DESC
     </select>
     <!--年度重点工作获取部门是否引用-->
     <select id="remoteAnnualKeyWorkDepartment"

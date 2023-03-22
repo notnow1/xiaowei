@@ -215,20 +215,22 @@
             )
         </if>
         <if test="strategyMetrics.params.businessUnitNameLike != null and strategyMetrics.params.businessUnitNameLike.size() > 0">
-            AND
+            AND (
             <foreach item="item"
                      collection="strategyMetrics.params.businessUnitNameLike"
                      index="index" open="(" separator="OR" close=")">
                 pbu.business_unit_name LIKE concat('%', #{item}, '%')
             </foreach>
+            )
         </if>
         <if test="strategyMetrics.params.businessUnitNameNotLike != null and strategyMetrics.params.businessUnitNameNotLike.size() > 0">
-            AND
+            AND (
             <foreach item="item"
                      collection="strategyMetrics.params.businessUnitNameNotLike"
                      index="index" open="(" separator="AND" close=")">
                 pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
+            )
         </if>
         <!--行业-->
         <if test="strategyMetrics.params.industryIdEqual != null and strategyMetrics.params.industryIdEqual.size() > 0">
@@ -343,7 +345,7 @@
             </if>
             <!-- 创建人等于过滤  -->
             <if test="strategyMetrics.params.createBys == null">
-                AND  sm.create_by is null
+                AND sm.create_by is null
             </if>
         </if>
         <!-- 创建人不等于过滤  -->
@@ -375,7 +377,7 @@
             </if>
             <!-- 创建人包含过滤  -->
             <if test="strategyMetrics.params.createBys == null">
-                AND  sm.create_by is null
+                AND sm.create_by is null
             </if>
         </if>
         <!-- 创建人不包含过滤  -->
@@ -431,7 +433,7 @@
         <if test="strategyMetrics.params.createTimeEnd != null and strategyMetrics.params.createTimeEnd != ''"><!-- 结束时间检索 -->
             AND date_format(sm.create_time,'%Y/%m/%d') &lt;= #{strategyMetrics.params.createTimeEnd}
         </if>
-        ORDER BY sm.update_time ASC
+        ORDER BY sm.create_time DESC
     </select>
     <!--根据清单ID查询战略衡量指标-->
     <select id="selectStrategyMetricsByStrategyMeasureId"

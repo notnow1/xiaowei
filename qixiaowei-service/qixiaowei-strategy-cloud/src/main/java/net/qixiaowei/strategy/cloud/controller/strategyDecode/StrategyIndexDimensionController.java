@@ -76,7 +76,9 @@ public class StrategyIndexDimensionController extends BaseController {
     @RequiresPermissions("strategy:cloud:strategyMeasure:add")
     @GetMapping("/rootList")
     public AjaxResult rootList() {
-        return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionRootList());
+        StrategyIndexDimensionDTO strategyIndexDimensionDTO = new StrategyIndexDimensionDTO();
+        strategyIndexDimensionDTO.setStatus(1);
+        return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionRootList(strategyIndexDimensionDTO));
     }
 
     /**

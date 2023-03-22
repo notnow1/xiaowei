@@ -233,20 +233,22 @@
             )
         </if>
         <if test="strategyMeasure.params.businessUnitNameLike != null and strategyMeasure.params.businessUnitNameLike.size() > 0">
-            AND
+            AND (
             <foreach item="item"
                      collection="strategyMeasure.params.businessUnitNameLike"
                      index="index" open="(" separator="OR" close=")">
                 pbu.business_unit_name LIKE concat('%', #{item}, '%')
             </foreach>
+            )
         </if>
         <if test="strategyMeasure.params.businessUnitNameNotLike != null and strategyMeasure.params.businessUnitNameNotLike.size() > 0">
-            AND
+            AND (
             <foreach item="item"
                      collection="strategyMeasure.params.businessUnitNameNotLike"
                      index="index" open="(" separator="AND" close=")">
                 pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
+            )
         </if>
         <!--行业-->
         <if test="strategyMeasure.params.industryIdEqual != null and strategyMeasure.params.industryIdEqual.size() > 0">
@@ -361,7 +363,7 @@
             </if>
             <!-- 创建人等于过滤  -->
             <if test="strategyMeasure.params.createBys == null">
-                AND  sm.create_by is null
+                AND sm.create_by is null
             </if>
         </if>
         <!-- 创建人不等于过滤  -->
@@ -394,7 +396,7 @@
             </if>
             <!-- 创建人包含过滤  -->
             <if test="strategyMeasure.params.createBys == null">
-                AND  sm.create_by is null
+                AND sm.create_by is null
             </if>
         </if>
         <!-- 创建人不包含过滤  -->
@@ -450,7 +452,7 @@
         <if test="strategyMeasure.params.createTimeEnd != null and strategyMeasure.params.createTimeEnd != ''"><!-- 结束时间检索 -->
             AND date_format(sm.create_time,'%Y/%m/%d') &lt;= #{strategyMeasure.params.createTimeEnd}
         </if>
-        ORDER BY sm.update_time ASC
+        ORDER BY sm.create_time DESC
     </select>
     <!--远程引用查询详情-->
     <select id="remoteDutyMeasure"

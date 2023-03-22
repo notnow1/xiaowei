@@ -135,7 +135,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
                 }
             }
         }
-        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionRootList();
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionRootList(new StrategyIndexDimensionDTO());
         for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
             for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
                 if (strategyIndexDimensionDTO.getStrategyIndexDimensionId().equals(strategyMeasureDetailVO.getStrategyIndexDimensionId())) {
@@ -274,7 +274,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             userDTO.setEmployeeName(createByName);
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
-            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            List<Long> employeeIds = userListData.stream().map(UserDTO::getUserId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(employeeIds)) {
                 employeeIds.forEach(e -> createByList.add(String.valueOf(e)));
             } else {
@@ -691,7 +691,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
         // 编辑战略衡量指标
         this.editStrategyMetrics(strategyMeasureDTO, strategyMeasureId);
         List<StrategyMeasureDetailDTO> strategyMeasureDetailDTOBefore = strategyMeasureDetailService.selectStrategyMeasureDetailByStrategyMeasureId(strategyMeasureId);
-        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionRootList();
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionRootList(new StrategyIndexDimensionDTO());
         List<Long> strategyIndexDimensionIds = strategyIndexDimensionDTOS.stream().map(StrategyIndexDimensionDTO::getStrategyIndexDimensionId).collect(Collectors.toList());
         List<StrategyMeasureDetailVO> strategyMeasureDetailVOS = strategyMeasureDTO.getStrategyMeasureDetailVOS();
         if (StringUtils.isEmpty(strategyMeasureDetailVOS))

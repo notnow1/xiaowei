@@ -206,7 +206,7 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
             userDTO.setEmployeeName(createByName);
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
-            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            List<Long> employeeIds = userListData.stream().map(UserDTO::getUserId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(employeeIds)) {
                 employeeIds.forEach(e -> {
                     createByList.add(String.valueOf(e));

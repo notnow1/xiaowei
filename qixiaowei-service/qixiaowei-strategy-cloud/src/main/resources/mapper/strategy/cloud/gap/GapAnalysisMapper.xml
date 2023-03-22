@@ -204,20 +204,22 @@
             )
         </if>
         <if test="gapAnalysis.params.businessUnitNameLike != null and gapAnalysis.params.businessUnitNameLike.size() > 0">
-            AND
-            (<foreach item="item"
-                      collection="gapAnalysis.params.businessUnitNameLike"
-                      index="index" open="(" separator="OR" close=")">
-            pbu.business_unit_name LIKE concat('%', #{item}, '%')
-        </foreach>)
+            AND (
+            <foreach item="item"
+                     collection="gapAnalysis.params.businessUnitNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                pbu.business_unit_name LIKE concat('%', #{item}, '%')
+            </foreach>
+            )
         </if>
         <if test="gapAnalysis.params.businessUnitNameNotLike != null and gapAnalysis.params.businessUnitNameNotLike.size() > 0">
-            AND
+            AND (
             <foreach item="item"
                      collection="gapAnalysis.params.businessUnitNameNotLike"
                      index="index" open="(" separator="AND" close=")">
                 pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
+            )
         </if>
         <!--行业-->
         <if test="gapAnalysis.params.industryIdEqual != null and gapAnalysis.params.industryIdEqual.size() > 0">
@@ -421,7 +423,7 @@
         <if test="gapAnalysis.params.createTimeEnd != null and gapAnalysis.params.createTimeEnd != ''"><!-- 结束时间检索 -->
             AND date_format(ga.create_time,'%Y/%m/%d') &lt;= #{gapAnalysis.params.createTimeEnd}
         </if>
-        ORDER BY ga.update_time ASC
+        ORDER BY ga.create_time DESC
     </select>
     <!--新增差距分析表-->
     <insert id="insertGapAnalysis" useGeneratedKeys="true" keyProperty="gapAnalysisId">

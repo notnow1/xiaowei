@@ -124,9 +124,9 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
      * @return List
      */
     @Override
-    public List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionRootList() {
+    public List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionRootList(StrategyIndexDimensionDTO indexDimensionDTO) {
         StrategyIndexDimension strategyIndexDimension = new StrategyIndexDimension();
-        strategyIndexDimension.setStatus(1);
+        BeanUtils.copyProperties(indexDimensionDTO, strategyIndexDimension);
         List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(strategyIndexDimension);
         List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOTree = this.createTree(strategyIndexDimensionDTOS, 0L);
         List<StrategyIndexDimensionDTO> rootList = new ArrayList<>();

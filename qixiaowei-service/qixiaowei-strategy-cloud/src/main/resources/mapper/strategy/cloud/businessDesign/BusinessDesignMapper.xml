@@ -210,20 +210,22 @@
             )
         </if>
         <if test="businessDesign.params.businessUnitNameLike != null and businessDesign.params.businessUnitNameLike.size() > 0">
-            AND
+            AND (
             <foreach item="item"
                      collection="businessDesign.params.businessUnitNameLike"
                      index="index" open="(" separator="OR" close=")">
                 pbu.business_unit_name LIKE concat('%', #{item}, '%')
             </foreach>
+            )
         </if>
         <if test="businessDesign.params.businessUnitNameNotLike != null and businessDesign.params.businessUnitNameNotLike.size() > 0">
-            AND
+            AND (
             <foreach item="item"
                      collection="businessDesign.params.businessUnitNameNotLike"
                      index="index" open="(" separator="AND" close=")">
                 pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
+            )
         </if>
         <!--行业-->
         <if test="businessDesign.params.industryIdEqual != null and businessDesign.params.industryIdEqual.size() > 0">
@@ -338,7 +340,7 @@
             </if>
             <!-- 创建人等于过滤  -->
             <if test="businessDesign.params.createBys == null">
-                AND  bd.create_by is null
+                AND bd.create_by is null
             </if>
         </if>
         <!-- 创建人不等于过滤  -->
@@ -371,7 +373,7 @@
             </if>
             <!-- 创建人包含过滤  -->
             <if test="businessDesign.params.createBys == null">
-                AND  bd.create_by is null
+                AND bd.create_by is null
             </if>
         </if>
         <!-- 创建人不包含过滤  -->
@@ -428,7 +430,7 @@
             AND date_format(bd.create_time,'%Y/%m/%d') &lt;= #{businessDesign.params.createTimeEnd}
         </if>
         GROUP BY bd.business_design_id
-        ORDER BY bd.update_time ASC
+        ORDER BY bd.create_time DESC
     </select>
     <!--查询最近一次-->
     <select id="selectBusinessDesignRecently"
