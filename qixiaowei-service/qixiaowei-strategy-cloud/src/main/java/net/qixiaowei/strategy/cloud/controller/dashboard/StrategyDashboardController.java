@@ -70,21 +70,20 @@ public class StrategyDashboardController extends BaseController {
         ArrayList<MarketInsightIndustryDTO> marketInsightIndustryDTOArrayList = new ArrayList<>();
         List<MarketInsightIndustryDTO> list = marketInsightIndustryService.selectMarketInsightIndustryList(marketInsightIndustryDTO);
         if (StringUtils.isNotEmpty(list)){
-            Map<String,MarketInsightIndustryDTO> map = new HashMap<>();
+
             for (MarketInsightIndustryDTO insightIndustryDTO : list) {
                 String planBusinessUnitName = insightIndustryDTO.getPlanBusinessUnitName();
-                map.put(planBusinessUnitName,insightIndustryDTO);
-                if (StringUtils.isNotEmpty(map)){
-                    MarketInsightIndustryDTO marketInsightIndustryDTO1 = map.get(planBusinessUnitName);
-                    if (StringUtils.isNotNull(marketInsightIndustryDTO1)){
+                if (StringUtils.isNotEmpty(marketInsightIndustryDTOArrayList)){
+                    List<String> planBusinessUnitNames = marketInsightIndustryDTOArrayList.stream().filter(f -> StringUtils.isNotBlank(f.getPlanBusinessUnitName())).map(MarketInsightIndustryDTO::getPlanBusinessUnitName).collect(Collectors.toList());
+                    if (planBusinessUnitNames.contains(planBusinessUnitName)){
                         continue;
                     }else {
-                        map.put(planBusinessUnitName,insightIndustryDTO);
+                        marketInsightIndustryDTOArrayList.add(insightIndustryDTO);
                     }
+                }else {
+                    marketInsightIndustryDTOArrayList.add(insightIndustryDTO);
                 }
-
             }
-
         }
 
 

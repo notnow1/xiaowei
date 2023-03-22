@@ -133,4 +133,11 @@ public interface IDictionaryDataService{
      * @return
      */
     List<DictionaryDataDTO> remoteDictionaryDataId(DictionaryDataDTO dictionaryDataDTO);
+
+    /**
+     * 查询字典数据表列表包括失效
+     * @param dictionaryDataDTO
+     * @return
+     */
+     List<DictionaryDataDTO> selectDictionaryDataListAll(DictionaryDataDTO dictionaryDataDTO);
 }

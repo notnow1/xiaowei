@@ -205,6 +205,20 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     }
 
     /**
+     * 查询字典数据表列表包括失效
+     * @param dictionaryDataDTO
+     * @return
+     */
+    @Override
+    public List<DictionaryDataDTO> selectDictionaryDataListAll(DictionaryDataDTO dictionaryDataDTO) {
+        DictionaryData dictionaryData = new DictionaryData();
+        BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
+        List<DictionaryDataDTO> dictionaryDataDTOS = dictionaryDataMapper.selectDictionaryDataListAll(dictionaryData);
+        this.handleResult(dictionaryDataDTOS);
+        return dictionaryDataDTOS;
+    }
+
+    /**
      * 逻辑删除字典数据表信息
      *
      * @param dictionaryDataDTO 字典数据表

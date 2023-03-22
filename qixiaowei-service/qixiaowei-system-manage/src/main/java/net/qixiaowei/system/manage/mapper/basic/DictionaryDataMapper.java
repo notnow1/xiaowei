@@ -130,4 +130,11 @@ public interface DictionaryDataMapper{
      * @return
      */
     List<DictionaryDataDTO> remoteDictionaryDataId(@Param("dictionaryData")DictionaryData dictionaryData);
+
+    /**
+     * 查询字典数据表列表包括失效
+     * @param dictionaryData
+     * @return
+     */
+    List<DictionaryDataDTO> selectDictionaryDataListAll(@Param("dictionaryData")DictionaryData dictionaryData);
 }
