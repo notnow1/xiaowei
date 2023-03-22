@@ -20,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -73,11 +70,21 @@ public class StrategyDashboardController extends BaseController {
         ArrayList<MarketInsightIndustryDTO> marketInsightIndustryDTOArrayList = new ArrayList<>();
         List<MarketInsightIndustryDTO> list = marketInsightIndustryService.selectMarketInsightIndustryList(marketInsightIndustryDTO);
         if (StringUtils.isNotEmpty(list)){
-            //根据属性去重
-            marketInsightIndustryDTOArrayList = list.stream().collect(Collectors.collectingAndThen(
-                    Collectors.toCollection(() -> new TreeSet<>(
-                            Comparator.comparing(
-                                    MarketInsightIndustryDTO::getPlanBusinessUnitName))), ArrayList::new));
+            Map<String,MarketInsightIndustryDTO> map = new HashMap<>();
+            for (MarketInsightIndustryDTO insightIndustryDTO : list) {
+                String planBusinessUnitName = insightIndustryDTO.getPlanBusinessUnitName();
+                map.put(planBusinessUnitName,insightIndustryDTO);
+                if (StringUtils.isNotEmpty(map)){
+                    MarketInsightIndustryDTO marketInsightIndustryDTO1 = map.get(planBusinessUnitName);
+                    if (StringUtils.isNotNull(marketInsightIndustryDTO1)){
+                        continue;
+                    }else {
+                        map.put(planBusinessUnitName,insightIndustryDTO);
+                    }
+                }
+
+            }
+
         }
 
 
