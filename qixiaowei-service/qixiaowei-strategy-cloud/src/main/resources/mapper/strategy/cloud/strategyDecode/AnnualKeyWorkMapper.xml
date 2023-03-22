@@ -243,10 +243,10 @@
             OR akw.industry_id IS NULL
             )
         </if>
-        <if test="annualKeyWork.params.industryIdIsNull != null">
+        <if test="annualKeyWork.params.industryIdNull != null">
             AND (akw.industry_id IS NULL or akw.industry_id ='')
         </if>
-        <if test="annualKeyWork.params.industryIdIsNotNull != null">
+        <if test="annualKeyWork.params.industryIdNotNull != null">
             AND (akw.industry_id IS NOT NULL or akw.industry_id != '')
         </if>
         <!--区域-->
@@ -268,10 +268,10 @@
             OR akw.area_id IS NULL
             )
         </if>
-        <if test="annualKeyWork.params.areaIdIsNull != null">
+        <if test="annualKeyWork.params.areaIdNull != null">
             AND (akw.area_id IS NULL or akw.area_id ='')
         </if>
-        <if test="annualKeyWork.params.areaIdIsNotNull != null">
+        <if test="annualKeyWork.params.areaIdNotNull != null">
             AND (akw.area_id IS NOT NULL or akw.area_id != '')
         </if>
         <!--产品-->
@@ -293,10 +293,10 @@
             OR akw.product_id IS NULL
             )
         </if>
-        <if test="annualKeyWork.params.productIdIsNull != null">
+        <if test="annualKeyWork.params.productIdNull != null">
             AND (akw.product_id IS NULL or akw.product_id ='')
         </if>
-        <if test="annualKeyWork.params.productIdIsNotNull != null">
+        <if test="annualKeyWork.params.productIdNotNull != null">
             AND (akw.product_id IS NOT NULL or akw.product_id != '')
         </if>
         <!--部门-->
@@ -318,10 +318,10 @@
             OR akw.department_id IS NULL
             )
         </if>
-        <if test="annualKeyWork.params.departmentIdIsNull != null">
+        <if test="annualKeyWork.params.departmentIdNull != null">
             AND (akw.department_id IS NULL or akw.department_id ='')
         </if>
-        <if test="annualKeyWork.params.departmentIdIsNotNull != null">
+        <if test="annualKeyWork.params.departmentIdNotNull != null">
             AND (akw.department_id IS NOT NULL or akw.department_id != '')
         </if>
         <!-- 创建人等于过滤  -->

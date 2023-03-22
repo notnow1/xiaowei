@@ -238,10 +238,10 @@
             OR ga.industry_id IS NULL
             )
         </if>
-        <if test="gapAnalysis.params.industryIdIsNull != null">
+        <if test="gapAnalysis.params.industryIdNull != null">
             AND (ga.industry_id IS NULL or ga.industry_id ='')
         </if>
-        <if test="gapAnalysis.params.industryIdIsNotNull != null">
+        <if test="gapAnalysis.params.industryIdNotNull != null">
             AND (ga.industry_id IS NOT NULL or ga.industry_id != '')
         </if>
         <!--区域-->
@@ -263,10 +263,10 @@
             OR ga.area_id IS NULL
             )
         </if>
-        <if test="gapAnalysis.params.areaIdIsNull != null">
+        <if test="gapAnalysis.params.areaIdNull != null">
             AND (ga.area_id IS NULL or ga.area_id ='')
         </if>
-        <if test="gapAnalysis.params.areaIdIsNotNull != null">
+        <if test="gapAnalysis.params.areaIdNotNull != null">
             AND (ga.area_id IS NOT NULL or ga.area_id != '')
         </if>
         <!--产品-->
@@ -288,10 +288,10 @@
             OR ga.product_id IS NULL
             )
         </if>
-        <if test="gapAnalysis.params.productIdIsNull != null">
+        <if test="gapAnalysis.params.productIdNull != null">
             AND (ga.product_id IS NULL or ga.product_id ='')
         </if>
-        <if test="gapAnalysis.params.productIdIsNotNull != null">
+        <if test="gapAnalysis.params.productIdNotNull != null">
             AND (ga.product_id IS NOT NULL or ga.product_id != '')
         </if>
         <!--部门-->
@@ -313,10 +313,10 @@
             OR ga.department_id IS NULL
             )
         </if>
-        <if test="gapAnalysis.params.departmentIdIsNull != null">
+        <if test="gapAnalysis.params.departmentIdNull != null">
             AND (ga.department_id IS NULL or ga.department_id ='')
         </if>
-        <if test="gapAnalysis.params.departmentIdIsNotNull != null">
+        <if test="gapAnalysis.params.departmentIdNotNull != null">
             AND (ga.department_id IS NOT NULL or ga.department_id != '')
         </if>
         <!-- 创建人等于过滤  -->
