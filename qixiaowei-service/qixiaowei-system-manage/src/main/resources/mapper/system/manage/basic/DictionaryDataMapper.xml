@@ -167,6 +167,42 @@
         dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
         FROM dictionary_data
         WHERE delete_flag=0
+        <if test="dictionaryData.dictionaryDataId != null">
+            and dictionary_data_id=#{dictionaryData.dictionaryDataId}
+        </if>
+        <if test="dictionaryData.dictionaryTypeId != null">
+            and dictionary_type_id=#{dictionaryData.dictionaryTypeId}
+        </if>
+        <if test="dictionaryData.dictionaryLabel != null and dictionaryData.dictionaryLabel != ''">
+            and dictionary_label=#{dictionaryData.dictionaryLabel}
+        </if>
+        <if test="dictionaryData.dictionaryValue != null and dictionaryData.dictionaryValue != ''">
+            and dictionary_value=#{dictionaryData.dictionaryValue}
+        </if>
+        <if test="dictionaryData.defaultFlag != null">
+            and default_flag=#{dictionaryData.defaultFlag}
+        </if>
+        <if test="dictionaryData.sort != null">
+            and sort=#{dictionaryData.sort}
+        </if>
+        <if test="dictionaryData.remark != null and dictionaryData.remark != ''">
+            and remark=#{dictionaryData.remark}
+        </if>
+        <if test="dictionaryData.deleteFlag != null">
+            and delete_flag=#{dictionaryData.deleteFlag}
+        </if>
+        <if test="dictionaryData.createBy != null">
+            and create_by=#{dictionaryData.createBy}
+        </if>
+        <if test="dictionaryData.createTime != null">
+            and create_time=#{dictionaryData.createTime}
+        </if>
+        <if test="dictionaryData.updateBy != null">
+            and update_by=#{dictionaryData.updateBy}
+        </if>
+        <if test="dictionaryData.updateTime != null">
+            and update_time=#{dictionaryData.updateTime}
+        </if>
         order by create_time desc
     </select>
     <!--新增字典数据表-->
