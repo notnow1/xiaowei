@@ -329,14 +329,14 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
             }
             if (businessUnitDecompose.contains("product") && StringUtils.isNotEmpty(productDTOS)) {
                 List<ProductDTO> productDTOS1 = productDTOS.stream().filter(productDTO -> productDTO.getProductId().equals(productId)).collect(Collectors.toList());
-                if (StringUtils.isEmpty(productDTOS1)) {
+                if (StringUtils.isNotEmpty(productDTOS1)) {
                     String productName = productDTOS1.get(0).getProductName();
                     metricsDTO.setProductName(productName);
                 }
             }
             if (businessUnitDecompose.contains("industry") && StringUtils.isNotEmpty(industryDTOS)) {
                 List<IndustryDTO> industryDTOS1 = industryDTOS.stream().filter(industryDTO -> industryDTO.getIndustryId().equals(industryId)).collect(Collectors.toList());
-                if (StringUtils.isEmpty(industryDTOS1)) {
+                if (StringUtils.isNotEmpty(industryDTOS1)) {
                     String industryName = industryDTOS1.get(0).getIndustryName();
                     metricsDTO.setIndustryName(industryName);
                 }

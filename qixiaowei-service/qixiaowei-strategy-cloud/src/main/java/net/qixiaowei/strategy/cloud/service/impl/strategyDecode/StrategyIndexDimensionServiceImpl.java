@@ -125,7 +125,9 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
      */
     @Override
     public List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionRootList() {
-        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(new StrategyIndexDimension());
+        StrategyIndexDimension strategyIndexDimension = new StrategyIndexDimension();
+        strategyIndexDimension.setStatus(1);
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(strategyIndexDimension);
         List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOTree = this.createTree(strategyIndexDimensionDTOS, 0L);
         List<StrategyIndexDimensionDTO> rootList = new ArrayList<>();
         for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOTree) {
@@ -320,7 +322,7 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         StrategyIndexDimension strategyIndexDimension = new StrategyIndexDimension();
         BeanUtils.copyProperties(strategyIndexDimensionDTO, strategyIndexDimension);
         if (parentStrategyIndexDimensionId != 0L) {
-            strategyIndexDimension.setAncestors(StringUtils.isNotEmpty(parentAncestors) ? "" : parentAncestors + "," + parentStrategyIndexDimensionId);
+            strategyIndexDimension.setAncestors(StringUtils.isEmpty(parentAncestors) ? parentStrategyIndexDimensionId.toString() : parentAncestors + "," + parentStrategyIndexDimensionId);
             strategyIndexDimension.setLevel(parentLevel + 1);
         } else {
             strategyIndexDimension.setParentIndexDimensionId(Constants.TOP_PARENT_ID);

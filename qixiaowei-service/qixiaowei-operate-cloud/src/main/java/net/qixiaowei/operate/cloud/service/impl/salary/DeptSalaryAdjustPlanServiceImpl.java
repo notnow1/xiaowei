@@ -277,7 +277,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOSBefore = deptSalaryAdjustItemService.selectDeptSalaryAdjustItemByPlanId(deptSalaryAdjustPlanId);
         for (DeptSalaryAdjustItemDTO deptSalaryAdjustItemDTO : deptSalaryAdjustItemDTOSAfter) {
             if (StringUtils.isNull(deptSalaryAdjustItemDTO.getDepartmentId())) {
-                throw new ServiceException("部门不可以为空");
+                throw new ServiceException("部门不能为空");
             }
             if (StringUtils.isNull(deptSalaryAdjustItemDTO.getAdjustmentTime())) {
                 throw new ServiceException("调整时间不可以为空");
@@ -307,7 +307,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         }
         Long deptSalaryAdjustPlanId = deptSalaryAdjustPlanDTO.getDeptSalaryAdjustPlanId();
         if (StringUtils.isNull(deptSalaryAdjustPlanId)) {
-            throw new ServiceException("部门调薪ID不能为空");
+            throw new ServiceException("部门不能为空");
         }
         DeptSalaryAdjustPlanDTO deptSalaryAdjustPlan = deptSalaryAdjustPlanMapper.selectDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);
         if (StringUtils.isNull(deptSalaryAdjustPlan)) {
@@ -324,7 +324,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOSBefore = deptSalaryAdjustItemService.selectDeptSalaryAdjustItemByPlanId(deptSalaryAdjustPlanId);
         for (DeptSalaryAdjustItemDTO deptSalaryAdjustItemDTO : deptSalaryAdjustItemDTOSAfter) {
             if (StringUtils.isNull(deptSalaryAdjustItemDTO.getDepartmentId())) {
-                throw new ServiceException("部门不可以为空");
+                throw new ServiceException("部门不能为空");
             }
             if (StringUtils.isNull(deptSalaryAdjustItemDTO.getAdjustmentTime())) {
                 throw new ServiceException("调整时间不可以为空");
