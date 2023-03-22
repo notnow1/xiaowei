@@ -154,6 +154,14 @@
             </foreach>
             OR mic.area_id IS NULL)
         </if>
+        <!-- 区域ID为空  -->
+        <if test="marketInsightCustomer.params.areaIdNull != null">
+            AND mic.area_id is null
+        </if>
+        <!-- 区域ID不为空  -->
+        <if test="marketInsightCustomer.params.areaIdNotNull != null">
+            AND mic.area_id is not null
+        </if>
         <!-- 部门ID过滤  -->
         <if test="marketInsightCustomer.params.departmentIdEqual != null and marketInsightCustomer.params.departmentIdEqual.size() > 0">
             AND mic.department_id IN
@@ -171,6 +179,14 @@
                 #{item}
             </foreach>
             OR mic.department_id IS NULL)
+        </if>
+        <!-- 部门ID为空  -->
+        <if test="marketInsightCustomer.params.departmentIdNull != null">
+            AND mic.department_id is null
+        </if>
+        <!-- 部门ID不为空  -->
+        <if test="marketInsightCustomer.params.departmentIdNotNull != null">
+            AND mic.department_id is not null
         </if>
         <!-- 产品ID过滤  -->
         <if test="marketInsightCustomer.params.productIdEqual != null and marketInsightCustomer.params.productIdEqual.size() > 0">
@@ -190,6 +206,14 @@
             </foreach>
             OR mic.product_id IS NULL)
         </if>
+        <!-- 产品ID为空  -->
+        <if test="marketInsightCustomer.params.productIdNull != null">
+            AND mic.product_id is null
+        </if>
+        <!-- 产品ID不为空  -->
+        <if test="marketInsightCustomer.params.productIdNotNull != null">
+            AND mic.product_id is not null
+        </if>
         <!-- 行业ID过滤  -->
         <if test="marketInsightCustomer.params.industryIdEqual != null and marketInsightCustomer.params.industryIdEqual.size() > 0">
             AND mic.industry_id IN
@@ -208,7 +232,14 @@
             </foreach>
             OR mic.industry_id IS NULL)
         </if>
-
+        <!-- 行业ID为空  -->
+        <if test="marketInsightCustomer.params.industryIdNull != null">
+            AND mic.industry_id is null
+        </if>
+        <!-- 行业ID不为空  -->
+        <if test="marketInsightCustomer.params.industryIdNotNull != null">
+            AND mic.industry_id is not null
+        </if>
         <!-- 创建人等于过滤  -->
         <if test="marketInsightCustomer.params.createByNameEqual != null">
             <!-- 创建人等于过滤  -->
@@ -275,7 +306,6 @@
                 AND mic.create_by is null
             </if>
         </if>
-
         <!-- 创建时间过滤  -->
         <if test="marketInsightCustomer.params.createTimeEqual != null and marketInsightCustomer.params.createTimeEqual.size() > 0">
             AND date_format(mic.create_time,'%Y/%m/%d') IN

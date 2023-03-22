@@ -275,6 +275,40 @@
                 AND mio.create_by is null
             </if>
         </if>
+        <!-- 区域ID为空  -->
+        <if test="marketInsightOpponent.params.areaIdNull != null">
+            AND mio.area_id is null
+        </if>
+        <!-- 区域ID不为空  -->
+        <if test="marketInsightOpponent.params.areaIdNotNull != null">
+            AND mio.area_id is not null
+        </if>
+
+        <!-- 部门ID为空  -->
+        <if test="marketInsightOpponent.params.departmentIdNull != null">
+            AND mio.department_id is null
+        </if>
+        <!-- 部门ID不为空  -->
+        <if test="marketInsightOpponent.params.departmentIdNotNull != null">
+            AND mio.department_id is not null
+        </if>
+        <!-- 产品ID为空  -->
+        <if test="marketInsightOpponent.params.productIdNull != null">
+            AND mio.product_id is null
+        </if>
+        <!-- 产品ID不为空  -->
+        <if test="marketInsightOpponent.params.productIdNotNull != null">
+            AND mio.product_id is not null
+        </if>
+
+        <!-- 行业ID为空  -->
+        <if test="marketInsightOpponent.params.industryIdNull != null">
+            AND mio.industry_id is null
+        </if>
+        <!-- 行业ID不为空  -->
+        <if test="marketInsightOpponent.params.industryIdNotNull != null">
+            AND mio.industry_id is not null
+        </if>
         <!-- 创建时间过滤  -->
         <if test="marketInsightOpponent.params.createTimeEqual != null and marketInsightOpponent.params.createTimeEqual.size() > 0">
             AND date_format(mio.create_time,'%Y/%m/%d') IN

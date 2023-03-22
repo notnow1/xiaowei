@@ -274,6 +274,40 @@
                 AND mis.create_by is null
             </if>
         </if>
+        <!-- 区域ID为空  -->
+        <if test="marketInsightSelf.params.areaIdNull != null">
+            AND mis.area_id is null
+        </if>
+        <!-- 区域ID不为空  -->
+        <if test="marketInsightSelf.params.areaIdNotNull != null">
+            AND mis.area_id is not null
+        </if>
+
+        <!-- 部门ID为空  -->
+        <if test="marketInsightSelf.params.departmentIdNull != null">
+            AND mis.department_id is null
+        </if>
+        <!-- 部门ID不为空  -->
+        <if test="marketInsightSelf.params.departmentIdNotNull != null">
+            AND mis.department_id is not null
+        </if>
+        <!-- 产品ID为空  -->
+        <if test="marketInsightSelf.params.productIdNull != null">
+            AND mis.product_id is null
+        </if>
+        <!-- 产品ID不为空  -->
+        <if test="marketInsightSelf.params.productIdNotNull != null">
+            AND mis.product_id is not null
+        </if>
+
+        <!-- 行业ID为空  -->
+        <if test="marketInsightSelf.params.industryIdNull != null">
+            AND mis.industry_id is null
+        </if>
+        <!-- 行业ID不为空  -->
+        <if test="marketInsightSelf.params.industryIdNotNull != null">
+            AND mis.industry_id is not null
+        </if>
         <!-- 创建时间过滤  -->
         <if test="marketInsightSelf.params.createTimeEqual != null and marketInsightSelf.params.createTimeEqual.size() > 0">
             AND date_format(mis.create_time,'%Y/%m/%d') IN

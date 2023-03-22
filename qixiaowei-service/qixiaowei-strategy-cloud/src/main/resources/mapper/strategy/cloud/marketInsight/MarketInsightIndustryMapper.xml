@@ -275,7 +275,40 @@
                 AND mii.create_by is null
             </if>
         </if>
+        <!-- 区域ID为空  -->
+        <if test="marketInsightIndustry.params.areaIdNull != null">
+            AND mii.area_id is null
+        </if>
+        <!-- 区域ID不为空  -->
+        <if test="marketInsightIndustry.params.areaIdNotNull != null">
+            AND mii.area_id is not null
+        </if>
 
+        <!-- 部门ID为空  -->
+        <if test="marketInsightIndustry.params.departmentIdNull != null">
+            AND mii.department_id is null
+        </if>
+        <!-- 部门ID不为空  -->
+        <if test="marketInsightIndustry.params.departmentIdNotNull != null">
+            AND mii.department_id is not null
+        </if>
+        <!-- 产品ID为空  -->
+        <if test="marketInsightIndustry.params.productIdNull != null">
+            AND mii.product_id is null
+        </if>
+        <!-- 产品ID不为空  -->
+        <if test="marketInsightIndustry.params.productIdNotNull != null">
+            AND mii.product_id is not null
+        </if>
+
+        <!-- 行业ID为空  -->
+        <if test="marketInsightIndustry.params.industryIdNull != null">
+            AND mii.industry_id is null
+        </if>
+        <!-- 行业ID不为空  -->
+        <if test="marketInsightIndustry.params.industryIdNotNull != null">
+            AND mii.industry_id is not null
+        </if>
         <!-- 创建时间过滤  -->
         <if test="marketInsightIndustry.params.createTimeEqual != null and marketInsightIndustry.params.createTimeEqual.size() > 0">
             AND date_format(mii.create_time,'%Y/%m/%d') IN
