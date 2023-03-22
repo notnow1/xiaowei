@@ -20,11 +20,13 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsD
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.*;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
 import net.qixiaowei.strategy.cloud.api.remote.businessDesign.RemoteBusinessDesignService;
 import net.qixiaowei.strategy.cloud.api.remote.gap.RemoteGapAnalysisService;
+import net.qixiaowei.strategy.cloud.api.remote.marketInsight.*;
 import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteAnnualKeyWorkService;
 import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMeasureService;
 import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMetricsService;
@@ -82,7 +84,16 @@ public class IndustryServiceImpl implements IIndustryService {
 
     @Autowired
     private RemoteBusinessDesignService remoteBusinessDesignService;
-
+    @Autowired
+    private RemoteMarketInsightCustomerService remoteMarketInsightCustomerService;
+    @Autowired
+    private RemoteMarketInsightIndustryService remoteMarketInsightIndustryService;
+    @Autowired
+    private RemoteMarketInsightMacroService remoteMarketInsightMacroService;
+    @Autowired
+    private RemoteMarketInsightOpponentService remoteMarketInsightOpponentService;
+    @Autowired
+    private RemoteMarketInsightSelfService remoteMarketInsightSelfService;
     /**
      * 查询行业 行业启用：1系统；2自定义
      *
@@ -518,6 +529,106 @@ public class IndustryServiceImpl implements IIndustryService {
         if (StringUtils.isNotEmpty(businessDesignDTOS)) {
             throw new ServiceException("数据被引用!");
         }
+
+
+        MarketInsightCustomerDTO marketInsightCustomerDTO = new MarketInsightCustomerDTO();
+        params = new HashMap<>();
+        params.put("industryIds", industryIds);
+        marketInsightCustomerDTO.setParams(params);
+        //看客户远程查询是否引用
+        R<List<MarketInsightCustomerDTO>> marketInsightCustomerList = remoteMarketInsightCustomerService.remoteMarketInsightCustomerList(marketInsightCustomerDTO, SecurityConstants.INNER);
+        List<MarketInsightCustomerDTO> marketInsightCustomerListData = marketInsightCustomerList.getData();
+        if (StringUtils.isNotEmpty(marketInsightCustomerListData)){
+            throw new ServiceException("数据被引用！");
+        }
+        MarketInsightIndustryDTO marketInsightIndustryDTO = new MarketInsightIndustryDTO();
+        params = new HashMap<>();
+        params.put("industryIds", industryIds);
+        marketInsightIndustryDTO.setParams(params);
+        //看行业远程查询是否引用
+        R<List<MarketInsightIndustryDTO>> marketInsightIndustryList = remoteMarketInsightIndustryService.remoteMarketInsightIndustryList(marketInsightIndustryDTO, SecurityConstants.INNER);
+        List<MarketInsightIndustryDTO> marketInsightIndustryListData = marketInsightIndustryList.getData();
+        if (StringUtils.isNotEmpty(marketInsightIndustryListData)){
+            throw new ServiceException("数据被引用！");
+        }
+        MarketInsightMacroDTO marketInsightMacroDTO = new MarketInsightMacroDTO();
+        params = new HashMap<>();
+        params.put("industryIds", industryIds);
+        marketInsightMacroDTO.setParams(params);
+        //看宏观远程查询是否引用
+        R<List<MarketInsightMacroDTO>> marketInsightMacroList = remoteMarketInsightMacroService.remoteMarketInsightMacroList(marketInsightMacroDTO, SecurityConstants.INNER);
+        List<MarketInsightMacroDTO> marketInsightMacroListData = marketInsightMacroList.getData();
+        if (StringUtils.isNotEmpty(marketInsightMacroListData)){
+            throw new ServiceException("数据被引用！");
+        }
+        MarketInsightOpponentDTO marketInsightOpponentDTO = new MarketInsightOpponentDTO();
+        params = new HashMap<>();
+        params.put("industryIds", industryIds);
+        marketInsightOpponentDTO.setParams(params);
+        //看对手远程查询是否引用
+        R<List<MarketInsightOpponentDTO>> marketInsightOpponentList = remoteMarketInsightOpponentService.remoteMarketInsightOpponentList(marketInsightOpponentDTO, SecurityConstants.INNER);
+        List<MarketInsightOpponentDTO> marketInsightOpponentListData = marketInsightOpponentList.getData();
+        if (StringUtils.isNotEmpty(marketInsightOpponentListData)){
+            throw new ServiceException("数据被引用！");
+        }
+        MarketInsightSelfDTO marketInsightSelfDTO = new MarketInsightSelfDTO();
+        params = new HashMap<>();
+        params.put("industryIds", industryIds);
+        marketInsightSelfDTO.setParams(params);
+        //看自身远程查询是否引用
+        R<List<MarketInsightSelfDTO>> marketInsightSelfList = remoteMarketInsightSelfService.remoteMarketInsightSelfList(marketInsightSelfDTO, SecurityConstants.INNER);
+        List<MarketInsightSelfDTO> marketInsightSelfListData = marketInsightSelfList.getData();
+        if (StringUtils.isNotEmpty(marketInsightSelfListData)){
+            throw new ServiceException("数据被引用！");
+        }
+
+        //远程查询市场洞察行业详情是否被引用
+        MiIndustryDetailDTO miIndustryDetailDTO = new MiIndustryDetailDTO();
+        params = new HashMap<>();
+        params.put("industryIds", industryIds);
+        miIndustryDetailDTO.setParams(params);
+        //远程查询市场洞察行业详情是否被引用
+        R<List<MiIndustryDetailDTO>> miIndustryDetailList = remoteMarketInsightIndustryService.remoteMiIndustryDetailList(miIndustryDetailDTO, SecurityConstants.INNER);
+        List<MiIndustryDetailDTO> miIndustryDetailListData = miIndustryDetailList.getData();
+        if (StringUtils.isNotEmpty(miIndustryDetailListData)){
+            throw new ServiceException("数据被引用！");
+        }
+
+        //远程查询看市场洞察客户选择集合是否被引用(行业)引用
+        MiCustomerChoiceDTO miCustomerChoiceDTO = new MiCustomerChoiceDTO();
+        params = new HashMap<>();
+        params.put("industryIds", industryIds);
+        miCustomerChoiceDTO.setParams(params);
+        //远程查询看市场洞察客户选择集合是否被引用(行业)引用
+        R<List<MiCustomerChoiceDTO>> miCustomerChoiceList = remoteMarketInsightCustomerService.remoteMiCustomerChoiceList(miCustomerChoiceDTO, SecurityConstants.INNER);
+        List<MiCustomerChoiceDTO> miCustomerChoiceListData = miCustomerChoiceList.getData();
+        if (StringUtils.isNotEmpty(miCustomerChoiceListData)){
+            throw new ServiceException("数据被引用！");
+        }
+
+        //远程查询市场洞察客户投资计划集合是否被引用（行业）
+        MiCustomerInvestPlanDTO miCustomerInvestPlanDTO = new MiCustomerInvestPlanDTO();
+        params = new HashMap<>();
+        params.put("industryIds", industryIds);
+        miCustomerInvestPlanDTO.setParams(params);
+        //远程查询市场洞察客户投资计划集合是否被引用（行业）
+        R<List<MiCustomerInvestPlanDTO>> miCustomerInvestPlanList = remoteMarketInsightCustomerService.remoteMiCustomerInvestPlanList(miCustomerInvestPlanDTO, SecurityConstants.INNER);
+        List<MiCustomerInvestPlanDTO> miCustomerInvestPlanListData = miCustomerInvestPlanList.getData();
+        if (StringUtils.isNotEmpty(miCustomerInvestPlanListData)){
+            throw new ServiceException("数据被引用！");
+        }
+
+        //市场洞察对手选择远程查询列表是否被引用(行业)
+        MiOpponentChoiceDTO miOpponentChoiceDTO = new MiOpponentChoiceDTO();
+        params = new HashMap<>();
+        params.put("industryIds", industryIds);
+        miOpponentChoiceDTO.setParams(params);
+        //市场洞察对手选择远程查询列表是否被引用(行业)
+        R<List<MiOpponentChoiceDTO>> miOpponentChoiceList = remoteMarketInsightOpponentService.remoteMiOpponentChoiceList(miOpponentChoiceDTO, SecurityConstants.INNER);
+        List<MiOpponentChoiceDTO> miOpponentChoiceListData = miOpponentChoiceList.getData();
+        if (StringUtils.isNotEmpty(miOpponentChoiceListData)){
+            throw new ServiceException("数据被引用！");
+        }
     }
 
     /**
@@ -534,7 +645,9 @@ public class IndustryServiceImpl implements IIndustryService {
             throw new ServiceException("该行业已不存在");
         }
         addSons(industryIds);
+        //系统经营云引用
         isQuote(industryIds, industryByIds);
+        //战略云引用
         isStrategyQuote(industryIds);
         return industryMapper.logicDeleteIndustryByIndustryIds(industryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
@@ -568,7 +681,8 @@ public class IndustryServiceImpl implements IIndustryService {
         }
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = decomposeListR.getData();
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
-            StringBuilder industryNames = new StringBuilder("");
+            throw new ServiceException("数据被引用！");
+/*            StringBuilder industryNames = new StringBuilder("");
             for (IndustryDTO industryById : industryByIds) {
                 for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
                     if (targetDecomposeDetailsDTO.getIndustryId().equals(industryById.getIndustryId())) {
@@ -577,7 +691,7 @@ public class IndustryServiceImpl implements IIndustryService {
                     }
                 }
             }
-            quoteReminder.append("行业配置【").append(industryNames.deleteCharAt(industryNames.length() - 1)).append("】正在被目标分解中的【分解维度-区域】引用 无法删除\n");
+            quoteReminder.append("行业配置【").append(industryNames.deleteCharAt(industryNames.length() - 1)).append("】正在被目标分解中的【分解维度-区域】引用 无法删除\n");*/
         }
         if (quoteReminder.length() != 0) {
             throw new ServiceException(quoteReminder.toString());

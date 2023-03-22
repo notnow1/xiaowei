@@ -24,15 +24,15 @@ public class RemoteBonusPayApplication implements RemoteBonusPayApplicationServi
 
     /**
      * 根据人员id查询个人年终奖 奖金发放对象ID(员工id)
-     * @param employeeId
+     * @param employeeIds
      * @param source
      * @return
      */
     @Override
     @InnerAuth
-    @GetMapping("/queryEmployeeIdBonusPayApplication")
-    public R<List<BonusPayObjectsDTO>> selectBonusPayApplicationByEmployeeId(@RequestParam("employeeId")Long employeeId, String source) {
-        return R.ok(bonusPayApplicationService.selectBonusPayApplicationByEmployeeId(employeeId));
+    @PostMapping("/queryEmployeeIdBonusPayApplication")
+    public R<List<BonusPayObjectsDTO>> selectBonusPayApplicationByEmployeeIds(@RequestBody List<Long> employeeIds, String source) {
+        return R.ok(bonusPayApplicationService.selectBonusPayApplicationByEmployeeIds(employeeIds));
     }
 
     /**

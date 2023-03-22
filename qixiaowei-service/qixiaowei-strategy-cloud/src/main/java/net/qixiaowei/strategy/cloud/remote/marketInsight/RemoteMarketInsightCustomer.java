@@ -3,7 +3,9 @@ package net.qixiaowei.strategy.cloud.remote.marketInsight;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestPlanDTO;
 import net.qixiaowei.strategy.cloud.api.remote.marketInsight.RemoteMarketInsightCustomerService;
 import net.qixiaowei.strategy.cloud.service.marketInsight.IMarketInsightCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +51,31 @@ public class RemoteMarketInsightCustomer implements RemoteMarketInsightCustomerS
     @PostMapping("/remoteMiCustomerInvestDetailList")
     public R<List<MiCustomerInvestDetailDTO>> remoteMiCustomerInvestDetailList(@RequestBody MiCustomerInvestDetailDTO miCustomerInvestDetailDTO, String source) {
         return R.ok(marketInsightCustomerService.remoteMiCustomerInvestDetailList(miCustomerInvestDetailDTO));
+    }
+
+    /**
+     * 远程查询看市场洞察客户选择集合是否被引用
+     * @param miCustomerChoiceDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/remoteMiCustomerChoiceList")
+    public R<List<MiCustomerChoiceDTO>> remoteMiCustomerChoiceList(@RequestBody MiCustomerChoiceDTO miCustomerChoiceDTO, String source) {
+        return R.ok(marketInsightCustomerService.remoteMiCustomerChoiceList(miCustomerChoiceDTO));
+    }
+
+    /**
+     * 远程查询市场洞察客户投资计划集合是否被引用
+     * @param miCustomerInvestPlanDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/remoteMiCustomerInvestPlanList")
+    public R<List<MiCustomerInvestPlanDTO>> remoteMiCustomerInvestPlanList(@RequestBody MiCustomerInvestPlanDTO miCustomerInvestPlanDTO, String source) {
+        return R.ok(marketInsightCustomerService.remoteMiCustomerInvestPlanList(miCustomerInvestPlanDTO));
     }
 }

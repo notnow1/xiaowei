@@ -2,6 +2,7 @@ package net.qixiaowei.strategy.cloud.service.marketInsight;
 
 import java.util.List;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO;
 import net.qixiaowei.strategy.cloud.excel.marketInsight.MarketInsightMacroExcel;
 
 
@@ -97,4 +98,11 @@ public interface IMarketInsightMacroService{
      * @return
      */
     List<MarketInsightMacroDTO> remoteMarketInsightMacroList(MarketInsightMacroDTO marketInsightMacroDTO);
+
+    /**
+     * 看宏观远程调用列表查询是否被引用
+     * @param miMacroDetailDTO
+     * @return
+     */
+    List<MiMacroDetailDTO> remoteMiMacroDetailList(MiMacroDetailDTO miMacroDetailDTO);
 }

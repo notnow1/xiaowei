@@ -111,6 +111,22 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    市场洞察对手选择远程查询列表是否被引用-->
+    <select id="remoteMiOpponentChoiceList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO">
+        SELECT
+            mi_opponent_choice_id,market_insight_opponent_id,industry_id,opponent_name,comparison_item,ability_assess_score,analysis_opponent_core_ability,own_advantage,own_disadvantage,competitor_category,competition_strategy_type,operate_history_period,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_choice
+        WHERE delete_flag=0
+        <if test="miOpponentChoice.params.industryIds != null and miOpponentChoice.params.industryIds.size()>0">
+            AND industry_id IN
+            <foreach item="item"
+                     collection="miOpponentChoice.params.industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
     <!--新增市场洞察对手选择表-->
     <insert id="insertMiOpponentChoice" useGeneratedKeys="true" keyProperty="miOpponentChoiceId">
         INSERT INTO mi_opponent_choice (market_insight_opponent_id,industry_id,opponent_name,comparison_item,ability_assess_score,analysis_opponent_core_ability,own_advantage,own_disadvantage,competitor_category,competition_strategy_type,operate_history_period,sort,delete_flag,create_by,create_time,update_by,update_time)

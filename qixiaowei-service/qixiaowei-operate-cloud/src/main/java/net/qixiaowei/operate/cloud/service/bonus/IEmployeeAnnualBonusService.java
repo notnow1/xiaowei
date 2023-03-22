@@ -147,10 +147,10 @@ public interface IEmployeeAnnualBonusService{
 
     /**
      * 根据人员id查询个人年终奖 申请人id
-     * @param employeeId
+     * @param employeeIds
      * @return
      */
-    List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByEmployeeId(Long employeeId);
+    List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByEmployeeIds(List<Long> employeeIds);
 
     /**
      * 根据部门id查询个人年终奖 (一级部门,申请部门)

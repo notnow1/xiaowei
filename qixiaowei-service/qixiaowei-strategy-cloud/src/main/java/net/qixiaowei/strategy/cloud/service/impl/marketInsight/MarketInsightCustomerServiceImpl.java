@@ -990,6 +990,30 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
     }
 
     /**
+     * 远程查询看市场洞察客户选择集合是否被引用
+     * @param miCustomerChoiceDTO
+     * @return
+     */
+    @Override
+    public List<MiCustomerChoiceDTO> remoteMiCustomerChoiceList(MiCustomerChoiceDTO miCustomerChoiceDTO) {
+        MiCustomerChoice miCustomerChoice = new MiCustomerChoice();
+        BeanUtils.copyProperties(miCustomerChoiceDTO,miCustomerChoice);
+        return miCustomerChoiceMapper.remoteMiCustomerChoiceList(miCustomerChoice);
+    }
+
+    /**
+     * 远程查询市场洞察客户投资计划集合是否被引用
+     * @param miCustomerInvestPlanDTO
+     * @return
+     */
+    @Override
+    public List<MiCustomerInvestPlanDTO> remoteMiCustomerInvestPlanList(MiCustomerInvestPlanDTO miCustomerInvestPlanDTO) {
+        MiCustomerInvestPlan miCustomerInvestPlan = new MiCustomerInvestPlan();
+        BeanUtils.copyProperties(miCustomerInvestPlanDTO,miCustomerInvestPlan);
+        return miCustomerInvestPlanMapper.remoteMiCustomerInvestPlanList(miCustomerInvestPlan);
+    }
+
+    /**
      * 逻辑删除市场洞察客户表信息
      *
      * @param marketInsightCustomerDTO 市场洞察客户表

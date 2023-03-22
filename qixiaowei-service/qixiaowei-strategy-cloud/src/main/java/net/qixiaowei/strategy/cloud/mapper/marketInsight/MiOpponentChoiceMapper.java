@@ -117,4 +117,11 @@ public interface MiOpponentChoiceMapper{
     * @return 结果
     */
     int batchMiOpponentChoice(@Param("miOpponentChoices")List<MiOpponentChoice> miOpponentChoices);
+
+    /**
+     * 市场洞察对手选择远程查询列表是否被引用
+     * @param miOpponentChoice
+     * @return
+     */
+    List<MiOpponentChoiceDTO> remoteMiOpponentChoiceList(@Param("miOpponentChoice")MiOpponentChoice miOpponentChoice);
 }

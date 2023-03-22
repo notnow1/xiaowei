@@ -92,6 +92,22 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    看对手竞争对手财务详情远程查询列表是否被引用-->
+    <select id="remoteMiOpponentFinanceList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO">
+        SELECT
+            mi_opponent_finance_id,market_insight_opponent_id,mi_opponent_choice_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_finance
+        WHERE delete_flag=0
+        <if test="miOpponentFinance.params.indicatorIds != null and miOpponentFinance.params.indicatorIds.size()>0">
+            AND propose_employee_id IN
+            <foreach item="item"
+                     collection="miOpponentFinance.params.indicatorIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
     <!--新增市场洞察对手财务表-->
     <insert id="insertMiOpponentFinance" useGeneratedKeys="true" keyProperty="miOpponentFinanceId">
         INSERT INTO mi_opponent_finance (market_insight_opponent_id,mi_opponent_choice_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)

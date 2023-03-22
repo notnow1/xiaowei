@@ -2,6 +2,7 @@ package net.qixiaowei.strategy.cloud.service.marketInsight;
 
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightIndustryDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryDetailDTO;
 
 
 import java.util.List;
@@ -100,4 +101,11 @@ public interface IMarketInsightIndustryService{
      * @return
      */
     List<MarketInsightIndustryDTO> remoteMarketInsightCustomerList(MarketInsightIndustryDTO marketInsightIndustryDTO);
+
+    /**
+     * 远程查询市场洞察行业详情是否被引用
+     * @param miIndustryDetailDTO
+     * @return
+     */
+    List<MiIndustryDetailDTO> remoteMiIndustryDetailList(MiIndustryDetailDTO miIndustryDetailDTO);
 }

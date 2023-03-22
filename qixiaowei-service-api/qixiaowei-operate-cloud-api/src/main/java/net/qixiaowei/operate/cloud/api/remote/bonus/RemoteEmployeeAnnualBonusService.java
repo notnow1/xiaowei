@@ -18,12 +18,12 @@ public interface RemoteEmployeeAnnualBonusService {
     String API_PREFIX_PERFORMANCE_APPRAISAL = "/employeeAnnualBonus/remote";
     /**
      * 根据人员id查询个人年终奖 申请人id
-     * @param employeeId
+     * @param employeeIds
      * @param source
      * @return
      */
-    @GetMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryEmployeeIdEmployeeAnnualBonus")
-    R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByEmployeeId(@RequestParam("employeeId") Long employeeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @PostMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryEmployeeIdEmployeeAnnualBonus")
+    R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByEmployeeIds(@RequestBody List<Long> employeeIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 根据部门id查询个人年终奖 (一级部门,申请部门)

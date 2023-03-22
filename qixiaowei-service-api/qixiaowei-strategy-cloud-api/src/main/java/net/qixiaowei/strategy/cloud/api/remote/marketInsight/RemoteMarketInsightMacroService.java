@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightMacroDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO;
 import net.qixiaowei.strategy.cloud.api.factory.businessDesign.RemoteBusinessDesignFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,4 +29,10 @@ public interface RemoteMarketInsightMacroService {
      */
     @PostMapping(API_MARKET_INSIGHT_MACRO + "/remoteMarketInsightMacroList")
     R<List<MarketInsightMacroDTO>> remoteMarketInsightMacroList(@RequestBody MarketInsightMacroDTO marketInsightMacroDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 看宏观详情远程调用提出人姓名查询是否被引用
+     */
+    @PostMapping(API_MARKET_INSIGHT_MACRO + "/remoteMiMacroDetailList")
+    R<List<MiMacroDetailDTO>> remoteMiMacroDetailList(@RequestBody MiMacroDetailDTO miMacroDetailDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

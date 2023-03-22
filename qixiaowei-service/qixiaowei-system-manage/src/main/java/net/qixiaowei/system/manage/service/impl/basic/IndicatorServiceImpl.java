@@ -26,10 +26,12 @@ import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeServi
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteSettingService;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO;
 import net.qixiaowei.strategy.cloud.api.remote.gap.RemoteGapAnalysisService;
+import net.qixiaowei.strategy.cloud.api.remote.marketInsight.RemoteMarketInsightOpponentService;
 import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMetricsService;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
@@ -109,6 +111,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
 
     @Autowired
     private RemoteStrategyMetricsService strategyMetricsService;
+
+    @Autowired
+    private RemoteMarketInsightOpponentService remoteMarketInsightOpponentService;
 
     @Override
     public Boolean initData() {
@@ -518,7 +523,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
 //            }
 //        }
         addSons(indicatorIds);
+        //系统经营云引用
         isQuote(indicatorIds, indicatorByIds);
+        //战略云引用
         isStrategyQuote(indicatorIds);
         return indicatorMapper.logicDeleteIndicatorByIndicatorIds(indicatorIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
@@ -554,6 +561,15 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (StringUtils.isNotEmpty(strategyMetricsDetailDTOS)) {
             throw new ServiceException("数据被引用!");
         }
+        MiOpponentFinanceDTO miOpponentFinanceDTO = new MiOpponentFinanceDTO();
+        params = new HashMap<>();
+        params.put("indicatorIds", indicatorIds);
+        miOpponentFinanceDTO.setParams(params);
+        R<List<MiOpponentFinanceDTO>> miOpponentFinanceList = remoteMarketInsightOpponentService.remoteMiOpponentFinanceList(miOpponentFinanceDTO, SecurityConstants.INNER);
+        List<MiOpponentFinanceDTO> miOpponentFinanceListData = miOpponentFinanceList.getData();
+        if (StringUtils.isNotEmpty(miOpponentFinanceListData)){
+            throw new ServiceException("数据被引用!");
+        }
     }
 
     /**
@@ -583,7 +599,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         List<TargetSettingDTO> targetSettingDTOS = listR.getData();
         if (StringUtils.isNotEmpty(targetSettingDTOS)) {
-            StringBuilder indicatorNames = new StringBuilder("");
+            throw new ServiceException("数据被引用！");
+/*            StringBuilder indicatorNames = new StringBuilder("");
             for (TargetSettingDTO targetSettingDTO : targetSettingDTOS) {
                 for (IndicatorDTO indicatorById : indicatorByIds) {
                     if (indicatorById.getIndicatorId().equals(targetSettingDTO.getIndicatorId())) {
@@ -592,7 +609,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                     }
                 }
             }
-            quoteReminder.append("指标配置【").append(indicatorNames.deleteCharAt(indicatorNames.length() - 1)).append("】已被关键经营目标制定中的【主要指标】引用 无法删除\n");
+            quoteReminder.append("指标配置【").append(indicatorNames.deleteCharAt(indicatorNames.length() - 1)).append("】已被关键经营目标制定中的【主要指标】引用 无法删除\n");*/
         }
         // 目标分解
         R<List<TargetDecomposeDTO>> decomposeR = targetDecomposeService.selectByIndicatorIds(indicatorIds, SecurityConstants.INNER);
@@ -601,7 +618,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         List<TargetDecomposeDTO> targetDecomposeDTOS = decomposeR.getData();
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
-            StringBuilder indicatorNames = new StringBuilder("");
+            throw new ServiceException("数据被引用！");
+/*            StringBuilder indicatorNames = new StringBuilder("");
             for (IndicatorDTO indicatorById : indicatorByIds) {
                 for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
                     if (indicatorById.getIndicatorId().equals(targetDecomposeDTO.getIndicatorId())) {
@@ -610,7 +628,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                     }
                 }
             }
-            quoteReminder.append("指标配置【").append(indicatorNames.deleteCharAt(indicatorNames.length() - 1)).append("】已被自定义目标分解中的【指标名称】引用 无法删除\n");
+            quoteReminder.append("指标配置【").append(indicatorNames.deleteCharAt(indicatorNames.length() - 1)).append("】已被自定义目标分解中的【指标名称】引用 无法删除\n");*/
         }
         //组织绩效制定
         Map<Integer, List<Long>> orgMap = new HashMap<>();
@@ -621,7 +639,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
             throw new ServiceException("远程调用失败");
         }
         if (StringUtils.isNotEmpty(orgPerformanceDTOS)) {
-            StringBuilder indicatorNames = new StringBuilder("");
+            throw new ServiceException("数据被引用！");
+/*            StringBuilder indicatorNames = new StringBuilder("");
             for (IndicatorDTO indicatorById : indicatorByIds) {
                 for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : orgPerformanceDTOS) {
                     if (indicatorById.getIndicatorId().equals(performanceAppraisalItemsDTO.getIndicatorId())) {
@@ -646,7 +665,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                     .append(indicatorNames.deleteCharAt(indicatorNames.length() - 1))
                     .append("】已被组织绩效中的【任务名称】【")
                     .append(performanceName.deleteCharAt(performanceName.length() - 1))
-                    .append("】引用 无法删除\n");
+                    .append("】引用 无法删除\n");*/
         }
         //个人绩效制定
         Map<Integer, List<Long>> perMap = new HashMap<>();
@@ -657,7 +676,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
             throw new ServiceException("远程调用失败");
         }
         if (StringUtils.isNotEmpty(perPerformanceDTOS)) {
-            StringBuilder indicatorNames = new StringBuilder("");
+            throw new ServiceException("数据被引用！");
+/*            StringBuilder indicatorNames = new StringBuilder("");
             for (IndicatorDTO indicatorById : indicatorByIds) {
                 for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : perPerformanceDTOS) {
                     if (indicatorById.getIndicatorId().equals(performanceAppraisalItemsDTO.getIndicatorId())) {
@@ -682,7 +702,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                     .append(indicatorNames.deleteCharAt(indicatorNames.length() - 1))
                     .append("】已被个人绩效中的【任务名称】【")
                     .append(performanceName.deleteCharAt(performanceName.length() - 1))
-                    .append("】引用 无法删除\n");
+                    .append("】引用 无法删除\n");*/
         }
         // 总奖金包预算
         BonusBudgetDTO bonusBudgetDTO = new BonusBudgetDTO();
@@ -693,7 +713,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         BonusBudgetDTO bonusBudget = bonusBudgetDTOR.getData();
         if (StringUtils.isNotNull(bonusBudget)) {
-            List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudget.getBonusBudgetParametersDTOS();
+            throw new ServiceException("数据被引用！");
+/*            List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudget.getBonusBudgetParametersDTOS();
             if (StringUtils.isNotNull(bonusBudgetParametersDTOS) && StringUtils.isNotEmpty(bonusBudgetParametersDTOS)) {
                 StringBuilder indicatorNames = new StringBuilder("");
                 for (IndicatorDTO indicatorById : indicatorByIds) {
@@ -721,7 +742,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                         .append("】已被总奖金包预算中的【奖金驱动因素】【")
                         .append(bonusBudgetParameterName.deleteCharAt(bonusBudgetParameterName.length() - 1))
                         .append("】引用 无法删除\n");
-            }
+            }*/
         }
         if (quoteReminder.length() != 0) {
             throw new ServiceException(quoteReminder.toString());
