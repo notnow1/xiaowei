@@ -189,8 +189,6 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
     @Override
     @Transactional
     public boolean initStrategyIndexDimension() {
-        int i = 0;
-        boolean initSuccess = false;
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         //战略指标维度主表
