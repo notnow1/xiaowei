@@ -245,7 +245,7 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         } catch (Exception e) {
             throw new ServiceException("插入战略指标维度主表失败！！！");
         }
-        return initSuccess;
+        return true;
     }
 
 
