@@ -94,6 +94,7 @@ public class IndustryServiceImpl implements IIndustryService {
     private RemoteMarketInsightOpponentService remoteMarketInsightOpponentService;
     @Autowired
     private RemoteMarketInsightSelfService remoteMarketInsightSelfService;
+
     /**
      * 查询行业 行业启用：1系统；2自定义
      *
@@ -283,7 +284,7 @@ public class IndustryServiceImpl implements IIndustryService {
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
         if (parentIndustryId != 0L) {
-            industry.setAncestors(StringUtils.isNotEmpty(parentAncestors) ? "" : parentAncestors + "," + parentIndustryId);
+            industry.setAncestors(StringUtils.isEmpty(parentAncestors) ? parentIndustryId.toString() : parentAncestors + "," + parentIndustryId);
             industry.setLevel(parentLevel + 1);
         } else {
             industry.setParentIndustryId(Constants.TOP_PARENT_ID);
@@ -538,7 +539,7 @@ public class IndustryServiceImpl implements IIndustryService {
         //看客户远程查询是否引用
         R<List<MarketInsightCustomerDTO>> marketInsightCustomerList = remoteMarketInsightCustomerService.remoteMarketInsightCustomerList(marketInsightCustomerDTO, SecurityConstants.INNER);
         List<MarketInsightCustomerDTO> marketInsightCustomerListData = marketInsightCustomerList.getData();
-        if (StringUtils.isNotEmpty(marketInsightCustomerListData)){
+        if (StringUtils.isNotEmpty(marketInsightCustomerListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightIndustryDTO marketInsightIndustryDTO = new MarketInsightIndustryDTO();
@@ -548,7 +549,7 @@ public class IndustryServiceImpl implements IIndustryService {
         //看行业远程查询是否引用
         R<List<MarketInsightIndustryDTO>> marketInsightIndustryList = remoteMarketInsightIndustryService.remoteMarketInsightIndustryList(marketInsightIndustryDTO, SecurityConstants.INNER);
         List<MarketInsightIndustryDTO> marketInsightIndustryListData = marketInsightIndustryList.getData();
-        if (StringUtils.isNotEmpty(marketInsightIndustryListData)){
+        if (StringUtils.isNotEmpty(marketInsightIndustryListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightMacroDTO marketInsightMacroDTO = new MarketInsightMacroDTO();
@@ -558,7 +559,7 @@ public class IndustryServiceImpl implements IIndustryService {
         //看宏观远程查询是否引用
         R<List<MarketInsightMacroDTO>> marketInsightMacroList = remoteMarketInsightMacroService.remoteMarketInsightMacroList(marketInsightMacroDTO, SecurityConstants.INNER);
         List<MarketInsightMacroDTO> marketInsightMacroListData = marketInsightMacroList.getData();
-        if (StringUtils.isNotEmpty(marketInsightMacroListData)){
+        if (StringUtils.isNotEmpty(marketInsightMacroListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightOpponentDTO marketInsightOpponentDTO = new MarketInsightOpponentDTO();
@@ -568,7 +569,7 @@ public class IndustryServiceImpl implements IIndustryService {
         //看对手远程查询是否引用
         R<List<MarketInsightOpponentDTO>> marketInsightOpponentList = remoteMarketInsightOpponentService.remoteMarketInsightOpponentList(marketInsightOpponentDTO, SecurityConstants.INNER);
         List<MarketInsightOpponentDTO> marketInsightOpponentListData = marketInsightOpponentList.getData();
-        if (StringUtils.isNotEmpty(marketInsightOpponentListData)){
+        if (StringUtils.isNotEmpty(marketInsightOpponentListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightSelfDTO marketInsightSelfDTO = new MarketInsightSelfDTO();
@@ -578,7 +579,7 @@ public class IndustryServiceImpl implements IIndustryService {
         //看自身远程查询是否引用
         R<List<MarketInsightSelfDTO>> marketInsightSelfList = remoteMarketInsightSelfService.remoteMarketInsightSelfList(marketInsightSelfDTO, SecurityConstants.INNER);
         List<MarketInsightSelfDTO> marketInsightSelfListData = marketInsightSelfList.getData();
-        if (StringUtils.isNotEmpty(marketInsightSelfListData)){
+        if (StringUtils.isNotEmpty(marketInsightSelfListData)) {
             throw new ServiceException("数据被引用！");
         }
 
@@ -590,7 +591,7 @@ public class IndustryServiceImpl implements IIndustryService {
         //远程查询市场洞察行业详情是否被引用
         R<List<MiIndustryDetailDTO>> miIndustryDetailList = remoteMarketInsightIndustryService.remoteMiIndustryDetailList(miIndustryDetailDTO, SecurityConstants.INNER);
         List<MiIndustryDetailDTO> miIndustryDetailListData = miIndustryDetailList.getData();
-        if (StringUtils.isNotEmpty(miIndustryDetailListData)){
+        if (StringUtils.isNotEmpty(miIndustryDetailListData)) {
             throw new ServiceException("数据被引用！");
         }
 
@@ -602,7 +603,7 @@ public class IndustryServiceImpl implements IIndustryService {
         //远程查询看市场洞察客户选择集合是否被引用(行业)引用
         R<List<MiCustomerChoiceDTO>> miCustomerChoiceList = remoteMarketInsightCustomerService.remoteMiCustomerChoiceList(miCustomerChoiceDTO, SecurityConstants.INNER);
         List<MiCustomerChoiceDTO> miCustomerChoiceListData = miCustomerChoiceList.getData();
-        if (StringUtils.isNotEmpty(miCustomerChoiceListData)){
+        if (StringUtils.isNotEmpty(miCustomerChoiceListData)) {
             throw new ServiceException("数据被引用！");
         }
 
@@ -614,7 +615,7 @@ public class IndustryServiceImpl implements IIndustryService {
         //远程查询市场洞察客户投资计划集合是否被引用（行业）
         R<List<MiCustomerInvestPlanDTO>> miCustomerInvestPlanList = remoteMarketInsightCustomerService.remoteMiCustomerInvestPlanList(miCustomerInvestPlanDTO, SecurityConstants.INNER);
         List<MiCustomerInvestPlanDTO> miCustomerInvestPlanListData = miCustomerInvestPlanList.getData();
-        if (StringUtils.isNotEmpty(miCustomerInvestPlanListData)){
+        if (StringUtils.isNotEmpty(miCustomerInvestPlanListData)) {
             throw new ServiceException("数据被引用！");
         }
 
@@ -626,7 +627,7 @@ public class IndustryServiceImpl implements IIndustryService {
         //市场洞察对手选择远程查询列表是否被引用(行业)
         R<List<MiOpponentChoiceDTO>> miOpponentChoiceList = remoteMarketInsightOpponentService.remoteMiOpponentChoiceList(miOpponentChoiceDTO, SecurityConstants.INNER);
         List<MiOpponentChoiceDTO> miOpponentChoiceListData = miOpponentChoiceList.getData();
-        if (StringUtils.isNotEmpty(miOpponentChoiceListData)){
+        if (StringUtils.isNotEmpty(miOpponentChoiceListData)) {
             throw new ServiceException("数据被引用！");
         }
     }

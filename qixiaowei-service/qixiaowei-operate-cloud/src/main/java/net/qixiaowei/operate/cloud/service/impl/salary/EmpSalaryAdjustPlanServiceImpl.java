@@ -724,10 +724,10 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         }
         if (isSubmit == 1) {
             if (StringUtils.isEmpty(adjustmentTypeList)) {
-                throw new ServiceException("至少选择一个调岗/调薪/调级才可以提交");
+                throw new ServiceException("请选择调整类型");
             }
             if (StringUtils.isNull(effectiveDate)) {
-                throw new ServiceException("请提供生效日期");
+                throw new ServiceException("请选择生效日期");
             }
         }
     }
