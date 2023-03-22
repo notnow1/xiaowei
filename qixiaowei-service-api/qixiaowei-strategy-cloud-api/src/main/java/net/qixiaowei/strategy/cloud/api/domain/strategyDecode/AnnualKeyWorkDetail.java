@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.api.domain.strategyDecode;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
@@ -54,10 +55,12 @@ public class AnnualKeyWorkDetail extends TenantEntity {
     /**
      * 任务开始时间
      */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private Date taskStartTime;
     /**
      * 任务结束时间
      */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private Date taskEndTime;
     /**
      * sort

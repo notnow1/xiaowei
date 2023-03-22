@@ -87,11 +87,13 @@ public class AnnualKeyWorkDetailDTO {
     /**
      * 任务开始时间
      */
-    private LocalDate taskStartTime;
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date taskStartTime;
     /**
      * 任务结束时间
      */
-    private LocalDate taskEndTime;
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date taskEndTime;
     /**
      * 责任人
      */
