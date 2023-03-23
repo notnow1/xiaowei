@@ -30,10 +30,10 @@ public class StrategyMeasureFieldListConfigImpl implements IFieldListConfigStrat
     static {
         INIT_MAP.put(StrategyMeasureField.PLAN_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(StrategyMeasureField.BUSINESS_UNIT_NAME.getCode(), FieldListConfig.builder().fieldWidth(160).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(StrategyMeasureField.INDUSTRY_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(StrategyMeasureField.AREA_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(StrategyMeasureField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(StrategyMeasureField.PRODUCT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyMeasureField.AREA_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyMeasureField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyMeasureField.PRODUCT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyMeasureField.INDUSTRY_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
     @Override
