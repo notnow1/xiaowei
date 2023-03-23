@@ -802,15 +802,15 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<Tree<Long>> getEnableList(IndustryDTO industryDTO) {
-        Integer status = industryDTO.getStatus();
+        Integer isAll = industryDTO.getIsAll();
         Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
         if (StringUtils.isNull(enableType)) {
             throw new ServiceException("系统配置数据异常");
         }
         if (enableType == 2) {
             Industry industry = new Industry();
-            if (StringUtils.isNotNull(status) && status == 1) {
-                industry.setStatus(status);
+            if (StringUtils.isNull(isAll)) {
+                industry.setStatus(1);
             }
             List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(industry);
             //自定义属性名
@@ -827,13 +827,13 @@ public class IndustryServiceImpl implements IIndustryService {
                 tree.putExtra("industryCode", treeNode.getIndustryCode());
                 tree.putExtra("status", treeNode.getStatus());
                 tree.putExtra("createBy", treeNode.getCreateBy());
-                tree.putExtra("statusValue", treeNode.getStatus() == 1);
+                tree.putExtra("statusValue", treeNode.getStatus() != 1);
                 tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
             });
         } else {
             IndustryDefault industryDefault = new IndustryDefault();
-            if (StringUtils.isNotNull(status) && status == 1) {
-                industryDefault.setStatus(status);
+            if (StringUtils.isNull(isAll)) {
+                industryDefault.setStatus(1);
             }
             List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultMapper.selectIndustryDefaultList(industryDefault);
             //自定义属性名
@@ -850,6 +850,7 @@ public class IndustryServiceImpl implements IIndustryService {
                 tree.putExtra("industryCode", treeNode.getIndustryCode());
                 tree.putExtra("status", treeNode.getStatus());
                 tree.putExtra("createBy", treeNode.getCreateBy());
+                tree.putExtra("statusValue", treeNode.getStatus() != 1);
                 tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
             });
         }

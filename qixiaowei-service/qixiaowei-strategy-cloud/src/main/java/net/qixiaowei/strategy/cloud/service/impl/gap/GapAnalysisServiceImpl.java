@@ -511,7 +511,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                 List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSList = gapAnalysisOperateDTO.getSonGapAnalysisOperateDTOS();
                 for (int j = 1; j < gapAnalysisOperateDTOSList.size() + 1; j++) {
                     GapAnalysisOperateDTO gapAnalysisOperate = new GapAnalysisOperateDTO();
-                    GapAnalysisOperateDTO analysisOperateDTO = gapAnalysisOperateDTOSList.get(i);
+                    GapAnalysisOperateDTO analysisOperateDTO = gapAnalysisOperateDTOSList.get(j - 1);
                     gapAnalysisOperate.setOperateYear(planYear - j);
                     gapAnalysisOperate.setGapAnalysisId(gapAnalysisId);
                     gapAnalysisOperate.setIndicatorId(indicatorId);

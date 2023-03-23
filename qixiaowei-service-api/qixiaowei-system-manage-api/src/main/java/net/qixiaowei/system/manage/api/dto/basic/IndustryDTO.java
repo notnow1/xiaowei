@@ -83,6 +83,10 @@ public class IndustryDTO extends BaseDTO {
      * 启用类型（0-默认，1-自定义）
      */
     private Integer configValue;
+    /**
+     * 是否需要所有的(1-需要所有的行业)
+     */
+    private Integer isAll;
 
 }
 
