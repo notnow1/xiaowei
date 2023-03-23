@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -144,11 +145,11 @@ public class StrategyDashboardServiceImpl implements IStrategyDashboardService {
         // 综合毛利率综合订单额计算
         if (StringUtils.isNotEmpty(businessDesignParamDTOS)) {
             for (BusinessDesignParamDTO businessDesignParamDTO : businessDesignParamDTOS) {
-                BigDecimal synthesizeGrossMargin = businessDesignParamDTO.getHistoryAverageRate().multiply(businessDesignParamDTO.getHistoryWeight())
-                        .add(businessDesignParamDTO.getForecastRate().multiply(businessDesignParamDTO.getForecastWeight()));
+                BigDecimal synthesizeGrossMargin = businessDesignParamDTO.getHistoryAverageRate().multiply(businessDesignParamDTO.getHistoryWeight().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP))
+                        .add(businessDesignParamDTO.getForecastRate().multiply(businessDesignParamDTO.getForecastWeight()).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
                 businessDesignParamDTO.setSynthesizeGrossMargin(synthesizeGrossMargin);
-                BigDecimal synthesizeOrderAmount = businessDesignParamDTO.getHistoryOrderAmount().multiply(businessDesignParamDTO.getHistoryOrderWeight())
-                        .add(businessDesignParamDTO.getForecastOrderAmount().multiply(businessDesignParamDTO.getForecastOrderWeight()));
+                BigDecimal synthesizeOrderAmount = businessDesignParamDTO.getHistoryOrderAmount().multiply(businessDesignParamDTO.getHistoryOrderWeight().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP))
+                        .add(businessDesignParamDTO.getForecastOrderAmount().multiply(businessDesignParamDTO.getForecastOrderWeight()).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
                 businessDesignParamDTO.setSynthesizeOrderAmount(synthesizeOrderAmount);
                 Integer paramDimension = businessDesignParamDTO.getParamDimension();
                 if (StringUtils.isNotNull(paramDimension)) {
