@@ -406,7 +406,7 @@
         moc.industry_id,
         moc.opponent_name,
         moc.comparison_item,
-        moc.ability_assess_score,
+        IFNULL(MAX(moc.ability_assess_score),0) as ability_assess_score ,
         moc.analysis_opponent_core_ability,
         moc.own_advantage,
         moc.own_disadvantage,
