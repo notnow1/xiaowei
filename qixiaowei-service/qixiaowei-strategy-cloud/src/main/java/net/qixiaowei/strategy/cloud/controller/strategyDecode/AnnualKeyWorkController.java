@@ -63,7 +63,7 @@ public class AnnualKeyWorkController extends BaseController {
      * 新增年度重点工作表
      */
     @RequiresPermissions("strategy:cloud:annualKeyWork:add")
-    @Log(title = "新增年度重点工作表", businessType = BusinessType.ANNUAL_KEY_WORK, businessId = "annualKeyWorkId", operationType = OperationType.INSERT)
+    @Log(title = "保存年度重点工作表", businessType = BusinessType.ANNUAL_KEY_WORK, businessId = "annualKeyWorkId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody AnnualKeyWorkDTO annualKeyWorkDTO) {
         return AjaxResult.success(annualKeyWorkService.insertAnnualKeyWork(annualKeyWorkDTO));
@@ -74,7 +74,7 @@ public class AnnualKeyWorkController extends BaseController {
      * 修改年度重点工作表
      */
     @RequiresPermissions("strategy:cloud:annualKeyWork:edit")
-    @Log(title = "修改年度重点工作表", businessType = BusinessType.ANNUAL_KEY_WORK, businessId = "annualKeyWorkId", operationType = OperationType.UPDATE)
+    @Log(title = "保存年度重点工作表", businessType = BusinessType.ANNUAL_KEY_WORK, businessId = "annualKeyWorkId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody AnnualKeyWorkDTO annualKeyWorkDTO) {
         return toAjax(annualKeyWorkService.updateAnnualKeyWork(annualKeyWorkDTO));

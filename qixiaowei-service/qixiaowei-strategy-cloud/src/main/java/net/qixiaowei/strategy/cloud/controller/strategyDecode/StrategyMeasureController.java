@@ -63,7 +63,7 @@ public class StrategyMeasureController extends BaseController {
      * 新增战略举措清单表
      */
     @RequiresPermissions("strategy:cloud:strategyMeasure:add")
-    @Log(title = "新增战略举措清单表", businessType = BusinessType.STRATEGY_MEASURE, businessId = "strategyMeasureId", operationType = OperationType.INSERT)
+    @Log(title = "保存战略举措清单表", businessType = BusinessType.STRATEGY_MEASURE, businessId = "strategyMeasureId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody StrategyMeasureDTO strategyMeasureDTO) {
         return AjaxResult.success(strategyMeasureService.insertStrategyMeasure(strategyMeasureDTO));
@@ -74,7 +74,7 @@ public class StrategyMeasureController extends BaseController {
      * 修改战略举措清单表
      */
     @RequiresPermissions("strategy:cloud:strategyMeasure:edit")
-    @Log(title = "修改战略举措清单表", businessType = BusinessType.STRATEGY_MEASURE, businessId = "strategyMeasureId", operationType = OperationType.UPDATE)
+    @Log(title = "保存战略举措清单表", businessType = BusinessType.STRATEGY_MEASURE, businessId = "strategyMeasureId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody StrategyMeasureDTO strategyMeasureDTO) {
         return toAjax(strategyMeasureService.updateStrategyMeasure(strategyMeasureDTO));

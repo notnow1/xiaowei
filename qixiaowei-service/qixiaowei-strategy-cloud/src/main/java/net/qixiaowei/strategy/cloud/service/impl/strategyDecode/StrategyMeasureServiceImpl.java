@@ -467,6 +467,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             // 新增战略清单详情任务表
             this.addMeasureTask(strategyMeasureId, groupDetailMapS, strategyMeasureDetails);
         }
+        strategyMeasureDTO.setStrategyMeasureId(strategyMeasureId);
         return strategyMeasureDTO;
     }
 

@@ -74,7 +74,7 @@ public class BusinessDesignController extends BaseController {
      * 新增业务设计表
      */
     @RequiresPermissions("strategy:cloud:businessDesign:add")
-    @Log(title = "新增业务设计表", businessType = BusinessType.BUSINESS_DESIGN, businessId = "businessDesignId", operationType = OperationType.INSERT)
+    @Log(title = "保存业务设计表", businessType = BusinessType.BUSINESS_DESIGN, businessId = "businessDesignId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody BusinessDesignDTO businessDesignDTO) {
         return AjaxResult.success(businessDesignService.insertBusinessDesign(businessDesignDTO));
@@ -85,7 +85,7 @@ public class BusinessDesignController extends BaseController {
      * 修改业务设计表
      */
     @RequiresPermissions("strategy:cloud:businessDesign:edit")
-    @Log(title = "修改业务设计表", businessType = BusinessType.BUSINESS_DESIGN, businessId = "businessDesignId", operationType = OperationType.UPDATE)
+    @Log(title = "保存业务设计表", businessType = BusinessType.BUSINESS_DESIGN, businessId = "businessDesignId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody BusinessDesignDTO businessDesignDTO) {
         return toAjax(businessDesignService.updateBusinessDesign(businessDesignDTO));

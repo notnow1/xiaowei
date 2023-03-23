@@ -428,6 +428,7 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
                 throw new ServiceException("部门信息已不存在 请检查组织信息配置");
         }
         annualKeyWorkDetailService.insertAnnualKeyWorkDetails(annualKeyWorkDetailDTOS);
+        annualKeyWorkDTO.setAnnualKeyWorkId(annualKeyWorkId);
         return annualKeyWorkDTO;
     }
 

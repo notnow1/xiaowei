@@ -477,6 +477,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             }
             gapAnalysisOpportunityService.insertGapAnalysisOpportunitys(gapAnalysisOpportunityDTOS);
         }
+        gapAnalysisDTO.setGapAnalysisId(gapAnalysisId);
         return gapAnalysisDTO;
     }
 

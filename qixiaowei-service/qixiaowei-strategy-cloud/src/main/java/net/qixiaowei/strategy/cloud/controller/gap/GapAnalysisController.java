@@ -82,7 +82,7 @@ public class GapAnalysisController extends BaseController {
      * 新增差距分析表
      */
     @RequiresPermissions("strategy:cloud:gapAnalysis:add")
-    @Log(title = "新增差距分析表", businessType = BusinessType.GAP_ANALYSIS, businessId = "gapAnalysisId", operationType = OperationType.INSERT)
+    @Log(title = "保存差距分析表", businessType = BusinessType.GAP_ANALYSIS, businessId = "gapAnalysisId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody GapAnalysisDTO gapAnalysisDTO) {
         return AjaxResult.success(gapAnalysisService.insertGapAnalysis(gapAnalysisDTO));
@@ -93,7 +93,7 @@ public class GapAnalysisController extends BaseController {
      * 修改差距分析表
      */
     @RequiresPermissions("strategy:cloud:gapAnalysis:edit")
-    @Log(title = "修改差距分析表", businessType = BusinessType.GAP_ANALYSIS, businessId = "gapAnalysisId", operationType = OperationType.UPDATE)
+    @Log(title = "保存差距分析表", businessType = BusinessType.GAP_ANALYSIS, businessId = "gapAnalysisId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody GapAnalysisDTO gapAnalysisDTO) {
         return toAjax(gapAnalysisService.updateGapAnalysis(gapAnalysisDTO));
