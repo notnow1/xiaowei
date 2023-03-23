@@ -802,13 +802,16 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<Tree<Long>> getEnableList(IndustryDTO industryDTO) {
+        Integer status = industryDTO.getStatus();
         Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
         if (StringUtils.isNull(enableType)) {
             throw new ServiceException("系统配置数据异常");
         }
         if (enableType == 2) {
             Industry industry = new Industry();
-            industry.setStatus(1);
+            if (StringUtils.isNotNull(status) && status == 1) {
+                industry.setStatus(status);
+            }
             List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(industry);
             //自定义属性名
             TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
@@ -824,12 +827,14 @@ public class IndustryServiceImpl implements IIndustryService {
                 tree.putExtra("industryCode", treeNode.getIndustryCode());
                 tree.putExtra("status", treeNode.getStatus());
                 tree.putExtra("createBy", treeNode.getCreateBy());
+                tree.putExtra("statusValue", treeNode.getStatus() == 1);
                 tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
             });
         } else {
-            IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
             IndustryDefault industryDefault = new IndustryDefault();
-            industryDefault.setStatus(1);
+            if (StringUtils.isNotNull(status) && status == 1) {
+                industryDefault.setStatus(status);
+            }
             List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultMapper.selectIndustryDefaultList(industryDefault);
             //自定义属性名
             TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
