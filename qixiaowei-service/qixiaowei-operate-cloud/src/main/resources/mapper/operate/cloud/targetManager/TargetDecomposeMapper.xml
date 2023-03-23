@@ -185,12 +185,6 @@
         and td.indicator_id = ts.indicator_id
         and ts.delete_flag= 0
         WHERE td.delete_flag = 0
-        and td.indicator_id in
-        <foreach item="item"
-                 collection="targetDecompose.indicatorIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
         <!-- 目标年度过滤  -->
         <if test="targetDecompose.params.targetYearEqual != null and targetDecompose.params.targetYearEqual.size() > 0">
             AND td.target_year IN
@@ -406,12 +400,6 @@
         and td.indicator_id = ts.indicator_id
         and ts.delete_flag= 0
         WHERE td.delete_flag = 0
-        and td.indicator_id in
-        <foreach item="item"
-                 collection="targetDecompose.indicatorIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
         <if test="targetDecompose.targetDecomposeId != null">
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
         </if>

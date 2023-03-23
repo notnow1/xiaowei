@@ -144,9 +144,10 @@ public interface DepartmentMapper{
 
     /**
      * 查询上级组织
+     * @param status 生效状态
      * @return
      */
-    List<DepartmentDTO> queryparent();
+    List<DepartmentDTO> queryparent(@Param("status")Integer status);
 
     /**
      * 查询code编码是否已经存在

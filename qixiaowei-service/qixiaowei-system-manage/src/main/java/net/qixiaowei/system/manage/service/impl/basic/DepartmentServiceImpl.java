@@ -256,11 +256,13 @@ public class DepartmentServiceImpl implements IDepartmentService {
         for (DepartmentDTO catelog : lists) {
             if (catelog.getParentDepartmentId() == pid) {
                 if (pid == 0) {
+                    catelog.setStatusFlag(catelog.getStatus()==0);
                     catelog.setParentDepartmentExcelName(catelog.getDepartmentName());
                 } else {
                     List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                         catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
+                        catelog.setStatusFlag(catelog.getStatus()==0);
                     }
                 }
                 catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getDepartmentId().toString())));
@@ -628,7 +630,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 List<Long> departmentIdList = departmentDTOList.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
                 this.quoteDepartment(departmentIdList, officialRankDecomposeerreo, employeeBudgetErreo, bonusPayApplicationErreo, employeeAnnualBonusErreo, posterreo, emplerreo, decomposesErreo, empSalaryAdjustPlanErreo);
                 //战略云引用
-                isStrategyQuote(departmentIdList);
+                this.isStrategyQuote(departmentIdList);
             }
             //将错误信息放在一个字符串中
             depterreo.append(posterreo).append(emplerreo).append(decomposesErreo).append(employeeBudgetErreo).append(bonusPayApplicationErreo).append(employeeAnnualBonusErreo).append(officialRankDecomposeerreo).append(empSalaryAdjustPlanErreo);
@@ -830,12 +832,16 @@ public class DepartmentServiceImpl implements IDepartmentService {
     /**
      * 查询上级组织
      *
-     * @param departmentId
+     * @param status
      * @return
      */
     @Override
-    public List<DepartmentDTO> queryparent(Long departmentId) {
-        List<DepartmentDTO> queryparent = departmentMapper.queryparent();
+    public List<DepartmentDTO> queryparent(Long departmentId,Integer status) {
+        //为空默认赋值生效
+        if (StringUtils.isNull(status)){
+            status =1;
+        }
+        List<DepartmentDTO> queryparent = departmentMapper.queryparent(status);
         List<DepartmentDTO> tree = this.createTree(queryparent, 0);
         if (StringUtils.isNotNull(departmentId)) {
             if (StringUtils.isNotEmpty(tree)) {
@@ -1081,7 +1087,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                                          posterreo, StringBuffer emplerreo, StringBuffer decomposesErreo, StringBuffer empSalaryAdjustPlanErreo) {
         // 岗位是否被引用
         List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(departmentIdList);
-        String postName = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+
         //职级分解id
         String officialRankDecomposeId = departmentPostDTOS.stream().map(DepartmentPostDTO::getOfficialRankDecomposeId).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
         //职级分解名称
@@ -1090,10 +1096,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             throw new ServiceException("数据被引用！");
             //officialRankDecomposeerreo.append("组织" + dto.getDepartmentName() + "已被职级分解[" + StringUtils.join(officialRankSystemName, ",") + "]职级引用\n");
         }
-        if (!StringUtils.isEmpty(departmentPostDTOS)) {
-            throw new ServiceException("数据被引用！");
-            //posterreo.append("组织" + dto.getDepartmentName() + "已被岗位" + StringUtils.join(postName, ",") + "引用\n");
-        }
+
 
         // 人员是否被引用
         List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployees(departmentIdList);

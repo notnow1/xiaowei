@@ -155,7 +155,7 @@ public interface IDepartmentService {
      * @param departmentId
      * @return
      */
-    List<DepartmentDTO> queryparent(Long departmentId);
+    List<DepartmentDTO> queryparent(Long departmentId,Integer status);
 
     /**
      * 部门岗位详情

@@ -602,21 +602,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeDTO> resultList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
-        //指标code集合
-        List<String> list = new ArrayList<>();
-        //订单（不含税）
-        list.add(IndicatorCode.ORDER.getCode());
-        //销售收入
-        list.add(IndicatorCode.INCOME.getCode());
-        //回款金额（含税）
-        list.add(IndicatorCode.RECEIVABLE.getCode());
-        R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
-        if (StringUtils.isEmpty(listR.getData())) {
-            throw new ServiceException("指标不存在 请联系管理员！");
-        } else {
-            List<Long> collect = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
-            targetDecompose.setIndicatorIds(collect);
-        }
+
         targetDecompose.setTenantId(SecurityUtils.getTenantId());
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectResultList(targetDecompose);
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
@@ -810,21 +796,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         List<String> remoteIndicatorIds = new ArrayList<>();
         TargetDecompose targetDecompose = new TargetDecompose();
         this.getIndicatorId(targetDecomposeDTO.getParams());
-        //指标code集合
-        List<String> list = new ArrayList<>();
-        //订单（不含税）
-        list.add(IndicatorCode.ORDER.getCode());
-        //销售收入
-        list.add(IndicatorCode.INCOME.getCode());
-        //回款金额（含税）
-        list.add(IndicatorCode.RECEIVABLE.getCode());
-        R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
-        if (StringUtils.isEmpty(listR.getData())) {
-            throw new ServiceException("指标不存在 请联系管理员！");
-        } else {
-            List<Long> collect = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
-            targetDecompose.setIndicatorIds(collect);
-        }
+
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         if (StringUtils.isNotBlank(targetDecomposeDTO.getIndicatorName())) {
             IndicatorDTO indicatorDTO = new IndicatorDTO();

@@ -152,6 +152,10 @@ public class DepartmentDTO extends BaseDTO {
      */
     private Integer status;
     /**
+     * 状态是否生效失效
+     */
+    private boolean statusFlag;
+    /**
      * 父级状态:0失效;1生效
      */
     private Integer parentDepartmentStatus;
