@@ -54,8 +54,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -252,6 +250,167 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
         } else {
             return targetDecomposeDTO;
+        }
+    }
+
+    /**
+     * 经营结果达成分析封装数据
+     *
+     * @param targetDecomposeIds
+     * @return
+     */
+    public List<TargetDecomposeDTO> selectResultTargetDecomposeByTargetDecomposeList(List<Long> targetDecomposeIds) {
+        //目标分解主表数据
+        List<TargetDecomposeDTO> targetDecomposeDTOList = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeIds(targetDecomposeIds);
+        if (StringUtils.isEmpty(targetDecomposeDTOList)) {
+            throw new ServiceException("数据不存在！");
+        } else {
+            targetDecomposeDTOList.forEach(this::packDecompositionDimension);
+        }
+        //目标分解详情数据
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeIds(targetDecomposeIds);
+        //根据目标分解主表id分组
+        Map<Long, List<TargetDecomposeDetailsDTO>> targetDecomposeDetailsMapList = targetDecomposeDetailsDTOList.stream().collect(Collectors.groupingBy(TargetDecomposeDetailsDTO::getTargetDecomposeId));
+
+        this.packRemote(targetDecomposeDetailsDTOList);
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
+            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsIds(targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getTargetDecomposeDetailsId).collect(Collectors.toList()));
+            for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOList) {
+                List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOListData = new ArrayList<>();
+                targetDecomposeDetailsDTOListData = targetDecomposeDetailsMapList.get(targetDecomposeDTO.getTargetDecomposeId());
+                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOListData)) {
+                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOListData) {
+                        List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOListData = new ArrayList<>();
+                        //年度预测值
+                        BigDecimal forecastYear = new BigDecimal("0");
+                        //累计实际值
+                        BigDecimal actualTotal = new BigDecimal("0");
+                        //目标完成率
+                        BigDecimal targetPercentageComplete = new BigDecimal("0");
+                        //目标完成率总和
+                        BigDecimal targetPercentageCompleteSum = new BigDecimal("0");
+                        //目标完成率平均值
+                        BigDecimal targetPercentageCompleteAve = new BigDecimal("0");
+                        //预测与目标偏差率总和
+                        BigDecimal forecastDeviationRateSum = new BigDecimal("0");
+                        //预测与目标偏差率平均值
+                        BigDecimal forecastDeviationRateAve = new BigDecimal("0");
+                        //分解目标值
+                        BigDecimal amountTarget = targetDecomposeDetailsDTO.getAmountTarget();
+                        if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList)) {
+                            Map<Long, List<DecomposeDetailCyclesDTO>> decomposeDetailCyclesMapList = decomposeDetailCyclesDTOList.stream().collect(Collectors.groupingBy(DecomposeDetailCyclesDTO::getTargetDecomposeDetailsId));
+                            if (StringUtils.isNotEmpty(decomposeDetailCyclesMapList)) {
+                                decomposeDetailCyclesDTOListData = decomposeDetailCyclesMapList.get(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
+                                if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOListData)) {
+                                    for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOListData) {
+                                        //周期预测值
+                                        BigDecimal cycleForecast = decomposeDetailCyclesDTO.getCycleForecast();
+                                        //周期实际值
+                                        BigDecimal cycleActual = decomposeDetailCyclesDTO.getCycleActual();
+                                        //周期目标值
+                                        BigDecimal cycleTarget = decomposeDetailCyclesDTO.getCycleTarget();
+                                        //预测与目标偏差率
+                                        BigDecimal cycleForecastDeviationRate = new BigDecimal("0");
+                                        //目标完成率
+                                        BigDecimal cyclePercentageComplete = new BigDecimal("0");
+                                        int nowForecastYear = packForecastYearType(targetDecomposeDTO);
+                                        Integer cycleNumber = decomposeDetailCyclesDTO.getCycleNumber();
+                                        //传入年份
+                                        Integer targetYear = targetDecomposeDTO.getTargetYear();
+                                        //当前年份
+                                        int year = DateUtils.getYear();
+
+                                        //判断年份
+                                        if (targetYear > year) {
+                                            if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
+                                                //预测值
+                                                forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
+                                            }
+                                        } else if (targetYear < year) {
+                                            if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
+                                                //预测值
+                                                forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleActual());
+                                            }
+                                        } else {
+                                            //实际值
+                                            if (cycleNumber < nowForecastYear) {
+                                                if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
+                                                    //预测值
+                                                    forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleActual());
+                                                }
+                                            } else {
+                                                if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
+                                                    //预测值
+                                                    forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
+                                                }
+                                            }
+                                        }
+
+                                        if (null != cycleActual && cycleActual.compareTo(BigDecimal.ZERO) != 0) {
+                                            //实际值
+                                            actualTotal = actualTotal.add(cycleActual);
+                                        }
+
+
+                                        if (cycleActual != null && cycleActual.compareTo(new BigDecimal("0")) != 0 &&
+                                                cycleForecast != null && cycleForecast.compareTo(new BigDecimal("0")) != 0) {
+                                            cycleForecastDeviationRate = cycleActual.subtract(cycleForecast).setScale(10, BigDecimal.ROUND_HALF_UP).divide(cycleActual, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(10, BigDecimal.ROUND_HALF_UP);
+                                        }
+
+
+                                        //预测与目标偏差率
+                                        decomposeDetailCyclesDTO.setCycleForecastDeviationRate(cycleForecastDeviationRate);
+
+                                        if (cycleActual != null && cycleActual.compareTo(new BigDecimal("0")) != 0) {
+                                            if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
+                                                cyclePercentageComplete = cycleActual.divide(cycleTarget, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                                            }
+                                        }
+                                        //目标完成率
+                                        decomposeDetailCyclesDTO.setCyclePercentageComplete(cyclePercentageComplete);
+                                        //预测总和
+                                        if (cyclePercentageComplete.compareTo(new BigDecimal("0")) != 0) {
+                                            forecastDeviationRateSum = forecastDeviationRateSum.add(cycleForecastDeviationRate.abs());
+                                        }
+                                        //目标总和
+                                        if (decomposeDetailCyclesDTO.getCyclePercentageComplete() != null && decomposeDetailCyclesDTO.getCyclePercentageComplete().compareTo(new BigDecimal("0")) != 0) {
+                                            targetPercentageCompleteSum = targetPercentageCompleteSum.add(decomposeDetailCyclesDTO.getCyclePercentageComplete());
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                        if (actualTotal.compareTo(BigDecimal.ZERO) != 0) {
+                            //被除数 不能为0和空
+                            if (null != amountTarget && amountTarget.compareTo(BigDecimal.ZERO) != 0) {
+                                //保留一位小数
+                                targetPercentageComplete = actualTotal.divide(amountTarget, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                            }
+                        }
+                        //预测平均数
+                        if (forecastDeviationRateSum.compareTo(BigDecimal.ZERO) != 0) {
+                            forecastDeviationRateAve = forecastDeviationRateSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size())), 10, BigDecimal.ROUND_HALF_UP);
+                        }
+                        //目标完成平均数
+                        if (targetPercentageCompleteSum.compareTo(BigDecimal.ZERO) != 0) {
+                            targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size())), 10, BigDecimal.ROUND_HALF_UP);
+                        }
+                        targetDecomposeDetailsDTO.setForecastDeviationRateAve(forecastDeviationRateAve);
+                        targetDecomposeDetailsDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
+                        targetDecomposeDetailsDTO.setForecastYear(forecastYear);
+                        targetDecomposeDetailsDTO.setActualTotal(actualTotal);
+                        targetDecomposeDetailsDTO.setTargetPercentageComplete(targetPercentageComplete);
+                        //目标分解周欺数据集合
+                        targetDecomposeDetailsDTO.setDecomposeDetailCyclesDTOS(decomposeDetailCyclesDTOListData);
+                    }
+                }
+                targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOListData);
+            }
+
+            return targetDecomposeDTOList;
+        } else {
+            return targetDecomposeDTOList;
         }
     }
 
@@ -600,6 +759,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public List<TargetDecomposeDTO> resultList(TargetDecomposeDTO targetDecomposeDTO) {
+        List<TargetDecomposeDTO> targetDecomposeDTOList = new ArrayList<>();
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
 
@@ -619,8 +779,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 }
 
             }
-        }
-        if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
                 //年度预测
                 BigDecimal forecastYear = decomposeDTO.getForecastYear();
@@ -656,60 +814,50 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 //目标完成率
                 decomposeDTO.setTargetPercentageComplete(targetPercentageComplete);
             }
-
-            //指标id
-            List<Long> collect1 = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getIndicatorId).distinct().collect(Collectors.toList());
-            //根据指标id分组
-            Map<Long, List<TargetDecomposeDTO>> listMap = targetDecomposeDTOS.parallelStream().collect(Collectors.groupingBy(TargetDecomposeDTO::getIndicatorId));
-            if (StringUtils.isNotEmpty(collect1)) {
-                targetDecomposeDTOS.clear();
-                for (Long aLong : collect1) {
-                    List<TargetDecomposeDTO> targetDecomposeDTOS1 = listMap.get(aLong);
-                    if (StringUtils.isNotEmpty(targetDecomposeDTOS1)) {
-                        ////目标完成率平均值
-                        for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS1) {
+            targetDecomposeDTOList = this.selectResultTargetDecomposeByTargetDecomposeList(targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList()));
+            if (StringUtils.isNotEmpty(targetDecomposeDTOList)) {
+                for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOList) {
+                    for (TargetDecomposeDTO dto : targetDecomposeDTOS) {
+                        if (dto.getTargetDecomposeId().equals(decomposeDTO.getTargetDecomposeId())){
+                            dto.setTargetDecomposeDetailsDTOS(decomposeDTO.getTargetDecomposeDetailsDTOS());
                             BigDecimal targetPercentageCompleteSum = new BigDecimal("0");
                             BigDecimal targetPercentageCompleteAve = new BigDecimal("0");
-                            TargetDecomposeDTO targetDecomposeDTO1 = this.selectResultTargetDecomposeByTargetDecomposeId(decomposeDTO.getTargetDecomposeId());
-                            if (StringUtils.isNotNull(targetDecomposeDTO1)) {
-                                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = new ArrayList<>();
-                                List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO1.getTargetDecomposeDetailsDTOS();
-                                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
-                                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
-                                        List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
-                                        decomposeDetailCyclesDTOList.addAll(decomposeDetailCyclesDTOS);
 
-                                    }
-                                    if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList) && decomposeDetailCyclesDTOList.get(0) != null) {
-                                        //根据周期数分组
-                                        Map<Integer, List<DecomposeDetailCyclesDTO>> cycleNumberMap = decomposeDetailCyclesDTOList.parallelStream().collect(Collectors.groupingBy(DecomposeDetailCyclesDTO::getCycleNumber));
-                                        for (Integer key : cycleNumberMap.keySet()) {
-                                            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList1 = cycleNumberMap.get(key);
-                                            //sterm流求和 实际值合计
-                                            BigDecimal cycleActualSum = decomposeDetailCyclesDTOList1.stream().map(DecomposeDetailCyclesDTO::getCycleActual).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-                                            //sterm流求和 目标值合计
-                                            BigDecimal cycleTargetSum = decomposeDetailCyclesDTOList1.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-                                            if (cycleActualSum.compareTo(new BigDecimal("0")) != 0 && cycleTargetSum.compareTo(new BigDecimal("0")) != 0) {
-                                                targetPercentageCompleteSum = targetPercentageCompleteSum.add(cycleActualSum.divide(cycleTargetSum, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")));
-                                            }
+                            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = new ArrayList<>();
+                            List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = dto.getTargetDecomposeDetailsDTOS();
+                            if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
+                                targetDecomposeDetailsDTOS.forEach(targetDecomposeDetailsDTO -> {
+                                    List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
+                                    decomposeDetailCyclesDTOList.addAll(decomposeDetailCyclesDTOS);
+                                });
+
+                                if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList) && decomposeDetailCyclesDTOList.get(0) != null) {
+                                    //根据周期数分组
+                                    Map<Integer, List<DecomposeDetailCyclesDTO>> cycleNumberMap = decomposeDetailCyclesDTOList.parallelStream().collect(Collectors.groupingBy(DecomposeDetailCyclesDTO::getCycleNumber));
+                                    for (Integer key : cycleNumberMap.keySet()) {
+                                        List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList1 = cycleNumberMap.get(key);
+                                        //sterm流求和 实际值合计
+                                        BigDecimal cycleActualSum = decomposeDetailCyclesDTOList1.stream().map(DecomposeDetailCyclesDTO::getCycleActual).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                                        //sterm流求和 目标值合计
+                                        BigDecimal cycleTargetSum = decomposeDetailCyclesDTOList1.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                                        if (cycleActualSum.compareTo(new BigDecimal("0")) != 0 && cycleTargetSum.compareTo(new BigDecimal("0")) != 0) {
+                                            targetPercentageCompleteSum = targetPercentageCompleteSum.add(cycleActualSum.divide(cycleTargetSum, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")));
                                         }
                                     }
-                                    if (targetPercentageCompleteSum.compareTo(new BigDecimal("0")) != 0 && StringUtils.isNotEmpty(targetDecomposeDetailsDTOS.get(0).getDecomposeDetailCyclesDTOS())) {
-                                        targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(targetDecomposeDetailsDTOS.get(0).getDecomposeDetailCyclesDTOS().size())), 10, BigDecimal.ROUND_HALF_UP);
-                                    }
-                                    //目标完成率平均值
-                                    decomposeDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
                                 }
+                                if (targetPercentageCompleteSum.compareTo(new BigDecimal("0")) != 0 && StringUtils.isNotEmpty(targetDecomposeDetailsDTOS.get(0).getDecomposeDetailCyclesDTOS())) {
+                                    targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(targetDecomposeDetailsDTOS.get(0).getDecomposeDetailCyclesDTOS().size())), 10, BigDecimal.ROUND_HALF_UP);
+                                }
+                                //目标完成率平均值
+                                dto.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
                             }
+                            break;
                         }
-
                     }
-                    targetDecomposeDTOS.addAll(targetDecomposeDTOS1);
+
                 }
             }
-
         }
-
         return targetDecomposeDTOS;
     }
 
@@ -2728,12 +2876,17 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 List<EmployeeDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-                        for (EmployeeDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getEmployeeId().equals(datum.getEmployeeId())) {
-                                targetDecomposeDetailsDTO.setEmployeeId(datum.getEmployeeId());
-                                targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName());
+                        Long employeeId = targetDecomposeDetailsDTO.getEmployeeId();
+                        if (null != employeeId) {
+                            for (EmployeeDTO datum : data) {
+                                if (targetDecomposeDetailsDTO.getEmployeeId().equals(datum.getEmployeeId())) {
+                                    targetDecomposeDetailsDTO.setEmployeeId(datum.getEmployeeId());
+                                    targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName());
+                                    break;
+                                }
                             }
                         }
+
                     }
                 }
             }
@@ -2743,10 +2896,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 List<EmployeeDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-                        for (EmployeeDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(datum.getEmployeeId())) {
-                                targetDecomposeDetailsDTO.setPrincipalEmployeeId(datum.getEmployeeId());
-                                targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName());
+                        Long principalEmployeeId = targetDecomposeDetailsDTO.getPrincipalEmployeeId();
+                        if (null != principalEmployeeId) {
+                            for (EmployeeDTO datum : data) {
+                                if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(datum.getEmployeeId())) {
+                                    targetDecomposeDetailsDTO.setPrincipalEmployeeId(datum.getEmployeeId());
+                                    targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName());
+                                    break;
+                                }
                             }
                         }
                     }
@@ -2758,10 +2915,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 List<DepartmentDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-                        for (DepartmentDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getDepartmentId().equals(datum.getDepartmentId())) {
-                                targetDecomposeDetailsDTO.setDepartmentId(datum.getDepartmentId());
-                                targetDecomposeDetailsDTO.setDepartmentName(datum.getDepartmentName());
+                        Long departmentId = targetDecomposeDetailsDTO.getDepartmentId();
+                        if (null != departmentId) {
+                            for (DepartmentDTO datum : data) {
+                                if (targetDecomposeDetailsDTO.getDepartmentId().equals(datum.getDepartmentId())) {
+                                    targetDecomposeDetailsDTO.setDepartmentId(datum.getDepartmentId());
+                                    targetDecomposeDetailsDTO.setDepartmentName(datum.getDepartmentName());
+                                    break;
+                                }
                             }
                         }
                     }
@@ -2773,12 +2934,17 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 List<RegionDTO> data = regionsByIds.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-                        for (RegionDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getRegionId().equals(datum.getRegionId())) {
-                                targetDecomposeDetailsDTO.setRegionId(datum.getRegionId());
-                                targetDecomposeDetailsDTO.setRegionName(datum.getRegionName());
+                        Long regionId = targetDecomposeDetailsDTO.getRegionId();
+                        if (null != regionId) {
+                            for (RegionDTO datum : data) {
+                                if (targetDecomposeDetailsDTO.getRegionId().equals(datum.getRegionId())) {
+                                    targetDecomposeDetailsDTO.setRegionId(datum.getRegionId());
+                                    targetDecomposeDetailsDTO.setRegionName(datum.getRegionName());
+                                    break;
+                                }
                             }
                         }
+
                     }
                 }
             }
@@ -2788,10 +2954,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 List<IndustryDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-                        for (IndustryDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getIndustryId().equals(datum.getIndustryId())) {
-                                targetDecomposeDetailsDTO.setIndustryId(datum.getIndustryId());
-                                targetDecomposeDetailsDTO.setIndustryName(datum.getIndustryName());
+                        Long industryId = targetDecomposeDetailsDTO.getIndustryId();
+                        if (null != industryId) {
+                            for (IndustryDTO datum : data) {
+                                if (targetDecomposeDetailsDTO.getIndustryId().equals(datum.getIndustryId())) {
+                                    targetDecomposeDetailsDTO.setIndustryId(datum.getIndustryId());
+                                    targetDecomposeDetailsDTO.setIndustryName(datum.getIndustryName());
+                                    break;
+                                }
                             }
                         }
                     }
@@ -3200,7 +3370,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 for (EmployeeDTO employeeDTO : employeeDTOList) {
                                     String employeeCode = employeeDTO.getEmployeeCode();
                                     if (StringUtils.isBlank(employeeCode)) {
-                                        codeErreo.append("第"+i+"列员工为必填项！");
+                                        codeErreo.append("第" + i + "列员工为必填项！");
                                         i++;
                                         continue;
                                     }
@@ -3209,7 +3379,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                             List<String> employeeCodes = employeeDTOS.stream().filter(f -> (null != f.getEmploymentStatus() && null != f.getStatus())
                                                     && (1 == f.getEmploymentStatus() && 1 == f.getStatus())).map(EmployeeDTO::getEmployeeCode).collect(Collectors.toList());
                                             if (!employeeCodes.contains(employeeDTO.getEmployeeCode())) {
-                                                codeErreo.append("第"+i+"列"+employeeDTO.getEmployeeCode() + "该员工不存在！");
+                                                codeErreo.append("第" + i + "列" + employeeDTO.getEmployeeCode() + "该员工不存在！");
                                                 break;
                                             } else {
                                                 if (employeeDTO.getEmployeeCode().equals(dto.getEmployeeCode())) {
@@ -3222,7 +3392,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                     i++;
                                 }
                             } else {
-                                codeErreo.append("请填入正确的员工编码！"+String.join(";",list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
+                                codeErreo.append("请填入正确的员工编码！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
                             }
                         }
                         if (StringUtils.isNotEmpty(employeeDTOList)) {
@@ -3255,7 +3425,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 for (AreaDTO areaDTO : areaDTOList) {
                                     String areaCode = areaDTO.getAreaCode();
                                     if (StringUtils.isBlank(areaCode)) {
-                                        codeErreo.append("第"+i+"区域为必填项！");
+                                        codeErreo.append("第" + i + "区域为必填项！");
                                         i++;
                                         continue;
                                     }
@@ -3263,7 +3433,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                         if (StringUtils.isNotBlank(areaCode)) {
                                             List<String> areaCodes = areaDTOS.stream().map(AreaDTO::getAreaCode).collect(Collectors.toList());
                                             if (!areaCodes.contains(areaDTO.getAreaCode())) {
-                                                codeErreo.append("第"+i+"列"+areaDTO.getAreaCode() + "该区域不存在！");
+                                                codeErreo.append("第" + i + "列" + areaDTO.getAreaCode() + "该区域不存在！");
                                                 break;
                                             } else {
                                                 if (areaDTO.getAreaCode().equals(dto.getAreaCode())) {
@@ -3277,7 +3447,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                     i++;
                                 }
                             } else {
-                                codeErreo.append("请填入正确的区域编码！"+String.join(";",list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
+                                codeErreo.append("请填入正确的区域编码！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
                             }
                         }
                         if (StringUtils.isNotEmpty(areaDTOList)) {
@@ -3313,7 +3483,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 for (DepartmentDTO departmentDTO : departmentDTOList) {
                                     String departmentCode = departmentDTO.getDepartmentCode();
                                     if (StringUtils.isBlank(departmentCode)) {
-                                        codeErreo.append("第"+i+"列"+"部门为必填项！");
+                                        codeErreo.append("第" + i + "列" + "部门为必填项！");
                                         i++;
                                         continue;
                                     }
@@ -3321,7 +3491,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                         if (StringUtils.isNotBlank(departmentCode)) {
                                             List<String> departmentCodes = departmentDTOS.stream().filter(f -> (null != f.getStatus() && f.getStatus() == 1)).map(DepartmentDTO::getDepartmentCode).collect(Collectors.toList());
                                             if (!departmentCodes.contains(departmentDTO.getDepartmentCode())) {
-                                                codeErreo.append("第"+i+"列"+departmentCode + "该部门为不存在！");
+                                                codeErreo.append("第" + i + "列" + departmentCode + "该部门为不存在！");
                                                 break;
                                             } else {
                                                 if (departmentDTO.getDepartmentCode().equals(dto.getDepartmentCode())) {
@@ -3334,7 +3504,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                     i++;
                                 }
                             } else {
-                                codeErreo.append("请填入正确的部门编码！"+String.join(";",list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
+                                codeErreo.append("请填入正确的部门编码！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
                             }
                         }
                         if (StringUtils.isNotEmpty(departmentDTOList)) {
@@ -3366,11 +3536,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                     industryDTO.setIndustryCode(s);
                                     industryDTOList.add(industryDTO);
                                 }
-                                int i =0;
+                                int i = 0;
                                 for (IndustryDTO industryDTO : industryDTOList) {
                                     String industryCode = industryDTO.getIndustryCode();
                                     if (StringUtils.isBlank(industryCode)) {
-                                        codeErreo.append("第"+i+"列"+"行业为必填项！");
+                                        codeErreo.append("第" + i + "列" + "行业为必填项！");
                                         i++;
                                         continue;
                                     }
@@ -3378,7 +3548,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                         if (StringUtils.isNotBlank(industryCode)) {
                                             List<String> industryCodes = industryDTOS.stream().filter(f -> (null != f.getStatus() && 1 == f.getStatus())).map(IndustryDTO::getIndustryCode).collect(Collectors.toList());
                                             if (!industryCodes.contains(industryCode)) {
-                                                codeErreo.append("第"+i+"列"+industryCode + "该行业不存在！");
+                                                codeErreo.append("第" + i + "列" + industryCode + "该行业不存在！");
                                                 break;
                                             } else {
                                                 if (industryDTO.getIndustryCode().equals(dto.getIndustryCode())) {
@@ -3392,7 +3562,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                     i++;
                                 }
                             } else {
-                                codeErreo.append("请填入正确的行业编码！"+String.join(";",list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
+                                codeErreo.append("请填入正确的行业编码！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
                             }
                         }
                         if (StringUtils.isNotEmpty(industryDTOList)) {
@@ -3424,11 +3594,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                     regionDTO.setProvinceName(s);
                                     regionDTOList.add(regionDTO);
                                 }
-                                int i =0;
+                                int i = 0;
                                 for (RegionDTO regionDTO : regionDTOList) {
                                     String provinceName = regionDTO.getProvinceName();
                                     if (StringUtils.isBlank(provinceName)) {
-                                        codeErreo.append("第"+i+"列"+"省份为必填项！");
+                                        codeErreo.append("第" + i + "列" + "省份为必填项！");
                                         i++;
                                         continue;
                                     }
@@ -3436,7 +3606,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                         if (StringUtils.isNotBlank(provinceName)) {
                                             List<String> provinceNames = regionDTOS.stream().filter(f -> StringUtils.isNotBlank(f.getProvinceName())).map(RegionDTO::getProvinceName).collect(Collectors.toList());
                                             if (!provinceNames.contains(provinceName)) {
-                                                codeErreo.append("第"+i+"列"+dto.getProvinceName() + "该省份不存在！");
+                                                codeErreo.append("第" + i + "列" + dto.getProvinceName() + "该省份不存在！");
                                                 break;
                                             } else {
                                                 if (StringUtils.equals(dto.getProvinceName(), regionDTO.getProvinceName())) {
@@ -3446,10 +3616,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                             }
                                         }
                                     }
-                                i++;
+                                    i++;
                                 }
                             } else {
-                                codeErreo.append("请填入正确的省份名称！"+String.join(";",list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
+                                codeErreo.append("请填入正确的省份名称！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
                             }
                         }
                         if (StringUtils.isNotEmpty(regionDTOList)) {
@@ -3483,17 +3653,17 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 for (ProductDTO productDTO : productDTOList) {
                                     String productCode = productDTO.getProductCode();
                                     if (StringUtils.isBlank(productCode)) {
-                                        codeErreo.append("第"+i+"列"+"产品为必填项！");
+                                        codeErreo.append("第" + i + "列" + "产品为必填项！");
                                         i++;
                                         continue;
                                     }
                                     for (ProductDTO dto : productDTOS) {
                                         if (StringUtils.isNotBlank(productCode)) {
                                             List<String> productCodes = productDTOS.stream().map(ProductDTO::getProductCode).collect(Collectors.toList());
-                                            if (!productCodes.contains(productCode)){
-                                                codeErreo.append("第"+i+"列"+dto.getProductCode() + "该产品不存在！");
+                                            if (!productCodes.contains(productCode)) {
+                                                codeErreo.append("第" + i + "列" + dto.getProductCode() + "该产品不存在！");
                                                 break;
-                                            }else {
+                                            } else {
                                                 if (dto.getProductCode().equals(productDTO.getProductCode())) {
                                                     BeanUtils.copyProperties(dto, productDTO);
                                                     break;
@@ -3504,7 +3674,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                     i++;
                                 }
                             } else {
-                                codeErreo.append("请填入正确的产品编码！"+String.join(";",list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
+                                codeErreo.append("请填入正确的产品编码！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
                             }
                         }
                         if (StringUtils.isNotEmpty(productDTOList)) {

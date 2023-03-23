@@ -377,6 +377,7 @@
         td.target_year,
         td.decomposition_dimension,
         td.time_dimension,
+        td.create_time,
         IFNULL(ts.target_value,0) as target_value,
         IFNULL((select sum(cycle_target) from target_decompose_details tdd left join decompose_detail_cycles ddc on
         ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 and ddc.tenant_id
@@ -445,6 +446,7 @@
         <if test="targetDecompose.updateTime != null">
             and td.update_time=#{targetDecompose.updateTime}
         </if>
+        order by td.create_time desc
     </select>
     <!--    目标分解是否被引用-->
     <select id="queryDeptDecompose"
