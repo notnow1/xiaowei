@@ -6,6 +6,7 @@ import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 /**
@@ -151,8 +152,8 @@ public interface IDepartmentService {
 
     /**
      * 查询上级组织
-     *
      * @param departmentId
+     * @param status
      * @return
      */
     List<DepartmentDTO> queryparent(Long departmentId,Integer status);

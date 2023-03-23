@@ -394,7 +394,7 @@
         <if test="department.sort != null">
             and dm.sort like '%${department.sort}%'
         </if>
-        <if test="department.status != null">
+        <if test="department.status != null and (department.status ==0 or department.status == 1)">
             and dm.status = #{department.status}
         </if>
         order by dm.create_time desc
@@ -585,32 +585,48 @@
     </select>
     <!--    查询上级组织-->
     <select id="queryparent" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
-        select distinct e.employee_name as departmentLeaderName,
-                        d.department_id,
-                        d.parent_department_id,
-                        d.ancestors,
-                        d.department_code,
-                        d.department_name,
-                        d.level,
-                        d.department_leader_id,
-                        d.department_leader_post_id,
-                        d.examination_leader_id,
-                        d.department_importance_factor,
-                        d.department_description,
-                        d.sort,
-                        d.status,
-                        d.delete_flag,
-                        d.create_by,
-                        d.create_time,
-                        d.update_by,
-                        d.update_time
-        from department d
-                 left join employee e
-                           on e.employee_id = d.department_leader_id
-                               and e.delete_flag = 0
-        where d.delete_flag = 0
+        select
+        ee.employee_name as department_leader_name,
+        ee2.employee_name as examination_leader_name,
+        p.post_name as department_leader_post_name,
+        dm.department_id,
+        dm.parent_department_id,
+        dm.ancestors,
+        dm.department_code,
+        dm.department_name,
+        dm2.department_name as parentDepartmentName,
+        dm.level,
+        dm.department_leader_id,
+        dm.department_leader_post_id,
+        dm.examination_leader_id,
+        dm.department_importance_factor,
+        dm.department_description,
+        dm.sort,
+        dm.status,
+        dm.create_by,
+        dm.create_time,
+        dm.update_by,
+        dm.update_time
+        from
+        department dm
+        left join employee ee
+        on ee.employee_id = dm.department_leader_id
+        and ee.delete_flag =0
+        left join post p2
+        on p2.post_id = ee.employee_post_id
+        and p2.delete_flag =0
+        left join employee ee2
+        on ee2.employee_id = dm.examination_leader_id
+        and ee2.delete_flag =0
+        left join post p
+        on p.post_id = dm.department_leader_post_id
+        and p.delete_flag =0
+        left join department dm2
+        on dm.parent_department_id = dm2.department_id
+        and dm2.delete_flag =0
+        where dm.delete_flag =0
         <if test="status != null and (status ==0 or status ==1)">
-            and d.status = #{status}
+            and dm.status = #{status}
         </if>
 
     </select>

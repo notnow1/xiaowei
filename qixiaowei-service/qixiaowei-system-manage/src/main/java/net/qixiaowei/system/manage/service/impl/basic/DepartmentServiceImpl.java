@@ -128,8 +128,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO) {
         Department department = new Department();
         BeanUtils.copyProperties(departmentDTO, department);
-        //返回数据
-        List<DepartmentDTO> tree = new ArrayList<>();
+
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
         this.handleResult(departmentDTOList);
@@ -829,9 +828,10 @@ public class DepartmentServiceImpl implements IDepartmentService {
         return departmentMapper.deleteDepartmentByDepartmentId(departmentId);
     }
 
+
     /**
-     * 查询上级组织
      *
+     * @param departmentId
      * @param status
      * @return
      */
@@ -839,16 +839,18 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public List<DepartmentDTO> queryparent(Long departmentId,Integer status) {
         //为空默认赋值生效
         if (StringUtils.isNull(status)){
-            status =1;
+            status=1;
         }
         List<DepartmentDTO> queryparent = departmentMapper.queryparent(status);
         List<DepartmentDTO> tree = this.createTree(queryparent, 0);
-        if (StringUtils.isNotNull(departmentId)) {
-            if (StringUtils.isNotEmpty(tree)) {
-                this.remoteTree(tree, departmentId);
+            //为空默认赋值生效
+            if (StringUtils.isNotNull(departmentId)) {
+                if (StringUtils.isNotEmpty(tree)) {
+                    this.remoteTree(tree, departmentId);
+                }
+
             }
 
-        }
         return tree;
     }
 
