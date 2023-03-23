@@ -397,7 +397,15 @@ public class TargetDecomposeController extends BaseController {
         List<TargetDecomposeDTO> list = targetDecomposeService.resultList(targetDecomposeDTO);
         return AjaxResult.success(list);
     }
-
+    /**
+     * 查询经营结果分析报表列表下拉框
+     */
+    @RequiresPermissions("operate:cloud:targetSetting:analyse")
+    @GetMapping("/resultListDroBox")
+    public AjaxResult resultListDroBox(TargetDecomposeDTO targetDecomposeDTO) {
+        List<TargetDecomposeDTO> list = targetDecomposeService.rollPageList(targetDecomposeDTO);
+        return AjaxResult.success(list);
+    }
 
     //==============================滚动预测管理==================================//
 

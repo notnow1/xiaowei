@@ -32,9 +32,9 @@ public class MarketInsightIndustryFieldListConfigImpl implements IFieldListConfi
         INIT_MAP.put(MarketInsightIndustryField.PLAN_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(MarketInsightIndustryField.PLAN_BUSINESS_UNIT_ID.getCode(), FieldListConfig.builder().fieldWidth(160).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(MarketInsightIndustryField.AREA_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(MarketInsightIndustryField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(MarketInsightIndustryField.PRODUCT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(MarketInsightIndustryField.INDUSTRY_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(MarketInsightIndustryField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(MarketInsightIndustryField.PRODUCT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(MarketInsightIndustryField.INDUSTRY_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 

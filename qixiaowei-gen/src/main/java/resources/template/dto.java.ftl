@@ -37,14 +37,16 @@ public class ${entity}DTO extends BaseDTO{
     }
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list table.fields as field>
+    <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime"&&"${field.propertyName}"!="remark">
     /**
     * ${field.comment}
     */
-    <#if "${field.propertyType}"=="LocalDateTime">
+    </#if>
+    <#if "${field.propertyType}"=="LocalDateTime"&&("${field.propertyName}"!="createTime" && "${field.propertyName}"!="updateTime")>
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     </#if>
-    <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime"&&"${field.propertyName}"!="remark" &&"${field.propertyName}"!="deleteFlag" && (field_has_next && "${field.propertyName}"!="tenantId")>
-        private <#if "${field.propertyType}"=="LocalDateTime" || "${field.propertyType}"=="LocalDate"> Date <#else> ${field.propertyType}</#if>  ${field.propertyName};
+    <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime"&&"${field.propertyName}"!="remark">
+    private <#if "${field.propertyType}"=="LocalDateTime" || "${field.propertyType}"=="LocalDate" > Date <#else> ${field.propertyType}</#if>  ${field.propertyName};
     </#if>
 </#list>
 
