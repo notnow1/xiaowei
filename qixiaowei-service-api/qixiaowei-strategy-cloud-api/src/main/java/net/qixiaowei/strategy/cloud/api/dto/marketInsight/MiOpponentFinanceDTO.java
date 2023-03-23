@@ -63,7 +63,10 @@ public class MiOpponentFinanceDTO extends BaseDTO {
      */
     private  String indicatorName;
 
-
+    /**
+     * 指标值类型:1金额;2比率
+     */
+    private Integer indicatorValueType;
     /**
     * 经营年度
     */

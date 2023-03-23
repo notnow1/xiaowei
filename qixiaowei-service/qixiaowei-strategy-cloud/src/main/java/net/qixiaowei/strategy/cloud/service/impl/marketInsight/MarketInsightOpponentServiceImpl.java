@@ -226,6 +226,7 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
                                 for (IndicatorDTO datum : data) {
                                     if (miOpponentFinanceDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                                         miOpponentFinanceDTO.setIndicatorName(datum.getIndicatorName());
+                                        miOpponentFinanceDTO.setIndicatorValueType(datum.getIndicatorValueType());
                                     }
                                 }
                             }
