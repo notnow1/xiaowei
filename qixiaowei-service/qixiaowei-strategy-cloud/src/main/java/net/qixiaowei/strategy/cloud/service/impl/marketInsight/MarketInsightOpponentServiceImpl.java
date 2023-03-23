@@ -16,7 +16,6 @@ import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MarketInsightOpponent;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiOpponentChoice;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiOpponentFinance;
-import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.*;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.MarketInsightOpponentMapper;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiOpponentChoiceMapper;
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -289,9 +287,9 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
             userDTO.setEmployeeName(marketInsightOpponentDTO.getCreateByName());
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
-            List<Long> employeeIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(employeeIds)) {
-                employeeIds.forEach(e -> {
+            List<Long> userIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(userIds)) {
+                userIds.forEach(e -> {
                     createByList.add(String.valueOf(e));
                 });
             } else {

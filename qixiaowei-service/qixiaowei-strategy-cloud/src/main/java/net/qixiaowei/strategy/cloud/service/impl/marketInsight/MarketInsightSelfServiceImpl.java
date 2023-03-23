@@ -154,9 +154,9 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
             userDTO.setEmployeeName(marketInsightSelfDTO.getCreateByName());
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
-            List<Long> employeeIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(employeeIds)) {
-                employeeIds.forEach(e -> {
+            List<Long> userIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(userIds)) {
+                userIds.forEach(e -> {
                     createByList.add(String.valueOf(e));
                 });
             } else {

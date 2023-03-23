@@ -50,8 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -202,9 +200,9 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             userDTO.setEmployeeName(bonusBudgetDTO.getCreateByName());
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
-            List<Long> employeeIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(employeeIds)) {
-                employeeIds.forEach(e -> {
+            List<Long> userIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(userIds)) {
+                userIds.forEach(e -> {
                     createBys.add(String.valueOf(e));
                 });
             } else {

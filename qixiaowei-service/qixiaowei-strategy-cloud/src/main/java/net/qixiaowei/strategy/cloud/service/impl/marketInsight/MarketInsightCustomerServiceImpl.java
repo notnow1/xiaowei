@@ -30,13 +30,10 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -325,9 +322,9 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
             userDTO.setEmployeeName(marketInsightCustomerDTO.getCreateByName());
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
-            List<Long> employeeIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(employeeIds)) {
-                employeeIds.forEach(e -> {
+            List<Long> userIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(userIds)) {
+                userIds.forEach(e -> {
                     createByList.add(String.valueOf(e));
                 });
             } else {
