@@ -36,7 +36,7 @@
                             and industry_attraction_id=#{industryAttraction.industryAttractionId}
                         </if>
                         <if test="industryAttraction.attractionElementName != null and industryAttraction.attractionElementName != ''">
-                            and attraction_element_name=#{industryAttraction.attractionElementName}
+                            and attraction_element_name like  concat('%', #{industryAttraction.attractionElementName}, '%')
                         </if>
                         <if test="industryAttraction.status != null">
                             and status=#{industryAttraction.status}

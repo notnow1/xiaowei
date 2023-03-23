@@ -227,6 +227,7 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
                                     if (miOpponentFinanceDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                                         miOpponentFinanceDTO.setIndicatorName(datum.getIndicatorName());
                                         miOpponentFinanceDTO.setIndicatorValueType(datum.getIndicatorValueType());
+                                        break;
                                     }
                                 }
                             }
@@ -250,6 +251,8 @@ public class MarketInsightOpponentServiceImpl implements IMarketInsightOpponentS
                             if (StringUtils.isNotEmpty(miOpponentFinanceDTOList1)) {
                                 //key 赋值指标id
                                 miOpponentFinanceDTO.setIndicatorId(key);
+                                //key 赋值指标id
+                                miOpponentFinanceDTO.setIndicatorValueType(IndicatorIdListMap.get(key).get(0).getIndicatorValueType());
                                 miOpponentFinanceDTO.setIndicatorName(IndicatorIdListMap.get(key).get(0).getIndicatorName());
                                 List<MiFinanceIndicatorIdDTO> miFinanceIndicatorIdDTOS = new ArrayList<>();
                                 for (MiOpponentFinanceDTO opponentFinanceDTO : miOpponentFinanceDTOList1) {
