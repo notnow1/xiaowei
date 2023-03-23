@@ -16,48 +16,48 @@
     <select id="selectOfficialRankSystemList"
             resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
         SELECT
-        official_rank_system_id, official_rank_system_name, rank_prefix_code, rank_start, rank_end,
-        rank_decompose_dimension, status, delete_flag, create_by, create_time, update_by, update_time
-        FROM official_rank_system
-        WHERE delete_flag=0
+        ors.official_rank_system_id, ors.official_rank_system_name, ors.rank_prefix_code, ors.rank_start, ors.rank_end,
+        ors.rank_decompose_dimension, ors.status, ors.delete_flag, ors.create_by, ors.create_time, ors.update_by, ors.update_time
+        FROM official_rank_system ors
+        WHERE ors.delete_flag=0
         <if test="officialRankSystem.officialRankSystemId != null">
-            and official_rank_system_id = #{officialRankSystem.officialRankSystemId}
+            and ors.official_rank_system_id = #{officialRankSystem.officialRankSystemId}
         </if>
         <if test="officialRankSystem.officialRankSystemName != null and officialRankSystem.officialRankSystemName != ''">
-            and official_rank_system_name like concat('%', #{officialRankSystem.officialRankSystemName}, '%')
+            and ors.official_rank_system_name like concat('%', #{officialRankSystem.officialRankSystemName}, '%')
         </if>
         <if test="officialRankSystem.rankStart != null">
-            and rank_start = #{officialRankSystem.rankStart}
+            and ors.rank_start = #{officialRankSystem.rankStart}
         </if>
         <if test="officialRankSystem.rankEnd != null">
-            and rank_end = #{officialRankSystem.rankEnd}
+            and ors.rank_end = #{officialRankSystem.rankEnd}
         </if>
         <if test="officialRankSystem.rankDecomposeDimension != null">
-            and rank_decompose_dimension = #{officialRankSystem.rankDecomposeDimension}
+            and ors.rank_decompose_dimension = #{officialRankSystem.rankDecomposeDimension}
         </if>
         <if test="officialRankSystem.status != null">
-            and status = #{officialRankSystem.status}
+            and ors.status = #{officialRankSystem.status}
         </if>
         <if test="officialRankSystem.deleteFlag != null">
-            and delete_flag = #{officialRankSystem.deleteFlag}
+            and ors.delete_flag = #{officialRankSystem.deleteFlag}
         </if>
         <if test="officialRankSystem.createBy != null">
-            and create_by = #{officialRankSystem.createBy}
+            and ors.create_by = #{officialRankSystem.createBy}
         </if>
         <!-- 开始时间检索 -->
         <if test="officialRankSystem.params.createTimeStart != null and officialRankSystem.params.createTimeStart != ''">
-            AND date_format(create_time,'%y%m%d') &gt;=
+            AND date_format(ors.create_time,'%y%m%d') &gt;=
             date_format(#{officialRankSystem.params.createTimeStart},'%y%m%d')
         </if>
         <if test="officialRankSystem.params.createTimeEnd != null and officialRankSystem.params.createTimeEnd != ''">
-            AND date_format(create_time,'%y%m%d') &lt;= date_format(#{officialRankSystem.params.createTimeEnd},'%y%m%d')
+            AND date_format(ors.create_time,'%y%m%d') &lt;= date_format(#{officialRankSystem.params.createTimeEnd},'%y%m%d')
         </if>
         <if test="officialRankSystem.updateBy != null">
-            and update_by = #{officialRankSystem.updateBy}
+            and ors.update_by = #{officialRankSystem.updateBy}
         </if>
         <!--    职级体系名称过滤-->
         <if test="officialRankSystem.params.officialRankSystemNameEqual != null and officialRankSystem.params.officialRankSystemNameEqual.size() > 0">
-            AND official_rank_system_name IN
+            AND ors.official_rank_system_name IN
             <foreach item="item"
                      collection="officialRankSystem.params.officialRankSystemNameEqual"
                      index="index" open="(" separator="," close=")">
@@ -65,13 +65,13 @@
             </foreach>
         </if>
         <if test="officialRankSystem.params.officialRankSystemNameNotEqual != null and officialRankSystem.params.officialRankSystemNameNotEqual.size() > 0">
-            AND (official_rank_system_name NOT IN
+            AND (ors.official_rank_system_name NOT IN
             <foreach item="item"
                      collection="officialRankSystem.params.officialRankSystemNameNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR official_rank_system_name IS NULL
+            OR ors.official_rank_system_name IS NULL
             )
         </if>
         <if test="officialRankSystem.params.officialRankSystemNameLike != null and officialRankSystem.params.officialRankSystemNameLike.size() > 0">
@@ -79,7 +79,7 @@
             <foreach item="item"
                      collection="officialRankSystem.params.officialRankSystemNameLike"
                      index="index" open="(" separator="OR" close=")">
-                official_rank_system_name LIKE concat('%', #{item}, '%')
+                ors.official_rank_system_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <if test="officialRankSystem.params.officialRankSystemNameNotLike != null and officialRankSystem.params.officialRankSystemNameNotLike.size() > 0">
@@ -87,12 +87,12 @@
             <foreach item="item"
                      collection="officialRankSystem.params.officialRankSystemNameNotLike"
                      index="index" open="(" separator="AND" close=")">
-                official_rank_system_name NOT LIKE concat('%', #{item}, '%')
+                ors.official_rank_system_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <!--    级别前缀过滤-->
         <if test="officialRankSystem.params.rankPrefixCodeEqual != null and officialRankSystem.params.rankPrefixCodeEqual.size() > 0">
-            AND rank_prefix_code IN
+            AND ors.rank_prefix_code IN
             <foreach item="item"
                      collection="officialRankSystem.params.rankPrefixCodeEqual"
                      index="index" open="(" separator="," close=")">
@@ -100,13 +100,13 @@
             </foreach>
         </if>
         <if test="officialRankSystem.params.rankPrefixCodeNotEqual != null and officialRankSystem.params.rankPrefixCodeNotEqual.size() > 0">
-            AND (rank_prefix_code NOT IN
+            AND (ors.rank_prefix_code NOT IN
             <foreach item="item"
                      collection="officialRankSystem.params.rankPrefixCodeNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR rank_prefix_code IS NULL
+            OR ors.rank_prefix_code IS NULL
             )
         </if>
         <if test="officialRankSystem.params.rankPrefixCodeLike != null and officialRankSystem.params.rankPrefixCodeLike.size() > 0">
@@ -114,7 +114,7 @@
             <foreach item="item"
                      collection="officialRankSystem.params.rankPrefixCodeLike"
                      index="index" open="(" separator="OR" close=")">
-                rank_prefix_code LIKE concat('%', #{item}, '%')
+                ors.rank_prefix_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <if test="officialRankSystem.params.rankPrefixCodeNotLike != null and officialRankSystem.params.rankPrefixCodeNotLike.size() > 0">
@@ -122,18 +122,18 @@
             <foreach item="item"
                      collection="officialRankSystem.params.rankPrefixCodeNotLike"
                      index="index" open="(" separator="AND" close=")">
-                rank_prefix_code NOT LIKE concat('%', #{item}, '%')
+                ors.rank_prefix_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <if test="officialRankSystem.params.rankPrefixCodeNull != null">
-            and rank_prefix_code IS NULL OR rank_prefix_code = ''
+            and ors.rank_prefix_code IS NULL OR rank_prefix_code = ''
         </if>
         <if test="officialRankSystem.params.rankPrefixCodeNotNull != null">
-            and rank_prefix_code IS NOT NULL OR rank_prefix_code != ''
+            and ors.rank_prefix_code IS NOT NULL OR rank_prefix_code != ''
         </if>
         <!--    起始级别过滤-->
         <if test="officialRankSystem.params.rankStartEqual != null and officialRankSystem.params.rankStartEqual.size() > 0">
-            AND rank_start IN
+            AND ors.rank_start IN
             <foreach item="item"
                      collection="officialRankSystem.params.rankStartEqual"
                      index="index" open="(" separator="," close=")">
@@ -141,18 +141,18 @@
             </foreach>
         </if>
         <if test="officialRankSystem.params.rankStartNotEqual != null and officialRankSystem.params.rankStartNotEqual.size() > 0">
-            AND (rank_start NOT IN
+            AND (ors.rank_start NOT IN
             <foreach item="item"
                      collection="officialRankSystem.params.rankStartNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR rank_start IS NULL
+            OR ors.rank_start IS NULL
             )
         </if>
         <!--    终止级别过滤-->
         <if test="officialRankSystem.params.rankEndEqual != null and officialRankSystem.params.rankEndEqual.size() > 0">
-            AND rank_end IN
+            AND ors.rank_end IN
             <foreach item="item"
                      collection="officialRankSystem.params.rankEndEqual"
                      index="index" open="(" separator="," close=")">
@@ -160,18 +160,18 @@
             </foreach>
         </if>
         <if test="officialRankSystem.params.rankEndNotEqual != null and officialRankSystem.params.rankEndNotEqual.size() > 0">
-            AND (rank_end NOT IN
+            AND (ors.rank_end NOT IN
             <foreach item="item"
                      collection="officialRankSystem.params.rankEndNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR rank_end IS NULL
+            OR ors.rank_end IS NULL
             )
         </if>
         <!--    职级体系状态过滤-->
         <if test="officialRankSystem.params.statusEqual != null and officialRankSystem.params.statusEqual.size() > 0">
-            AND status IN
+            AND ors.status IN
             <foreach item="item"
                      collection="officialRankSystem.params.statusEqual"
                      index="index" open="(" separator="," close=")">
@@ -179,15 +179,18 @@
             </foreach>
         </if>
         <if test="officialRankSystem.params.statusNotEqual != null and officialRankSystem.params.statusNotEqual.size() > 0">
-            AND (status NOT IN
+            AND (ors.status NOT IN
             <foreach item="item"
                      collection="officialRankSystem.params.statusNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR status IS NULL
+            OR ors.status IS NULL
             )
         </if>
+        <!-- 数据范围过滤 -->
+        ${officialRankSystem.params.dataScope}
+        ORDER BY ors.create_time DESC
     </select>
     <select id="officialRankByName" resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
         SELECT

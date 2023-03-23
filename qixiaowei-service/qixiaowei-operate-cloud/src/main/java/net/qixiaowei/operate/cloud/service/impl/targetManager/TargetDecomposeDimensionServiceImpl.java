@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDimension;
@@ -56,6 +57,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
      * @param targetDecomposeDimensionDTO 目标分解维度配置
      * @return 目标分解维度配置
      */
+    @DataScope(businessAlias = "tdd")
     @Override
     public List<TargetDecomposeDimensionDTO> selectTargetDecomposeDimensionList(TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();

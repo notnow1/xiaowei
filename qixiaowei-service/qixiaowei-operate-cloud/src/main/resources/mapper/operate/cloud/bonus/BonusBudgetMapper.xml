@@ -38,18 +38,18 @@
     <!--    查询奖金预算表列表-->
     <select id="selectBonusBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO">
         SELECT
-        bonus_budget_id, budget_year, amount_bonus_budget, amount_wage_budget,amount_wage_budget as basicWageBonusBudget,bonus_before_one,
-        delete_flag, create_by, create_time, update_by, update_time
-        FROM bonus_budget
-        WHERE delete_flag=0
+        bb.bonus_budget_id, bb.budget_year, bb.amount_bonus_budget, bb.amount_wage_budget,bb.amount_wage_budget as basicWageBonusBudget,bb.bonus_before_one,
+        bb.delete_flag, bb.create_by, bb.create_time, bb.update_by, bb.update_time
+        FROM bonus_budget bb
+        WHERE bb.delete_flag=0
         <if test="bonusBudget.bonusBudgetId != null">
-            and bonus_budget_id=#{bonusBudget.bonusBudgetId}
+            and bb.bonus_budget_id=#{bonusBudget.bonusBudgetId}
         </if>
         <if test="bonusBudget.budgetYear != null">
-            and budget_year=#{bonusBudget.budgetYear}
+            and bb.budget_year=#{bonusBudget.budgetYear}
         </if>
         <if test="bonusBudget.createBys != null and bonusBudget.createBys.size() >0">
-            and create_by in
+            and bb.create_by in
             <foreach item="item"
                      collection="bonusBudget.createBys"
                      index="index" open="(" separator="," close=")">
@@ -57,27 +57,29 @@
             </foreach>
         </if>
         <if test="bonusBudget.amountBonusBudget != null">
-            and amount_bonus_budget like '%${bonusBudget.amountBonusBudget}%'
+            and bb.amount_bonus_budget like '%${bonusBudget.amountBonusBudget}%'
         </if>
         <if test="bonusBudget.bonusBeforeOne != null">
-            and bonus_before_one=#{bonusBudget.bonusBeforeOne}
+            and bb.bonus_before_one=#{bonusBudget.bonusBeforeOne}
         </if>
         <if test="bonusBudget.deleteFlag != null">
-            and delete_flag=#{bonusBudget.deleteFlag}
+            and bb.delete_flag=#{bonusBudget.deleteFlag}
         </if>
         <if test="bonusBudget.createBy != null">
-            and create_by=#{bonusBudget.createBy}
+            and bb.create_by=#{bonusBudget.createBy}
         </if>
         <if test="bonusBudget.createTime != null">
-            and create_time=#{bonusBudget.createTime}
+            and bb.create_time=#{bonusBudget.createTime}
         </if>
         <if test="bonusBudget.updateBy != null">
-            and update_by=#{bonusBudget.updateBy}
+            and bb.update_by=#{bonusBudget.updateBy}
         </if>
         <if test="bonusBudget.updateTime != null">
-            and update_time=#{bonusBudget.updateTime}
+            and bb.update_time=#{bonusBudget.updateTime}
         </if>
-        order by create_time desc
+        <!-- 数据范围过滤 -->
+        ${bonusBudget.params.dataScope}
+        ORDER BY bb.create_time DESC
     </select>
     <!--    返回最大年份-->
     <select id="queryBonusBudgetYear" resultType="java.lang.Integer">

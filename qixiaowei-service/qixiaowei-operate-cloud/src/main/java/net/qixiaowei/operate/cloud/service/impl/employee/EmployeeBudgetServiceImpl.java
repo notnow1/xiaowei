@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudget;
@@ -157,6 +158,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      * @param employeeBudgetDTO 人力预算表
      * @return 人力预算表
      */
+    @DataScope(businessAlias = "eb")
     @Override
     public List<EmployeeBudgetDTO> selectEmployeeBudgetList(EmployeeBudgetDTO employeeBudgetDTO) {
         List<String> departmentIds = new ArrayList<>();

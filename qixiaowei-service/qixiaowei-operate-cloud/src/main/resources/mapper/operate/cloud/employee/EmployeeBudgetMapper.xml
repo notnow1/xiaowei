@@ -29,12 +29,12 @@
     <!--    查询人力预算表列表-->
     <select id="selectEmployeeBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO">
         SELECT
-        employee_budget_id, budget_year, department_id, official_rank_system_id, budget_cycle, amount_last_year, amount_adjust, amount_average_adjust, delete_flag, create_by, create_time, update_by, update_time
-        FROM employee_budget
-        WHERE delete_flag=0
+        eb.employee_budget_id, eb.budget_year, eb.department_id, eb.official_rank_system_id, eb.budget_cycle, eb.amount_last_year, eb.amount_adjust, eb.amount_average_adjust, eb.delete_flag, eb.create_by, eb.create_time, eb.update_by, eb.update_time
+        FROM employee_budget eb
+        WHERE eb.delete_flag=0
         <!-- 人力预算年度过滤  -->
         <if test="employeeBudget.params.budgetYearEqual != null and employeeBudget.params.budgetYearEqual.size() > 0">
-            AND budget_year IN
+            AND eb.budget_year IN
             <foreach item="item"
                      collection="employeeBudget.params.budgetYearEqual"
                      index="index" open="(" separator="," close=")">
@@ -42,7 +42,7 @@
             </foreach>
         </if>
         <if test="employeeBudget.params.budgetYearNotEqual != null and employeeBudget.params.budgetYearNotEqual.size() > 0">
-            AND budget_year NOT IN
+            AND eb.budget_year NOT IN
             <foreach item="item"
                      collection="employeeBudget.params.budgetYearNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -50,28 +50,28 @@
             </foreach>
         </if>
         <if test="employeeBudget.params.budgetYearBefore != null and employeeBudget.params.budgetYearBefore != ''">
-            AND budget_year &lt; #{employeeBudget.params.budgetYearBefore}
+            AND eb.budget_year &lt; #{employeeBudget.params.budgetYearBefore}
         </if>
         <if test="employeeBudget.params.budgetYearNotBefore != null and employeeBudget.params.budgetYearNotBefore != ''"><!-- 开始时间检索 -->
-            AND budget_year &gt;= #{employeeBudget.params.budgetYearNotBefore}
+            AND eb.budget_year &gt;= #{employeeBudget.params.budgetYearNotBefore}
         </if>
         <if test="employeeBudget.params.budgetYearAfter != null and employeeBudget.params.budgetYearAfter != ''"><!-- 开始时间检索 -->
-            AND budget_year &gt; #{employeeBudget.params.budgetYearAfter}
+            AND eb.budget_year &gt; #{employeeBudget.params.budgetYearAfter}
         </if>
         <if test="employeeBudget.params.budgetYearNotAfter != null and employeeBudget.params.budgetYearNotAfter != ''"><!-- 结束时间检索 -->
-            AND budget_year &lt;= #{employeeBudget.params.budgetYearNotAfter}
+            AND eb.budget_year &lt;= #{employeeBudget.params.budgetYearNotAfter}
         </if>
         <if test="employeeBudget.params.budgetYearStart != null and employeeBudget.params.budgetYearStart != ''"><!-- 开始时间检索 -->
-            AND budget_year &gt;= #{employeeBudget.params.budgetYearStart}
+            AND eb.budget_year &gt;= #{employeeBudget.params.budgetYearStart}
         </if>
         <if test="employeeBudget.params.budgetYearEnd != null and employeeBudget.params.budgetYearEnd != ''"><!-- 结束时间检索 -->
-            AND budget_year &lt;= #{employeeBudget.params.budgetYearEnd}
+            AND eb.budget_year &lt;= #{employeeBudget.params.budgetYearEnd}
         </if>
         <!-- 预算部门过滤  -->
         <if test="employeeBudget.params.departmentNameEqual != null">
             <!-- 预算部门过滤  -->
             <if test="employeeBudget.params.departmentIds != null and employeeBudget.params.departmentIds.size() > 0">
-                AND department_id IN
+                AND eb.department_id IN
                 <foreach item="item"
                          collection="employeeBudget.params.departmentIds"
                          index="index" open="(" separator="," close=")">
@@ -80,23 +80,23 @@
             </if>
             <!-- 预算部门过滤  -->
             <if test="employeeBudget.params.departmentIds == null">
-                AND (department_id='' or department_id is null)
+                AND (eb.department_id='' or eb.department_id is null)
             </if>
         </if>
         <!-- 预算部门过滤  -->
         <if test="employeeBudget.params.departmentNameNotEqual != null">
             <!-- 预算部门过滤  -->
             <if test="employeeBudget.params.departmentIds != null and employeeBudget.params.departmentIds.size() > 0">
-                AND (department_id IN
+                AND (eb.department_id IN
                 <foreach item="item"
                          collection="employeeBudget.params.departmentIds"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (department_id='' or department_id is null))
+                </foreach> or (eb.department_id='' or eb.department_id is null))
             </if>
             <!-- 预算部门过滤  -->
             <if test="employeeBudget.params.departmentIds == null">
-                AND (department_id='' or department_id is null)
+                AND (eb.department_id='' or eb.department_id is null)
             </if>
         </if>
 
@@ -104,7 +104,7 @@
         <if test="employeeBudget.params.officialRankSystemNameEqual != null">
             <!-- 职级体系过滤  -->
             <if test="employeeBudget.params.officialRankSystemIds != null and employeeBudget.params.officialRankSystemIds.size() > 0">
-                AND official_rank_system_id IN
+                AND eb.official_rank_system_id IN
                 <foreach item="item"
                          collection="employeeBudget.params.officialRankSystemIds"
                          index="index" open="(" separator="," close=")">
@@ -113,28 +113,28 @@
             </if>
             <!-- 职级体系过滤  -->
             <if test="employeeBudget.params.officialRankSystemIds == null">
-                AND (official_rank_system_id ='' or official_rank_system_id is null)
+                AND (eb.official_rank_system_id ='' or eb.official_rank_system_id is null)
             </if>
         </if>
         <!-- 职级体系过滤  -->
         <if test="employeeBudget.params.officialRankSystemNameNotEqual != null">
             <!-- 职级体系过滤  -->
             <if test="employeeBudget.params.officialRankSystemIds != null and employeeBudget.params.officialRankSystemIds.size() > 0">
-                AND (official_rank_system_id IN
+                AND (eb.official_rank_system_id IN
                 <foreach item="item"
                          collection="employeeBudget.params.officialRankSystemIds"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (official_rank_system_id ='' or official_rank_system_id is null))
+                </foreach> or (eb.official_rank_system_id ='' or eb.official_rank_system_id is null))
             </if>
             <!-- 职级体系过滤  -->
             <if test="employeeBudget.params.officialRankSystemIds == null">
-                AND (official_rank_system_id ='' or official_rank_system_id is null)
+                AND (eb.official_rank_system_id ='' or eb.official_rank_system_id is null)
             </if>
         </if>
         <!-- 预算周期过滤  -->
         <if test="employeeBudget.params.budgetCycleEqual != null and employeeBudget.params.budgetCycleEqual.size() > 0">
-            AND budget_cycle IN
+            AND eb.budget_cycle IN
             <foreach item="item"
                      collection="employeeBudget.params.budgetCycleEqual"
                      index="index" open="(" separator="," close=")">
@@ -142,7 +142,7 @@
             </foreach>
         </if>
         <if test="employeeBudget.params.budgetCycleNotEqual != null and employeeBudget.params.budgetCycleNotEqual.size() > 0">
-            AND budget_cycle NOT IN
+            AND eb.budget_cycle NOT IN
             <foreach item="item"
                      collection="employeeBudget.params.budgetCycleNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -152,7 +152,7 @@
 
         <!-- 普通部门查询过滤  -->
         <if test="employeeBudget.departmentIds != null and employeeBudget.departmentIds.size() > 0">
-            AND department_id  IN
+            AND eb.department_id  IN
             <foreach item="item"
                      collection="employeeBudget.departmentIds"
                      index="index" open="(" separator="," close=")">
@@ -160,45 +160,47 @@
             </foreach>
         </if>
         <if test="employeeBudget.employeeBudgetId != null">
-            and employee_budget_id=#{employeeBudget.employeeBudgetId}
+            and eb.employee_budget_id=#{employeeBudget.employeeBudgetId}
         </if>
         <if test="employeeBudget.budgetYear != null">
-            and budget_year=#{employeeBudget.budgetYear}
+            and eb.budget_year=#{employeeBudget.budgetYear}
         </if>
         <if test="employeeBudget.departmentId != null">
-            and department_id=#{employeeBudget.departmentId}
+            and eb.department_id=#{employeeBudget.departmentId}
         </if>
         <if test="employeeBudget.officialRankSystemId != null">
-            and official_rank_system_id=#{employeeBudget.officialRankSystemId}
+            and eb.official_rank_system_id=#{employeeBudget.officialRankSystemId}
         </if>
         <if test="employeeBudget.budgetCycle != null">
-            and budget_cycle=#{employeeBudget.budgetCycle}
+            and eb.budget_cycle=#{employeeBudget.budgetCycle}
         </if>
         <if test="employeeBudget.amountLastYear != null">
-            and amount_last_year=#{employeeBudget.amountLastYear}
+            and eb.amount_last_year=#{employeeBudget.amountLastYear}
         </if>
         <if test="employeeBudget.amountAdjust != null">
-            and amount_adjust=#{employeeBudget.amountAdjust}
+            and eb.amount_adjust=#{employeeBudget.amountAdjust}
         </if>
         <if test="employeeBudget.amountAverageAdjust != null">
-            and amount_average_adjust=#{employeeBudget.amountAverageAdjust}
+            and eb.amount_average_adjust=#{employeeBudget.amountAverageAdjust}
         </if>
         <if test="employeeBudget.deleteFlag != null">
-            and delete_flag=#{employeeBudget.deleteFlag}
+            and eb.delete_flag=#{employeeBudget.deleteFlag}
         </if>
         <if test="employeeBudget.createBy != null">
-            and create_by=#{employeeBudget.createBy}
+            and eb.create_by=#{employeeBudget.createBy}
         </if>
         <if test="employeeBudget.createTime != null">
-            and create_time=#{employeeBudget.createTime}
+            and eb.create_time=#{employeeBudget.createTime}
         </if>
         <if test="employeeBudget.updateBy != null">
-            and update_by=#{employeeBudget.updateBy}
+            and eb.update_by=#{employeeBudget.updateBy}
         </if>
         <if test="employeeBudget.updateTime != null">
-            and update_time=#{employeeBudget.updateTime}
+            and eb.update_time=#{employeeBudget.updateTime}
         </if>
-    order by create_time desc
+        <!-- 数据范围过滤 -->
+        ${employeeBudget.params.dataScope}
+        ORDER BY eb.create_time DESC
     </select>
     <!--    不允许季度和月度同时存在 新增时查询唯一性-->
     <select id="selectEmployeeBudget"

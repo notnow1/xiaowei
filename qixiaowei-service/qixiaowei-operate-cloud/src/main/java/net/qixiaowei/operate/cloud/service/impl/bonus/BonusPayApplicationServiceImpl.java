@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayApplication;
@@ -230,6 +231,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @param bonusPayApplicationDTO 奖金发放申请表
      * @return 奖金发放申请表
      */
+    @DataScope(businessAlias = "bpa")
     @Override
     public List<BonusPayApplicationDTO> selectBonusPayApplicationList(BonusPayApplicationDTO bonusPayApplicationDTO) {
         BonusPayApplication bonusPayApplication = new BonusPayApplication();

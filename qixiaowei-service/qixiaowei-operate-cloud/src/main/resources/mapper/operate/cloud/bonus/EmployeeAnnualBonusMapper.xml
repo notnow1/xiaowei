@@ -51,15 +51,15 @@
     <select id="selectEmployeeAnnualBonusList"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO">
         SELECT
-        employee_annual_bonus_id, annual_bonus_year, department_id, department_name, apply_department_id,
-        apply_department_name, apply_employee_id, apply_employee_name, distribute_bonus_amount, comment_flag,
-        comment_step, comment_employee_id, comment_employee_name, comment_date, status, delete_flag, create_by,
-        create_time, update_by, update_time
-        FROM employee_annual_bonus
-        WHERE delete_flag=0
+        eab.employee_annual_bonus_id, eab.annual_bonus_year, eab.department_id, eab.department_name, eab.apply_department_id,
+        eab.apply_department_name, eab.apply_employee_id, eab.apply_employee_name, eab.distribute_bonus_amount, eab.comment_flag,
+        eab.comment_step, eab.comment_employee_id, eab.comment_employee_name, eab.comment_date, eab.status, eab.delete_flag, eab.create_by,
+        eab.create_time, eab.update_by, eab.update_time
+        FROM employee_annual_bonus eab
+        WHERE eab.delete_flag=0
         <!-- 评议年度过滤  -->
         <if test="employeeAnnualBonus.params.annualBonusYearEqual != null and employeeAnnualBonus.params.annualBonusYearEqual.size() > 0">
-            AND annual_bonus_year IN
+            AND eab.annual_bonus_year IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.annualBonusYearEqual"
                      index="index" open="(" separator="," close=")">
@@ -67,7 +67,7 @@
             </foreach>
         </if>
         <if test="employeeAnnualBonus.params.annualBonusYearNotEqual != null and employeeAnnualBonus.params.annualBonusYearNotEqual.size() > 0">
-            AND annual_bonus_year NOT IN
+            AND eab.annual_bonus_year NOT IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.annualBonusYearNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -75,26 +75,26 @@
             </foreach>
         </if>
         <if test="employeeAnnualBonus.params.annualBonusYearBefore != null and employeeAnnualBonus.params.annualBonusYearBefore != ''">
-            AND annual_bonus_year &lt; #{employeeAnnualBonus.params.annualBonusYearBefore}
+            AND eab.annual_bonus_year &lt; #{employeeAnnualBonus.params.annualBonusYearBefore}
         </if>
         <if test="employeeAnnualBonus.params.annualBonusYearNotBefore != null and employeeAnnualBonus.params.annualBonusYearNotBefore != ''"><!-- 开始时间检索 -->
-            AND annual_bonus_year &gt;= #{employeeAnnualBonus.params.annualBonusYearNotBefore}
+            AND eab.annual_bonus_year &gt;= #{employeeAnnualBonus.params.annualBonusYearNotBefore}
         </if>
         <if test="employeeAnnualBonus.params.annualBonusYearAfter != null and employeeAnnualBonus.params.annualBonusYearAfter != ''"><!-- 开始时间检索 -->
-            AND annual_bonus_year &gt; #{employeeAnnualBonus.params.annualBonusYearAfter}
+            AND eab.annual_bonus_year &gt; #{employeeAnnualBonus.params.annualBonusYearAfter}
         </if>
         <if test="employeeAnnualBonus.params.annualBonusYearNotAfter != null and employeeAnnualBonus.params.annualBonusYearNotAfter != ''"><!-- 结束时间检索 -->
-            AND annual_bonus_year &lt;= #{employeeAnnualBonus.params.annualBonusYearNotAfter}
+            AND eab.annual_bonus_year &lt;= #{employeeAnnualBonus.params.annualBonusYearNotAfter}
         </if>
         <if test="employeeAnnualBonus.params.annualBonusYearStart != null and employeeAnnualBonus.params.annualBonusYearStart != ''"><!-- 开始时间检索 -->
-            AND annual_bonus_year &gt;= #{employeeAnnualBonus.params.annualBonusYearStart}
+            AND eab.annual_bonus_year &gt;= #{employeeAnnualBonus.params.annualBonusYearStart}
         </if>
         <if test="employeeAnnualBonus.params.annualBonusYearEnd != null and employeeAnnualBonus.params.annualBonusYearEnd != ''"><!-- 结束时间检索 -->
-            AND annual_bonus_year &lt;= #{employeeAnnualBonus.params.annualBonusYearEnd}
+            AND eab.annual_bonus_year &lt;= #{employeeAnnualBonus.params.annualBonusYearEnd}
         </if>
         <!-- 一级部门过滤  -->
         <if test="employeeAnnualBonus.params.departmentNameEqual != null and employeeAnnualBonus.params.departmentNameEqual.size() > 0">
-            AND department_name IN
+            AND eab.department_name IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.departmentNameEqual"
                      index="index" open="(" separator="," close=")">
@@ -102,7 +102,7 @@
             </foreach>
         </if>
         <if test="employeeAnnualBonus.params.departmentNameNotEqual != null and employeeAnnualBonus.params.departmentNameNotEqual.size() > 0">
-            AND department_name NOT IN
+            AND eab.department_name NOT IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.departmentNameNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -111,7 +111,7 @@
         </if>
         <!-- 申请部门过滤  -->
         <if test="employeeAnnualBonus.params.applyDepartmentNameEqual != null and employeeAnnualBonus.params.applyDepartmentNameEqual.size() > 0">
-            AND apply_department_name IN
+            AND eab.apply_department_name IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.applyDepartmentNameEqual"
                      index="index" open="(" separator="," close=")">
@@ -119,7 +119,7 @@
             </foreach>
         </if>
         <if test="employeeAnnualBonus.params.applyDepartmentNameNotEqual != null and employeeAnnualBonus.params.applyDepartmentNameNotEqual.size() > 0">
-            AND apply_department_name NOT IN
+            AND eab.apply_department_name NOT IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.applyDepartmentNameNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -128,7 +128,7 @@
         </if>
         <!-- 申请人过滤  -->
         <if test="employeeAnnualBonus.params.applyEmployeeNameEqual != null and employeeAnnualBonus.params.applyEmployeeNameEqual.size() > 0">
-            AND apply_employee_name IN
+            AND eab.apply_employee_name IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.applyEmployeeNameEqual"
                      index="index" open="(" separator="," close=")">
@@ -136,7 +136,7 @@
             </foreach>
         </if>
         <if test="employeeAnnualBonus.params.applyEmployeeNameNotEqual != null and employeeAnnualBonus.params.applyEmployeeNameNotEqual.size() > 0">
-            AND apply_employee_name NOT IN
+            AND eab.apply_employee_name NOT IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.applyEmployeeNameNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -145,7 +145,7 @@
         </if>
         <!-- 是否发起评议流程过滤  -->
         <if test="employeeAnnualBonus.params.commentFlagEqual != null and employeeAnnualBonus.params.commentFlagEqual.size() > 0">
-            AND comment_flag IN
+            AND eab.comment_flag IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.commentFlagEqual"
                      index="index" open="(" separator="," close=")">
@@ -153,7 +153,7 @@
             </foreach>
         </if>
         <if test="employeeAnnualBonus.params.commentFlagNotEqual != null and employeeAnnualBonus.params.commentFlagNotEqual.size() > 0">
-            AND comment_flag NOT IN
+            AND eab.comment_flag NOT IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.commentFlagNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -162,66 +162,68 @@
         </if>
 
         <if test="employeeAnnualBonus.employeeAnnualBonusId != null">
-            and employee_annual_bonus_id=#{employeeAnnualBonus.employeeAnnualBonusId}
+            and eab.employee_annual_bonus_id=#{employeeAnnualBonus.employeeAnnualBonusId}
         </if>
         <if test="employeeAnnualBonus.annualBonusYear != null">
-            and annual_bonus_year=#{employeeAnnualBonus.annualBonusYear}
+            and eab.annual_bonus_year=#{employeeAnnualBonus.annualBonusYear}
         </if>
         <if test="employeeAnnualBonus.departmentId != null">
-            and department_id=#{employeeAnnualBonus.departmentId}
+            and eab.department_id=#{employeeAnnualBonus.departmentId}
         </if>
         <if test="employeeAnnualBonus.departmentName != null and employeeAnnualBonus.departmentName != ''">
-            and department_name like '%${employeeAnnualBonus.departmentName}%'
+            and eab.department_name like '%${employeeAnnualBonus.departmentName}%'
         </if>
         <if test="employeeAnnualBonus.applyDepartmentId != null">
-            and apply_department_id=#{employeeAnnualBonus.applyDepartmentId}
+            and eab.apply_department_id=#{employeeAnnualBonus.applyDepartmentId}
         </if>
         <if test="employeeAnnualBonus.applyDepartmentName != null and employeeAnnualBonus.applyDepartmentName != ''">
-            and apply_department_name=#{employeeAnnualBonus.applyDepartmentName}
+            and eab.apply_department_name=#{employeeAnnualBonus.applyDepartmentName}
         </if>
         <if test="employeeAnnualBonus.applyEmployeeId != null">
-            and apply_employee_id=#{employeeAnnualBonus.applyEmployeeId}
+            and eab.apply_employee_id=#{employeeAnnualBonus.applyEmployeeId}
         </if>
         <if test="employeeAnnualBonus.applyEmployeeName != null and employeeAnnualBonus.applyEmployeeName != ''">
-            and apply_employee_name like '%${employeeAnnualBonus.applyEmployeeName}%'
+            and eab.apply_employee_name like '%${employeeAnnualBonus.applyEmployeeName}%'
         </if>
         <if test="employeeAnnualBonus.distributeBonusAmount != null">
-            and distribute_bonus_amount like '%${employeeAnnualBonus.distributeBonusAmount}%'
+            and eab.distribute_bonus_amount like '%${employeeAnnualBonus.distributeBonusAmount}%'
         </if>
         <if test="employeeAnnualBonus.commentFlag != null">
-            and comment_flag=#{employeeAnnualBonus.commentFlag}
+            and eab.comment_flag=#{employeeAnnualBonus.commentFlag}
         </if>
         <if test="employeeAnnualBonus.commentStep != null">
-            and comment_step=#{employeeAnnualBonus.commentStep}
+            and eab.comment_step=#{employeeAnnualBonus.commentStep}
         </if>
         <if test="employeeAnnualBonus.commentEmployeeId != null">
-            and comment_employee_id=#{employeeAnnualBonus.commentEmployeeId}
+            and eab.comment_employee_id=#{employeeAnnualBonus.commentEmployeeId}
         </if>
         <if test="employeeAnnualBonus.commentEmployeeName != null and employeeAnnualBonus.commentEmployeeName != ''">
-            and comment_employee_name=#{employeeAnnualBonus.commentEmployeeName}
+            and eab.comment_employee_name=#{employeeAnnualBonus.commentEmployeeName}
         </if>
         <if test="employeeAnnualBonus.commentDate != null">
-            and comment_date=#{employeeAnnualBonus.commentDate}
+            and eab.comment_date=#{employeeAnnualBonus.commentDate}
         </if>
         <if test="employeeAnnualBonus.status != null">
-            and status=#{employeeAnnualBonus.status}
+            and eab.status=#{employeeAnnualBonus.status}
         </if>
         <if test="employeeAnnualBonus.deleteFlag != null">
-            and delete_flag=#{employeeAnnualBonus.deleteFlag}
+            and eab.delete_flag=#{employeeAnnualBonus.deleteFlag}
         </if>
         <if test="employeeAnnualBonus.createBy != null">
-            and create_by=#{employeeAnnualBonus.createBy}
+            and eab.create_by=#{employeeAnnualBonus.createBy}
         </if>
         <if test="employeeAnnualBonus.createTime != null">
-            and create_time=#{employeeAnnualBonus.createTime}
+            and eab.create_time=#{employeeAnnualBonus.createTime}
         </if>
         <if test="employeeAnnualBonus.updateBy != null">
-            and update_by=#{employeeAnnualBonus.updateBy}
+            and eab.update_by=#{employeeAnnualBonus.updateBy}
         </if>
         <if test="employeeAnnualBonus.updateTime != null">
-            and update_time=#{employeeAnnualBonus.updateTime}
+            and eab.update_time=#{employeeAnnualBonus.updateTime}
         </if>
-        order by create_time desc
+        <!-- 数据范围过滤 -->
+        ${employeeAnnualBonus.params.dataScope}
+        ORDER BY eab.create_time DESC
     </select>
     <!--    根据个人年终奖表年份查询个人年终奖表-->
     <select id="selectEmployeeAnnualBonusByAnnualBonusYear"

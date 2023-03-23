@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.service.user;
 import java.util.List;
 import java.util.Set;
 
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;

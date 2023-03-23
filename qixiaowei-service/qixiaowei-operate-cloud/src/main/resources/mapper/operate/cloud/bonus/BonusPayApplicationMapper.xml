@@ -352,7 +352,9 @@
         <if test="bonusPayApplication.updateTime != null">
             and bpa.update_time=#{bonusPayApplication.updateTime}
         </if>
-        order by bpa.create_time desc
+        <!-- 数据范围过滤 -->
+        ${bonusPayApplication.params.dataScope}
+        ORDER BY bpa.create_time DESC
     </select>
     <!--    取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计-->
     <select id="selectBonusPayApplicationAddDeptAnnual" resultType="java.math.BigDecimal">

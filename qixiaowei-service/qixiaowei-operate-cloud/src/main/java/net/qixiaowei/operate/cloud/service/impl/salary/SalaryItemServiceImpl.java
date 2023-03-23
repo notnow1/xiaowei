@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryItem;
@@ -77,6 +78,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @param salaryItemDTO 工资项
      * @return 工资项
      */
+    @DataScope(businessAlias = "si")
     @Override
     public List<SalaryItemDTO> selectSalaryItemList(SalaryItemDTO salaryItemDTO) {
         SalaryItem salaryItem = new SalaryItem();

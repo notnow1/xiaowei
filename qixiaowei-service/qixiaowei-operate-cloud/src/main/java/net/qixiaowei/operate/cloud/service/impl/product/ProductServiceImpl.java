@@ -11,6 +11,7 @@ import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.product.*;
@@ -155,6 +156,7 @@ public class ProductServiceImpl implements IProductService {
      * @param productDTO 产品表
      * @return 产品表
      */
+    @DataScope(businessAlias = "p")
     @Override
     public List<ProductDTO> selectProductList(ProductDTO productDTO) {
         Product product = new Product();

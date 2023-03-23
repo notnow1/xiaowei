@@ -5,6 +5,7 @@ import java.util.List;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
@@ -57,6 +58,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
      * @param productUnitDTO 产品单位表
      * @return 产品单位表
      */
+    @DataScope(businessAlias = "pu")
     @Override
     public List<ProductUnitDTO> selectProductUnitList(ProductUnitDTO productUnitDTO) {
         ProductUnit productUnit = new ProductUnit();

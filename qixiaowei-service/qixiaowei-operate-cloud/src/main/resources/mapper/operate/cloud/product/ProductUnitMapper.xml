@@ -14,37 +14,39 @@
     <!--    查询产品单位表列表-->
     <select id="selectProductUnitList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO">
         SELECT
-        product_unit_id, product_unit_code, product_unit_name, reserve_digit, delete_flag, create_by, create_time, update_by, update_time
-        FROM product_unit
-        WHERE delete_flag=0
+        pu.product_unit_id, pu.product_unit_code, pu.product_unit_name, pu.reserve_digit, pu.delete_flag, pu.create_by, pu.create_time, pu.update_by, pu.update_time
+        FROM product_unit pu
+        WHERE pu.delete_flag=0
         <if test="productUnit.productUnitId != null">
-            and product_unit_id like '%${productUnit.productUnitId}%'
+            and pu.product_unit_id like '%${productUnit.productUnitId}%'
         </if>
         <if test="productUnit.productUnitCode != null and productUnit.productUnitCode != ''">
-            and product_unit_code like '%${productUnit.productUnitCode}%'
+            and pu.product_unit_code like '%${productUnit.productUnitCode}%'
         </if>
         <if test="productUnit.productUnitName != null and productUnit.productUnitName != ''">
-            and product_unit_name like '%${productUnit.productUnitName}%'
+            and pu.product_unit_name like '%${productUnit.productUnitName}%'
         </if>
         <if test="productUnit.reserveDigit != null">
-            and reserve_digit like '%${productUnit.reserveDigit}%'
+            and pu.reserve_digit like '%${productUnit.reserveDigit}%'
         </if>
         <if test="productUnit.deleteFlag != null">
-            and delete_flag like '%${productUnit.deleteFlag}%'
+            and pu.delete_flag like '%${productUnit.deleteFlag}%'
         </if>
         <if test="productUnit.createBy != null">
-            and create_by like '%${productUnit.createBy}%'
+            and pu.create_by like '%${productUnit.createBy}%'
         </if>
         <if test="productUnit.createTime != null">
-            and create_time like '%${productUnit.createTime}%'
+            and pu.create_time like '%${productUnit.createTime}%'
         </if>
         <if test="productUnit.updateBy != null">
-            and update_by like '%${productUnit.updateBy}%'
+            and pu.update_by like '%${productUnit.updateBy}%'
         </if>
         <if test="productUnit.updateTime != null">
-            and update_time like '%${productUnit.updateTime}%'
+            and pu.update_time like '%${productUnit.updateTime}%'
         </if>
-    order by create_time desc
+        <!-- 数据范围过滤 -->
+        ${productUnit.params.dataScope}
+        ORDER BY pu.create_time DESC
     </select>
 <!--    根据code查询产品单位表-->
     <select id="selectProductUnitByProductUnitCode"

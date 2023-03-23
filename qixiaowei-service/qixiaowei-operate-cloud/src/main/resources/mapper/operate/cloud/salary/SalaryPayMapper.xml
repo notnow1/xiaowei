@@ -75,79 +75,79 @@
     <!--    查询工资发薪表列表 payYearMonth -->
     <select id="selectSalaryPayList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT
-        salary_pay_id,
-        employee_id,
-        CONCAT(pay_year,'/',RIGHT(CONCAT('0',pay_month),2)) as payYearMonth,
-        pay_year,
-        pay_month,
-        IFNULL(salary_amount, 0) as salary_amount,
-        IFNULL(allowance_amount, 0) as allowance_amount,
-        IFNULL(welfare_amount, 0) as welfare_amount,
-        IFNULL(bonus_amount, 0) as bonus_amount,
-        IFNULL(withhold_remit_tax, 0) as withhold_remit_tax,
-        IFNULL(other_deductions, 0) as other_deductions,
-        IFNULL(pay_amount, 0) as pay_amount,
-        delete_flag,
-        create_by,
-        create_time,
-        update_by,
-        update_time
-        FROM salary_pay
-        WHERE delete_flag=0
+        sp.salary_pay_id,
+        sp.employee_id,
+        CONCAT(sp.pay_year,'/',RIGHT(CONCAT('0',sp.pay_month),2)) as payYearMonth,
+        sp.pay_year,
+        sp.pay_month,
+        IFNULL(sp.salary_amount, 0) as salary_amount,
+        IFNULL(sp.allowance_amount, 0) as allowance_amount,
+        IFNULL(sp.welfare_amount, 0) as welfare_amount,
+        IFNULL(sp.bonus_amount, 0) as bonus_amount,
+        IFNULL(sp.withhold_remit_tax, 0) as withhold_remit_tax,
+        IFNULL(sp.other_deductions, 0) as other_deductions,
+        IFNULL(sp.pay_amount, 0) as pay_amount,
+        sp.delete_flag,
+        sp.create_by,
+        sp.create_time,
+        sp.update_by,
+        sp.update_time
+        FROM salary_pay sp
+        WHERE sp.delete_flag=0
         <if test="salaryPay.salaryPayId != null">
-            and salary_pay_id=#{salaryPay.salaryPayId}
+            and sp.salary_pay_id=#{salaryPay.salaryPayId}
         </if>
         <if test="salaryPay.employeeId != null">
-            and employee_id=#{salaryPay.employeeId}
+            and sp.employee_id=#{salaryPay.employeeId}
         </if>
         <if test="salaryPay.payYear != null">
-            and pay_year=#{salaryPay.payYear}
+            and sp.pay_year=#{salaryPay.payYear}
         </if>
         <if test="salaryPay.payMonth != null">
-            and pay_month=#{salaryPay.payMonth}
+            and sp.pay_month=#{salaryPay.payMonth}
         </if>
         <if test="salaryPay.salaryAmount != null">
-            and salary_amount=#{salaryPay.salaryAmount}
+            and sp.salary_amount=#{salaryPay.salaryAmount}
         </if>
         <if test="salaryPay.allowanceAmount != null">
-            and allowance_amount=#{salaryPay.allowanceAmount}
+            and sp.allowance_amount=#{salaryPay.allowanceAmount}
         </if>
         <if test="salaryPay.welfareAmount != null">
-            and welfare_amount=#{salaryPay.welfareAmount}
+            and sp.welfare_amount=#{salaryPay.welfareAmount}
         </if>
         <if test="salaryPay.bonusAmount != null">
-            and bonus_amount=#{salaryPay.bonusAmount}
+            and sp.bonus_amount=#{salaryPay.bonusAmount}
         </if>
         <if test="salaryPay.withholdRemitTax != null">
-            and withhold_remit_tax=#{salaryPay.withholdRemitTax}
+            and sp.withhold_remit_tax=#{salaryPay.withholdRemitTax}
         </if>
         <if test="salaryPay.otherDeductions != null">
-            and other_deductions=#{salaryPay.otherDeductions}
+            and sp.other_deductions=#{salaryPay.otherDeductions}
         </if>
         <if test="salaryPay.payAmount != null">
-            and pay_amount=#{salaryPay.payAmount}
+            and sp.pay_amount=#{salaryPay.payAmount}
         </if>
         <if test="salaryPay.deleteFlag != null">
-            and delete_flag=#{salaryPay.deleteFlag}
+            and sp.delete_flag=#{salaryPay.deleteFlag}
         </if>
         <if test="salaryPay.createBy != null">
-            and create_by=#{salaryPay.createBy}
+            and sp.create_by=#{salaryPay.createBy}
         </if>
         <if test="salaryPay.createTime != null">
-            and create_time=#{salaryPay.createTime}
+            and sp.create_time=#{salaryPay.createTime}
         </if>
         <if test="salaryPay.updateBy != null">
-            and update_by=#{salaryPay.updateBy}
+            and sp.update_by=#{salaryPay.updateBy}
         </if>
         <if test="salaryPay.updateTime != null">
-            and update_time=#{salaryPay.updateTime}
+            and sp.update_time=#{salaryPay.updateTime}
         </if>
         <!--发薪年月-->
         <if test="salaryPay.params.payTimeEqual != null and salaryPay.params.payTimeEqual.size() > 0">
             AND (CASE
-            WHEN pay_month &gt; 9 THEN
-            CONCAT( pay_year, "/", pay_month )
-            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) IN
+            WHEN sp.pay_month &gt; 9 THEN
+            CONCAT( sp.pay_year, "/", sp.pay_month )
+            WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) IN
             <foreach item="item"
                      collection="salaryPay.params.payTimeEqual"
                      index="index" open="(" separator="," close=")">
@@ -156,9 +156,9 @@
         </if>
         <if test="salaryPay.params.payTimeNotEqual != null and salaryPay.params.payTimeNotEqual.size() > 0">
             AND (CASE
-            WHEN pay_month &gt; 9 THEN
-            CONCAT( pay_year, "/", pay_month )
-            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) NOT IN
+            WHEN sp.pay_month &gt; 9 THEN
+            CONCAT( sp.pay_year, "/", sp.pay_month )
+            WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) NOT IN
             <foreach item="item"
                      collection="salaryPay.params.payTimeNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -167,49 +167,49 @@
         </if>
         <if test="salaryPay.params.payTimeBefore != null and salaryPay.params.payTimeBefore != ''">
             AND (CASE
-            WHEN pay_month &gt; 9 THEN
-            CONCAT( pay_year, "/", pay_month )
-            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &lt;
+            WHEN sp.pay_month &gt; 9 THEN
+            CONCAT( sp.pay_year, "/", sp.pay_month )
+            WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &lt;
             #{salaryPay.params.payTimeBefore}
         </if>
         <if test="salaryPay.params.payTimeNotBefore != null and salaryPay.params.payTimeNotBefore != ''">
             AND (CASE
-            WHEN pay_month &gt; 9 THEN
-            CONCAT( pay_year, "/", pay_month )
-            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &gt;=
+            WHEN sp.pay_month &gt; 9 THEN
+            CONCAT( sp.pay_year, "/", sp.pay_month )
+            WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &gt;=
             #{salaryPay.params.payTimeNotBefore}
         </if>
         <if test="salaryPay.params.payTimeAfter != null and salaryPay.params.payTimeAfter != ''">
             AND (CASE
-            WHEN pay_month &gt; 9 THEN
-            CONCAT( pay_year, "/", pay_month )
-            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &gt;
+            WHEN sp.pay_month &gt; 9 THEN
+            CONCAT( sp.pay_year, "/", sp.pay_month )
+            WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &gt;
             #{salaryPay.params.payTimeAfter}
         </if>
         <if test="salaryPay.params.payTimeNotAfter != null and salaryPay.params.payTimeNotAfter != ''">
             AND (CASE
-            WHEN pay_month &gt; 9 THEN
-            CONCAT( pay_year, "/", pay_month )
-            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &lt;=
+            WHEN sp.pay_month &gt; 9 THEN
+            CONCAT( sp.pay_year, "/", sp.pay_month )
+            WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &lt;=
             #{salaryPay.params.payTimeNotAfter}
         </if>
         <if test="salaryPay.params.payTimeStart != null and salaryPay.params.payTimeStart != ''">
             AND (CASE
-            WHEN pay_month &gt; 9 THEN
-            CONCAT( pay_year, "/", pay_month )
-            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &gt;=
+            WHEN sp.pay_month &gt; 9 THEN
+            CONCAT( sp.pay_year, "/", sp.pay_month )
+            WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &gt;=
             #{salaryPay.params.payTimeStart}
         </if>
         <if test="salaryPay.params.payTimeEnd != null and salaryPay.params.payTimeEnd != ''">
             AND (CASE
-            WHEN pay_month &gt; 9 THEN
-            CONCAT( pay_year, "/", pay_month )
-            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &lt;=
+            WHEN sp.pay_month &gt; 9 THEN
+            CONCAT( sp.pay_year, "/", sp.pay_month )
+            WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &lt;=
             #{salaryPay.params.payTimeEnd}
         </if>
         <!--总计（工资+津贴+福利+奖金）-->
         <if test="salaryPay.params.totalAmountEqual != null and salaryPay.params.totalAmountEqual.size() > 0">
-            AND IFNULL(salary_amount,0)+IFNULL(allowance_amount,0)+IFNULL(welfare_amount,0)+IFNULL(bonus_amount,0) IN
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) IN
             <foreach item="item"
                      collection="salaryPay.params.totalAmountEqual"
                      index="index" open="(" separator="," close=")">
@@ -217,7 +217,7 @@
             </foreach>
         </if>
         <if test="salaryPay.params.totalAmountNotEqual != null and salaryPay.params.totalAmountNotEqual.size() > 0">
-            AND IFNULL(salary_amount,0)+IFNULL(allowance_amount,0)+IFNULL(welfare_amount,0)+IFNULL(bonus_amount,0) NOT
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) NOT
             IN
             <foreach item="item"
                      collection="salaryPay.params.totalAmountNotEqual"
@@ -226,31 +226,33 @@
             </foreach>
         </if>
         <if test="salaryPay.params.totalAmountGreaterThan != null and salaryPay.params.totalAmountGreaterThan != ''">
-            AND IFNULL(salary_amount,0)+IFNULL(allowance_amount,0)+IFNULL(welfare_amount,0)+IFNULL(bonus_amount,0) &gt;
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) &gt;
             #{salaryPay.params.totalAmountGreaterThan}
         </if>
         <if test="salaryPay.params.totalAmountNotGreaterThan != null and salaryPay.params.totalAmountNotGreaterThan != ''">
-            AND IFNULL(salary_amount,0)+IFNULL(allowance_amount,0)+IFNULL(welfare_amount,0)+IFNULL(bonus_amount,0) &lt;=
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) &lt;=
             #{salaryPay.params.totalAmountNotGreaterThan}
         </if>
         <if test="salaryPay.params.totalAmountLessThan != null and salaryPay.params.totalAmountLessThan != ''">
-            AND IFNULL(salary_amount,0)+IFNULL(allowance_amount,0)+IFNULL(welfare_amount,0)+IFNULL(bonus_amount,0) &lt;
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) &lt;
             #{salaryPay.params.totalAmountLessThan}
         </if>
         <if test="salaryPay.params.totalAmountNotLessThan != null and salaryPay.params.totalAmountNotLessThan != ''">
-            AND IFNULL(salary_amount,0)+IFNULL(allowance_amount,0)+IFNULL(welfare_amount,0)+IFNULL(bonus_amount,0) &gt;=
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) &gt;=
             #{salaryPay.params.totalAmountNotLessThan}
         </if>
         <!--    员工高级搜索-->
         <if test="salaryPay.params.employeeIds != null and salaryPay.params.employeeIds.size() > 0">
-            AND employee_id IN
+            AND sp.employee_id IN
             <foreach item="item"
                      collection="salaryPay.params.employeeIds"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        ORDER BY pay_year,pay_month
+        <!-- 数据范围过滤 -->
+        ${salaryPay.params.dataScope}
+        ORDER BY sp.pay_year,sp.pay_month
     </select>
     <!--根据人员ID集合查找工资发薪信息-->
     <select id="selectSalaryPayByEmployeeIds"

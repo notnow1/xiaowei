@@ -10,6 +10,7 @@ import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
@@ -92,6 +93,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @param departmentDTO 部门表
      * @return 部门表
      */
+    @DataScope(deptAlias = "dm")
     @Override
     public List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO) {
         Department department = new Department();

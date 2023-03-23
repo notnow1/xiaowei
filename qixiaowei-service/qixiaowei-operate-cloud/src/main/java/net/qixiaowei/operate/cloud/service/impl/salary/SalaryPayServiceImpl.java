@@ -13,6 +13,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryPay;
@@ -157,6 +158,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * @param salaryPayDTO 工资发薪表
      * @return 工资发薪表
      */
+    @DataScope(businessAlias = "sp")
     @Override
     public List<SalaryPayDTO> selectSalaryPayList(SalaryPayDTO salaryPayDTO) {
         List<SalaryPayDTO> salaryPayDTOList = new ArrayList<>();
@@ -169,8 +171,10 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         employeeDTO.setEmployeeCode(employeeCode);
         employeeDTO.setEmployeePostName(postName);
         employeeDTO.setEmployeeDepartmentName(departmentName);
+        SalaryPay salaryPay = new SalaryPay();
+        BeanUtils.copyProperties(salaryPayDTO, salaryPay);
         if (CheckObjectIsNullUtils.isNull(employeeDTO)) {
-            return salaryPayMapper.selectSalaryPayList(new SalaryPay());
+            return salaryPayMapper.selectSalaryPayList(salaryPay);
         }
         R<List<EmployeeDTO>> employeeDTOR = employeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
         List<EmployeeDTO> employeeDTOS = employeeDTOR.getData();
@@ -185,8 +189,6 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         } else {
             return salaryPayDTOList;
         }
-        SalaryPay salaryPay = new SalaryPay();
-        BeanUtils.copyProperties(salaryPayDTO, salaryPay);
         Map<String, Object> params = salaryPayDTO.getParams();
         if (StringUtils.isNotEmpty(params)) {
             getRemoteIds(params, employeeIds);

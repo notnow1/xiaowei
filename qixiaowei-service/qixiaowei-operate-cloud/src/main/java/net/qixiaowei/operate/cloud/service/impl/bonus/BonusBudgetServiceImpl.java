@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusBudget;
@@ -192,6 +193,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
      * @param bonusBudgetDTO 奖金预算表
      * @return 奖金预算表
      */
+    @DataScope(businessAlias = "bb")
     @Override
     public List<BonusBudgetDTO> selectBonusBudgetList(BonusBudgetDTO bonusBudgetDTO) {
         List<String> createBys = new ArrayList<>();

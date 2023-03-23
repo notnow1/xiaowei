@@ -371,7 +371,9 @@
         <if test="post.status != null">
             and p.status =#{post.status}
         </if>
-        order by p.create_time desc
+        <!-- 数据范围过滤 -->
+        ${post.params.dataScope}
+        ORDER BY p.create_time DESC
     </select>
 
     <select id="getPostCodes" resultType="java.lang.String">

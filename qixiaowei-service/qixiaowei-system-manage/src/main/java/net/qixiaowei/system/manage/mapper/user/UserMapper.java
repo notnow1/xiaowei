@@ -61,6 +61,16 @@ public interface UserMapper {
     /**
      * 查询用户表
      *
+     * @param departmentId 部门ID
+     * @param employeeId 员工ID
+     * @param dataScope    数据权限
+     * @return 用户表
+     */
+    Set<Long> selectUserIdsByDepartmentId(@Param("departmentId") Long departmentId, @Param("employeeId") Long employeeId, @Param("dataScope") Integer dataScope);
+
+    /**
+     * 查询用户表
+     *
      * @param userAccount 用户帐号
      * @return 用户表
      */

@@ -253,6 +253,9 @@
             OR i1.status IS NULL
             )
         </if>
+        <!-- 数据范围过滤 -->
+        ${industry.params.dataScope}
+        ORDER BY i1.create_time DESC
     </select>
 
     <!--    查询行业编码集合-->

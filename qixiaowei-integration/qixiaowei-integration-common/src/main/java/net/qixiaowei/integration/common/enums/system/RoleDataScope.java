@@ -32,5 +32,14 @@ public enum RoleDataScope {
     public String getInfo() {
         return info;
     }
+
+    public static RoleDataScope parseEnum(Integer code) {
+        for (RoleDataScope roleDataScope : RoleDataScope.values()) {
+            if (roleDataScope.getCode().equals(code)) {
+                return roleDataScope;
+            }
+        }
+        return SELF;
+    }
 }
 

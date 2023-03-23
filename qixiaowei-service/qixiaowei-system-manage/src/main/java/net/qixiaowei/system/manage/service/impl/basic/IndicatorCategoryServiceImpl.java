@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.system.manage.api.domain.basic.IndicatorCategory;
@@ -57,6 +58,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
      * @param indicatorCategoryDTO 指标类型表
      * @return 指标类型表
      */
+    @DataScope(businessAlias = "ic")
     @Override
     public List<IndicatorCategoryDTO> selectIndicatorCategoryList(IndicatorCategoryDTO indicatorCategoryDTO) {
         IndicatorCategory indicatorCategory = new IndicatorCategory();

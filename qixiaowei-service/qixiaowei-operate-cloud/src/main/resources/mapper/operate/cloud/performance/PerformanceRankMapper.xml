@@ -16,37 +16,40 @@
     <select id="selectPerformanceRankList"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankDTO">
         SELECT
-        performance_rank_id, performance_rank_category, performance_rank_name, performance_rank_description,
-        delete_flag, create_by, create_time, update_by, update_time
-        FROM performance_rank
-        WHERE delete_flag=0
+        pr.performance_rank_id, pr.performance_rank_category, pr.performance_rank_name, pr.performance_rank_description,
+        pr.delete_flag, pr.create_by, pr.create_time, pr.update_by, pr.update_time
+        FROM performance_rank pr
+        WHERE pr.delete_flag=0
         <if test="performanceRank.performanceRankId != null">
-            and performance_rank_id=#{performanceRank.performanceRankId}
+            and pr.performance_rank_id=#{performanceRank.performanceRankId}
         </if>
         <if test="performanceRank.performanceRankCategory != null">
-            and performance_rank_category=#{performanceRank.performanceRankCategory}
+            and pr.performance_rank_category=#{performanceRank.performanceRankCategory}
         </if>
         <if test="performanceRank.performanceRankName != null and performanceRank.performanceRankName != ''">
-            and performance_rank_name=#{performanceRank.performanceRankName}
+            and pr.performance_rank_name=#{performanceRank.performanceRankName}
         </if>
         <if test="performanceRank.performanceRankDescription != null and performanceRank.performanceRankDescription != ''">
-            and performance_rank_description=#{performanceRank.performanceRankDescription}
+            and pr.performance_rank_description=#{performanceRank.performanceRankDescription}
         </if>
         <if test="performanceRank.deleteFlag != null">
-            and delete_flag=#{performanceRank.deleteFlag}
+            and pr.delete_flag=#{performanceRank.deleteFlag}
         </if>
         <if test="performanceRank.createBy != null">
-            and create_by=#{performanceRank.createBy}
+            and pr.create_by=#{performanceRank.createBy}
         </if>
         <if test="performanceRank.createTime != null">
-            and create_time=#{performanceRank.createTime}
+            and pr.create_time=#{performanceRank.createTime}
         </if>
         <if test="performanceRank.updateBy != null">
-            and update_by=#{performanceRank.updateBy}
+            and pr.update_by=#{performanceRank.updateBy}
         </if>
         <if test="performanceRank.updateTime != null">
-            and update_time=#{performanceRank.updateTime}
+            and pr.update_time=#{performanceRank.updateTime}
         </if>
+        <!-- 数据范围过滤 -->
+        ${performanceRank.params.dataScope}
+        ORDER BY pr.create_time DESC
     </select>
     <!--绩效等级名称重复校验-->
     <select id="checkUniqueName" resultType="java.lang.Integer">

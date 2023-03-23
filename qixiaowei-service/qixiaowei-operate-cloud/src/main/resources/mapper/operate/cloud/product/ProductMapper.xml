@@ -315,7 +315,9 @@
         <if test="product.listingFlag != null">
             and p.listing_flag =#{product.listingFlag}
         </if>
-        order by p.create_time desc
+        <!-- 数据范围过滤 -->
+        ${product.params.dataScope}
+        ORDER BY p.create_time DESC
     </select>
 
     <select id="getProductCodes" resultType="java.lang.String">
