@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.service.impl.strategyDecode;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
+import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
  * @since 2023-03-03
  */
 @Service
+@Slf4j
 public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensionService {
     @Autowired
     private StrategyIndexDimensionMapper strategyIndexDimensionMapper;
@@ -209,8 +211,7 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
      */
     @Override
     @Transactional
-    public boolean initStrategyIndexDimension() {
-        Long userId = SecurityUtils.getUserId();
+    public boolean initStrategyIndexDimension(Long userId) {
         Date nowDate = DateUtils.getNowDate();
         //战略指标维度主表
         List<StrategyIndexDimension> strategyIndexDimensions = new ArrayList<>();
@@ -225,14 +226,15 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         try {
             strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensions);
         } catch (Exception e) {
-            throw new ServiceException("插入战略指标维度主表失败！！！");
+            log.error("插入父级战略指标维度失败{}", e.getMessage());
+            throw new ServiceException("插入父级战略指标维度失败！！！");
         }
         StrategyIndexDimension strategyIndexDimension1 = strategyIndexDimensions.get(2);
         StrategyIndexDimension strategyIndexDimension2 = strategyIndexDimensions.get(3);
         if (StringUtils.isNull(strategyIndexDimension1) || StringUtils.isNull(strategyIndexDimension2)) {
             throw new ServiceException("初始化父级战略指标维度失败！！！");
         }
-        List<StrategyIndexDimension> strategyIndexDimensionSon1 = new ArrayList<>();
+        List<StrategyIndexDimension> strategyIndexDimensionSon = new ArrayList<>();
         for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_SON_1) {
             strategyIndexDimension.setParentIndexDimensionId(strategyIndexDimension1.getStrategyIndexDimensionId());
             strategyIndexDimension.setAncestors(strategyIndexDimension1.getStrategyIndexDimensionId().toString());
@@ -241,14 +243,8 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
             strategyIndexDimension.setUpdateBy(userId);
             strategyIndexDimension.setCreateTime(nowDate);
             strategyIndexDimension.setUpdateTime(nowDate);
-            strategyIndexDimensionSon1.add(strategyIndexDimension);
+            strategyIndexDimensionSon.add(strategyIndexDimension);
         }
-        try {
-            strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensionSon1);
-        } catch (Exception e) {
-            throw new ServiceException("插入战略指标维度主表失败！！！");
-        }
-        List<StrategyIndexDimension> strategyIndexDimensionSon2 = new ArrayList<>();
         for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_SON_2) {
             strategyIndexDimension.setParentIndexDimensionId(strategyIndexDimension2.getStrategyIndexDimensionId());
             strategyIndexDimension.setAncestors(strategyIndexDimension2.getStrategyIndexDimensionId().toString());
@@ -257,12 +253,13 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
             strategyIndexDimension.setUpdateBy(userId);
             strategyIndexDimension.setCreateTime(nowDate);
             strategyIndexDimension.setUpdateTime(nowDate);
-            strategyIndexDimensionSon2.add(strategyIndexDimension);
+            strategyIndexDimensionSon.add(strategyIndexDimension);
         }
         try {
-            strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensionSon2);
+            strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensionSon);
         } catch (Exception e) {
-            throw new ServiceException("插入战略指标维度主表失败！！！");
+            log.error("初始化子级战略指标维度失败{}", e.getMessage());
+            throw new ServiceException("初始化子级战略指标维度失败！！！");
         }
         return true;
     }

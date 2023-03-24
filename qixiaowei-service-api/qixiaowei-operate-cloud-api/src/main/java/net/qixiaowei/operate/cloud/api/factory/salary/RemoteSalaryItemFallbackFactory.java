@@ -21,11 +21,6 @@ public class RemoteSalaryItemFallbackFactory implements FallbackFactory<RemoteSa
         return new RemoteSalaryItemService() {
 
             @Override
-            public R<Boolean> initSalaryItem(String source) {
-                return R.fail("初始化工资条失败:" + throwable.getMessage());
-            }
-
-            @Override
             public R<List<SalaryPayDTO>> selectByEmployeeId(Long employeeId, String source) {
                 return R.fail("根据员工ID查询工资条失败:" + throwable.getMessage());
             }

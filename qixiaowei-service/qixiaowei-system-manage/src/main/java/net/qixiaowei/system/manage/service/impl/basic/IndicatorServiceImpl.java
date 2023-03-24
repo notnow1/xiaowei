@@ -116,8 +116,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
     private RemoteMarketInsightOpponentService remoteMarketInsightOpponentService;
 
     @Override
-    public Boolean initData() {
-        Long userId = SecurityUtils.getUserId();
+    public Boolean initData(Long userId) {
         Date nowDate = DateUtils.getNowDate();
         //先初始化销售成本
         Indicator indicator = INIT_INDICATOR.get(3);

@@ -110,18 +110,18 @@ public class TenantLogic {
             //1、初始化用户、用户配置---user
             //2、初始化用户角色+用户关联角色---role、user_role
             //3、角色赋权---role_menu
-            boolean initUserInfo = this.initUserInfo(tenant, initMenuIds);
+            Long userId = this.initUserInfo(tenant, initMenuIds);
             //4、配置，如启用行业配置---config
-            boolean initConfig = this.initConfig();
+            boolean initConfig = this.initConfig(userId);
             //5、初始化枚举值---dictionary_type、dictionary_data
-            boolean initDictionary = this.initDictionary();
+            boolean initDictionary = this.initDictionary(userId);
             //6、初始化预置指标---indicator
-            boolean initIndicator = this.initIndicator();
+            boolean initIndicator = this.initIndicator(userId);
             //7、初始化经营云
-            boolean initSalaryItem = this.initOperateCloud();
-            //7、初始化战略云
-            boolean initStrategyCloud = this.initStrategyCloud();
-            initSuccess.set(initUserInfo && initConfig && initDictionary && initIndicator && initSalaryItem && initStrategyCloud);
+            boolean initSalaryItem = this.initOperateCloud(userId);
+            //8、初始化战略云
+            boolean initStrategyCloud = this.initStrategyCloud(userId);
+            initSuccess.set(initConfig && initDictionary && initIndicator && initSalaryItem && initStrategyCloud);
             //continue...
         });
         return initSuccess.get();
@@ -152,6 +152,7 @@ public class TenantLogic {
     public void updateTenantAuth(Set<Long> initMenuIds) {
         //更新租户用户授权
         //找到租户管理员目前的权限。
+        Long userId = 0L;
         Long roleIdOfAdmin = roleMapper.selectRoleIdOfAdmin();
         if (StringUtils.isNull(roleIdOfAdmin)) {
             return;
@@ -159,7 +160,7 @@ public class TenantLogic {
         Set<Long> nowMenuIds = roleMenuMapper.selectMenuIdsByRoleId(roleIdOfAdmin);
         //新增权限。只给管理员角色。
         if (StringUtils.isEmpty(nowMenuIds)) {
-            this.initRoleMenu(initMenuIds, roleIdOfAdmin);
+            this.initRoleMenu(initMenuIds, roleIdOfAdmin, userId);
             return;
         }
         Set<Long> addMenuIds = new HashSet<>();
@@ -173,7 +174,7 @@ public class TenantLogic {
             }
         }
         //新增权限。只给管理员角色。
-        this.initRoleMenu(addMenuIds, roleIdOfAdmin);
+        this.initRoleMenu(addMenuIds, roleIdOfAdmin, userId);
         //取消权限。改租户所有角色。
         this.cancelRoleMenu(nowMenuIds);
     }
@@ -186,8 +187,7 @@ public class TenantLogic {
      * @param: [tenant, initMenuIds]
      * @return: boolean
      **/
-    public boolean initUserInfo(Tenant tenant, Set<Long> initMenuIds) {
-        Long userId = SecurityUtils.getUserId();
+    public Long initUserInfo(Tenant tenant, Set<Long> initMenuIds) {
         Date nowDate = DateUtils.getNowDate();
         //新增用户
         User user = new User();
@@ -198,11 +198,14 @@ public class TenantLogic {
         user.setStatus(BusinessConstants.NORMAL);
         user.setUserName(RoleCode.TENANT_ADMIN.getInfo());
         user.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        user.setCreateBy(userId);
-        user.setUpdateBy(userId);
+        user.setCreateBy(0L);
+        user.setUpdateBy(0L);
         user.setCreateTime(nowDate);
         user.setUpdateTime(nowDate);
         boolean userSuccess = userMapper.insertUser(user) > 0;
+        if (!userSuccess) {
+            throw new ServiceException("用户初始化异常，请联系管理员");
+        }
         Long userIdOfInit = user.getUserId();
         //新增用户配置
         userConfigService.initUserConfig(userIdOfInit);
@@ -214,17 +217,20 @@ public class TenantLogic {
         role.setRoleName(RoleCode.TENANT_ADMIN.getInfo());
         role.setStatus(BusinessConstants.NORMAL);
         role.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        role.setCreateBy(userId);
-        role.setUpdateBy(userId);
+        role.setCreateBy(userIdOfInit);
+        role.setUpdateBy(userIdOfInit);
         role.setCreateTime(nowDate);
         role.setUpdateTime(nowDate);
         boolean roleSuccess = roleMapper.insertRole(role) > 0;
         //角色赋权
         Long roleId = role.getRoleId();
-        boolean initRoleMenuSuccess = this.initRoleMenu(initMenuIds, roleId);
+        boolean initRoleMenuSuccess = this.initRoleMenu(initMenuIds, roleId, userIdOfInit);
         //新增用户角色关联
-        boolean userRoleSuccess = this.initUserRole(userId, nowDate, userIdOfInit, roleId);
-        return userSuccess && roleSuccess && initRoleMenuSuccess && userRoleSuccess;
+        boolean userRoleSuccess = this.initUserRole(userIdOfInit, nowDate, userIdOfInit, roleId);
+        if (!roleSuccess || !initRoleMenuSuccess || !userRoleSuccess) {
+            throw new ServiceException("用户角色初始化异常，请联系管理员");
+        }
+        return userIdOfInit;
     }
 
     /**
@@ -250,15 +256,14 @@ public class TenantLogic {
      * @description: 初始化角色菜单
      * @Author: hzk
      * @date: 2023/1/31 17:45
-     * @param: [initMenuIds, roleId]
+     * @param: [initMenuIds, roleId,userId]
      * @return: boolean
      **/
-    private boolean initRoleMenu(Set<Long> initMenuIds, Long roleId) {
+    private boolean initRoleMenu(Set<Long> initMenuIds, Long roleId, Long userId) {
         if (StringUtils.isEmpty(initMenuIds)) {
             return true;
         }
         boolean initRoleMenu = true;
-        Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         List<RoleMenu> list = new ArrayList<>();
         for (Long menuId : initMenuIds) {
@@ -298,11 +303,10 @@ public class TenantLogic {
      * @description: 初始化配置
      * @Author: hzk
      * @date: 2022/12/13 10:47
-     * @param: []
+     * @param: [userId]
      * @return: boolean
      **/
-    public boolean initConfig() {
-        Long userId = SecurityUtils.getUserId();
+    public boolean initConfig(Long userId) {
         Date nowDate = DateUtils.getNowDate();
         //初始化基础的配置
         Config basicConfig = new Config();
@@ -342,8 +346,8 @@ public class TenantLogic {
      * @param: []
      * @return: boolean
      **/
-    public boolean initDictionary() {
-        return dictionaryTypeService.initData();
+    public boolean initDictionary(Long userId) {
+        return dictionaryTypeService.initData(userId);
     }
 
     /**
@@ -353,20 +357,20 @@ public class TenantLogic {
      * @param: []
      * @return: boolean
      **/
-    public boolean initIndicator() {
-        return iIndicatorService.initData();
+    public boolean initIndicator(Long userId) {
+        return iIndicatorService.initData(userId);
     }
 
     /**
-     * @description: 初始化工资条
+     * @description: 初始化经营云
      * @Author: hzk
      * @date: 2022/12/13 10:47
-     * @param: []
+     * @param: [userId]
      * @return: boolean
      **/
-    public boolean initOperateCloud() {
+    public boolean initOperateCloud(Long userId) {
         boolean initOperateCloud = true;
-        R<Boolean> booleanR = remoteOperateCloudInitDataService.initData(SecurityConstants.INNER);
+        R<Boolean> booleanR = remoteOperateCloudInitDataService.initData(userId, SecurityConstants.INNER);
         if (R.SUCCESS != booleanR.getCode()) {
             initOperateCloud = false;
         } else {
@@ -378,9 +382,16 @@ public class TenantLogic {
         return initOperateCloud;
     }
 
-    public boolean initStrategyCloud() {
+    /**
+     * @description: 初始化战略云
+     * @Author: hzk
+     * @date: 2023/3/24 13:37
+     * @param: [userId]
+     * @return: boolean
+     **/
+    public boolean initStrategyCloud(Long userId) {
         boolean initStrategyCloud = true;
-        R<Boolean> booleanR = remoteStrategyCloudInitDataService.initData(SecurityConstants.INNER);
+        R<Boolean> booleanR = remoteStrategyCloudInitDataService.initData(userId, SecurityConstants.INNER);
         if (R.SUCCESS != booleanR.getCode()) {
             initStrategyCloud = false;
         } else {

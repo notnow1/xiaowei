@@ -16,7 +16,7 @@ public interface IDictionaryTypeService{
      *
      * @return 是否成功
      */
-    Boolean initData();
+    Boolean initData(Long userId);
 
     /**
     * 查询字典类型表

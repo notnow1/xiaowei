@@ -14,6 +14,6 @@ public interface RemoteOperateCloudInitDataService {
      * 初始化数据
      */
     @PostMapping("/operate-cloud/initData")
-    R<Boolean> initData(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<Boolean> initData(@RequestParam("userId") Long userId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }

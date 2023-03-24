@@ -103,7 +103,7 @@ public interface IIndustryAttractionService{
      * 初始化行业吸引力配置
      * @return
      */
-    Boolean initIndustryAttraction();
+    Boolean initIndustryAttraction(Long userId);
 
     /**
      * 逻辑删除行业吸引力要素

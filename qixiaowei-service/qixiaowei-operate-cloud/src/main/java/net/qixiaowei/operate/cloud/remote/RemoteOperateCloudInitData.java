@@ -25,9 +25,9 @@ public class RemoteOperateCloudInitData implements RemoteOperateCloudInitDataSer
     @Override
     @InnerAuth
     @PostMapping("/initData")
-    public R<Boolean> initData(String source) {
+    public R<Boolean> initData(Long userId, String source) {
         Boolean initData;
-        initData = salaryItemService.initSalaryItem();
+        initData = salaryItemService.initSalaryItem(userId);
         return R.ok(initData);
     }
 

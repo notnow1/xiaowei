@@ -2,7 +2,6 @@ package net.qixiaowei.strategy.cloud.remote;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
-import net.qixiaowei.operate.cloud.api.remote.RemoteOperateCloudInitDataService;
 import net.qixiaowei.strategy.cloud.api.remote.RemoteStrategyCloudInitDataService;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
 import net.qixiaowei.strategy.cloud.service.strategyDecode.IStrategyIndexDimensionService;
@@ -32,9 +31,9 @@ public class RemoteStrategyCloudInitData implements RemoteStrategyCloudInitDataS
     @Override
     @InnerAuth
     @PostMapping("/initData")
-    public R<Boolean> initData(String source) {
+    public R<Boolean> initData(Long userId, String source) {
         boolean initData;
-        initData = iIndustryAttractionService.initIndustryAttraction() && iStrategyIndexDimensionService.initStrategyIndexDimension();
+        initData = iIndustryAttractionService.initIndustryAttraction(userId) && iStrategyIndexDimensionService.initStrategyIndexDimension(userId);
         return R.ok(initData);
     }
 

@@ -138,5 +138,5 @@ public interface IStrategyIndexDimensionService {
      *
      * @return 真假
      */
-    boolean initStrategyIndexDimension();
+    boolean initStrategyIndexDimension(Long userId);
 }

@@ -168,9 +168,8 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @return 结果
      */
     @Override
-    public Boolean initSalaryItem() {
+    public Boolean initSalaryItem(Long userId) {
         boolean initSuccess = false;
-        Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         List<SalaryItem> salaryItems = new ArrayList<>();
         for (SalaryItem salaryItem : INIT_SALARY_ITEM) {

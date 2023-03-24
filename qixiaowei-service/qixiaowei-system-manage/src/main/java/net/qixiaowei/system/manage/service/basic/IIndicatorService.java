@@ -20,7 +20,7 @@ public interface IIndicatorService {
      *
      * @return 是否成功
      */
-    Boolean initData();
+    Boolean initData(Long userId);
     /**
      * 查询指标表
      *
