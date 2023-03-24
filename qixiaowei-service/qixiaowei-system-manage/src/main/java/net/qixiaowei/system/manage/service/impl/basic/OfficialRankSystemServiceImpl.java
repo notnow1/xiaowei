@@ -462,6 +462,14 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (StringUtils.isEmpty(officialRankDecomposeDTOS)) {
             throw new ServiceException("职级分解不能为空");
         }
+        for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+            if (StringUtils.isNull(officialRankDecomposeDTO.getDecomposeDimension())) {
+                throw new ServiceException("请选择分解维度");
+            }
+            if (StringUtils.isNull(officialRankDecomposeDTO.getSalaryFactor())) {
+                throw new ServiceException("职级分解的工资系数不能为空");
+            }
+        }
         List<OfficialRankDecompose> officialRankDecomposes = officialRankDecomposeService.insertOfficialRankDecomposes(officialRankDecomposeDTOS, officialRankSystem);// 新增操作
         officialRankSystemDTO.setOfficialRankDecomposes(officialRankDecomposes);
         officialRankSystemDTO.setOfficialRankSystemId(officialRankSystem.getOfficialRankSystemId());
@@ -541,6 +549,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             return 1;
         }
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOAfter) {
+            if (StringUtils.isNull(officialRankDecomposeDTO.getDecomposeDimension())) {
+                throw new ServiceException("请选择分解维度");
+            }
             if (StringUtils.isNull(officialRankDecomposeDTO.getSalaryFactor())) {
                 throw new ServiceException("职级分解的工资系数不能为空");
             }
