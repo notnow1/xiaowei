@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -123,4 +125,19 @@ public class EmolumentPlanController extends BaseController {
     }
 
 
+    /**
+     * 查询已制定的薪酬规划(返回年份List)
+     * @param emolumentPlanDTO
+     * @return
+     */
+    @RequiresPermissions("operate:cloud:emolumentPlan:add")
+    @GetMapping("/getExistYear")
+    public AjaxResult getExistYear(EmolumentPlanDTO emolumentPlanDTO) {
+        List<String> listYears = new ArrayList<>();
+        List<EmolumentPlanDTO> list = emolumentPlanService.selectEmolumentPlanList(emolumentPlanDTO);
+        if (StringUtils.isNotEmpty(list)){
+            listYears = list.stream().filter(f -> f.getPlanYear() != null).map(EmolumentPlanDTO::getPlanYear).collect(Collectors.toList()).stream().map(String::valueOf).collect(Collectors.toList());
+        }
+        return AjaxResult.success(listYears);
+    }
 }
