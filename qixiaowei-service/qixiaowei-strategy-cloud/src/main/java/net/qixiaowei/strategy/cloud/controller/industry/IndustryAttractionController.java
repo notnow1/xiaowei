@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.controller.industry;
 
 import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -8,8 +9,10 @@ import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -50,6 +56,14 @@ public class IndustryAttractionController extends BaseController {
     public TableDataInfo pageList(IndustryAttractionDTO industryAttractionDTO) {
         startPage();
         List<IndustryAttractionDTO> list = industryAttractionService.selectIndustryAttractionList(industryAttractionDTO);
+        if (StringUtils.isNotEmpty(list)) {
+            Set<Long> userIds = list.stream().map(IndustryAttractionDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            list.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
         return getDataTable(list);
     }
 
