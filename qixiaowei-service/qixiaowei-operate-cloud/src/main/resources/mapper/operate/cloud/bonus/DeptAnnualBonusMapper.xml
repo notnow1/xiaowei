@@ -73,7 +73,7 @@
         <if test="deptAnnualBonus.updateTime != null">
             and update_time=#{deptAnnualBonus.updateTime}
         </if>
-    order by create_time desc
+    order by annual_bonus_year desc
     </select>
     <!--    根据年份和一级部门年终奖-->
     <select id="selectDeptAnnualBonusByAnnualBonusYear"
