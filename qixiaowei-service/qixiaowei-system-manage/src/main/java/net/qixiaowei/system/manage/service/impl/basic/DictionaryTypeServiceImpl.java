@@ -114,8 +114,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService {
      */
     @Override
     @Transactional
-    public Boolean initData() {
-        Long userId = SecurityUtils.getUserId();
+    public Boolean initData(Long userId) {
         Date nowDate = DateUtils.getNowDate();
         //初始化
         for (DictionaryTypeCode dictionaryTypeCode : DictionaryTypeCode.values()) {

@@ -372,10 +372,9 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      */
     @Override
     @Transactional
-    public Boolean initIndustryAttraction() {
+    public Boolean initIndustryAttraction(Long userId) {
         int i = 0;
         boolean initSuccess = false;
-        Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         //行业吸引力配置主表
         List<IndustryAttraction> industryAttractions = new ArrayList<>();

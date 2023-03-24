@@ -104,7 +104,7 @@ public class MarketInsightMacroController extends BaseController {
      * 新增市场洞察宏观表
      */
     @RequiresPermissions("strategy:cloud:marketInsightMacro:add")
-    @Log(title = "新增市场洞察宏观表", businessType = BusinessType.MARKET_INSIGHT_MACRO, businessId = "marketInsightMacroId", operationType = OperationType.INSERT)
+    @Log(title = "保存看宏观", businessType = BusinessType.MARKET_INSIGHT_MACRO, businessId = "marketInsightMacroId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated({StrategyIntentDTO.DeleteStrategyIntentDTO.class}) MarketInsightMacroDTO marketInsightMacroDTO) {
         return AjaxResult.success(marketInsightMacroService.insertMarketInsightMacro(marketInsightMacroDTO));
@@ -115,7 +115,7 @@ public class MarketInsightMacroController extends BaseController {
      * 修改市场洞察宏观表
      */
     @RequiresPermissions("strategy:cloud:marketInsightMacro:edit")
-    @Log(title = "修改市场洞察宏观表", businessType = BusinessType.MARKET_INSIGHT_MACRO, businessId = "marketInsightMacroId", operationType = OperationType.UPDATE)
+    @Log(title = "保存看宏观", businessType = BusinessType.MARKET_INSIGHT_MACRO, businessId = "marketInsightMacroId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated({StrategyIntentDTO.UpdateStrategyIntentDTO.class}) MarketInsightMacroDTO marketInsightMacroDTO) {
         return toAjax(marketInsightMacroService.updateMarketInsightMacro(marketInsightMacroDTO));
@@ -146,6 +146,7 @@ public class MarketInsightMacroController extends BaseController {
     @SneakyThrows
     @GetMapping("export")
     @RequiresPermissions("strategy:cloud:marketInsightMacro:export")
+    @Log(title = "导出看宏观", businessType = BusinessType.MARKET_INSIGHT_MACRO, businessId = "marketInsightMacroId", operationType = OperationType.EXPORT)
     public void exportMarketInsightMacro(@RequestParam Map<String, Object> marketInsightMacro, MarketInsightMacroDTO marketInsightMacroDTO, HttpServletResponse response) {
         MarketInsightMacroDTO marketInsightMacroDTO1 = marketInsightMacroService.selectMarketInsightMacroByMarketInsightMacroId(marketInsightMacroDTO.getMarketInsightMacroId());
 

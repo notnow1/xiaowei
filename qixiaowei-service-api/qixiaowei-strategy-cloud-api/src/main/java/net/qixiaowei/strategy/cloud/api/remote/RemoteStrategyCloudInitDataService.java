@@ -7,6 +7,7 @@ import net.qixiaowei.strategy.cloud.api.factory.RemoteStrategyCloudInitDataFallb
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @FeignClient(contextId = "remoteStrategyCloudInitDataService", value = ServiceNameConstants.STRATEGY_CLOUD_SERVICE, fallbackFactory = RemoteStrategyCloudInitDataFallbackFactory.class)
@@ -15,6 +16,6 @@ public interface RemoteStrategyCloudInitDataService {
      * 初始化数据
      */
     @PostMapping("/strategy-cloud/initData")
-    R<Boolean> initData(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<Boolean> initData(@RequestParam("userId") Long userId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }

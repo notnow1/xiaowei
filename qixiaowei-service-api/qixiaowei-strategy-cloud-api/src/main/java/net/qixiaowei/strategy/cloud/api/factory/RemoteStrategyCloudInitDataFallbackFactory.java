@@ -16,7 +16,7 @@ public class RemoteStrategyCloudInitDataFallbackFactory implements FallbackFacto
         log.error("初始化数据服务调用失败:{}", throwable.getMessage());
         return new RemoteStrategyCloudInitDataService() {
             @Override
-            public R<Boolean> initData(String source) {
+            public R<Boolean> initData(Long userId, String source) {
                 return R.fail("初始化数据服务失败:" + throwable.getMessage());
             }
         };

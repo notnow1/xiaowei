@@ -247,10 +247,11 @@ public class TenantServiceImpl implements ITenantService {
         Set<Long> initMenuIds = this.saveTenantContract(tenantContractDTOList, tenantId, userId, nowDate);
         //初始化租户数据
         Boolean initSuccess = tenantLogic.initTenantData(tenant, initMenuIds);
-        if (initSuccess) {
-            tenant.setTenantStatus(BusinessConstants.NORMAL);
-            tenantMapper.updateTenant(tenant);
+        if (!initSuccess) {
+            throw new ServiceException("初始化数据异常，请联系管理员");
         }
+        tenant.setTenantStatus(BusinessConstants.NORMAL);
+        tenantMapper.updateTenant(tenant);
         this.setTenantIdsCache();
         //返回数据
         tenantDTO.setTenantId(tenantId);

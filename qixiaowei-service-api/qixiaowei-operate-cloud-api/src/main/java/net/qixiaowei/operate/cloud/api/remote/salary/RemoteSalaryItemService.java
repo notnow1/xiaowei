@@ -20,12 +20,6 @@ public interface RemoteSalaryItemService {
     String API_PREFIX_SALARY_ITEM = "/salaryItem";
 
     /**
-     * 初始化工资项
-     */
-    @PostMapping(API_PREFIX_SALARY_ITEM + "/initSalaryItem")
-    R<Boolean> initSalaryItem(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
-
-    /**
      * 根据员工ID查询工资条
      *
      * @param employeeId 员工ID

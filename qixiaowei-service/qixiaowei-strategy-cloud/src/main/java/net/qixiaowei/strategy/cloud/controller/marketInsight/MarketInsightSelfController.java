@@ -80,7 +80,7 @@ public class MarketInsightSelfController extends BaseController {
      * 新增市场洞察自身表
      */
     @RequiresPermissions("strategy:cloud:marketInsightSelf:add")
-    @Log(title = "新增市场洞察自身表", businessType = BusinessType.MARKET_INSIGHT_SELF, businessId = "marketInsightSelfId", operationType = OperationType.INSERT)
+    @Log(title = "保存看自身", businessType = BusinessType.MARKET_INSIGHT_SELF, businessId = "marketInsightSelfId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated({MarketInsightSelfDTO.AddMarketInsightSelfDTO.class}) MarketInsightSelfDTO marketInsightSelfDTO) {
         return AjaxResult.success(marketInsightSelfService.insertMarketInsightSelf(marketInsightSelfDTO));
@@ -91,7 +91,7 @@ public class MarketInsightSelfController extends BaseController {
      * 修改市场洞察自身表
      */
     @RequiresPermissions("strategy:cloud:marketInsightSelf:edit")
-    @Log(title = "修改市场洞察自身表", businessType = BusinessType.MARKET_INSIGHT_SELF, businessId = "marketInsightSelfId", operationType = OperationType.UPDATE)
+    @Log(title = "保存看自身", businessType = BusinessType.MARKET_INSIGHT_SELF, businessId = "marketInsightSelfId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated({MarketInsightSelfDTO.UpdateMarketInsightSelfDTO.class}) MarketInsightSelfDTO marketInsightSelfDTO) {
         return toAjax(marketInsightSelfService.updateMarketInsightSelf(marketInsightSelfDTO));
