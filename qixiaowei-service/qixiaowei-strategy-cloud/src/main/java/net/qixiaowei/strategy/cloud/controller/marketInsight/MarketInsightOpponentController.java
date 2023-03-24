@@ -83,7 +83,7 @@ public class MarketInsightOpponentController extends BaseController
     * 新增市场洞察对手表
     */
     @RequiresPermissions("strategy:cloud:marketInsightOpponent:add")
-    @Log(title = "新增市场洞察对手表", businessType = BusinessType.MARKET_INSIGHT_OPPONENT, businessId = "marketInsightOpponentId", operationType = OperationType.INSERT)
+    @Log(title = "保存看对手", businessType = BusinessType.MARKET_INSIGHT_OPPONENT, businessId = "marketInsightOpponentId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated({MarketInsightOpponentDTO.AddMarketInsightOpponentDTO.class}) MarketInsightOpponentDTO marketInsightOpponentDTO) {
     return AjaxResult.success(marketInsightOpponentService.insertMarketInsightOpponent(marketInsightOpponentDTO));
@@ -94,7 +94,7 @@ public class MarketInsightOpponentController extends BaseController
     * 修改市场洞察对手表
     */
     @RequiresPermissions("strategy:cloud:marketInsightOpponent:edit")
-    @Log(title = "修改市场洞察对手表", businessType = BusinessType.MARKET_INSIGHT_OPPONENT, businessId = "marketInsightOpponentId", operationType = OperationType.UPDATE)
+    @Log(title = "保存看对手", businessType = BusinessType.MARKET_INSIGHT_OPPONENT, businessId = "marketInsightOpponentId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated({MarketInsightOpponentDTO.UpdateMarketInsightOpponentDTO.class}) MarketInsightOpponentDTO marketInsightOpponentDTO)
     {

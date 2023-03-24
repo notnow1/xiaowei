@@ -81,7 +81,7 @@ public class StrategyIntentController extends BaseController {
      * 新增战略意图表
      */
     @RequiresPermissions("strategy:cloud:strategyIntent:add")
-    @Log(title = "新增战略意图表", businessType = BusinessType.STRATEGY_INTENT, businessId = "strategyIntentId", operationType = OperationType.INSERT)
+    @Log(title = "保存战略意图", businessType = BusinessType.STRATEGY_INTENT, businessId = "strategyIntentId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(StrategyIntentDTO.AddStrategyIntentDTO.class) StrategyIntentDTO strategyIntentDTO) {
         return AjaxResult.success(strategyIntentService.insertStrategyIntent(strategyIntentDTO));
@@ -92,7 +92,7 @@ public class StrategyIntentController extends BaseController {
      * 修改战略意图表
      */
     @RequiresPermissions("strategy:cloud:strategyIntent:edit")
-    @Log(title = "修改战略意图表", businessType = BusinessType.STRATEGY_INTENT, businessId = "strategyIntentId", operationType = OperationType.UPDATE)
+    @Log(title = "保存战略意图", businessType = BusinessType.STRATEGY_INTENT, businessId = "strategyIntentId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(StrategyIntentDTO.UpdateStrategyIntentDTO.class) StrategyIntentDTO strategyIntentDTO) {
         return toAjax(strategyIntentService.updateStrategyIntent(strategyIntentDTO));

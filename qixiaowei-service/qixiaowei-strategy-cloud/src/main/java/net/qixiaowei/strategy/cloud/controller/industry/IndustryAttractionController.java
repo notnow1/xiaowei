@@ -82,7 +82,7 @@ public class IndustryAttractionController extends BaseController {
      * 新增行业吸引力表
      */
     @RequiresPermissions("strategy:cloud:industryAttraction:add")
-    @Log(title = "新增行业吸引力表", businessType = BusinessType.INDUSTRY_ATTRACTION, businessId = "industryAttractionId", operationType = OperationType.INSERT)
+    @Log(title = "保存行业吸引力配置", businessType = BusinessType.INDUSTRY_ATTRACTION, businessId = "industryAttractionId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(IndustryAttractionDTO.AddIndustryAttractionDTO.class) IndustryAttractionDTO industryAttractionDTO) {
         return AjaxResult.success(industryAttractionService.insertIndustryAttraction(industryAttractionDTO));
@@ -93,7 +93,7 @@ public class IndustryAttractionController extends BaseController {
      * 修改行业吸引力表
      */
     @RequiresPermissions("strategy:cloud:industryAttraction:edit")
-    @Log(title = "修改行业吸引力表", businessType = BusinessType.INDUSTRY_ATTRACTION, businessId = "industryAttractionId", operationType = OperationType.UPDATE)
+    @Log(title = "保存行业吸引力配置", businessType = BusinessType.INDUSTRY_ATTRACTION, businessId = "industryAttractionId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(IndustryAttractionDTO.UpdateIndustryAttractionDTO.class) IndustryAttractionDTO industryAttractionDTO) {
         return toAjax(industryAttractionService.updateIndustryAttraction(industryAttractionDTO));

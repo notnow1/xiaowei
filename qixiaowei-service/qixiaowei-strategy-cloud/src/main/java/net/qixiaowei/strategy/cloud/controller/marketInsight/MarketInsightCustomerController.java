@@ -79,7 +79,7 @@ public class MarketInsightCustomerController extends BaseController {
      * 新增市场洞察客户表
      */
     @RequiresPermissions("strategy:cloud:marketInsightCustomer:add")
-    @Log(title = "新增市场洞察客户表", businessType = BusinessType.MARKET_INSIGHT_CUSTOMER, businessId = "marketInsightCustomerId", operationType = OperationType.INSERT)
+    @Log(title = "保存看客户", businessType = BusinessType.MARKET_INSIGHT_CUSTOMER, businessId = "marketInsightCustomerId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated({MarketInsightCustomerDTO.AddMarketInsightCustomerDTO.class}) MarketInsightCustomerDTO marketInsightCustomerDTO) {
         return AjaxResult.success(marketInsightCustomerService.insertMarketInsightCustomer(marketInsightCustomerDTO));
@@ -90,7 +90,7 @@ public class MarketInsightCustomerController extends BaseController {
      * 修改市场洞察客户表
      */
     @RequiresPermissions("strategy:cloud:marketInsightCustomer:edit")
-    @Log(title = "修改市场洞察客户表", businessType = BusinessType.MARKET_INSIGHT_CUSTOMER, businessId = "marketInsightCustomerId", operationType = OperationType.UPDATE)
+    @Log(title = "保存看客户", businessType = BusinessType.MARKET_INSIGHT_CUSTOMER, businessId = "marketInsightCustomerId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated({MarketInsightCustomerDTO.UpdateMarketInsightCustomerDTO.class}) MarketInsightCustomerDTO marketInsightCustomerDTO) {
         return toAjax(marketInsightCustomerService.updateMarketInsightCustomer(marketInsightCustomerDTO));
