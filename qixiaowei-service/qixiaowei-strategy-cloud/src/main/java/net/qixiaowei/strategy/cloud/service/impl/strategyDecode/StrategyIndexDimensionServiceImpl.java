@@ -319,7 +319,7 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         if (StringUtils.isNotNull(strategyIndexDimensionDTO.getLevel()) && strategyIndexDimensionDTO.getLevel() == 1) {
             List<StrategyIndexDimensionDTO> strategyIndexDimensionsByCode = strategyIndexDimensionMapper.checkUnique(strategyIndexDimensionCode);
             if (StringUtils.isNotEmpty(strategyIndexDimensionsByCode)) {
-                throw new ServiceException("新增战略指标维度" + strategyIndexDimensionDTO.getIndexDimensionName() + "失败,战略指标维度编码重复");
+                throw new ServiceException("新增战略指标维度" + strategyIndexDimensionDTO.getIndexDimensionName() + "失败,战略指标维度序号重复");
             }
         }
         if (parentStrategyIndexDimensionId != 0L) {
