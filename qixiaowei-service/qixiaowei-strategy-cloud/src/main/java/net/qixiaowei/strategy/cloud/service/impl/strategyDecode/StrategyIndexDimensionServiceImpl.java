@@ -11,6 +11,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyIndexDimension;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
@@ -84,7 +85,16 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
     public List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionList(StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
         StrategyIndexDimension strategyIndexDimension = new StrategyIndexDimension();
         BeanUtils.copyProperties(strategyIndexDimensionDTO, strategyIndexDimension);
-        return strategyIndexDimensionMapper.selectStrategyIndexDimensionList(strategyIndexDimension);
+        List<StrategyIndexDimensionDTO> list = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(strategyIndexDimension);
+        if (StringUtils.isNotEmpty(list)) {
+            Set<Long> userIds = list.stream().map(StrategyIndexDimensionDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            list.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
+        return list;
     }
 
 
@@ -96,13 +106,21 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
      */
     @Override
     public List<Tree<Long>> selectStrategyIndexDimensionTreeList(StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
-        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(new StrategyIndexDimension());
+        List<StrategyIndexDimensionDTO> list = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(new StrategyIndexDimension());
+        if (StringUtils.isNotEmpty(list)) {
+            Set<Long> userIds = list.stream().map(StrategyIndexDimensionDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            list.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
         //自定义属性名
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         treeNodeConfig.setIdKey("strategyIndexDimensionId");
         treeNodeConfig.setNameKey("indexDimensionName");
         treeNodeConfig.setParentIdKey("parentIndexDimensionId");
-        return TreeUtil.build(strategyIndexDimensionDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+        return TreeUtil.build(list, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
                     tree.setId(treeNode.getStrategyIndexDimensionId());
                     tree.setParentId(treeNode.getParentIndexDimensionId());
                     tree.setName(treeNode.getIndexDimensionName());
@@ -113,6 +131,7 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
                     tree.putExtra("levelName", treeNode.getLevel() + "级");
                     tree.putExtra("status", treeNode.getStatus());
                     tree.putExtra("createBy", treeNode.getCreateBy());
+                    tree.putExtra("createByName", treeNode.getCreateByName());
                     tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
                 }
         );

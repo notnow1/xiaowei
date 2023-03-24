@@ -462,6 +462,7 @@
         SELECT
         sm.strategy_metrics_id,
         sm.strategy_measure_id,
+        smd.strategy_metrics_detail_id,
         sm.plan_year,
         sm.plan_business_unit_id,
         sm.business_unit_decompose,
@@ -475,10 +476,13 @@
         sm.create_time,
         sm.update_by,
         sm.update_time
-        FROM strategy_metrics sm
+        FROM
+        strategy_metrics sm
         LEFT JOIN strategy_metrics_detail smd
-        AND smd.delete_flag=0
-        WHERE sm.delete_flag=0
+        ON smd.strategy_metrics_id = sm.strategy_metrics_id
+        AND smd.delete_flag = 0
+        WHERE
+        sm.delete_flag = 0
         AND smd.strategy_index_dimension_id IN
         <foreach item="item"
                  collection="strategyIndexDimensionIds"

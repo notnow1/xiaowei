@@ -164,5 +164,5 @@ public interface IDeptSalaryAdjustPlanService {
      *
      * @return list
      */
-    List<Integer> getExistYear();
+    List<String> getExistYear();
 }

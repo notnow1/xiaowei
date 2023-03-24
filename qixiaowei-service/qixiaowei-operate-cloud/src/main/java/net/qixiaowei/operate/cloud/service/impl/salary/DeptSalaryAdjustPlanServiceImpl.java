@@ -484,7 +484,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
      * @return list
      */
     @Override
-    public List<Integer> getExistYear() {
+    public List<String> getExistYear() {
         return deptSalaryAdjustPlanMapper.getExistYear();
     }
 

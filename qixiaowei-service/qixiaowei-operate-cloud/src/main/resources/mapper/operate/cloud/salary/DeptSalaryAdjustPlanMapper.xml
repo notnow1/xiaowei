@@ -7,7 +7,7 @@
         SELECT
         dept_salary_adjust_plan_id,plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_salary_adjust_plan
-        WHERE  dept_salary_adjust_plan_id=#{deptSalaryAdjustPlanId}
+        WHERE dept_salary_adjust_plan_id=#{deptSalaryAdjustPlanId}
         and delete_flag=0
     </select>
 
@@ -17,45 +17,46 @@
         SELECT
         dept_salary_adjust_plan_id,plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_salary_adjust_plan
-        WHERE  dept_salary_adjust_plan_id in
-            <foreach item="item"
-                     collection="deptSalaryAdjustPlanIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE dept_salary_adjust_plan_id in
+        <foreach item="item"
+                 collection="deptSalaryAdjustPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询部门调薪计划表列表-->
-    <select id="selectDeptSalaryAdjustPlanList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustPlanDTO">
+    <select id="selectDeptSalaryAdjustPlanList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustPlanDTO">
         SELECT
         dept_salary_adjust_plan_id,plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_salary_adjust_plan
         WHERE delete_flag=0
-                        <if test="deptSalaryAdjustPlan.deptSalaryAdjustPlanId != null">
-                            and dept_salary_adjust_plan_id=#{deptSalaryAdjustPlan.deptSalaryAdjustPlanId}
-                        </if>
-                        <if test="deptSalaryAdjustPlan.planYear != null">
-                            and plan_year=#{deptSalaryAdjustPlan.planYear}
-                        </if>
-                        <if test="deptSalaryAdjustPlan.salaryAdjustTotal != null">
-                            and salary_adjust_total=#{deptSalaryAdjustPlan.salaryAdjustTotal}
-                        </if>
-                        <if test="deptSalaryAdjustPlan.deleteFlag != null">
-                            and delete_flag=#{deptSalaryAdjustPlan.deleteFlag}
-                        </if>
-                        <if test="deptSalaryAdjustPlan.createBy != null">
-                            and create_by=#{deptSalaryAdjustPlan.createBy}
-                        </if>
-                        <if test="deptSalaryAdjustPlan.createTime != null">
-                            and create_time=#{deptSalaryAdjustPlan.createTime}
-                        </if>
-                        <if test="deptSalaryAdjustPlan.updateBy != null">
-                            and update_by=#{deptSalaryAdjustPlan.updateBy}
-                        </if>
-                        <if test="deptSalaryAdjustPlan.updateTime != null">
-                            and update_time=#{deptSalaryAdjustPlan.updateTime}
-                        </if>
+        <if test="deptSalaryAdjustPlan.deptSalaryAdjustPlanId != null">
+            and dept_salary_adjust_plan_id=#{deptSalaryAdjustPlan.deptSalaryAdjustPlanId}
+        </if>
+        <if test="deptSalaryAdjustPlan.planYear != null">
+            and plan_year=#{deptSalaryAdjustPlan.planYear}
+        </if>
+        <if test="deptSalaryAdjustPlan.salaryAdjustTotal != null">
+            and salary_adjust_total=#{deptSalaryAdjustPlan.salaryAdjustTotal}
+        </if>
+        <if test="deptSalaryAdjustPlan.deleteFlag != null">
+            and delete_flag=#{deptSalaryAdjustPlan.deleteFlag}
+        </if>
+        <if test="deptSalaryAdjustPlan.createBy != null">
+            and create_by=#{deptSalaryAdjustPlan.createBy}
+        </if>
+        <if test="deptSalaryAdjustPlan.createTime != null">
+            and create_time=#{deptSalaryAdjustPlan.createTime}
+        </if>
+        <if test="deptSalaryAdjustPlan.updateBy != null">
+            and update_by=#{deptSalaryAdjustPlan.updateBy}
+        </if>
+        <if test="deptSalaryAdjustPlan.updateTime != null">
+            and update_time=#{deptSalaryAdjustPlan.updateTime}
+        </if>
     </select>
     <!--根据年份查询部门调薪计划-->
     <select id="selectDeptSalaryAdjustPlanByYear"
@@ -73,7 +74,7 @@
         WHERE delete_flag=0
     </select>
     <!--获取已存在的年份-->
-    <select id="getExistYear" resultType="java.lang.Integer">
+    <select id="getExistYear" resultType="java.lang.String">
         SELECT
         plan_year
         FROM
@@ -88,7 +89,8 @@
     </select>
     <!--新增部门调薪计划表-->
     <insert id="insertDeptSalaryAdjustPlan" useGeneratedKeys="true" keyProperty="deptSalaryAdjustPlanId">
-        INSERT INTO dept_salary_adjust_plan (plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_salary_adjust_plan
+        (plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{deptSalaryAdjustPlan.planYear},#{deptSalaryAdjustPlan.salaryAdjustTotal},#{deptSalaryAdjustPlan.deleteFlag},#{deptSalaryAdjustPlan.createBy},#{deptSalaryAdjustPlan.createTime},#{deptSalaryAdjustPlan.updateBy},#{deptSalaryAdjustPlan.updateTime})
     </insert>
@@ -96,56 +98,57 @@
     <update id="updateDeptSalaryAdjustPlan">
         UPDATE dept_salary_adjust_plan
         SET
-                    <if test="deptSalaryAdjustPlan.planYear != null">
-                        plan_year=#{deptSalaryAdjustPlan.planYear},
-                    </if>
-                    <if test="deptSalaryAdjustPlan.salaryAdjustTotal != null">
-                        salary_adjust_total=#{deptSalaryAdjustPlan.salaryAdjustTotal},
-                    </if>
-                    <if test="deptSalaryAdjustPlan.deleteFlag != null">
-                        delete_flag=#{deptSalaryAdjustPlan.deleteFlag},
-                    </if>
-                    <if test="deptSalaryAdjustPlan.createBy != null">
-                        create_by=#{deptSalaryAdjustPlan.createBy},
-                    </if>
-                    <if test="deptSalaryAdjustPlan.createTime != null">
-                        create_time=#{deptSalaryAdjustPlan.createTime},
-                    </if>
-                    <if test="deptSalaryAdjustPlan.updateBy != null">
-                        update_by=#{deptSalaryAdjustPlan.updateBy},
-                    </if>
-                    <if test="deptSalaryAdjustPlan.updateTime != null">
-                        update_time=#{deptSalaryAdjustPlan.updateTime}
-                    </if>
+        <if test="deptSalaryAdjustPlan.planYear != null">
+            plan_year=#{deptSalaryAdjustPlan.planYear},
+        </if>
+        <if test="deptSalaryAdjustPlan.salaryAdjustTotal != null">
+            salary_adjust_total=#{deptSalaryAdjustPlan.salaryAdjustTotal},
+        </if>
+        <if test="deptSalaryAdjustPlan.deleteFlag != null">
+            delete_flag=#{deptSalaryAdjustPlan.deleteFlag},
+        </if>
+        <if test="deptSalaryAdjustPlan.createBy != null">
+            create_by=#{deptSalaryAdjustPlan.createBy},
+        </if>
+        <if test="deptSalaryAdjustPlan.createTime != null">
+            create_time=#{deptSalaryAdjustPlan.createTime},
+        </if>
+        <if test="deptSalaryAdjustPlan.updateBy != null">
+            update_by=#{deptSalaryAdjustPlan.updateBy},
+        </if>
+        <if test="deptSalaryAdjustPlan.updateTime != null">
+            update_time=#{deptSalaryAdjustPlan.updateTime}
+        </if>
         WHERE
-                 dept_salary_adjust_plan_id=#{deptSalaryAdjustPlan.deptSalaryAdjustPlanId}
+        dept_salary_adjust_plan_id=#{deptSalaryAdjustPlan.deptSalaryAdjustPlanId}
     </update>
     <!--逻辑删除部门调薪计划表-->
     <update id="logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId">
         UPDATE dept_salary_adjust_plan
-        SET     delete_flag= 1,
-                update_by=#{deptSalaryAdjustPlan.updateBy},
-                update_time=#{deptSalaryAdjustPlan.updateTime}
+        SET delete_flag= 1,
+        update_by=#{deptSalaryAdjustPlan.updateBy},
+        update_time=#{deptSalaryAdjustPlan.updateTime}
         WHERE
-                dept_salary_adjust_plan_id=#{deptSalaryAdjustPlan.deptSalaryAdjustPlanId}
+        dept_salary_adjust_plan_id=#{deptSalaryAdjustPlan.deptSalaryAdjustPlanId}
     </update>
     <!--逻辑批量删除部门调薪计划表-->
     <update id="logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds">
         UPDATE dept_salary_adjust_plan
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         dept_salary_adjust_plan_id IN
-            <foreach item="item"
-                     collection="deptSalaryAdjustPlanIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        dept_salary_adjust_plan_id IN
+        <foreach item="item"
+                 collection="deptSalaryAdjustPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增部门调薪计划表-->
     <insert id="batchDeptSalaryAdjustPlan">
-        INSERT INTO dept_salary_adjust_plan (plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_salary_adjust_plan
+        (plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="deptSalaryAdjustPlans"
@@ -157,76 +160,76 @@
     <!--物理删除部门调薪计划表-->
     <delete id="deleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId">
         DELETE FROM dept_salary_adjust_plan
-        WHERE  dept_salary_adjust_plan_id=#{deptSalaryAdjustPlan}
+        WHERE dept_salary_adjust_plan_id=#{deptSalaryAdjustPlan}
 
     </delete>
     <!--物理批量删除部门调薪计划表-->
     <delete id="deleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds">
         DELETE FROM dept_salary_adjust_plan
-        WHERE  dept_salary_adjust_plan_id IN
-            <foreach item="item"
-                     collection="deptSalaryAdjustPlanIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE dept_salary_adjust_plan_id IN
+        <foreach item="item"
+                 collection="deptSalaryAdjustPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改部门调薪计划表-->
     <update id="updateDeptSalaryAdjustPlans">
         update dept_salary_adjust_plan
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="plan_year=case" suffix="end,">
-                        <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
-                                <if test="item.planYear != null">
-                                    when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.planYear}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="salary_adjust_total=case" suffix="end,">
-                        <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
-                                <if test="item.salaryAdjustTotal != null">
-                                    when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.salaryAdjustTotal}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="plan_year=case" suffix="end,">
+                <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.planYear != null">
+                        when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.planYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="salary_adjust_total=case" suffix="end,">
+                <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.salaryAdjustTotal != null">
+                        when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.salaryAdjustTotal}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="deptSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="deptSalaryAdjustPlanList" separator="or" item="item" index="index">
-                    dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId}
+            dept_salary_adjust_plan_id=#{item.deptSalaryAdjustPlanId}
         </foreach>
     </update>
 </mapper>

@@ -126,5 +126,5 @@ public interface DeptSalaryAdjustPlanMapper {
      *
      * @return List
      */
-    List<Integer> getExistYear();
+    List<String> getExistYear();
 }
