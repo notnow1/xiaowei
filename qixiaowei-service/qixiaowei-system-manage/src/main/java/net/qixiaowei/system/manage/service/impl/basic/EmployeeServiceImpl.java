@@ -277,7 +277,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //查询是否已经存在员工
         EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeCode(employeeDTO.getEmployeeCode());
         if (null != employeeDTO1) {
-            throw new ServiceException("工号已存在请重新添加！");
+            throw new ServiceException("工号已存在");
         }
         //员工表
         Employee employee = new Employee();

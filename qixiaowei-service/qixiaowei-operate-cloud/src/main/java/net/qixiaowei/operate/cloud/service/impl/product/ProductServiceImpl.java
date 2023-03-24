@@ -384,7 +384,7 @@ public class ProductServiceImpl implements IProductService {
     public ProductDTO insertProduct(ProductDTO productDTO) {
         ProductDTO productDTO1 = productMapper.selectProductByProductCode(productDTO.getProductCode());
         if (null != productDTO1) {
-            throw new ServiceException("产品编码已存在！");
+            throw new ServiceException("产品编码已存在");
         }
         //封装产品表数据
         Product product = this.packProduct(productDTO);

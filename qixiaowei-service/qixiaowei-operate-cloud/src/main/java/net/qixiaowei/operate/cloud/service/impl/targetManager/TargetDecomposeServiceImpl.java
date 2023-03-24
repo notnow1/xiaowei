@@ -1161,7 +1161,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setTargetDecomposeType(TargetDecomposeType.ORDER.getCode());
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
         if (StringUtils.isNotNull(targetDecomposeDTO1)) {
-            throw new ServiceException(targetDecomposeDTO.getTargetYear() + "年已创建该维度目标分解，无需重复创建。");
+            throw new ServiceException(targetDecomposeDTO.getTargetYear() + "年该维度目标分解已存在");
         }
         targetDecompose.setCreateBy(SecurityUtils.getUserId());
         targetDecompose.setCreateTime(DateUtils.getNowDate());
@@ -1331,7 +1331,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setTargetDecomposeType(TargetDecomposeType.INCOME.getCode());
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
         if (StringUtils.isNotNull(targetDecomposeDTO1)) {
-            throw new ServiceException(targetDecomposeDTO.getTargetYear() + "年已创建该维度目标分解，无需重复创建。");
+            throw new ServiceException(targetDecomposeDTO.getTargetYear() + "年该维度目标分解已存在");
         }
         targetDecompose.setCreateBy(SecurityUtils.getUserId());
         targetDecompose.setCreateTime(DateUtils.getNowDate());
@@ -1378,7 +1378,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setTargetDecomposeType(TargetDecomposeType.RECEIVABLE.getCode());
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
         if (StringUtils.isNotNull(targetDecomposeDTO1)) {
-            throw new ServiceException(targetDecomposeDTO.getTargetYear() + "年已创建该维度目标分解，无需重复创建。");
+            throw new ServiceException(targetDecomposeDTO.getTargetYear() + "年该维度目标分解已存在");
         }
         targetDecompose.setCreateBy(SecurityUtils.getUserId());
         targetDecompose.setCreateTime(DateUtils.getNowDate());
@@ -1426,7 +1426,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setTargetDecomposeType(TargetDecomposeType.CUSTOM.getCode());
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
         if (StringUtils.isNotNull(targetDecomposeDTO1)) {
-            throw new ServiceException(targetDecomposeDTO.getTargetYear() + "年已创建该维度目标分解，无需重复创建。");
+            throw new ServiceException(targetDecomposeDTO.getTargetYear() + "年该维度目标分解已存在");
         }
         targetDecompose.setCreateBy(SecurityUtils.getUserId());
         targetDecompose.setCreateTime(DateUtils.getNowDate());
@@ -2508,7 +2508,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 throw new ServiceException("移交预测负责人失败");
             }
         } else {
-            throw new ServiceException("暂无可移交的数据！");
+            throw new ServiceException("您没有移交该数据的权限");
         }
     }
 

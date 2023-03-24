@@ -312,7 +312,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         BeanUtils.copyProperties(employeeBudgetDTO, employeeBudget);
         EmployeeBudgetDTO employeeBudgetDTO1 = employeeBudgetMapper.selectEmployeeBudget(employeeBudget);
         if (StringUtils.isNotNull(employeeBudgetDTO1)) {
-            throw new ServiceException("人力预算已存在！");
+            throw new ServiceException("人力预算已存在");
         }
         employeeBudget.setCreateBy(SecurityUtils.getUserId());
         employeeBudget.setCreateTime(DateUtils.getNowDate());

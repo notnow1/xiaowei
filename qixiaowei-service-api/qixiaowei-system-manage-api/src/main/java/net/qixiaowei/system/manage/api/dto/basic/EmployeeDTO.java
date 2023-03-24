@@ -120,7 +120,7 @@ public class EmployeeDTO extends BaseDTO {
     /**
      * 员工手机号
      */
-    @Pattern(regexp = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "手机号码有误！")
+    @Pattern(regexp = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "请输入正确的手机号码")
 //    @NotBlank(message = "员工手机号不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private String employeeMobile;
     /**
@@ -255,7 +255,7 @@ public class EmployeeDTO extends BaseDTO {
     /**
      * 紧急联系人电话
      */
-    @Pattern(regexp = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "紧急联系人手机号码有误！")
+    @Pattern(regexp = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "请输入正确的手机号码")
 //    @NotBlank(message = "紧急联系人电话不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private String emergencyMobile;
     /**

@@ -91,7 +91,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
         BeanUtils.copyProperties(productUnitDTO, productUnit);
         ProductUnitDTO productUnitDTO1 = productUnitMapper.selectProductUnitByProductUnitCode(productUnitDTO.getProductUnitCode());
         if (StringUtils.isNotNull(productUnitDTO1)) {
-            throw new ServiceException("产品单位编码已存在！");
+            throw new ServiceException("产品单位编码已存在");
         }
         productUnit.setCreateBy(SecurityUtils.getUserId());
         productUnit.setCreateTime(DateUtils.getNowDate());

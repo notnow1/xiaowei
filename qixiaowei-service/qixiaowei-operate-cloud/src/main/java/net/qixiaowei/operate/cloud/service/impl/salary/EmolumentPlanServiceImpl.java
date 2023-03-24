@@ -291,7 +291,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
         BeanUtils.copyProperties(emolumentPlanDTO, emolumentPlan);
         EmolumentPlanDTO emolumentPlanDTO1 = emolumentPlanMapper.selectEmolumentPlanByPlanYear(emolumentPlan.getPlanYear());
         if (StringUtils.isNotNull(emolumentPlanDTO1)) {
-            throw new ServiceException("该预算年度已操作薪酬规划计划！！！");
+            throw new ServiceException(emolumentPlanDTO.getPlanYear()+"年薪酬规划已存在");
         }
         emolumentPlan.setCreateBy(SecurityUtils.getUserId());
         emolumentPlan.setCreateTime(DateUtils.getNowDate());

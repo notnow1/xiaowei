@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -50,6 +52,8 @@ public class BonusBudgetDTO extends BaseDTO {
     /**
      * 总奖金包预算参数集合
      */
+    @NotEmpty(message = "奖金驱动因素不能为空", groups = {BonusBudgetDTO.DeleteBonusBudgetDTO.class, BonusBudgetDTO.UpdateBonusBudgetDTO.class})
+    @Valid
     private List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS;
     /**
      * 总薪酬包预算

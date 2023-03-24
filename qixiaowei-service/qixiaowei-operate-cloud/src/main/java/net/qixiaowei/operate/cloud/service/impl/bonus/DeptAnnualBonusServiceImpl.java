@@ -216,7 +216,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
     public DeptAnnualBonusDTO insertDeptAnnualBonus(DeptAnnualBonusDTO deptAnnualBonusDTO) {
         DeptAnnualBonusDTO deptAnnualBonusDTO1 = deptAnnualBonusMapper.selectDeptAnnualBonusByAnnualBonusYearAdd(deptAnnualBonusDTO.getAnnualBonusYear());
         if (StringUtils.isNotNull(deptAnnualBonusDTO1)) {
-            throw new ServiceException(deptAnnualBonusDTO.getAnnualBonusYear() + "年 数据已存在 无需重复添加！");
+            throw new ServiceException(deptAnnualBonusDTO.getAnnualBonusYear() + "年部门年终奖已生成");
         }
         //部门年终奖系数表集合
         List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs = deptAnnualBonusDTO.getDeptAnnualBonusFactorDTOs();

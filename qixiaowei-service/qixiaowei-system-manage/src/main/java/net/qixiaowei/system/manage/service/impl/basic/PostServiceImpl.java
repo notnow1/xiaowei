@@ -151,12 +151,12 @@ public class PostServiceImpl implements IPostService {
         //先查询 重复无法添加
         PostDTO postDTO1 = postMapper.selectPostCode(postDTO.getPostCode());
         if (StringUtils.isNotNull(postDTO1)) {
-            throw new ServiceException("岗位编码已存在！");
+            throw new ServiceException("岗位编码已存在");
         }
         //先查询 重复无法添加
         PostDTO postDTO2 = postMapper.selectPostName(postDTO.getPostName());
         if (StringUtils.isNotNull(postDTO2)) {
-            throw new ServiceException("岗位名称已存在！");
+            throw new ServiceException("岗位名称已存在");
         }
         //岗位表
         Post post = new Post();

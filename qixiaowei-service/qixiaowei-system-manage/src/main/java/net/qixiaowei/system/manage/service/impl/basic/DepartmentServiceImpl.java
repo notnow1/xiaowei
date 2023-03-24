@@ -320,7 +320,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //查询code编码是否已经存在
         DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentCode(departmentDTO.getDepartmentCode());
         if (null != departmentDTO1) {
-            throw new ServiceException("编码已经存在 不允许添加相同编码" + departmentDTO.getDepartmentCode());
+            throw new ServiceException("组织编码已存在");
         }
         //实体类
         Department department = new Department();

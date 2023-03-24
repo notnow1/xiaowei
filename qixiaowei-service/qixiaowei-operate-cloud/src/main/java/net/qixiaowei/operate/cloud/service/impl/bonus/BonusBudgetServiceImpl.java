@@ -241,7 +241,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
     public BonusBudgetDTO insertBonusBudget(BonusBudgetDTO bonusBudgetDTO) {
         BonusBudgetDTO bonusBudgetDTO1 = bonusBudgetMapper.selectBonusBudgetByBudgetYear(bonusBudgetDTO.getBudgetYear());
         if (StringUtils.isNotNull(bonusBudgetDTO1)) {
-            throw new ServiceException(bonusBudgetDTO.getBudgetYear() + "年 数据已存在无需重复添加！");
+            throw new ServiceException(bonusBudgetDTO.getBudgetYear() + "年总奖金包预算已存在");
         }
         //插入总奖金包预算参数集合
         List<BonusBudgetParameters> bonusBudgetParametersList = new ArrayList<>();
