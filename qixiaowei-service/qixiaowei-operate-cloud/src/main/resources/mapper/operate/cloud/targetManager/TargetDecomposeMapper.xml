@@ -130,7 +130,9 @@
         <if test="targetDecompose.updateTime != null">
             and td.update_time=#{targetDecompose.updateTime}
         </if>
-        order by td.create_time desc
+        <!-- 数据范围过滤 -->
+        ${targetDecompose.params.dataScope}
+        ORDER BY td.create_time DESC
     </select>
     <!--    联合主键查询目标分解表-->
     <select id="selectTargetDecomposeUniteId"
@@ -343,7 +345,9 @@
         <if test="targetDecompose.updateTime != null">
             and td.update_time=#{targetDecompose.updateTime}
         </if>
-        order by td.create_time desc
+        <!-- 数据范围过滤 -->
+        ${targetDecompose.params.dataScope}
+        ORDER BY td.create_time DESC
     </select>
     <!--    根据时间维度查询目标分解所有数据-->
     <select id="selectCronCreateHistoryList"

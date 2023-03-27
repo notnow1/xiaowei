@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.Area;
@@ -102,6 +103,7 @@ public class AreaServiceImpl implements IAreaService {
      * @param areaDTO 区域表
      * @return 区域表
      */
+    @DataScope(businessAlias = "a")
     @Override
     public List<AreaDTO> selectAreaList(AreaDTO areaDTO) {
         Area area = new Area();

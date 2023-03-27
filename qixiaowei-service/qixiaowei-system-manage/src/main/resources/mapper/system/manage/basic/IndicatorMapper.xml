@@ -401,6 +401,9 @@
             OR t1.driving_factor_flag IS NULL
             )
         </if>
+        <!-- 数据范围过滤 -->
+        ${indicator.params.dataScope}
+        ORDER BY t1.create_time DESC
     </select>
     <!--    级联查询父菜单-->
     <select id="selectIndicatorTree" resultMap="treeVoMap">

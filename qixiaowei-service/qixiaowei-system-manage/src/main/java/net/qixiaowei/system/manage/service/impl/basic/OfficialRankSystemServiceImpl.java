@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
@@ -120,6 +121,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      * @param officialRankSystemDTO 职级体系表
      * @return
      */
+    @DataScope(businessAlias = "ors")
     @Override
     public List<OfficialRankSystemDTO> selectOfficialRankSystemPageList(OfficialRankSystemDTO officialRankSystemDTO) {
         OfficialRankSystem officialRankSystem = new OfficialRankSystem();

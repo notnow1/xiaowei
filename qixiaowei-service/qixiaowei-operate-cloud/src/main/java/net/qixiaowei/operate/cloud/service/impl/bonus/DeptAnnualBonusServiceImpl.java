@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptAnnualBonus;
@@ -187,6 +188,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      * @param deptAnnualBonusDTO 部门年终奖表
      * @return 部门年终奖表
      */
+    @DataScope(businessAlias = "dab")
     @Override
     public List<DeptAnnualBonusDTO> selectDeptAnnualBonusList(DeptAnnualBonusDTO deptAnnualBonusDTO) {
         DeptAnnualBonus deptAnnualBonus = new DeptAnnualBonus();

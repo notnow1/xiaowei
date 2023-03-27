@@ -45,13 +45,13 @@
     <!--    查询薪酬规划表列表-->
     <select id="selectEmolumentPlanList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO">
         SELECT
-        emolument_plan_id, plan_year, revenue_before_one, revenue, revenue_after_one, revenue_after_two, er_before_one,
-        emolument_revenue_improve, er_improve_after_one, er_improve_after_two, emolument_package_before_one,
-        delete_flag, create_by, create_time, update_by, update_time
-        FROM emolument_plan
-        WHERE delete_flag=0
+        ep.emolument_plan_id, ep.plan_year, ep.revenue_before_one, ep.revenue, ep.revenue_after_one, ep.revenue_after_two, ep.er_before_one,
+        ep.emolument_revenue_improve, ep.er_improve_after_one, ep.er_improve_after_two, ep.emolument_package_before_one,
+        ep.delete_flag, ep.create_by, ep.create_time, ep.update_by, ep.update_time
+        FROM emolument_plan ep
+        WHERE ep.delete_flag=0
         <if test="emolumentPlan.createBys != null and emolumentPlan.createBys.size() >0">
-            and create_by in
+            and ep.create_by in
             <foreach item="item"
                      collection="emolumentPlan.createBys"
                      index="index" open="(" separator="," close=")">
@@ -59,54 +59,56 @@
             </foreach>
         </if>
         <if test="emolumentPlan.emolumentPlanId != null">
-            and emolument_plan_id=#{emolumentPlan.emolumentPlanId}
+            and ep.emolument_plan_id=#{emolumentPlan.emolumentPlanId}
         </if>
         <if test="emolumentPlan.planYear != null">
-            and plan_year=#{emolumentPlan.planYear}
+            and ep.plan_year=#{emolumentPlan.planYear}
         </if>
         <if test="emolumentPlan.revenueBeforeOne != null">
-            and revenue_before_one=#{emolumentPlan.revenueBeforeOne}
+            and ep.revenue_before_one=#{emolumentPlan.revenueBeforeOne}
         </if>
         <if test="emolumentPlan.revenue != null">
-            and revenue=#{emolumentPlan.revenue}
+            and ep.revenue=#{emolumentPlan.revenue}
         </if>
         <if test="emolumentPlan.revenueAfterOne != null">
-            and revenue_after_one=#{emolumentPlan.revenueAfterOne}
+            and ep.revenue_after_one=#{emolumentPlan.revenueAfterOne}
         </if>
         <if test="emolumentPlan.revenueAfterTwo != null">
-            and revenue_after_two=#{emolumentPlan.revenueAfterTwo}
+            and ep.revenue_after_two=#{emolumentPlan.revenueAfterTwo}
         </if>
         <if test="emolumentPlan.erBeforeOne != null">
-            and er_before_one=#{emolumentPlan.erBeforeOne}
+            and ep.er_before_one=#{emolumentPlan.erBeforeOne}
         </if>
         <if test="emolumentPlan.emolumentRevenueImprove != null">
-            and emolument_revenue_improve=#{emolumentPlan.emolumentRevenueImprove}
+            and ep.emolument_revenue_improve=#{emolumentPlan.emolumentRevenueImprove}
         </if>
         <if test="emolumentPlan.erImproveAfterOne != null">
-            and er_improve_after_one=#{emolumentPlan.erImproveAfterOne}
+            and ep.er_improve_after_one=#{emolumentPlan.erImproveAfterOne}
         </if>
         <if test="emolumentPlan.erImproveAfterTwo != null">
-            and er_improve_after_two=#{emolumentPlan.erImproveAfterTwo}
+            and ep.er_improve_after_two=#{emolumentPlan.erImproveAfterTwo}
         </if>
         <if test="emolumentPlan.emolumentPackageBeforeOne != null">
-            and emolument_package_before_one=#{emolumentPlan.emolumentPackageBeforeOne}
+            and ep.emolument_package_before_one=#{emolumentPlan.emolumentPackageBeforeOne}
         </if>
         <if test="emolumentPlan.deleteFlag != null">
-            and delete_flag=#{emolumentPlan.deleteFlag}
+            and ep.delete_flag=#{emolumentPlan.deleteFlag}
         </if>
         <if test="emolumentPlan.createBy != null">
-            and create_by=#{emolumentPlan.createBy}
+            and ep.create_by=#{emolumentPlan.createBy}
         </if>
         <if test="emolumentPlan.createTime != null">
-            and create_time=#{emolumentPlan.createTime}
+            and ep.create_time=#{emolumentPlan.createTime}
         </if>
         <if test="emolumentPlan.updateBy != null">
-            and update_by=#{emolumentPlan.updateBy}
+            and ep.update_by=#{emolumentPlan.updateBy}
         </if>
         <if test="emolumentPlan.updateTime != null">
-            and update_time=#{emolumentPlan.updateTime}
+            and ep.update_time=#{emolumentPlan.updateTime}
         </if>
-        order by plan_year desc
+        <!-- 数据范围过滤 -->
+        ${emolumentPlan.params.dataScope}
+        ORDER BY ep.create_time DESC
     </select>
 <!--    新增薪酬规划时预制数据-->
     <select id="prefabricateAddEmolumentPlan"

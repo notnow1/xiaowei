@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
@@ -280,6 +281,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      * @param targetOutcomeDTO 目标结果表
      * @return 目标结果表
      */
+    @DataScope(businessAlias = "tao")
     @Override
     public List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO) {
         String createByName = targetOutcomeDTO.getCreateByName();

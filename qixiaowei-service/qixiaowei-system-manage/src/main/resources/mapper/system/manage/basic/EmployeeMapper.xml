@@ -902,7 +902,9 @@
         <if test="employee.emergencyMobile != null and employee.emergencyMobile != ''">
             and ei.emergency_mobile=#{employee.emergencyMobile}
         </if>
-        order by e.create_time desc
+        <!-- 数据范围过滤 -->
+        ${employee.params.dataScope}
+        ORDER BY e.create_time DESC
     </select>
 
     <!--    通过部门，岗位，职级集合查询员工表-->

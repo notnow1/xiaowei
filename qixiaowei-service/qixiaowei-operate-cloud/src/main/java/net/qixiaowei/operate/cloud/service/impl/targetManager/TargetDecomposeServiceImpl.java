@@ -21,6 +21,7 @@ import net.qixiaowei.integration.common.text.Convert;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.message.api.dto.backlog.BacklogDTO;
@@ -915,6 +916,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecomposeDTO 目标分解(销售订单)表
      * @return 目标分解(销售订单)表
      */
+    @DataScope(businessAlias = "td")
     @Override
     public List<TargetDecomposeDTO> selectOrderList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
@@ -939,6 +941,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecomposeDTO 滚动预测表列表
      * @return
      */
+    @DataScope(businessAlias = "td")
     @Override
     public List<TargetDecomposeDTO> rollPageList(TargetDecomposeDTO targetDecomposeDTO) {
         List<String> remoteIndicatorIds = new ArrayList<>();
@@ -1067,6 +1070,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecomposeDTO 目标分解(销售收入)表
      * @return 目标分解(销售收入)表
      */
+    @DataScope(businessAlias = "td")
     @Override
     public List<TargetDecomposeDTO> selectIncomeList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
@@ -1091,6 +1095,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecomposeDTO 目标分解(销售回款)表
      * @return 目标分解(销售回款)表
      */
+    @DataScope(businessAlias = "td")
     @Override
     public List<TargetDecomposeDTO> selectReturnedList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
@@ -1115,6 +1120,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecomposeDTO 目标分解(自定义)表
      * @return 目标分解(自定义)表
      */
+    @DataScope(businessAlias = "td")
     @Override
     public List<TargetDecomposeDTO> selectCustomList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();

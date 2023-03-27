@@ -30,33 +30,36 @@
     <select id="selectDeptSalaryAdjustPlanList"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustPlanDTO">
         SELECT
-        dept_salary_adjust_plan_id,plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time
-        FROM dept_salary_adjust_plan
-        WHERE delete_flag=0
-        <if test="deptSalaryAdjustPlan.deptSalaryAdjustPlanId != null">
-            and dept_salary_adjust_plan_id=#{deptSalaryAdjustPlan.deptSalaryAdjustPlanId}
-        </if>
-        <if test="deptSalaryAdjustPlan.planYear != null">
-            and plan_year=#{deptSalaryAdjustPlan.planYear}
-        </if>
-        <if test="deptSalaryAdjustPlan.salaryAdjustTotal != null">
-            and salary_adjust_total=#{deptSalaryAdjustPlan.salaryAdjustTotal}
-        </if>
-        <if test="deptSalaryAdjustPlan.deleteFlag != null">
-            and delete_flag=#{deptSalaryAdjustPlan.deleteFlag}
-        </if>
-        <if test="deptSalaryAdjustPlan.createBy != null">
-            and create_by=#{deptSalaryAdjustPlan.createBy}
-        </if>
-        <if test="deptSalaryAdjustPlan.createTime != null">
-            and create_time=#{deptSalaryAdjustPlan.createTime}
-        </if>
-        <if test="deptSalaryAdjustPlan.updateBy != null">
-            and update_by=#{deptSalaryAdjustPlan.updateBy}
-        </if>
-        <if test="deptSalaryAdjustPlan.updateTime != null">
-            and update_time=#{deptSalaryAdjustPlan.updateTime}
-        </if>
+        dsap.dept_salary_adjust_plan_id,dsap.plan_year,dsap.salary_adjust_total,dsap.delete_flag,dsap.create_by,dsap.create_time,dsap.update_by,dsap.update_time
+        FROM dept_salary_adjust_plan dsap
+        WHERE dsap.delete_flag=0
+                        <if test="deptSalaryAdjustPlan.deptSalaryAdjustPlanId != null">
+                            and ddsap.ept_salary_adjust_plan_id=#{deptSalaryAdjustPlan.deptSalaryAdjustPlanId}
+                        </if>
+                        <if test="deptSalaryAdjustPlan.planYear != null">
+                            and dsap.plan_year=#{deptSalaryAdjustPlan.planYear}
+                        </if>
+                        <if test="deptSalaryAdjustPlan.salaryAdjustTotal != null">
+                            and dsap.salary_adjust_total=#{deptSalaryAdjustPlan.salaryAdjustTotal}
+                        </if>
+                        <if test="deptSalaryAdjustPlan.deleteFlag != null">
+                            and dsap.delete_flag=#{deptSalaryAdjustPlan.deleteFlag}
+                        </if>
+                        <if test="deptSalaryAdjustPlan.createBy != null">
+                            and dsap.create_by=#{deptSalaryAdjustPlan.createBy}
+                        </if>
+                        <if test="deptSalaryAdjustPlan.createTime != null">
+                            and dsap.create_time=#{deptSalaryAdjustPlan.createTime}
+                        </if>
+                        <if test="deptSalaryAdjustPlan.updateBy != null">
+                            and dsap.update_by=#{deptSalaryAdjustPlan.updateBy}
+                        </if>
+                        <if test="deptSalaryAdjustPlan.updateTime != null">
+                            and dsap.update_time=#{deptSalaryAdjustPlan.updateTime}
+                        </if>
+        <!-- 数据范围过滤 -->
+        ${deptSalaryAdjustPlan.params.dataScope}
+        ORDER BY dsap.create_time DESC
     </select>
     <!--根据年份查询部门调薪计划-->
     <select id="selectDeptSalaryAdjustPlanByYear"

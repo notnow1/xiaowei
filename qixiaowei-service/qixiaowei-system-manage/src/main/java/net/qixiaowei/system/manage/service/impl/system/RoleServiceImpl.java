@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.enums.system.RoleType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
@@ -89,6 +90,7 @@ public class RoleServiceImpl implements IRoleService {
      * @return 角色表
      */
     @Override
+    @DataScope(userAlias = "u")
     public List<RoleDTO> selectRoleList(RoleDTO roleDTO) {
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);

@@ -722,7 +722,9 @@
                 #{item}
             </foreach>
         </if>
-        ORDER BY esa.update_time DESC
+        <!-- 数据范围过滤 -->
+        ${empSalaryAdjustPlan.params.dataScope}
+        ORDER BY esa.create_time DESC
     </select>
     <!--根据员工ID获取个人调薪计划表-->
     <select id="selectByEmployeeId"

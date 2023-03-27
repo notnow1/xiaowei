@@ -16,35 +16,37 @@
     <select id="selectTargetDecomposeDimensionList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO">
         SELECT
-        target_decompose_dimension_id, decomposition_dimension, sort, delete_flag, create_by, create_time, update_by,
-        update_time
-        FROM target_decompose_dimension
-        WHERE delete_flag=0
+        tdd.target_decompose_dimension_id, tdd.decomposition_dimension, tdd.sort, tdd.delete_flag, tdd.create_by, tdd.create_time, tdd.update_by,
+        tdd.update_time
+        FROM target_decompose_dimension tdd
+        WHERE tdd.delete_flag=0
         <if test="targetDecomposeDimension.targetDecomposeDimensionId != null and targetDecomposeDimension.targetDecomposeDimensionId != ''">
-            and target_decompose_dimension_id=#{targetDecomposeDimension.targetDecomposeDimensionId}
+            and tdd.target_decompose_dimension_id=#{targetDecomposeDimension.targetDecomposeDimensionId}
         </if>
         <if test="targetDecomposeDimension.decompositionDimension != null and targetDecomposeDimension.decompositionDimension != ''">
-            and decomposition_dimension LIKE concat('%', #{targetDecomposeDimension.decompositionDimension}, '%')
+            and tdd.decomposition_dimension LIKE concat('%', #{targetDecomposeDimension.decompositionDimension}, '%')
         </if>
         <if test="targetDecomposeDimension.sort != null and targetDecomposeDimension.sort != ''">
-            and sort=#{targetDecomposeDimension.sort}
+            and tdd.sort=#{targetDecomposeDimension.sort}
         </if>
         <if test="targetDecomposeDimension.deleteFlag != null and targetDecomposeDimension.deleteFlag != ''">
-            and delete_flag=#{targetDecomposeDimension.deleteFlag}
+            and tdd.delete_flag=#{targetDecomposeDimension.deleteFlag}
         </if>
         <if test="targetDecomposeDimension.createBy != null and targetDecomposeDimension.createBy != ''">
-            and create_by=#{targetDecomposeDimension.createBy}
+            and tdd.create_by=#{targetDecomposeDimension.createBy}
         </if>
         <if test="targetDecomposeDimension.createTime != null">
-            and create_time=#{targetDecomposeDimension.createTime}
+            and tdd.create_time=#{targetDecomposeDimension.createTime}
         </if>
         <if test="targetDecomposeDimension.updateBy != null and targetDecomposeDimension.updateBy != ''">
-            and update_by=#{targetDecomposeDimension.updateBy}
+            and tdd.update_by=#{targetDecomposeDimension.updateBy}
         </if>
         <if test="targetDecomposeDimension.updateTime != null">
-            and update_time=#{targetDecomposeDimension.updateTime}
+            and tdd.update_time=#{targetDecomposeDimension.updateTime}
         </if>
-        ORDER BY sort ASC
+        <!-- 数据范围过滤 -->
+        ${targetDecomposeDimension.params.dataScope}
+        ORDER BY tdd.sort DESC
     </select>
     <!--新增目标分解维度配置-->
     <insert id="insertTargetDecomposeDimension" useGeneratedKeys="true" keyProperty="targetDecomposeDimensionId">

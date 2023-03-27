@@ -7,6 +7,7 @@ import net.qixiaowei.file.api.dto.FileDTO;
 import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.*;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.system.RoleDataScope;
 import net.qixiaowei.integration.common.enums.tenant.TenantStatus;
 import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -14,6 +15,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.file.FileTypeUtils;
 import net.qixiaowei.integration.common.utils.file.MimeTypeUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.security.utils.UserUtils;
@@ -136,6 +138,28 @@ public class UserServiceImpl implements IUserService {
         userDTO.setTenantLogo(this.convertToFullFilePath(userDTO.getTenantLogo()));
         //角色集合
         Set<String> roles = userRoleService.getRoleCodes(userDTO);
+        List<RoleDTO> roleList = userDTO.getRoles();
+        Long departmentId = userDTO.getDepartmentId();
+        Long employeeId = userDTO.getEmployeeId();
+        //设置查看用户ID集合
+        Set<Integer> dataScope = new HashSet<>();
+        Set<Long> userIds = new HashSet<>();
+        userIds.add(userDTO.getUserId());
+        Set<Long> userIdSet = null;
+        roleList.forEach(roleDTO -> dataScope.add(roleDTO.getDataScope()));
+        if (!dataScope.contains(RoleDataScope.ALL.getCode())) {
+            if (dataScope.contains(RoleDataScope.ALL_SUB_DEPARTMENT.getCode())) {
+                userIdSet = userMapper.selectUserIdsByDepartmentId(departmentId, employeeId, RoleDataScope.ALL_SUB_DEPARTMENT.getCode());
+            } else if (dataScope.contains(RoleDataScope.DEPARTMENT.getCode())) {
+                userIdSet = userMapper.selectUserIdsByDepartmentId(departmentId, employeeId, RoleDataScope.DEPARTMENT.getCode());
+            } else if (dataScope.contains(RoleDataScope.SELF_AND_SUBORDINATE.getCode())) {
+                userIdSet = userMapper.selectUserIdsByDepartmentId(departmentId, employeeId, RoleDataScope.SELF_AND_SUBORDINATE.getCode());
+            }
+            if (StringUtils.isNotEmpty(userIdSet)) {
+                userIds.addAll(userIdSet);
+            }
+        }
+        userDTO.setUserIds(userIds);
         //权限集合
         Set<String> permissions = roleMenuService.getMenuPermission(userDTO);
         LoginUserVO sysUserVo = new LoginUserVO();
@@ -345,6 +369,7 @@ public class UserServiceImpl implements IUserService {
      * @return 用户表
      */
     @Override
+    @DataScope(userAlias = "u")
     public List<UserDTO> selectUserList(UserDTO userDTO) {
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);

@@ -397,7 +397,9 @@
         <if test="department.status != null and (department.status ==0 or department.status == 1)">
             and dm.status = #{department.status}
         </if>
-        order by dm.create_time desc
+        <!-- 数据范围过滤 -->
+        ${department.params.dataScope}
+        ORDER BY dm.create_time DESC
     </select>
 
     <select id="getDepartmentCodes" resultType="java.lang.String">

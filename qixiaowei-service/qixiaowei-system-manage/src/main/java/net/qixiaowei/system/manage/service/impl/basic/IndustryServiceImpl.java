@@ -14,6 +14,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
@@ -122,6 +123,7 @@ public class IndustryServiceImpl implements IIndustryService {
      * @param industryDTO 行业
      * @return 行业
      */
+    @DataScope(businessAlias = "i1")
     @Override
     public List<IndustryDTO> selectIndustryPageList(IndustryDTO industryDTO) {
         Long parentIndustryId = industryDTO.getParentIndustryId();
@@ -184,6 +186,7 @@ public class IndustryServiceImpl implements IIndustryService {
      * @param industryDTO 行业DTO
      * @return List
      */
+    @DataScope(businessAlias = "i1")
     @Override
     public List<Tree<Long>> selectIndustryTreeList(IndustryDTO industryDTO) {
         Industry industry = new Industry();

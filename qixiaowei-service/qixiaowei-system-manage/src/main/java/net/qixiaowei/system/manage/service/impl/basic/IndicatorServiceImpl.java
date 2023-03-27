@@ -13,6 +13,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
@@ -174,6 +175,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
      * @param indicatorDTO 指标表
      * @return 指标表
      */
+    @DataScope(businessAlias = "t1")
     @Override
     public List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO) {
         Indicator indicator = new Indicator();
@@ -239,6 +241,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
      * @param indicatorDTO
      * @return
      */
+    @DataScope(businessAlias = "t1")
     @Override
     public List<Tree<Long>> selectTreeList(IndicatorDTO indicatorDTO) {
         Indicator indicator = new Indicator();

@@ -5,6 +5,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformancePercentage;
@@ -127,6 +128,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
      * @param performancePercentageDTO 绩效比例表
      * @return 绩效比例列表
      */
+    @DataScope(businessAlias = "t1")
     @Override
     public List<PerformancePercentageDTO> selectPerformancePercentageList(PerformancePercentageDTO performancePercentageDTO) {
         List<PerformancePercentageDTO> performancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageList(performancePercentageDTO);
