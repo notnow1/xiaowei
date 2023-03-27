@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.performance.PerformAppraisalEvaluateMapper">
+    <!--    查询绩效考核评议表-->
+    <select id="selectPerformAppraisalEvaluateByPerformAppraisalEvaluateId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformAppraisalEvaluateDTO">
+        SELECT
+        perform_appraisal_evaluate_id,perform_appraisal_objects_id,perform_appraisal_items_id,evaluate_number,actual_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM perform_appraisal_evaluate
+        WHERE perform_appraisal_evaluate_id=#{performAppraisalEvaluateId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询绩效考核评议表-->
+    <select id="selectPerformAppraisalEvaluateByPerformAppraisalEvaluateIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformAppraisalEvaluateDTO">
+        SELECT
+        perform_appraisal_evaluate_id,perform_appraisal_objects_id,perform_appraisal_items_id,evaluate_number,actual_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM perform_appraisal_evaluate
+        WHERE perform_appraisal_evaluate_id in
+        <foreach item="item"
+                 collection="performAppraisalEvaluateIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询绩效考核评议表列表-->
+    <select id="selectPerformAppraisalEvaluateList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformAppraisalEvaluateDTO">
+        SELECT
+        perform_appraisal_evaluate_id,perform_appraisal_objects_id,perform_appraisal_items_id,evaluate_number,actual_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM perform_appraisal_evaluate
+        WHERE delete_flag=0
+        <if test="performAppraisalEvaluate.performAppraisalEvaluateId != null">
+            and perform_appraisal_evaluate_id=#{performAppraisalEvaluate.performAppraisalEvaluateId}
+        </if>
+        <if test="performAppraisalEvaluate.performAppraisalObjectsId != null">
+            and perform_appraisal_objects_id=#{performAppraisalEvaluate.performAppraisalObjectsId}
+        </if>
+        <if test="performAppraisalEvaluate.performAppraisalItemsId != null">
+            and perform_appraisal_items_id=#{performAppraisalEvaluate.performAppraisalItemsId}
+        </if>
+        <if test="performAppraisalEvaluate.evaluateNumber != null">
+            and evaluate_number=#{performAppraisalEvaluate.evaluateNumber}
+        </if>
+        <if test="performAppraisalEvaluate.actualValue != null">
+            and actual_value=#{performAppraisalEvaluate.actualValue}
+        </if>
+        <if test="performAppraisalEvaluate.deleteFlag != null">
+            and delete_flag=#{performAppraisalEvaluate.deleteFlag}
+        </if>
+        <if test="performAppraisalEvaluate.createBy != null">
+            and create_by=#{performAppraisalEvaluate.createBy}
+        </if>
+        <if test="performAppraisalEvaluate.createTime != null">
+            and create_time=#{performAppraisalEvaluate.createTime}
+        </if>
+        <if test="performAppraisalEvaluate.updateBy != null">
+            and update_by=#{performAppraisalEvaluate.updateBy}
+        </if>
+        <if test="performAppraisalEvaluate.updateTime != null">
+            and update_time=#{performAppraisalEvaluate.updateTime}
+        </if>
+    </select>
+    <!--根据指标ID集合查询评议列表-->
+    <select id="selectPerformAppraisalEvaluateByPerformAppraisalItemIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformAppraisalEvaluateDTO">
+        SELECT
+        perform_appraisal_evaluate_id,perform_appraisal_objects_id,perform_appraisal_items_id,evaluate_number,actual_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM perform_appraisal_evaluate
+        WHERE delete_flag=0
+        AND perform_appraisal_items_id IN
+        <foreach collection="delPerformanceAppraisalItemIds" separator="," open="(" close=")" index="index" item="item">
+            #{item}
+        </foreach>
+    </select>
+    <!--新增绩效考核评议表-->
+    <insert id="insertPerformAppraisalEvaluate" useGeneratedKeys="true" keyProperty="performAppraisalEvaluateId">
+        INSERT INTO perform_appraisal_evaluate
+        (perform_appraisal_objects_id,perform_appraisal_items_id,evaluate_number,actual_value,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{performAppraisalEvaluate.performAppraisalObjectsId},#{performAppraisalEvaluate.performAppraisalItemsId},#{performAppraisalEvaluate.evaluateNumber},#{performAppraisalEvaluate.actualValue},#{performAppraisalEvaluate.deleteFlag},#{performAppraisalEvaluate.createBy},#{performAppraisalEvaluate.createTime},#{performAppraisalEvaluate.updateBy},#{performAppraisalEvaluate.updateTime})
+    </insert>
+    <!--修改绩效考核评议表-->
+    <update id="updatePerformAppraisalEvaluate">
+        UPDATE perform_appraisal_evaluate
+        SET
+        <if test="performAppraisalEvaluate.performAppraisalObjectsId != null">
+            perform_appraisal_objects_id=#{performAppraisalEvaluate.performAppraisalObjectsId},
+        </if>
+        <if test="performAppraisalEvaluate.performAppraisalItemsId != null">
+            perform_appraisal_items_id=#{performAppraisalEvaluate.performAppraisalItemsId},
+        </if>
+        <if test="performAppraisalEvaluate.evaluateNumber != null">
+            evaluate_number=#{performAppraisalEvaluate.evaluateNumber},
+        </if>
+        <if test="performAppraisalEvaluate.actualValue != null">
+            actual_value=#{performAppraisalEvaluate.actualValue},
+        </if>
+        <if test="performAppraisalEvaluate.deleteFlag != null">
+            delete_flag=#{performAppraisalEvaluate.deleteFlag},
+        </if>
+        <if test="performAppraisalEvaluate.createBy != null">
+            create_by=#{performAppraisalEvaluate.createBy},
+        </if>
+        <if test="performAppraisalEvaluate.createTime != null">
+            create_time=#{performAppraisalEvaluate.createTime},
+        </if>
+        <if test="performAppraisalEvaluate.updateBy != null">
+            update_by=#{performAppraisalEvaluate.updateBy},
+        </if>
+        <if test="performAppraisalEvaluate.updateTime != null">
+            update_time=#{performAppraisalEvaluate.updateTime}
+        </if>
+        WHERE
+        perform_appraisal_evaluate_id=#{performAppraisalEvaluate.performAppraisalEvaluateId}
+    </update>
+    <!--逻辑删除绩效考核评议表-->
+    <update id="logicDeletePerformAppraisalEvaluateByPerformAppraisalEvaluateId">
+        UPDATE perform_appraisal_evaluate
+        SET delete_flag= 1,
+        update_by=#{performAppraisalEvaluate.updateBy},
+        update_time=#{performAppraisalEvaluate.updateTime}
+        WHERE
+        perform_appraisal_evaluate_id=#{performAppraisalEvaluate.performAppraisalEvaluateId}
+    </update>
+    <!--逻辑批量删除绩效考核评议表-->
+    <update id="logicDeletePerformAppraisalEvaluateByPerformAppraisalEvaluateIds">
+        UPDATE perform_appraisal_evaluate
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        perform_appraisal_evaluate_id IN
+        <foreach item="item"
+                 collection="performAppraisalEvaluateIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增绩效考核评议表-->
+    <insert id="batchPerformAppraisalEvaluate">
+        INSERT INTO perform_appraisal_evaluate
+        (perform_appraisal_objects_id,perform_appraisal_items_id,evaluate_number,actual_value,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="performAppraisalEvaluates"
+                 separator=",">
+            (#{item.performAppraisalObjectsId},#{item.performAppraisalItemsId},#{item.evaluateNumber},#{item.actualValue},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除绩效考核评议表-->
+    <delete id="deletePerformAppraisalEvaluateByPerformAppraisalEvaluateId">
+        DELETE FROM perform_appraisal_evaluate
+        WHERE perform_appraisal_evaluate_id=#{performAppraisalEvaluate}
+
+    </delete>
+    <!--物理批量删除绩效考核评议表-->
+    <delete id="deletePerformAppraisalEvaluateByPerformAppraisalEvaluateIds">
+        DELETE FROM perform_appraisal_evaluate
+        WHERE perform_appraisal_evaluate_id IN
+        <foreach item="item"
+                 collection="performAppraisalEvaluateIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改绩效考核评议表-->
+    <update id="updatePerformAppraisalEvaluates">
+        update perform_appraisal_evaluate
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="perform_appraisal_objects_id=case" suffix="end,">
+                <foreach collection="performAppraisalEvaluateList" item="item" index="index">
+                    <if test="item.performAppraisalObjectsId != null">
+                        when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then
+                        #{item.performAppraisalObjectsId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="perform_appraisal_items_id=case" suffix="end,">
+                <foreach collection="performAppraisalEvaluateList" item="item" index="index">
+                    <if test="item.performAppraisalItemsId != null">
+                        when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then
+                        #{item.performAppraisalItemsId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluate_number=case" suffix="end,">
+                <foreach collection="performAppraisalEvaluateList" item="item" index="index">
+                    <if test="item.evaluateNumber != null">
+                        when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then
+                        #{item.evaluateNumber}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="actual_value=case" suffix="end,">
+                <foreach collection="performAppraisalEvaluateList" item="item" index="index">
+                    <if test="item.actualValue != null">
+                        when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then #{item.actualValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="performAppraisalEvaluateList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="performAppraisalEvaluateList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="performAppraisalEvaluateList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="performAppraisalEvaluateList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="performAppraisalEvaluateList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="performAppraisalEvaluateList" separator="or" item="item" index="index">
+            perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId}
+        </foreach>
+    </update>
+</mapper>
+
+

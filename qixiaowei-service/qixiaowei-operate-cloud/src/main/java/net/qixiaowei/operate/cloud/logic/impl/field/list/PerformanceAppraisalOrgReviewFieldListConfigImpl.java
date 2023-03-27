@@ -32,10 +32,11 @@ public class PerformanceAppraisalOrgReviewFieldListConfigImpl implements IFieldL
         INIT_MAP.put(PerformanceAppraisalOrgReviewField.APPRAISAL_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalOrgReviewField.CYCLE_TYPE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalOrgReviewField.CYCLE_NUMBER.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalOrgReviewField.APPRAISAL_OBJECT_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalOrgReviewField.APPRAISAL_PRINCIPAL_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalOrgReviewField.EVALUATION_SCORE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalOrgReviewField.APPRAISAL_OBJECT_STATUS.getCode(), FieldListConfig.builder().fieldWidth(120).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalOrgReviewField.EVALUATION_TYPE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalOrgReviewField.APPRAISAL_OBJECT_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalOrgReviewField.APPRAISAL_PRINCIPAL_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalOrgReviewField.EVALUATION_SCORE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalOrgReviewField.APPRAISAL_OBJECT_STATUS.getCode(), FieldListConfig.builder().fieldWidth(120).sort(9).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 

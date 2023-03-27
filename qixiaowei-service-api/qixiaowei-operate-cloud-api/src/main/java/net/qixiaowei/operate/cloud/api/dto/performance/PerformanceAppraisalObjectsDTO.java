@@ -1,22 +1,15 @@
 package net.qixiaowei.operate.cloud.api.dto.performance;
 
-import java.awt.*;
-import java.time.LocalDate;
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
-import java.util.Date;
+import javax.validation.groups.Default;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
-import javax.validation.groups.Default;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import net.qixiaowei.integration.common.domain.dto.BaseDTO;
-import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 /**
  * 绩效考核对象表
@@ -76,6 +69,14 @@ public class PerformanceAppraisalObjectsDTO extends BaseDTO {
      * 周期类型:1月度;2季度;3半年度;4年度
      */
     private String CycleTypeName;
+    /**
+     * 评议周期类型:1月度;2季度;3半年度;4年度
+     */
+    private Integer evaluationType;
+    /**
+     * 评议周期类型:1月度;2季度;3半年度;4年度
+     */
+    private String evaluationTypeName;
     /**
      * 名次
      */
@@ -203,6 +204,18 @@ public class PerformanceAppraisalObjectsDTO extends BaseDTO {
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
+    /**
+     * 备注
+     */
+    private String remark;
+    /**
+     * 页数
+     */
+    private Integer pageNum;
+    /**
+     * 页数
+     */
+    private Integer pageSize;
 
 }
 

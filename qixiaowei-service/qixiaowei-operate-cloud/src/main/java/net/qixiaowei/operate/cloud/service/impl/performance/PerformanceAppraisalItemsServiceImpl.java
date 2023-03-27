@@ -93,11 +93,10 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
      * 逻辑批量删除绩效考核项目表
      *
      * @param performAppraisalItemsIds 主键集合
-     * @return 结果
      */
     @Override
-    public int logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds(List<Long> performAppraisalItemsIds) {
-        return performanceAppraisalItemsMapper.logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds(performAppraisalItemsIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    public void logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds(List<Long> performAppraisalItemsIds) {
+        performanceAppraisalItemsMapper.logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds(performAppraisalItemsIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**
@@ -163,7 +162,7 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
      */
 
     @Override
-    public int insertPerformanceAppraisalItemss(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDtos) {
+    public List<PerformanceAppraisalItems> insertPerformanceAppraisalItemss(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDtos) {
         List<PerformanceAppraisalItems> performanceAppraisalItemsList = new ArrayList<>();
 
         for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsDtos) {
@@ -176,7 +175,8 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
             performanceAppraisalItems.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             performanceAppraisalItemsList.add(performanceAppraisalItems);
         }
-        return performanceAppraisalItemsMapper.batchPerformanceAppraisalItems(performanceAppraisalItemsList);
+        performanceAppraisalItemsMapper.batchPerformanceAppraisalItems(performanceAppraisalItemsList);
+        return performanceAppraisalItemsList;
     }
 
     /**
@@ -185,7 +185,7 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
      * @param performanceAppraisalItemsDtoS 绩效考核项目表对象
      */
     @Override
-    public int updatePerformanceAppraisalItemsS(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDtoS) {
+    public void updatePerformanceAppraisalItemsS(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDtoS) {
         List<PerformanceAppraisalItems> performanceAppraisalItemsList = new ArrayList<>();
         for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsDtoS) {
             PerformanceAppraisalItems performanceAppraisalItems = new PerformanceAppraisalItems();
@@ -194,7 +194,7 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
             performanceAppraisalItems.setUpdateBy(SecurityUtils.getUserId());
             performanceAppraisalItemsList.add(performanceAppraisalItems);
         }
-        return performanceAppraisalItemsMapper.updatePerformanceAppraisalItemss(performanceAppraisalItemsList);
+        performanceAppraisalItemsMapper.updatePerformanceAppraisalItemss(performanceAppraisalItemsList);
     }
 
     /**

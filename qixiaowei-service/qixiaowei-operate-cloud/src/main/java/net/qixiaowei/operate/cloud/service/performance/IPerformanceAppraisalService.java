@@ -1,7 +1,11 @@
 package net.qixiaowei.operate.cloud.service.performance;
 
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
-import net.qixiaowei.operate.cloud.api.dto.performance.*;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,6 +52,7 @@ public interface IPerformanceAppraisalService {
      * @return 绩效考核表集合
      */
     List<PerformanceAppraisalDTO> selectPerformanceAppraisalList(PerformanceAppraisalDTO performanceAppraisalDTO);
+
     /**
      * 查询组织绩效归档
      *
@@ -267,7 +272,7 @@ public interface IPerformanceAppraisalService {
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
      * @return List
      */
-    List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
+    TableDataInfo selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
 
     /**
      * 查询绩效考核表列表-组织-制定
@@ -275,7 +280,7 @@ public interface IPerformanceAppraisalService {
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
      * @return List
      */
-    List<PerformanceAppraisalObjectsDTO> selectPerAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
+    TableDataInfo selectPerAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
 
     /**
      * 查询绩效考核表列表-组织-制定-详情
@@ -315,7 +320,7 @@ public interface IPerformanceAppraisalService {
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
      * @return List
      */
-    List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
+    TableDataInfo selectOrgAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
 
     /**
      * 查询绩效考核表列表-个人-评议
@@ -323,7 +328,7 @@ public interface IPerformanceAppraisalService {
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
      * @return List
      */
-    List<PerformanceAppraisalObjectsDTO> selectPerAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
+    TableDataInfo selectPerAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
 
     /**
      * 查询组织绩效考核表详情-评议-组织

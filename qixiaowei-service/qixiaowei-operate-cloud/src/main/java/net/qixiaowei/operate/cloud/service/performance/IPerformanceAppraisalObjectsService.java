@@ -58,9 +58,8 @@ public interface IPerformanceAppraisalObjectsService {
      * 批量新增绩效考核对象表
      *
      * @param performanceAppraisalObjectsDtos 绩效考核对象表
-     * @return 结果
      */
-    int insertPerformanceAppraisalObjectss(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDtos);
+    void insertPerformanceAppraisalObjectsS(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDtos);
 
     /**
      * 逻辑批量删除绩效考核对象表

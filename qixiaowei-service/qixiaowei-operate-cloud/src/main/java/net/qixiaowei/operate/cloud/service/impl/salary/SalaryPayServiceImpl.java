@@ -10,6 +10,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.PageUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -1258,16 +1259,16 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         String departmentName = salaryStructureDTO.getDepartmentName();
         R<List<EmployeeDTO>> employeeDTOR;
         if (StringUtils.isEmpty(salaryPayDTOList)) {
-            return tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
+            return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
         }
         employeeDTOR = getEmployee(salaryPayDTOList, departmentName);
         List<EmployeeDTO> employeeDTOS = getEmployeeDTOList(employeeDTOR);
         if (StringUtils.isEmpty(employeeDTOS)) {
-            return tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
+            return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
         }
         setSalaryPayValue(salaryPayDTOList, employeeDTOS);
         if (StringUtils.isEmpty(salaryPayDTOList)) {
-            return tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
+            return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
         }
         List<SalaryPayDTO> salaryPayDTOS = calculateAmount(salaryPayDTOList);
         List<SalaryPayDTO> partition;
@@ -1276,7 +1277,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         } else {
             partition = ListUtils.partition(salaryPayDTOS, pageSize).get(pageNum - 1);
         }
-        return tableDataInfo(HttpStatus.SUCCESS, partition, salaryPayDTOS.size());
+        return PageUtils.tableDataInfo(HttpStatus.SUCCESS, partition, salaryPayDTOS.size());
     }
 
     /**
@@ -1469,23 +1470,6 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             employeeDTOR = employeeService.selectByEmployeeIds(employeeIds, SecurityConstants.INNER);
         }
         return employeeDTOR;
-    }
-
-    /**
-     * 返回分页
-     *
-     * @param code 状态码
-     * @param rows 数据
-     * @param size 大小
-     * @return TableDataInfo
-     */
-    private static TableDataInfo tableDataInfo(int code, List<SalaryPayDTO> rows, int size) {
-        TableDataInfo rspData = new TableDataInfo();
-        rspData.setCode(code);
-        rspData.setRows(rows);
-        rspData.setMsg("查询成功");
-        rspData.setTotal(size);
-        return rspData;
     }
 
     /**

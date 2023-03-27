@@ -90,6 +90,14 @@ public class PerformanceAppraisalDTO extends BaseDTO {
      */
     private String cycleNumberName;
     /**
+     * 评议周期类型:1月度;2季度;3半年度;4年度
+     */
+    private Integer evaluationType;
+    /**
+     * 评议周期类型:1月度;2季度;3半年度;4年度
+     */
+    private String evaluationTypeName;
+    /**
      * 考核开始日期
      */
     @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")

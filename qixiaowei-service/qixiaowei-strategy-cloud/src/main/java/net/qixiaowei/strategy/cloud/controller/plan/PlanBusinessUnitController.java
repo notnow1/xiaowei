@@ -1,11 +1,17 @@
 package net.qixiaowei.strategy.cloud.controller.plan;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.utils.UserUtils;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +56,14 @@ public class PlanBusinessUnitController extends BaseController {
     public TableDataInfo pageList(PlanBusinessUnitDTO planBusinessUnitDTO) {
         startPage();
         List<PlanBusinessUnitDTO> list = planBusinessUnitService.selectPlanBusinessUnitList(planBusinessUnitDTO);
+        if (StringUtils.isNotEmpty(list)) {
+            Set<Long> userIds = list.stream().map(PlanBusinessUnitDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            list.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
         return getDataTable(list);
     }
 
