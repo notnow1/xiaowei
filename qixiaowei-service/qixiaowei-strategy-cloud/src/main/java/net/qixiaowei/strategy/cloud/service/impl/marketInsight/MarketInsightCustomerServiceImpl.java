@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
@@ -310,6 +311,7 @@ public class MarketInsightCustomerServiceImpl implements IMarketInsightCustomerS
      * @return 市场洞察客户表
      */
     @Override
+    @DataScope(businessAlias = "mic")
     public List<MarketInsightCustomerDTO> selectMarketInsightCustomerList(MarketInsightCustomerDTO marketInsightCustomerDTO) {
         List<String> createByList = new ArrayList<>();
         MarketInsightCustomer marketInsightCustomer = new MarketInsightCustomer();

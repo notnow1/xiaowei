@@ -392,7 +392,9 @@
         <if test="marketInsightCustomer.planBusinessUnitName != null">
             AND pbu.business_unit_name LIKE concat('%', #{marketInsightCustomer.planBusinessUnitName}, '%')
         </if>
-        order by mic.create_time desc
+        <!-- 数据范围过滤 -->
+        ${marketInsightCustomer.params.dataScope}
+        ORDER BY mic.create_time desc
     </select>
 <!--    根据规划业务单元集合批量查询市场洞察客户表-->
     <select id="selectMarketInsightCustomerByPlanBusinessUnitIds"

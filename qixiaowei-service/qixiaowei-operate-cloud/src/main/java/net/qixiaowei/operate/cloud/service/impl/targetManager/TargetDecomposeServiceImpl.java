@@ -3240,21 +3240,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             //详情周期数据
             for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
-                int dime = 0;
+/*                int dime = 0;
                 if (targetDecomposeDTO.getTargetYear() <= DateUtils.getYear()) {
                     dime = this.packDecomposeDetailCycles(targetDecomposeDTO);
-                }
+                }*/
                 List<String> list = cyclesExcelData.get(i);
                 for (int i1 = 0; i1 < list.size(); i1++) {
-                    if (i1 >= dime - 1) {
-                        DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
-                        //周期
-                        decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
-                        if (StringUtils.isNotBlank(list.get(i1))) {
-                            //周期目标值
-                            decomposeDetailCyclesDTO.setCycleTarget(new BigDecimal(list.get(i1)));
-                        }
-                        decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
+ /*                   if (i1 >= dime - 1) {
                     } else {
                         DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
                         //周期
@@ -3264,7 +3256,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             decomposeDetailCyclesDTO.setCycleTarget(new BigDecimal("0"));
                         }
                         decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
-                    }
+                    }*/
+                        DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
+                        //周期
+                        decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
+                        if (StringUtils.isNotBlank(list.get(i1))) {
+                            //周期目标值
+                            decomposeDetailCyclesDTO.setCycleTarget(new BigDecimal(list.get(i1)));
+                        }
+                        decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
+
                 }
                 targetDecomposeDetailsDTOS.get(i).setDecomposeDetailCyclesDTOS(decomposeDetailCyclesDTOS);
             }

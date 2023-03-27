@@ -394,6 +394,9 @@
         <if test="marketInsightMacro.updateTime != null">
             and mim.update_time=#{marketInsightMacro.updateTime}
         </if>
+
+        <!-- 数据范围过滤 -->
+        ${marketInsightMacro.params.dataScope}
         order by mim.create_time desc
     </select>
 <!--    根据规划业务单元id集合批量查询市场洞察宏观表-->

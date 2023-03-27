@@ -394,6 +394,8 @@
         <if test="marketInsightOpponent.updateTime != null">
             and mio.update_time=#{marketInsightOpponent.updateTime}
         </if>
+        <!-- 数据范围过滤 -->
+        ${marketInsightOpponent.params.dataScope}
         order by mio.create_time desc
     </select>
 <!--    根据规划业务单元id批量查询市场洞察对手表-->
