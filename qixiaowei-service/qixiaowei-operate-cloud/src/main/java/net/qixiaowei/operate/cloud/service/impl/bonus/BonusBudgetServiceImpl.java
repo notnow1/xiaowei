@@ -810,12 +810,11 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
      * @return
      */
     @Override
-    public BonusBudgetDTO selectBonusBudgetByIndicatorId(BonusBudgetDTO bonusBudgetDTO) {
+    public List<BonusBudgetParametersDTO> selectBonusBudgetByIndicatorId(BonusBudgetDTO bonusBudgetDTO) {
+        BonusBudgetDTO bonusBudgetDTO1 = new BonusBudgetDTO();
         BonusBudget bonusBudget = new BonusBudget();
         BeanUtils.copyProperties(bonusBudgetDTO, bonusBudget);
-        List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS1 = bonusBudgetMapper.selectBonusBudgetByIndicatorId(bonusBudget);
-        bonusBudgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS1);
-        return bonusBudgetDTO;
+        return bonusBudgetMapper.selectBonusBudgetByIndicatorId(bonusBudget);
     }
 
     /**

@@ -150,5 +150,5 @@ public interface IBonusBudgetService{
      * @param bonusBudgetDTO
      * @return
      */
-    BonusBudgetDTO selectBonusBudgetByIndicatorId(BonusBudgetDTO bonusBudgetDTO);
+    List<BonusBudgetParametersDTO> selectBonusBudgetByIndicatorId(BonusBudgetDTO bonusBudgetDTO);
 }

@@ -10,6 +10,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -709,12 +710,10 @@ public class IndicatorServiceImpl implements IIndicatorService {
         // 总奖金包预算
         BonusBudgetDTO bonusBudgetDTO = new BonusBudgetDTO();
         bonusBudgetDTO.setIndicatorIds(indicatorIds);
-        R<BonusBudgetDTO> bonusBudgetDTOR = bonusBudgetService.selectBonusBudgetByIndicatorId(bonusBudgetDTO, SecurityConstants.INNER);
-        if (bonusBudgetDTOR.getCode() != 200) {
-            throw new ServiceException("远程调用总奖金包预算失败");
-        }
-        BonusBudgetDTO bonusBudget = bonusBudgetDTOR.getData();
-        if (StringUtils.isNotNull(bonusBudget)) {
+        R<List<BonusBudgetParametersDTO>> bonusBudgetParametersList= bonusBudgetService.selectBonusBudgetByIndicatorId(bonusBudgetDTO, SecurityConstants.INNER);
+
+        List<BonusBudgetParametersDTO> data = bonusBudgetParametersList.getData();
+        if (StringUtils.isNotEmpty(data)) {
             throw new ServiceException("数据被引用！");
 /*            List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudget.getBonusBudgetParametersDTOS();
             if (StringUtils.isNotNull(bonusBudgetParametersDTOS) && StringUtils.isNotEmpty(bonusBudgetParametersDTOS)) {

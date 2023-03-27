@@ -3,10 +3,13 @@ package net.qixiaowei.operate.cloud.api.factory.bonus;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO;
 import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteBonusBudgetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
+
+import java.util.List;
 
 /**
  * 总奖金预算服务降级处理
@@ -21,7 +24,7 @@ public class RemoteBonusBudgetFallbackFactory implements FallbackFactory<RemoteB
         return new RemoteBonusBudgetService() {
 
             @Override
-            public R<BonusBudgetDTO> selectBonusBudgetByIndicatorId(BonusBudgetDTO bonusBudgetDTO, String source) {
+            public R<List<BonusBudgetParametersDTO>> selectBonusBudgetByIndicatorId(BonusBudgetDTO bonusBudgetDTO, String source) {
                 return R.fail("根据人员id查询奖金发放申请失败:" + throwable.getMessage());
             }
         };
