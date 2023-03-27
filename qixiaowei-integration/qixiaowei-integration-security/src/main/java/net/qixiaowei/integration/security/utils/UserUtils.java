@@ -37,7 +37,7 @@ public class UserUtils {
      * @return UserProfileVO 用户资料
      */
     public static UserProfileVO getUserCache(Long userId) {
-        if (StringUtils.isNull(userId)) {
+        if (StringUtils.isNull(userId) || 0L == userId) {
             return null;
         }
         UserProfileVO userProfileVO = SpringUtils.getBean(RedisService.class).getCacheObject(getCacheKey(userId));

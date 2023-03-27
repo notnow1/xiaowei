@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
@@ -159,6 +160,7 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
      * @return 市场洞察宏观表
      */
     @Override
+    @DataScope(businessAlias = "mim")
     public List<MarketInsightMacroDTO> selectMarketInsightMacroList(MarketInsightMacroDTO marketInsightMacroDTO) {
         List<String> createByList = new ArrayList<>();
         MarketInsightMacro marketInsightMacro = new MarketInsightMacro();

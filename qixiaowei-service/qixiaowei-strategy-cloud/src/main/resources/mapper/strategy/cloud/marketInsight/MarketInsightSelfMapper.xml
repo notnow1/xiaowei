@@ -395,6 +395,8 @@
         <if test="marketInsightSelf.updateTime != null">
             and mis.update_time=#{marketInsightSelf.updateTime}
         </if>
+        <!-- 数据范围过滤 -->
+        ${marketInsightSelf.params.dataScope}
         order by mis.create_time desc
     </select>
     <!--    根据规划年度和业务单元查询看对手详情表表-->

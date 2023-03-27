@@ -396,7 +396,9 @@
         <if test="marketInsightIndustry.planBusinessUnitName != null">
             AND pbu.business_unit_name LIKE concat('%', #{marketInsightIndustry.planBusinessUnitName}, '%')
         </if>
-        order by mii.create_time desc
+        <!-- 数据范围过滤 -->
+        ${marketInsightIndustry.params.dataScope}
+        ORDER BY mii.create_time desc
     </select>
 <!--    查询市场洞察行业表传入年份最近一次数据-->
     <select id="dashboardMiIndustryDetailList"

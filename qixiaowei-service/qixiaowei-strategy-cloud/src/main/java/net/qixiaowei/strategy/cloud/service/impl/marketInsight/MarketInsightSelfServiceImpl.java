@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
@@ -141,6 +142,7 @@ public class MarketInsightSelfServiceImpl implements IMarketInsightSelfService {
      * @return 市场洞察自身表
      */
     @Override
+    @DataScope(businessAlias = "mis")
     public List<MarketInsightSelfDTO> selectMarketInsightSelfList(MarketInsightSelfDTO marketInsightSelfDTO) {
         List<String> createByList = new ArrayList<>();
         MarketInsightSelf marketInsightSelf = new MarketInsightSelf();
