@@ -393,9 +393,10 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetSetting:analyse")
     @GetMapping("/result/list")
-    public AjaxResult resultList(TargetDecomposeDTO targetDecomposeDTO) {
+    public TableDataInfo resultList(TargetDecomposeDTO targetDecomposeDTO) {
+        startPage();
         List<TargetDecomposeDTO> list = targetDecomposeService.resultList(targetDecomposeDTO);
-        return AjaxResult.success(list);
+       return getDataTable(list);
     }
     /**
      * 查询经营结果分析报表列表下拉框
