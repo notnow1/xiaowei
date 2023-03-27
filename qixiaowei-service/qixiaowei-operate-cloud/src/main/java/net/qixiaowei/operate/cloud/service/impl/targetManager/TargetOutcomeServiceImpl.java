@@ -619,7 +619,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             throw new ServiceException("获取指标名称失败!");
         }
         if (indicatorDTOS.size() != dataList.size()) {
-            throw new ServiceException("指标有问题,请检查指标配置!");
+            throw new ServiceException("指标数据异常 请检查指标配置!");
         }
         List<BigDecimal> monthValue = new ArrayList<>();
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsAfter = new ArrayList<>();
@@ -637,26 +637,35 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             excelToDTO(size, data, targetOutcomeDetailsDTO);
             targetOutcomeDetailsAfter.add(targetOutcomeDetailsDTO);
         }
+        TargetOutcomeDTO targetOutcomeDTO = targetOutcomeMapper.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
+        Integer targetYear = targetOutcomeDTO.getTargetYear();
+        List<Long> indicatorIds = indicatorDTOS.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
+        List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingByIndicators(indicatorIds, targetYear);
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsBefore = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsBefore) {
             for (TargetOutcomeDetailsDTO outcomeDetailsDTO : targetOutcomeDetailsAfter) {
-                if (targetOutcomeDetailsDTO.getIndicatorId().equals(outcomeDetailsDTO.getIndicatorId())) {
+                Long indicatorId = outcomeDetailsDTO.getIndicatorId();
+                if (targetOutcomeDetailsDTO.getIndicatorId().equals(indicatorId)) {
                     outcomeDetailsDTO.setTargetOutcomeDetailsId(targetOutcomeDetailsDTO.getTargetOutcomeDetailsId());
+                    TargetSettingDTO targetSettingDTO = targetSettingDTOS.stream().filter(t -> t.getIndicatorId().equals(indicatorId)).collect(Collectors.toList()).get(0);
+                    BigDecimal targetValue = Optional.ofNullable(targetSettingDTO.getTargetValue()).orElse(BigDecimal.ZERO);
+                    BigDecimal actualTotal = outcomeDetailsDTO.getActualTotal();
+                    outcomeDetailsDTO.setTargetValue(targetValue);
+                    //实际值合计/目标值
+                    outcomeDetailsDTO.setTargetCompletionRate(targetValue.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : actualTotal.divide(targetValue, 2, RoundingMode.HALF_UP));
                     break;
                 }
             }
         }
-        TargetOutcomeDTO targetOutcomeDTO = targetOutcomeMapper.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
-        Integer targetYear = targetOutcomeDTO.getTargetYear();
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS = new ArrayList<>();
         int year = DateUtils.getYear();
         int month = DateUtils.getMonth();
         if (targetYear < year) {
             setAllMonth(targetOutcomeDetailsAfter, monthValue, targetOutcomeDetailsDTOS);// 存放所有月份
         } else if (targetYear == year) {
-            setSomeMonth(targetOutcomeDetailsAfter, month, monthValue, targetOutcomeDetailsDTOS);//存放部分月份
+            setSomeMonth(targetOutcomeDetailsAfter, month, monthValue, targetOutcomeDetailsDTOS);// 存放部分月份
         } else {
-            setOtherValue(targetOutcomeDetailsAfter, targetOutcomeDetailsDTOS);//不存放月份
+            setOtherValue(targetOutcomeDetailsAfter, targetOutcomeDetailsDTOS);// 不存放月份
         }
         return targetOutcomeDetailsDTOS;
     }
