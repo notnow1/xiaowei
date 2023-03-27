@@ -57,7 +57,7 @@ public class PerformanceAppraisalObjectsExcel{
      * 评议分数
      */
      @ExcelIgnore
-     @ExcelProperty("评议分数")
+     @ExcelProperty("评议总分数")
      private BigDecimal evaluationScore;
      /**
      * 考核结果(绩效等级ID)

@@ -32,12 +32,13 @@ public class PerformanceAppraisalPersonSettingFieldListConfigImpl implements IFi
         INIT_MAP.put(PerformanceAppraisalPersonSettingField.APPRAISAL_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalPersonSettingField.CYCLE_TYPE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalPersonSettingField.CYCLE_NUMBER.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalPersonSettingField.APPRAISAL_OBJECT_CODE.getCode(), FieldListConfig.builder().fieldWidth(140).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalPersonSettingField.APPRAISAL_OBJECT_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalPersonSettingField.DEPARTMENT_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalPersonSettingField.POST_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalPersonSettingField.APPRAISAL_PRINCIPAL_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(9).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalPersonSettingField.APPRAISAL_OBJECT_STATUS.getCode(), FieldListConfig.builder().fieldWidth(120).sort(10).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonSettingField.EVALUATION_TYPE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonSettingField.APPRAISAL_OBJECT_CODE.getCode(), FieldListConfig.builder().fieldWidth(140).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonSettingField.APPRAISAL_OBJECT_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonSettingField.DEPARTMENT_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonSettingField.POST_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(9).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonSettingField.APPRAISAL_PRINCIPAL_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(10).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonSettingField.APPRAISAL_OBJECT_STATUS.getCode(), FieldListConfig.builder().fieldWidth(120).sort(11).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 

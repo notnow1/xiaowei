@@ -10,6 +10,7 @@ import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
@@ -47,18 +48,20 @@ public class PerformanceAppraisalController extends BaseController {
     @Autowired
     private IPerformanceAppraisalColumnsService performanceAppraisalColumnsService;
 
-    //==============================绩效考核任务==================================//
 
     /**
      * 分页查询绩效考核表列表
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:pageList")
+    @DataScope(businessAlias = "pa")
     @GetMapping("/pageList")
     public TableDataInfo pageList(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();
         List<PerformanceAppraisalDTO> list = performanceAppraisalService.selectPerformanceAppraisalList(performanceAppraisalDTO);
         return getDataTable(list);
     }
+
+    //==============================绩效考核任务==================================//
 
     /**
      * 新增绩效考核表
@@ -104,11 +107,10 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-组织-制定
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgDevelop:pageList")
+    @DataScope(businessAlias = "pa")
     @GetMapping("/orgDevelop/pageList")
     public TableDataInfo listOrgDevelop(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
-        startPage();
-        List<PerformanceAppraisalObjectsDTO> list = performanceAppraisalService.selectOrgAppraisalDevelopList(performanceAppraisalObjectsDTO);
-        return getDataTable(list);
+        return performanceAppraisalService.selectOrgAppraisalDevelopList(performanceAppraisalObjectsDTO);
     }
 
     /**
@@ -129,17 +131,17 @@ public class PerformanceAppraisalController extends BaseController {
     public AjaxResult infoOrgDevelop(@PathVariable Long performAppraisalObjectsId) {
         return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalDevelopById(performAppraisalObjectsId));
     }
+
     //==============================组织绩效评议==================================//
 
     /**
      * 查询绩效考核表列表-组织-评议
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgReview:pageList")
+    @DataScope(businessAlias = "pa")
     @GetMapping("/orgReview/pageList")
     public TableDataInfo listOrgReview(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
-        startPage();
-        List<PerformanceAppraisalObjectsDTO> list = performanceAppraisalService.selectOrgAppraisalReviewList(performanceAppraisalObjectsDTO);
-        return getDataTable(list);
+        return performanceAppraisalService.selectOrgAppraisalReviewList(performanceAppraisalObjectsDTO);
     }
 
     /**
@@ -167,6 +169,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-组织-排名
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgRanking:pageList")
+    @DataScope(businessAlias = "pa")
     @GetMapping("/orgRanking/pageList")
     public TableDataInfo listOrgRanking(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();
@@ -199,6 +202,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-组织-归档
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgArchive:pageList")
+    @DataScope(businessAlias = "pa")
     @GetMapping("/orgArchive/pageList")
     public TableDataInfo listOrgArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();
@@ -310,11 +314,10 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-个人-制定
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:perDevelop:pageList")
+    @DataScope(businessAlias = "pa")
     @GetMapping("/perDevelop/pageList")
     public TableDataInfo listPerDevelop(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
-        startPage();
-        List<PerformanceAppraisalObjectsDTO> list = performanceAppraisalService.selectPerAppraisalDevelopList(performanceAppraisalObjectsDTO);
-        return getDataTable(list);
+        return performanceAppraisalService.selectPerAppraisalDevelopList(performanceAppraisalObjectsDTO);
     }
 
     /**
@@ -341,11 +344,10 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-个人-评议
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:perReview:pageList")
+    @DataScope(businessAlias = "pa")
     @GetMapping("/perReview/pageList")
     public TableDataInfo listPerReview(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
-        startPage();
-        List<PerformanceAppraisalObjectsDTO> list = performanceAppraisalService.selectPerAppraisalReviewList(performanceAppraisalObjectsDTO);
-        return getDataTable(list);
+        return performanceAppraisalService.selectPerAppraisalReviewList(performanceAppraisalObjectsDTO);
     }
 
     /**
@@ -373,6 +375,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-组织-排名
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:perRanking:pageList")
+    @DataScope(businessAlias = "pa")
     @GetMapping("/perRanking/pageList")
     public TableDataInfo listPerRanking(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();
@@ -405,6 +408,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-个人-归档
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:perArchive:pageList")
+    @DataScope(businessAlias = "pa")
     @GetMapping("/perArchive/pageList")
     public TableDataInfo listPerArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();

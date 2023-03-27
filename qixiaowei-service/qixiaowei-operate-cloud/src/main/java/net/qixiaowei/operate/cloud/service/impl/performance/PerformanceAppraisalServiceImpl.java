@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.performance;
 
+import cn.hutool.core.util.PageUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.fastjson.JSON;
@@ -7,15 +8,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import groovy.lang.Lazy;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.HttpStatus;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.PageUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
+import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalItems;
 import net.qixiaowei.operate.cloud.api.dto.performance.*;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalMapper;
@@ -26,6 +31,7 @@ import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,6 +83,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
 
     @Autowired
     private RemoteIndicatorService indicatorService;
+
+    @Autowired
+    private IPerformAppraisalEvaluateService performAppraisalEvaluateService;
 
     /**
      * 查询绩效考核表详情
@@ -631,6 +640,20 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     break;
             }
         }
+        switch (appraisal.getEvaluationType()) {
+            case 1:
+                appraisal.setEvaluationTypeName("月度");
+                break;
+            case 2:
+                appraisal.setEvaluationTypeName("季度");
+                break;
+            case 3:
+                appraisal.setEvaluationTypeName("半年度");
+                break;
+            case 4:
+                appraisal.setEvaluationTypeName("年度");
+                break;
+        }
         // 考核阶段
         if (StringUtils.isNotNull(appraisal.getAppraisalStatus())) {
             switch (appraisal.getAppraisalStatus()) {
@@ -694,6 +717,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isNull(performanceRankDTO)) {
             throw new ServiceException("当前绩效等级不存在 请检查绩效配置");
         }
+        if (performanceAppraisalDTO.getCycleType() < performanceAppraisalDTO.getEvaluationType()) {
+            throw new ServiceException("评议周期不可以超过考核周期");
+        }
         performanceAppraisalDTO.setPerformanceRankName(performanceRankDTO.getPerformanceRankName());
         // 周期性考核标记:0否;1是
         if (performanceAppraisalDTO.getCycleFlag().equals(1)) {
@@ -731,7 +757,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         } else {
             performanceAppraisalObjectsDTOList = matchEmployeeObject(employeeData, performanceAppraisalObjectsDTOS, performanceAppraisal, appraisalFlow);
         }
-        performanceAppraisalObjectsService.insertPerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
+        performanceAppraisalObjectsService.insertPerformanceAppraisalObjectsS(performanceAppraisalObjectsDTOList);
         List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = setSnapValue(appraisalObject, performanceAppraisalObjectsDTOList);
         return performAppraisalObjectSnapService.insertPerformAppraisalObjectSnaps(performAppraisalObjectSnapDTOS);
     }
@@ -779,7 +805,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 } else {
                     performanceAppraisalObjectsDTOList = matchEmployeeObject(employeeData, performanceAppraisalObjectsDTOS, performanceAppraisal, appraisalFlow);
                 }
-                performanceAppraisalObjectsService.insertPerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
+                performanceAppraisalObjectsService.insertPerformanceAppraisalObjectsS(performanceAppraisalObjectsDTOList);
                 List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = setSnapValue(appraisalObject, performanceAppraisalObjectsDTOList);
                 return performAppraisalObjectSnapService.insertPerformAppraisalObjectSnaps(performAppraisalObjectSnapDTOS);
         }
@@ -840,7 +866,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         } else {
             performanceAppraisalObjectsDTOList.addAll(matchEmployeeObject(employeeData, performanceAppraisalObjectsDTOS, performanceAppraisal, appraisalFlow));
         }
-        performanceAppraisalObjectsService.insertPerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
+        performanceAppraisalObjectsService.insertPerformanceAppraisalObjectsS(performanceAppraisalObjectsDTOList);
         List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = setSnapValue(appraisalObject, performanceAppraisalObjectsDTOList);
         performAppraisalObjectSnapService.insertPerformAppraisalObjectSnaps(performAppraisalObjectSnapDTOS);
     }
@@ -1135,6 +1161,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         List<Long> performanceAppraisalItemIds = performanceAppraisalItemsDTOS.stream().map(PerformanceAppraisalItemsDTO::getPerformAppraisalItemsId).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(performanceAppraisalItemIds)) {
             performanceAppraisalItemsService.logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds(performanceAppraisalItemIds);
+            // 实际值列表
+            List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOList = performAppraisalEvaluateService.selectPerformAppraisalEvaluateByPerformAppraisalItemIds(performanceAppraisalItemIds);
+            if (StringUtils.isNotEmpty(performAppraisalEvaluateDTOList)) {
+                List<Long> performAppraisalEvaluateIds = performAppraisalEvaluateDTOList.stream().map(PerformAppraisalEvaluateDTO::getPerformAppraisalEvaluateId).collect(Collectors.toList());
+                performAppraisalEvaluateService.logicDeletePerformAppraisalEvaluateByPerformAppraisalEvaluateIds(performAppraisalEvaluateIds);
+            }
         }
         return 1;
     }
@@ -1207,6 +1239,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         List<Long> performanceAppraisalItemIds = performanceAppraisalItemsDTOS.stream().map(PerformanceAppraisalItemsDTO::getPerformAppraisalItemsId).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(performanceAppraisalItemIds)) {
             performanceAppraisalItemsService.logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds(performanceAppraisalItemIds);
+            // 实际值列表
+            List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOList = performAppraisalEvaluateService.selectPerformAppraisalEvaluateByPerformAppraisalItemIds(performanceAppraisalItemIds);
+            if (StringUtils.isNotEmpty(performAppraisalEvaluateDTOList)) {
+                List<Long> performAppraisalEvaluateIds = performAppraisalEvaluateDTOList.stream().map(PerformAppraisalEvaluateDTO::getPerformAppraisalEvaluateId).collect(Collectors.toList());
+                performAppraisalEvaluateService.logicDeletePerformAppraisalEvaluateByPerformAppraisalEvaluateIds(performAppraisalEvaluateIds);
+            }
         }
         return 1;
     }
@@ -2238,7 +2276,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return List
      */
     @Override
-    public List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+    public TableDataInfo selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+        Integer pageNum = performanceAppraisalObjectsDTO.getPageNum();
+        Integer pageSize = performanceAppraisalObjectsDTO.getPageSize();
         PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(1);
         appraisalDTO.setAppraisalStatus(1);
@@ -2249,7 +2289,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         appraisalDTO.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
-            return new ArrayList<>();
+            return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
         }
         List<Long> performanceAppraisalIds = performanceAppraisalDTOS.stream().map(PerformanceAppraisalDTO::getPerformanceAppraisalId).collect(Collectors.toList());
         Integer appraisalObjectStatus = performanceAppraisalObjectsDTO.getAppraisalObjectStatus();
@@ -2276,7 +2316,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isNotEmpty(params2)) {
             List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
             if (StringUtils.isEmpty(departmentDTOS)) {
-                return new ArrayList<>();
+                return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
             }
             List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
             params.put("departmentIds", departmentIds);
@@ -2284,7 +2324,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setParams(params);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
         this.handleResultOfPerformanceAppraisalObjects(performanceAppraisalObjectsDTOList);
-        return performanceAppraisalObjectsDTOList;
+        List<PerformanceAppraisalObjectsDTO> partition;
+        if (pageNum > PageUtil.totalPage(performanceAppraisalObjectsDTOList.size(), pageSize)) {
+            partition = new ArrayList<>();
+        } else {
+            partition = ListUtils.partition(performanceAppraisalObjectsDTOList, pageSize).get(pageNum - 1);
+        }
+        return PageUtils.tableDataInfo(HttpStatus.SUCCESS, partition, performanceAppraisalObjectsDTOList.size());
     }
 
     /**
@@ -2294,7 +2340,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return List
      */
     @Override
-    public List<PerformanceAppraisalObjectsDTO> selectPerAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+    public TableDataInfo selectPerAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+        Integer pageNum = performanceAppraisalObjectsDTO.getPageNum();
+        Integer pageSize = performanceAppraisalObjectsDTO.getPageSize();
         List<Long> performanceAppraisalIds = new ArrayList<>();
         PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(2);
@@ -2306,7 +2354,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         appraisalDTO.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
-            return new ArrayList<>();
+            return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
         }
         for (PerformanceAppraisalDTO performanceAppraisalDTO : performanceAppraisalDTOS) {
             performanceAppraisalIds.add(performanceAppraisalDTO.getPerformanceAppraisalId());
@@ -2353,7 +2401,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isNotEmpty(params2)) {
             List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
             if (StringUtils.isEmpty(employeeDTOS)) {
-                return new ArrayList<>();
+                return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
             }
             List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
             params.put("employeeIds", employeeIds);
@@ -2361,7 +2409,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setParams(params);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
         this.handleResultOfPerformanceAppraisalObjects(performanceAppraisalObjectsDTOList);
-        return performanceAppraisalObjectsDTOList;
+        List<PerformanceAppraisalObjectsDTO> partition;
+        if (pageNum > PageUtil.totalPage(performanceAppraisalObjectsDTOList.size(), pageSize)) {
+            partition = new ArrayList<>();
+        } else {
+            partition = ListUtils.partition(performanceAppraisalObjectsDTOList, pageSize).get(pageNum - 1);
+        }
+        return PageUtils.tableDataInfo(HttpStatus.SUCCESS, partition, performanceAppraisalObjectsDTOList.size());
     }
 
     /**
@@ -2425,7 +2479,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * 编辑-绩效考核-制定-组织
      *
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
-     * @return
+     * @return dto
      */
     @Override
     @Transactional
@@ -2438,6 +2492,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isNull(performanceAppraisalObjectsDTOByObjectId)) {
             throw new ServiceException("当前绩效考核对象已不存在");
         }
+        performanceAppraisalObjectsDTO.setCycleType(performanceAppraisalObjectsDTOByObjectId.getCycleType());
+        performanceAppraisalObjectsDTO.setEvaluationType(performanceAppraisalObjectsDTOByObjectId.getEvaluationType());
         Long performanceAppraisalId = performanceAppraisalObjectsDTOByObjectId.getPerformanceAppraisalId();
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
         // 更新绩效考核任务
@@ -2512,7 +2568,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 }
             }
         }
-        operateItemValue(performanceAppraisalItemsBefore, performanceAppraisalItemsAfter);
+        operateItemValue(performanceAppraisalObjectsDTO, performanceAppraisalItemsBefore, performanceAppraisalItemsAfter);
         return null;
     }
 
@@ -2585,7 +2641,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return List
      */
     @Override
-    public List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+    public TableDataInfo selectOrgAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+        Integer pageNum = performanceAppraisalObjectsDTO.getPageNum();
+        Integer pageSize = performanceAppraisalObjectsDTO.getPageSize();
         PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(1);
         Map<String, Object> params = performanceAppraisalObjectsDTO.getParams();
@@ -2595,7 +2653,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         appraisalDTO.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
-            return new ArrayList<>();
+            return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
         }
         List<Long> performanceAppraisalIds = performanceAppraisalDTOS.stream().map(PerformanceAppraisalDTO::getPerformanceAppraisalId).collect(Collectors.toList());
         Integer appraisalObjectStatus = performanceAppraisalObjectsDTO.getAppraisalObjectStatus();
@@ -2609,7 +2667,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setAppraisalObjectStatusList(appraisalObjectStatuses);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
         Map<String, Object> params2 = new HashMap<>();
-
         for (String key : params.keySet()) {
             switch (key) {
                 case "departmentNameEqual":
@@ -2623,7 +2680,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isNotEmpty(params2)) {
             List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
             if (StringUtils.isEmpty(departmentDTOS)) {
-                return new ArrayList<>();
+                return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
             }
             List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
             params.put("departmentIds", departmentIds);
@@ -2631,7 +2688,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setParams(params);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
         this.handleResultOfPerformanceAppraisalObjects(performanceAppraisalObjectsDTOList);
-        return performanceAppraisalObjectsDTOList;
+        List<PerformanceAppraisalObjectsDTO> partition;
+        if (pageNum > PageUtil.totalPage(performanceAppraisalObjectsDTOList.size(), pageSize)) {
+            partition = new ArrayList<>();
+        } else {
+            partition = ListUtils.partition(performanceAppraisalObjectsDTOList, pageSize).get(pageNum - 1);
+        }
+        return PageUtils.tableDataInfo(HttpStatus.SUCCESS, partition, performanceAppraisalObjectsDTOList.size());
     }
 
     /**
@@ -2641,7 +2704,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return List
      */
     @Override
-    public List<PerformanceAppraisalObjectsDTO> selectPerAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+    public TableDataInfo selectPerAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+        Integer pageNum = performanceAppraisalObjectsDTO.getPageNum();
+        Integer pageSize = performanceAppraisalObjectsDTO.getPageSize();
         List<Long> performanceAppraisalIds = new ArrayList<>();
         PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(2);
@@ -2652,7 +2717,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         appraisalDTO.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
-            return new ArrayList<>();
+            return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
         }
         for (PerformanceAppraisalDTO performanceAppraisalDTO : performanceAppraisalDTOS) {
             performanceAppraisalIds.add(performanceAppraisalDTO.getPerformanceAppraisalId());
@@ -2700,7 +2765,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isNotEmpty(params2)) {
             List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
             if (StringUtils.isEmpty(employeeDTOS)) {
-                return new ArrayList<>();
+                return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
             }
             List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
             params.put("employeeIds", employeeIds);
@@ -2708,7 +2773,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setParams(params);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
         this.handleResultOfPerformanceAppraisalObjects(performanceAppraisalObjectsDTOList);
-        return performanceAppraisalObjectsDTOList;
+        List<PerformanceAppraisalObjectsDTO> partition;
+        if (pageNum > PageUtil.totalPage(performanceAppraisalObjectsDTOList.size(), pageSize)) {
+            partition = new ArrayList<>();
+        } else {
+            partition = ListUtils.partition(performanceAppraisalObjectsDTOList, pageSize).get(pageNum - 1);
+        }
+        return PageUtils.tableDataInfo(HttpStatus.SUCCESS, partition, performanceAppraisalObjectsDTOList.size());
     }
 
     /**
@@ -2729,6 +2800,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             Integer examineDirection = performanceAppraisalItemsDTO.getExamineDirection();
             countScore(performanceAppraisalItemsDTO, examineDirection);
         }
+        setEvaluateValue(performanceAppraisalObjectsDTO, performanceAppraisalItemsDTOS);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalItemsDTOS(performanceAppraisalItemsDTOS);
         return performanceAppraisalObjectsDTO;
     }
@@ -2751,8 +2823,130 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             Integer examineDirection = performanceAppraisalItemsDTO.getExamineDirection();
             countScore(performanceAppraisalItemsDTO, examineDirection);
         }
+        setEvaluateValue(performanceAppraisalObjectsDTO, performanceAppraisalItemsDTOS);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalItemsDTOS(performanceAppraisalItemsDTOS);
         return performanceAppraisalObjectsDTO;
+    }
+
+    /**
+     * 给指标列表赋值
+     *
+     * @param performanceAppraisalObjectsDTO 对象DTO
+     * @param performanceAppraisalItemsDTOS  指标列表
+     */
+    private void setEvaluateValue(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO, List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS) {
+        Integer cycleType = performanceAppraisalObjectsDTO.getCycleType();
+        Integer cycleNumber = performanceAppraisalObjectsDTO.getCycleNumber();
+        Integer evaluationType = performanceAppraisalObjectsDTO.getEvaluationType();
+        List<Long> performanceAppraisalItemIds = performanceAppraisalItemsDTOS.stream().map(PerformanceAppraisalItemsDTO::getPerformAppraisalItemsId).collect(Collectors.toList());
+        List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOList =
+                performAppraisalEvaluateService.selectPerformAppraisalEvaluateByPerformAppraisalItemIds(performanceAppraisalItemIds);
+        for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsDTOS) {
+            List<Map<String, Object>> evaluateList = new ArrayList<>();
+            Long performAppraisalItemsId = performanceAppraisalItemsDTO.getPerformAppraisalItemsId();
+            List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOS = performAppraisalEvaluateDTOList.stream().filter(p ->
+                    p.getPerformAppraisalItemsId().equals(performAppraisalItemsId)).collect(Collectors.toList());
+            for (PerformAppraisalEvaluateDTO performAppraisalEvaluateDTO : performAppraisalEvaluateDTOS) {
+                if (cycleType == 4) {//年度
+                    if (evaluationType == 3) {
+                        if (performAppraisalEvaluateDTO.getEvaluateNumber() == 1) {
+                            setTimeValue(performAppraisalEvaluateDTO, "上半年", evaluateList);
+                        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 2) {
+                            setTimeValue(performAppraisalEvaluateDTO, "下半年", evaluateList);
+                        }
+                    } else if (evaluationType == 2) {//季度
+                        setQuarterValue(evaluateList, performAppraisalEvaluateDTO);
+                    } else if (evaluationType == 1) {//月度
+                        setMonthValue(evaluateList, performAppraisalEvaluateDTO);
+                    }
+                } else if (cycleType == 3) {//半年度
+                    if (evaluationType == 2) {//季度
+                        setQuarterValue(evaluateList, performAppraisalEvaluateDTO);
+                    } else if (evaluationType == 1) {//月度
+                        setMonthValue(evaluateList, performAppraisalEvaluateDTO);
+                    }
+                } else if (cycleType == 2) {// 季度
+                    if (evaluationType == 1) {//月度
+                        setMonthValue(evaluateList, performAppraisalEvaluateDTO);
+                    }
+                }
+            }
+            Map<String, Object> sumMap = new HashMap<>();
+            if (StringUtils.isNotEmpty(evaluateList)) {
+                sumMap.put("value", Optional.ofNullable(performanceAppraisalItemsDTO.getActualValue()).orElse(BigDecimal.ZERO));
+                sumMap.put("name", "总计");
+                evaluateList.add(sumMap);
+            }
+            performanceAppraisalItemsDTO.setEvaluateList(evaluateList);
+        }
+    }
+
+    /**
+     * 月份赋值
+     *
+     * @param evaluateList                实际值列表
+     * @param performAppraisalEvaluateDTO 实际DTO
+     */
+    private void setQuarterValue(List<Map<String, Object>> evaluateList, PerformAppraisalEvaluateDTO performAppraisalEvaluateDTO) {
+        if (performAppraisalEvaluateDTO.getEvaluateNumber() == 1) {
+            setTimeValue(performAppraisalEvaluateDTO, "一季度", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 2) {
+            setTimeValue(performAppraisalEvaluateDTO, "二季度", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 3) {
+            setTimeValue(performAppraisalEvaluateDTO, "三季度", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 4) {
+            setTimeValue(performAppraisalEvaluateDTO, "四季度", evaluateList);
+        }
+    }
+
+    /**
+     * 月份赋值
+     *
+     * @param evaluateList                实际值列表
+     * @param performAppraisalEvaluateDTO 实际DTO
+     */
+    private void setMonthValue(List<Map<String, Object>> evaluateList, PerformAppraisalEvaluateDTO performAppraisalEvaluateDTO) {
+        if (performAppraisalEvaluateDTO.getEvaluateNumber() == 1) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 2) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 3) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 4) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 5) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 6) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 7) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 8) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 9) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 10) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 11) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        } else if (performAppraisalEvaluateDTO.getEvaluateNumber() == 12) {
+            setTimeValue(performAppraisalEvaluateDTO, performAppraisalEvaluateDTO.getEvaluateNumber() + "月", evaluateList);
+        }
+    }
+
+    /**
+     * 赋值
+     *
+     * @param performAppraisalEvaluateDTO 实际值dto
+     * @param name                        什么名
+     * @param evaluateList                实际值列表
+     */
+    private void setTimeValue(PerformAppraisalEvaluateDTO performAppraisalEvaluateDTO, String
+            name, List<Map<String, Object>> evaluateList) {
+        Map<String, Object> evaluateMap = new HashMap<>();
+        evaluateMap.put("performAppraisalEvaluateId", performAppraisalEvaluateDTO.getPerformAppraisalEvaluateId());
+        evaluateMap.put("value", Optional.ofNullable(performAppraisalEvaluateDTO.getActualValue()).orElse(BigDecimal.ZERO));
+        evaluateMap.put("name", name);
+        evaluateList.add(evaluateMap);
     }
 
     /**
@@ -2763,7 +2957,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *                                     1) 若指标的考核方向为正向，则为实际值/目标值*权重*100，实际值/目标值大于1.2时，按照1.2取值。
      *                                     2) 若指标的考核方向为负向，则为目标值/实际值*权重*100，实际值为0时分数为0。
      */
-    private static void countScore(PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO, Integer examineDirection) {
+    private static void countScore(PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO, Integer
+            examineDirection) {
         if (StringUtils.isNotNull(examineDirection)) {
             if (examineDirection == 1) {// 正向
                 BigDecimal targetValue = performanceAppraisalItemsDTO.getTargetValue();
@@ -2811,7 +3006,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     @Transactional
-    public PerformanceAppraisalObjectsDTO updateOrgReviewPerformanceAppraisal(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+    public PerformanceAppraisalObjectsDTO updateOrgReviewPerformanceAppraisal(PerformanceAppraisalObjectsDTO
+                                                                                      performanceAppraisalObjectsDTO) {
         Long performAppraisalObjectsId = performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId();
         if (StringUtils.isNull(performAppraisalObjectsId)) {
             throw new ServiceException("绩效考核对象ID不能为空");
@@ -2865,9 +3061,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsAfter) {
             PerformanceAppraisalItemsDTO appraisalItemsDTO = new PerformanceAppraisalItemsDTO();
             appraisalItemsDTO.setPerformAppraisalItemsId(performanceAppraisalItemsDTO.getPerformAppraisalItemsId());
+            appraisalItemsDTO.setRemark(performanceAppraisalItemsDTO.getRemark());
             appraisalItemsDTO.setActualValue(performanceAppraisalItemsDTO.getActualValue());
+            appraisalItemsDTO.setEvaluateList(performanceAppraisalItemsDTO.getEvaluateList());
             performanceAppraisalItemList.add(appraisalItemsDTO);
         }
+        this.setPerformanceAppraisalEvaluate(performanceAppraisalItemList);
         performanceAppraisalItemsService.updatePerformanceAppraisalItemsS(performanceAppraisalItemList);
         return performanceAppraisalObjectsDTO;
     }
@@ -2876,10 +3075,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * 编辑个人绩效考核表 -评议
      *
      * @param performanceAppraisalObjectsDTO 考核对象
-     * @return
+     * @return 结果
      */
     @Override
-    public PerformanceAppraisalObjectsDTO updatePerReviewPerformanceAppraisal(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+    public PerformanceAppraisalObjectsDTO updatePerReviewPerformanceAppraisal(PerformanceAppraisalObjectsDTO
+                                                                                      performanceAppraisalObjectsDTO) {
         Long performAppraisalObjectsId = performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId();
         if (StringUtils.isNull(performAppraisalObjectsId)) {
             throw new ServiceException("绩效考核对象ID不能为空");
@@ -2937,7 +3137,52 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             performanceAppraisalItemList.add(appraisalItemsDTO);
         }
         performanceAppraisalItemsService.updatePerformanceAppraisalItemsS(performanceAppraisalItemList);
+        this.setPerformanceAppraisalEvaluate(performanceAppraisalItemList);
         return performanceAppraisalObjectsDTO;
+    }
+
+    /**
+     * 更新实际值
+     *
+     * @param performanceAppraisalItemList 指标列表
+     */
+    private void setPerformanceAppraisalEvaluate(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemList) {
+        List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOS = new ArrayList<>();
+        for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemList) {
+            List<Map<String, Object>> evaluateList = performanceAppraisalItemsDTO.getEvaluateList();
+            if (StringUtils.isNotEmpty(evaluateList)) {
+                this.operateReviewEvaluation(evaluateList, performAppraisalEvaluateDTOS, performanceAppraisalItemsDTO);
+                Map<String, Object> lastMap = evaluateList.get(evaluateList.size() - 1);
+                performanceAppraisalItemsDTO.setActualValue(new BigDecimal(lastMap.get("value").toString()));
+            }
+        }
+        if (StringUtils.isNotEmpty(performAppraisalEvaluateDTOS)) {
+            performAppraisalEvaluateService.updatePerformAppraisalEvaluates(performAppraisalEvaluateDTOS);
+        }
+    }
+
+    /**
+     * 处理评议的实际值内容
+     *
+     * @param evaluateList                 实际值列表
+     * @param performAppraisalEvaluateDTOS 实际值列表
+     * @param performanceAppraisalItemsDTO 总计
+     */
+    private void operateReviewEvaluation(List<Map<String, Object>> evaluateList, List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOS, PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO) {
+        for (Map<String, Object> map : evaluateList) {
+            if (StringUtils.isNotNull(map.get("name")) && map.get("name").toString().equals("总计")) {
+                continue;
+            }
+            if (StringUtils.isNull(map.get("performAppraisalEvaluateId"))) {
+                throw new ServiceException("数据异常 请联系管理员");
+            }
+            Long performAppraisalEvaluateId = Long.parseLong(map.get("performAppraisalEvaluateId").toString());
+            BigDecimal value = StringUtils.isNull(map.get("value")) ? BigDecimal.ZERO : new BigDecimal(map.get("value").toString());
+            PerformAppraisalEvaluateDTO performAppraisalEvaluateDTO = new PerformAppraisalEvaluateDTO();
+            performAppraisalEvaluateDTO.setPerformAppraisalEvaluateId(performAppraisalEvaluateId);
+            performAppraisalEvaluateDTO.setActualValue(value);
+            performAppraisalEvaluateDTOS.add(performAppraisalEvaluateDTO);
+        }
     }
 
     /**
@@ -2978,7 +3223,20 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             itemsDTO.setPerformAppraisalItemsId(performanceAppraisalItemsDTO.getPerformAppraisalItemsId());
             itemsDTOList.add(itemsDTO);
         }
-        return performanceAppraisalItemsService.withdrawPerformanceAppraisalItems(itemsDTOList);
+        performanceAppraisalItemsService.withdrawPerformanceAppraisalItems(itemsDTOList);
+        List<Long> performanceAppraisalItemIds = performanceAppraisalItemsDTOS.stream().map(PerformanceAppraisalItemsDTO::getPerformAppraisalItemsId).collect(Collectors.toList());
+        List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOList = performAppraisalEvaluateService.selectPerformAppraisalEvaluateByPerformAppraisalItemIds(performanceAppraisalItemIds);
+        if (StringUtils.isNotEmpty(performAppraisalEvaluateDTOList)) {
+            List<PerformAppraisalEvaluateDTO> evaluateDTOS = new ArrayList<>();
+            for (PerformAppraisalEvaluateDTO performAppraisalEvaluateDTO : performAppraisalEvaluateDTOList) {
+                PerformAppraisalEvaluateDTO appraisalEvaluateDTO = new PerformAppraisalEvaluateDTO();
+                appraisalEvaluateDTO.setPerformAppraisalEvaluateId(performAppraisalEvaluateDTO.getPerformAppraisalEvaluateId());
+                appraisalEvaluateDTO.setActualValue(BigDecimal.ZERO);
+                evaluateDTOS.add(appraisalEvaluateDTO);
+            }
+            performAppraisalEvaluateService.updatePerformAppraisalEvaluates(evaluateDTOS);
+        }
+        return 1;
     }
 
     /**
@@ -2999,7 +3257,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return List
      */
     @Override
-    public List<PerformanceAppraisalDTO> selectOrgAppraisalRankingList(PerformanceAppraisalDTO performanceAppraisalDTO) {
+    public List<PerformanceAppraisalDTO> selectOrgAppraisalRankingList(PerformanceAppraisalDTO
+                                                                               performanceAppraisalDTO) {
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         performanceAppraisal.setAppraisalObject(1);
@@ -3025,7 +3284,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return
      */
     @Override
-    public List<PerformanceAppraisalDTO> selectPerAppraisalRankingList(PerformanceAppraisalDTO performanceAppraisalDTO) {
+    public List<PerformanceAppraisalDTO> selectPerAppraisalRankingList(PerformanceAppraisalDTO
+                                                                               performanceAppraisalDTO) {
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         performanceAppraisal.setAppraisalObject(2);
@@ -3080,7 +3340,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * 查询绩效考核详情-人员-排名
      *
      * @param performanceAppraisalId 考核ID
-     * @return
+     * @return 结果
      */
     @Override
     public PerformanceAppraisalDTO selectPerAppraisalRankingById(Long performanceAppraisalId) {
@@ -3153,7 +3413,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalObjectsDTOS    考核对象List - 前
      * @param performanceAppraisalObjectsDTOList 考核对象List - 后
      */
-    private void updateRankOperate(Integer isSubmit, Long performanceAppraisalId, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList) {
+    private void updateRankOperate(Integer isSubmit, Long
+            performanceAppraisalId, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList) {
         if (isSubmit == 1) {
             PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
             performanceAppraisal.setPerformanceAppraisalId(performanceAppraisalId);
@@ -3165,6 +3426,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
             PerformanceAppraisalObjectsDTO objectsDTO = new PerformanceAppraisalObjectsDTO();
             objectsDTO.setPerformAppraisalObjectsId(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
+            objectsDTO.setRemark(performanceAppraisalObjectsDTO.getRemark());
             objectsDTO.setAppraisalResultId(performanceAppraisalObjectsDTO.getAppraisalResultId());
             objectsDTO.setAppraisalResult(performanceAppraisalObjectsDTO.getAppraisalResult());
             objectsDTO.setAppraisalPrincipalId(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
@@ -3180,7 +3442,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalId          考核ID
      * @param performanceAppraisalObjectsDTOS 考核对象集合
      */
-    private void checkRankingUpdate(Integer isSubmit, Long performanceAppraisalId, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS) {
+    private void checkRankingUpdate(Integer isSubmit, Long
+            performanceAppraisalId, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS) {
         if (StringUtils.isNull(isSubmit)) {
             throw new ServiceException("请添加是否提交");
         }
@@ -3218,10 +3481,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     /**
      * 处理评议指标信息
      *
+     * @param performanceAppraisalObjectsDTO  对象
      * @param performanceAppraisalItemsBefore 库值
      * @param performanceAppraisalItemsAfter  后来的
      */
-    private void operateItemValue(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsBefore, List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsAfter) {
+    private void operateItemValue(PerformanceAppraisalObjectsDTO
+                                          performanceAppraisalObjectsDTO, List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsBefore, List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsAfter) {
         // 交集
         List<PerformanceAppraisalItemsDTO> updatePerformanceAppraisalItem =
                 performanceAppraisalItemsAfter.stream().filter(performanceAppraisalItemsDTO ->
@@ -3240,6 +3505,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                         !performanceAppraisalItemsBefore.stream().map(PerformanceAppraisalItemsDTO::getIndicatorId)
                                 .collect(Collectors.toList()).contains(performanceAppraisalItemsDTO.getIndicatorId())
                 ).collect(Collectors.toList());
+        List<PerformanceAppraisalItems> addPerformanceAppraisalItems = new ArrayList<>();
         try {
             if (StringUtils.isNotEmpty(delPerformanceAppraisalItem)) {
                 List<Long> performanceAppraisalItems = new ArrayList<>();
@@ -3249,13 +3515,142 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 performanceAppraisalItemsService.logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds(performanceAppraisalItems);
             }
             if (StringUtils.isNotEmpty(addPerformanceAppraisalItem)) {
-                performanceAppraisalItemsService.insertPerformanceAppraisalItemss(addPerformanceAppraisalItem);
+                addPerformanceAppraisalItems = performanceAppraisalItemsService.insertPerformanceAppraisalItemss(addPerformanceAppraisalItem);
             }
             if (StringUtils.isNotEmpty(updatePerformanceAppraisalItem)) {
                 performanceAppraisalItemsService.updatePerformanceAppraisalItemsS(updatePerformanceAppraisalItem);
             }
         } catch (ServiceException e) {
             throw new ServiceException("数据更新失败");
+        }
+        if (performanceAppraisalObjectsDTO.getIsSubmit() == 1) {
+            this.operateEvaluation(updatePerformanceAppraisalItem, addPerformanceAppraisalItems, delPerformanceAppraisalItem, performanceAppraisalObjectsDTO);
+        }
+    }
+
+    /**
+     * 处理
+     *
+     * @param updatePerformanceAppraisalItem 更新
+     * @param addPerformanceAppraisalItem    新增
+     * @param delPerformanceAppraisalItem    删除
+     * @param performanceAppraisalObjectsDTO 对象表
+     */
+    private void operateEvaluation
+    (List<PerformanceAppraisalItemsDTO> updatePerformanceAppraisalItem, List<PerformanceAppraisalItems> addPerformanceAppraisalItem,
+     List<PerformanceAppraisalItemsDTO> delPerformanceAppraisalItem, PerformanceAppraisalObjectsDTO
+             performanceAppraisalObjectsDTO) {
+        Integer cycleType = performanceAppraisalObjectsDTO.getCycleType();
+        Integer evaluationType = performanceAppraisalObjectsDTO.getEvaluationType();
+        Integer cycleNumber = performanceAppraisalObjectsDTO.getCycleNumber();
+        Long performAppraisalObjectsId = performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId();
+        if (StringUtils.isNotEmpty(addPerformanceAppraisalItem)) {
+            List<PerformAppraisalEvaluateDTO> addPerformanceEvaluationList = new ArrayList<>();
+            for (PerformanceAppraisalItems performanceAppraisalItems : addPerformanceAppraisalItem) {
+                setCycleActualValue(performAppraisalObjectsId, addPerformanceEvaluationList, cycleType, evaluationType, cycleNumber, performanceAppraisalItems.getPerformAppraisalItemsId());
+            }
+            if (StringUtils.isNotEmpty(addPerformanceEvaluationList)) {
+                performAppraisalEvaluateService.insertPerformAppraisalEvaluates(addPerformanceEvaluationList);
+            }
+        }
+        if (StringUtils.isNotEmpty(updatePerformanceAppraisalItem)) {
+            List<Long> performanceAppraisalItemIds = updatePerformanceAppraisalItem.stream().map(PerformanceAppraisalItemsDTO::getPerformAppraisalItemsId).collect(Collectors.toList());
+            List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOBefore = performAppraisalEvaluateService.selectPerformAppraisalEvaluateByPerformAppraisalItemIds(performanceAppraisalItemIds);
+            List<PerformAppraisalEvaluateDTO> delPerformanceEvaluationList = new ArrayList<>();
+            List<PerformAppraisalEvaluateDTO> addPerformanceEvaluationList = new ArrayList<>();
+            for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : updatePerformanceAppraisalItem) {
+                List<PerformAppraisalEvaluateDTO> performanceEvaluationListAfter = new ArrayList<>();
+                setCycleActualValue(performAppraisalObjectsId, performanceEvaluationListAfter, cycleType, evaluationType, cycleNumber, performanceAppraisalItemsDTO.getPerformAppraisalItemsId());
+                List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateBefore = performAppraisalEvaluateDTOBefore.stream().filter(before ->
+                        before.getPerformAppraisalItemsId().equals(performanceAppraisalItemsDTO.getPerformAppraisalItemsId())).collect(Collectors.toList());
+                delPerformanceEvaluationList.addAll(performAppraisalEvaluateBefore.stream().filter(before ->
+                        !performanceEvaluationListAfter.stream().map(PerformAppraisalEvaluateDTO::getEvaluateNumber)
+                                .collect(Collectors.toList()).contains(before.getEvaluateNumber())).collect(Collectors.toList()));
+                addPerformanceEvaluationList.addAll(performanceEvaluationListAfter.stream().filter(after ->
+                        !performAppraisalEvaluateBefore.stream().map(PerformAppraisalEvaluateDTO::getEvaluateNumber)
+                                .collect(Collectors.toList()).contains(after.getEvaluateNumber())).collect(Collectors.toList()));
+            }
+            if (StringUtils.isNotEmpty(addPerformanceEvaluationList)) {
+                performAppraisalEvaluateService.insertPerformAppraisalEvaluates(addPerformanceEvaluationList);
+            }
+            if (StringUtils.isNotEmpty(delPerformanceEvaluationList)) {
+                List<Long> delPerformanceEvaluationIds = delPerformanceEvaluationList.stream().map(PerformAppraisalEvaluateDTO::getPerformAppraisalEvaluateId).collect(Collectors.toList());
+                performAppraisalEvaluateService.logicDeletePerformAppraisalEvaluateByPerformAppraisalEvaluateIds(delPerformanceEvaluationIds);
+            }
+        }
+        if (StringUtils.isNotEmpty(delPerformanceAppraisalItem)) {
+            List<Long> delPerformanceAppraisalItemIds = delPerformanceAppraisalItem.stream().map(PerformanceAppraisalItemsDTO::getPerformAppraisalItemsId).collect(Collectors.toList());
+            List<PerformAppraisalEvaluateDTO> delPerformAppraisalEvaluateDTOS = performAppraisalEvaluateService.selectPerformAppraisalEvaluateByPerformAppraisalItemIds(delPerformanceAppraisalItemIds);
+            List<Long> delPerformanceAppraisalEvaluateIds = delPerformAppraisalEvaluateDTOS.stream().map(PerformAppraisalEvaluateDTO::getPerformAppraisalEvaluateId).collect(Collectors.toList());
+            performAppraisalEvaluateService.logicDeletePerformAppraisalEvaluateByPerformAppraisalEvaluateIds(delPerformanceAppraisalEvaluateIds);
+        }
+    }
+
+    /**
+     * 赋值
+     *
+     * @param performAppraisalObjectsId    对象ID
+     * @param addPerformanceEvaluationList 新增的列表
+     * @param cycleType                    周期
+     * @param evaluationType               平移类型
+     * @param cycleNumber                  周期
+     * @param performAppraisalItemsId      指标iD
+     */
+    private static void setCycleActualValue(Long
+                                                    performAppraisalObjectsId, List<PerformAppraisalEvaluateDTO> addPerformanceEvaluationList,
+                                            Integer cycleType, Integer evaluationType, Integer cycleNumber, Long performAppraisalItemsId) {
+        if (cycleType == 4) {//年度
+            if (evaluationType == 3) {
+                setEvaluateValue(1, 2, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+            } else if (evaluationType == 2) {
+                setEvaluateValue(1, 4, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+            } else if (evaluationType == 1) {
+                setEvaluateValue(1, 12, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+            }
+        } else if (cycleType == 3) {//半年度
+            if (cycleNumber == 1) {
+                if (evaluationType == 2) {
+                    setEvaluateValue(1, 2, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+                } else if (evaluationType == 1) {
+                    setEvaluateValue(1, 6, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+                }
+            } else if (cycleNumber == 2) {
+                if (evaluationType == 2) {
+                    setEvaluateValue(3, 4, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+                } else if (evaluationType == 1) {
+                    setEvaluateValue(7, 12, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+                }
+            }
+        } else if (cycleType == 2) {//季度
+            if (evaluationType == 1) {
+                if (cycleNumber == 1) {
+                    setEvaluateValue(1, 3, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+                } else if (cycleNumber == 2) {
+                    setEvaluateValue(4, 6, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+                } else if (cycleNumber == 3) {
+                    setEvaluateValue(7, 9, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+                } else if (cycleNumber == 4) {
+                    setEvaluateValue(10, 12, performAppraisalItemsId, performAppraisalObjectsId, addPerformanceEvaluationList);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param start                        开始时间
+     * @param end                          结束时间
+     * @param performAppraisalItemsId      绩效评议id
+     * @param performAppraisalObjectsId    绩效对象ID
+     * @param addPerformanceEvaluationList 绩效评议新增
+     */
+    private static void setEvaluateValue(int start, int end, Long performAppraisalItemsId, Long
+            performAppraisalObjectsId, List<PerformAppraisalEvaluateDTO> addPerformanceEvaluationList) {
+        for (int i = start; i < end + 1; i++) {
+            PerformAppraisalEvaluateDTO performAppraisalEvaluateDTO = new PerformAppraisalEvaluateDTO();
+            performAppraisalEvaluateDTO.setEvaluateNumber(i);
+            performAppraisalEvaluateDTO.setPerformAppraisalItemsId(performAppraisalItemsId);
+            performAppraisalEvaluateDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
+            addPerformanceEvaluationList.add(performAppraisalEvaluateDTO);
         }
     }
 
@@ -3267,7 +3662,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     private static void setObjectFieldName(PerformanceAppraisalObjectsDTO appraisalObjectsDTO) {
         // 考核周期类型/考核周期
         if (StringUtils.isNotNull(appraisalObjectsDTO)) {
-            if (StringUtils.isNotNull(appraisalObjectsDTO.getCycleType())) {
+            if (StringUtils.isNotNull(appraisalObjectsDTO.getCycleType()) && StringUtils.isNotNull(appraisalObjectsDTO.getEvaluationType())) {
                 switch (appraisalObjectsDTO.getCycleType()) {
                     case 1:
                         appraisalObjectsDTO.setCycleTypeName("月度");
@@ -3288,6 +3683,20 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     case 4:
                         appraisalObjectsDTO.setCycleTypeName("年度");
                         appraisalObjectsDTO.setCycleNumberName("整年度");
+                        break;
+                }
+                switch (appraisalObjectsDTO.getEvaluationType()) {
+                    case 1:
+                        appraisalObjectsDTO.setEvaluationTypeName("月度");
+                        break;
+                    case 2:
+                        appraisalObjectsDTO.setEvaluationTypeName("季度");
+                        break;
+                    case 3:
+                        appraisalObjectsDTO.setEvaluationTypeName("半年度");
+                        break;
+                    case 4:
+                        appraisalObjectsDTO.setEvaluationTypeName("年度");
                         break;
                 }
             }

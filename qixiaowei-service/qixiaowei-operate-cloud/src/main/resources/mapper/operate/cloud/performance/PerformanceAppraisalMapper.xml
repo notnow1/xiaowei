@@ -8,7 +8,7 @@
         performance_appraisal_id, performance_rank_id, performance_rank_name, appraisal_year, appraisal_name,
         cycle_flag, cycle_type, cycle_number, appraisal_start_date, appraisal_end_date, filing_date, appraisal_flow,
         appraisal_object, self_defined_columns_flag, appraisal_status, delete_flag, create_by, create_time, update_by,
-        update_time
+        evaluation_type, update_time
         FROM performance_appraisal
         WHERE performance_appraisal_id=#{performanceAppraisalId}
         and delete_flag=0
@@ -21,7 +21,7 @@
         performance_appraisal_id, performance_rank_id, performance_rank_name, appraisal_year, appraisal_name,
         cycle_flag, cycle_type, cycle_number, appraisal_start_date, appraisal_end_date, filing_date, appraisal_flow,
         appraisal_object, self_defined_columns_flag, appraisal_status, delete_flag, create_by, create_time, update_by,
-        update_time
+        update_time,evaluation_type
         FROM performance_appraisal
         WHERE performance_appraisal_id in
         <foreach item="item"
@@ -44,6 +44,7 @@
         pa.cycle_flag,
         pa.cycle_type,
         pa.cycle_number,
+        pa.evaluation_type,
         pa.appraisal_start_date,
         pa.appraisal_end_date,
         pa.filing_date,
@@ -76,11 +77,17 @@
         <if test="performanceAppraisal.appraisalName != null and performanceAppraisal.appraisalName != ''">
             and pa.appraisal_name like concat('%', #{performanceAppraisal.appraisalName}, '%')
         </if>
+        <if test="performanceAppraisal.evaluationType != null and performanceAppraisal.evaluationType != ''">
+            and pa.evaluation_type, like concat('%', #{performanceAppraisal.evaluationType}, '%')
+        </if>
         <if test="performanceAppraisal.cycleFlag != null">
             and pa.cycle_flag=#{performanceAppraisal.cycleFlag}
         </if>
         <if test="performanceAppraisal.cycleType != null">
             and pa.cycle_type=#{performanceAppraisal.cycleType}
+        </if>
+        <if test="performanceAppraisal.cycleType != null">
+            and pa.pa.evaluation_type,=#{performanceAppraisal.evaluationType}
         </if>
         <if test="performanceAppraisal.cycleNumber != null">
             and pa.cycle_number=#{performanceAppraisal.cycleNumber}
@@ -201,6 +208,25 @@
                 #{item}
             </foreach>
             OR pa.cycle_type IS NULL
+            )
+        </if>
+        <!--    评议类型-->
+        <if test="performanceAppraisal.params.evaluationTypeEqual != null and performanceAppraisal.params.evaluationTypeEqual.size() > 0">
+            AND pa.evaluation_type IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.evaluationTypeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.evaluationTypeNotEqual != null and performanceAppraisal.params.evaluationTypeNotEqual.size() > 0">
+            AND (pa.evaluation_type NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.evaluationTypeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.evaluation_type IS NULL
             )
         </if>
         <!--    是否周期性考核-->
@@ -467,7 +493,8 @@
             </foreach>
         </if>
         GROUP BY pa.performance_appraisal_id
-        ORDER BY pa.appraisal_year,pa.cycle_number
+        ${performanceAppraisal.params.dataScope}
+        ORDER BY pa.create_time DESC
     </select>
     <select id="selectRankFactorByAppraisalId"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO">
@@ -498,7 +525,8 @@
         SELECT
         performance_appraisal_id, performance_rank_id, appraisal_year, appraisal_name, cycle_flag, cycle_type,
         cycle_number, appraisal_start_date, appraisal_end_date, filing_date, appraisal_flow, appraisal_object,
-        self_defined_columns_flag, appraisal_status, delete_flag, create_by, create_time, update_by, update_time
+        self_defined_columns_flag, appraisal_status, delete_flag, create_by, create_time, update_by, update_time,
+        evaluation_type
         FROM performance_appraisal
         WHERE delete_flag=0
         AND appraisal_name = #{appraisalName}
@@ -533,6 +561,7 @@
         pa.appraisal_year,
         pa.cycle_type,
         pa.cycle_number,
+        pa.evaluation_type,
         pa.appraisal_status
         FROM
         (select * from performance_appraisal_objects
@@ -569,6 +598,9 @@
         </if>
         <if test="performanceAppraisalObjectsDTO.cycleNumber!=null">
             and pa.cycle_number=#{performanceAppraisalObjectsDTO.cycleNumber}
+        </if>
+        <if test="performanceAppraisalObjectsDTO.evaluationType!=null">
+            and pa.evaluation_type=#{performanceAppraisalObjectsDTO.evaluationType}
         </if>
         <if test="performanceAppraisalObjectsDTO.appraisalObjectName!=null and ''!= performanceAppraisalObjectsDTO.appraisalObjectName">
             and pas.appraisal_object_name like concat('%', #{performanceAppraisalObjectsDTO.appraisalObjectName}, '%')
@@ -701,6 +733,7 @@
         pa.appraisal_year,
         pa.cycle_type,
         pa.cycle_number,
+        pa.evaluation_type,
         pa.appraisal_status,
         pas.appraisal_object_name,
         pas.appraisal_object_code,
@@ -742,9 +775,9 @@
     <!--新增绩效考核表-->
     <insert id="insertPerformanceAppraisal" useGeneratedKeys="true" keyProperty="performanceAppraisalId">
         INSERT INTO performance_appraisal
-        (performance_rank_id,performance_rank_name,appraisal_year,appraisal_name,cycle_flag,cycle_type,cycle_number,appraisal_start_date,appraisal_end_date,filing_date,appraisal_flow,appraisal_object,self_defined_columns_flag,appraisal_status,delete_flag,create_by,create_time,update_by,update_time)
+        (performance_rank_id,performance_rank_name,appraisal_year,appraisal_name,cycle_flag,cycle_type,cycle_number,appraisal_start_date,appraisal_end_date,filing_date,appraisal_flow,appraisal_object,self_defined_columns_flag,appraisal_status,delete_flag,create_by,create_time,update_by,update_time,evaluation_type)
         VALUES
-        (#{performanceAppraisal.performanceRankId},#{performanceAppraisal.performanceRankName},#{performanceAppraisal.appraisalYear},#{performanceAppraisal.appraisalName},#{performanceAppraisal.cycleFlag},#{performanceAppraisal.cycleType},#{performanceAppraisal.cycleNumber},#{performanceAppraisal.appraisalStartDate},#{performanceAppraisal.appraisalEndDate},#{performanceAppraisal.filingDate},#{performanceAppraisal.appraisalFlow},#{performanceAppraisal.appraisalObject},#{performanceAppraisal.selfDefinedColumnsFlag},#{performanceAppraisal.appraisalStatus},#{performanceAppraisal.deleteFlag},#{performanceAppraisal.createBy},#{performanceAppraisal.createTime},#{performanceAppraisal.updateBy},#{performanceAppraisal.updateTime})
+        (#{performanceAppraisal.performanceRankId},#{performanceAppraisal.performanceRankName},#{performanceAppraisal.appraisalYear},#{performanceAppraisal.appraisalName},#{performanceAppraisal.cycleFlag},#{performanceAppraisal.cycleType},#{performanceAppraisal.cycleNumber},#{performanceAppraisal.appraisalStartDate},#{performanceAppraisal.appraisalEndDate},#{performanceAppraisal.filingDate},#{performanceAppraisal.appraisalFlow},#{performanceAppraisal.appraisalObject},#{performanceAppraisal.selfDefinedColumnsFlag},#{performanceAppraisal.appraisalStatus},#{performanceAppraisal.deleteFlag},#{performanceAppraisal.createBy},#{performanceAppraisal.createTime},#{performanceAppraisal.updateBy},#{performanceAppraisal.updateTime},#{performanceAppraisal.evaluationType})
     </insert>
     <!--修改绩效考核表-->
     <update id="updatePerformanceAppraisal">
@@ -767,6 +800,9 @@
         </if>
         <if test="performanceAppraisal.cycleType != null">
             cycle_type=#{performanceAppraisal.cycleType},
+        </if>
+        <if test="performanceAppraisal.evaluationType != null">
+            evaluation_type=#{performanceAppraisal.evaluationType},
         </if>
         <if test="performanceAppraisal.cycleNumber != null">
             cycle_number=#{performanceAppraisal.cycleNumber},
@@ -836,12 +872,12 @@
     <!--批量新增绩效考核表-->
     <insert id="batchPerformanceAppraisal">
         INSERT INTO performance_appraisal
-        (performance_rank_id,performance_rank_name,appraisal_year,appraisal_name,cycle_flag,cycle_type,cycle_number,appraisal_start_date,appraisal_end_date,filing_date,appraisal_flow,appraisal_object,self_defined_columns_flag,appraisal_status,delete_flag,create_by,create_time,update_by,update_time)
+        (performance_rank_id,performance_rank_name,appraisal_year,appraisal_name,cycle_flag,cycle_type,evaluation_type,cycle_number,appraisal_start_date,appraisal_end_date,filing_date,appraisal_flow,appraisal_object,self_defined_columns_flag,appraisal_status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="performanceAppraisals"
                  separator=",">
-            (#{item.performanceRankId},#{item.performanceRankName},#{item.appraisalYear},#{item.appraisalName},#{item.cycleFlag},#{item.cycleType},#{item.cycleNumber},#{item.appraisalStartDate},#{item.appraisalEndDate},#{item.filingDate},#{item.appraisalFlow},#{item.appraisalObject},#{item.selfDefinedColumnsFlag},#{item.appraisalStatus},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.performanceRankId},#{item.performanceRankName},#{item.appraisalYear},#{item.appraisalName},#{item.cycleFlag},#{item.cycleType},#{item.evaluationType},#{item.cycleNumber},#{item.appraisalStartDate},#{item.appraisalEndDate},#{item.filingDate},#{item.appraisalFlow},#{item.appraisalObject},#{item.selfDefinedColumnsFlag},#{item.appraisalStatus},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -904,6 +940,13 @@
                 <foreach collection="performanceAppraisalList" item="item" index="index">
                     <if test="item.cycleType != null">
                         when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.cycleType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_type=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.evaluationType != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.evaluationType}
                     </if>
                 </foreach>
             </trim>

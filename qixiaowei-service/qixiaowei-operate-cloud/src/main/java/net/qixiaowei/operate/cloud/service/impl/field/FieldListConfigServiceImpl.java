@@ -41,23 +41,28 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
 
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.CYCLE_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.CYCLE_NUMBER.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.EVALUATION_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.APPRAISAL_FLOW.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.APPRAISAL_STATUS.getCode());
 
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalOrgSettingField.CYCLE_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalOrgSettingField.CYCLE_NUMBER.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalOrgSettingField.EVALUATION_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalOrgSettingField.APPRAISAL_OBJECT_STATUS.getCode());
 
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalOrgReviewField.CYCLE_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalOrgReviewField.CYCLE_NUMBER.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalOrgReviewField.EVALUATION_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalOrgReviewField.APPRAISAL_OBJECT_STATUS.getCode());
 
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalPersonSettingField.CYCLE_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalPersonSettingField.CYCLE_NUMBER.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalPersonSettingField.EVALUATION_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalPersonSettingField.APPRAISAL_OBJECT_STATUS.getCode());
 
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalPersonReviewField.CYCLE_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalPersonReviewField.CYCLE_NUMBER.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalPersonReviewField.EVALUATION_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalPersonReviewField.APPRAISAL_OBJECT_STATUS.getCode());
 
         NEED_CONCAT.add(BusinessType.EMP_SALARY_ADJUST_PLAN.getCode() + StrUtil.COLON + EmpSalaryAdjustPlanField.OFFICIAL_RANK.getCode());
