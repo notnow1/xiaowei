@@ -3133,7 +3133,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsAfter) {
             PerformanceAppraisalItemsDTO appraisalItemsDTO = new PerformanceAppraisalItemsDTO();
             appraisalItemsDTO.setPerformAppraisalItemsId(performanceAppraisalItemsDTO.getPerformAppraisalItemsId());
+            appraisalItemsDTO.setRemark(performanceAppraisalItemsDTO.getRemark());
             appraisalItemsDTO.setActualValue(performanceAppraisalItemsDTO.getActualValue());
+            appraisalItemsDTO.setEvaluateList(performanceAppraisalItemsDTO.getEvaluateList());
             performanceAppraisalItemList.add(appraisalItemsDTO);
         }
         performanceAppraisalItemsService.updatePerformanceAppraisalItemsS(performanceAppraisalItemList);

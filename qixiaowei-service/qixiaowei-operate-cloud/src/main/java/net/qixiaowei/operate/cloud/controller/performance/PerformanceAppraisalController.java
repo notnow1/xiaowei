@@ -351,7 +351,7 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 查询组织绩效考核表详情-评议
+     * 查询个人绩效考核表详情-评议
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:perReview:info")
     @GetMapping("/perReview/info/{performAppraisalObjectsId}")
@@ -360,7 +360,7 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 编辑组织绩效考核评议表
+     * 编辑个人绩效考核评议表
      */
     @Log(title = "保存个人绩效评议", businessType = BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW, businessId = "performAppraisalObjectsId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:performanceAppraisal:perReview:edit")
