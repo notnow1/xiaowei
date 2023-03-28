@@ -1,8 +1,7 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.DataFormatData;
@@ -50,8 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -404,8 +402,16 @@ public class TargetDecomposeController extends BaseController {
     @RequiresPermissions("operate:cloud:targetSetting:analyse")
     @GetMapping("/resultListDroBox")
     public AjaxResult resultListDroBox(TargetDecomposeDTO targetDecomposeDTO) {
+        ArrayList<TargetDecomposeDTO> targetDecomposeList = new ArrayList<>();
         List<TargetDecomposeDTO> list = targetDecomposeService.rollPageList(targetDecomposeDTO);
-        return AjaxResult.success(list);
+        if (StringUtils.isNotEmpty(list)){
+            //根据属性去重
+            targetDecomposeList = list.stream().collect(Collectors.collectingAndThen(
+                    Collectors.toCollection(() -> new TreeSet<>(
+                            Comparator.comparing(
+                                    TargetDecomposeDTO::getIndicatorId))), ArrayList::new));
+        }
+        return AjaxResult.success(targetDecomposeList);
     }
 
     //==============================滚动预测管理==================================//
