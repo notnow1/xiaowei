@@ -408,11 +408,14 @@
         <if test="targetDecompose.targetDecomposeId != null">
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
         </if>
+        <if test="targetDecompose.indicatorId != null">
+            and td.indicator_id=#{targetDecompose.indicatorId}
+        </if>
         <if test="targetDecompose.targetDecomposeType != null">
             and td.target_decompose_type=#{targetDecompose.targetDecomposeType}
         </if>
         <if test="targetDecompose.targetYear != null">
-            and td.target_year like '%${targetDecompose.targetYear}%'
+            and td.target_year =#{targetDecompose.targetYear}
         </if>
         <if test="targetDecompose.targetDecomposeDimensionId != null">
             and td.target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId}
@@ -421,7 +424,7 @@
             and td.decomposition_dimension like '%$#{targetDecompose.decompositionDimension}%'
         </if>
         <if test="targetDecompose.timeDimension != null">
-            and td.time_dimension like '%${targetDecompose.timeDimension}%'
+            and td.time_dimension = #{targetDecompose.timeDimension}
         </if>
         <if test="targetDecompose.decomposeTarget != null">
             and td.decompose_target=#{targetDecompose.decomposeTarget}
