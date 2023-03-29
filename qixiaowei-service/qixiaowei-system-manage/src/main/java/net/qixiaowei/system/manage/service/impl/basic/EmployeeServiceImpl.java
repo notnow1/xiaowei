@@ -176,10 +176,39 @@ public class EmployeeServiceImpl implements IEmployeeService {
         }
         employee.setParams(params);
         List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeeList(employee);
+        //根据一级部门分组不同的树
+        Map<Long,List<DepartmentDTO>> departmentDTOListMap =new HashMap<>();
+        //查询所有一级部门
+        List<DepartmentDTO> parentDepartmentAllData = departmentMapper.getParentAll();
+        if (StringUtils.isNotEmpty(parentDepartmentAllData)){
+            for (DepartmentDTO departmentDTO : parentDepartmentAllData) {
+                //查询一级部门及子级部门
+                List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(departmentDTO.getDepartmentId());
+                if (StringUtils.isNotEmpty(departmentDTOList)){
+                    departmentDTOListMap.put(departmentDTO.getDepartmentId(),departmentDTOList);
+                }
+            }
+        }
+        //遍历一级部门分组不同的树
+        if (StringUtils.isNotEmpty(departmentDTOListMap)){
+            for (EmployeeDTO dto : employeeDTOS) {
+                if (StringUtils.isNotNull(dto.getEmployeeDepartmentId())){
+                    for (Long key : departmentDTOListMap.keySet()) {
+                        List<DepartmentDTO> departmentDTOList = departmentDTOListMap.get(key);
+                        if (StringUtils.isNotEmpty(departmentDTOList)){
+                            //包含部门即为一级部门
+                            if (departmentDTOList.stream().filter(f -> f.getDepartmentId() != null).map(DepartmentDTO::getDepartmentId).collect(Collectors.toList()).contains(dto.getEmployeeDepartmentId())){
+                                dto.setTopLevelDepartmentName(departmentDTOList.get(0).getDepartmentName());
+                                dto.setTopLevelDepartmentId(departmentDTOList.get(0).getDepartmentId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
         this.handleResult(employeeDTOS);
         return employeeDTOS;
     }
-
     @Override
     public void handleResult(List<EmployeeDTO> result) {
         if (StringUtils.isNotEmpty(result)) {

@@ -942,6 +942,7 @@
         department
         WHERE
         delete_flag=0
+        and    status=1
         <if test="departmentId != null">
             and department_id=#{departmentId}
         </if>
@@ -969,6 +970,7 @@
             WHERE find_in_set(#{departmentId}, ancestors)
         </if>
         and delete_flag = 0
+        and    status=1
         ) AS ancestors
     </select>
     <!--    远程查询所有部门-->

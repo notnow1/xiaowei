@@ -29,10 +29,11 @@ public class TargetDecomposeFieldListConfigImpl implements IFieldListConfigStrat
 
     static {
         INIT_MAP.put(TargetDecomposeField.TARGET_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(TargetDecomposeField.DECOMPOSITION_DIMENSION.getCode(), FieldListConfig.builder().fieldWidth(150).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(TargetDecomposeField.TIME_DIMENSION.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(TargetDecomposeField.TARGET_VALUE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(TargetDecomposeField.DECOMPOSE_TARGET.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(TargetDecomposeField.INDICATOR_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(TargetDecomposeField.DECOMPOSITION_DIMENSION.getCode(), FieldListConfig.builder().fieldWidth(150).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(TargetDecomposeField.TIME_DIMENSION.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(TargetDecomposeField.TARGET_VALUE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(TargetDecomposeField.DECOMPOSE_TARGET.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 

@@ -5,6 +5,7 @@ public enum EmployeeField {
     EMPLOYEE_CODE("employee_code", "工号"),
     EMPLOYEE_NAME("employee_name", "姓名"),
     EMPLOYEE_GENDER("employee_gender", "性别"),
+    TOP_LEVEL_DEPARTMENT_ID("top_level_department_id", "所属一级部门"),
     EMPLOYEE_DEPARTMENT_ID("employee_department_id", "最小部门"),
     EMPLOYEE_POST_ID("employee_post_id", "岗位"),
     EMPLOYMENT_STATUS("employment_status", "用工关系状态"),
