@@ -171,22 +171,22 @@
             </foreach>
         </if>
         <!-- 职级体系过滤  -->
-        <if test="post.params.officialRankSystemNameEqual != null and post.params.officialRankSystemNameEqual.size() > 0">
-            AND ors.official_rank_system_name IN
+        <if test="post.params.officialRankSystemIdEqual != null and post.params.officialRankSystemIdEqual.size() > 0">
+            AND ors.official_rank_system_id IN
             <foreach item="item"
-                     collection="post.params.officialRankSystemNameEqual"
+                     collection="post.params.officialRankSystemIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="post.params.officialRankSystemNameNotEqual != null and post.params.officialRankSystemNameNotEqual.size() > 0">
-            AND (ors.official_rank_system_name NOT IN
+        <if test="post.params.officialRankSystemIdNotEqual != null and post.params.officialRankSystemIdNotEqual.size() > 0">
+            AND (ors.official_rank_system_id NOT IN
             <foreach item="item"
-                     collection="post.params.officialRankSystemNameNotEqual"
+                     collection="post.params.officialRankSystemIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ors.official_rank_system_name IS NULL
+            OR ors.official_rank_system_id IS NULL
             )
         </if>
         <!-- 岗位职级过滤  -->

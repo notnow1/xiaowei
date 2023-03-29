@@ -236,20 +236,49 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
     public List<BonusPayApplicationDTO> selectBonusPayApplicationList(BonusPayApplicationDTO bonusPayApplicationDTO) {
         BonusPayApplication bonusPayApplication = new BonusPayApplication();
         this.getDepartmentIdAndofficialRankSystemId(bonusPayApplicationDTO.getParams());
+        //部门默认查询
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        if (StringUtils.isNotBlank(bonusPayApplicationDTO.getBudgetDepartmentNames())){
+            departmentDTO.setDepartmentName(bonusPayApplicationDTO.getBudgetDepartmentNames());
+            //远程查找部门列表
+            R<List<DepartmentDTO>> departmentListData = remoteDepartmentService.selectDepartment(departmentDTO, SecurityConstants.INNER);
+            if (departmentListData.getCode() != 200) {
+                throw new ServiceException("远程调用组织失败 请联系管理员");
+            }
+            List<DepartmentDTO> departmentDataList = departmentListData.getData();
+            List<Long> departmentIds = new ArrayList<>();
+            if (StringUtils.isNotEmpty(departmentDataList)) {
+                departmentIds = departmentDataList.stream().map(DepartmentDTO::getDepartmentId).distinct().collect(Collectors.toList());
+                bonusPayApplicationDTO.setBudgetDepartmentIds(departmentIds);
+            }
+        }
         BeanUtils.copyProperties(bonusPayApplicationDTO, bonusPayApplication);
-        List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.selectBonusPayApplicationList(bonusPayApplication);
-        if (StringUtils.isNotEmpty(bonusPayApplicationDTOS)) {
-            //申请部门ID集合
-            List<Long> collect = bonusPayApplicationDTOS.stream().map(BonusPayApplicationDTO::getApplyDepartmentId).collect(Collectors.toList());
-            for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
-                List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS = bonusPayBudgetDeptMapper.selectBonusPayBudgetDeptByBonusPayApplicationId(payApplicationDTO.getBonusPayApplicationId());
-                if (StringUtils.isNotEmpty(bonusPayBudgetDeptDTOS)) {
-                    payApplicationDTO.setBudgetDepartmentIds(bonusPayBudgetDeptDTOS.stream().map(BonusPayBudgetDeptDTO::getDepartmentId).distinct().collect(Collectors.toList()));
+        if (StringUtils.isNotEmpty(bonusPayApplicationDTO.getParams())){
+            for (String key : bonusPayApplicationDTO.getParams().keySet()) {
+                switch (key) {
+                    case "budgetDepartmentIdEqual":
+                        bonusPayApplication.setBudgetDepartmentIdsEqual(bonusPayApplicationDTO.getParams().get("budgetDepartmentIdEqual").toString().replace("[", "").replace("]", "").replace(";",",").replaceAll(" ",""));
+                        break;
+                    case "budgetDepartmentIdNotEqual":
+                        bonusPayApplication.setBudgetDepartmentIdsNotEqual( bonusPayApplicationDTO.getParams().get("budgetDepartmentIdNotEqual").toString().replace("[", "").replace("]", "").replace(";",",").replaceAll(" ",""));
+                        break;
+                    case "budgetDepartmentIdLike":
+                        bonusPayApplication.setBudgetDepartmentIdsLike(bonusPayApplicationDTO.getParams().get("budgetDepartmentIdLike").toString().replace("[", "").replace("]", "").replace(";",",").replaceAll(" ",""));
+                        break;
+                    case "budgetDepartmentIdNotLike":
+                        bonusPayApplication.setBudgetDepartmentIdsNotLike(bonusPayApplicationDTO.getParams().get("budgetDepartmentIdNotLike").toString().replace("[", "").replace("]", "").replace(";",",").replaceAll(" ",""));
+                        break;
+                    default:break;
                 }
             }
+        }
+            List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.selectBonusPayApplicationList(bonusPayApplication);
+        if (StringUtils.isNotEmpty(bonusPayApplicationDTOS)) {
             //预算id集合
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
-                List<Long> budgetDepartmentIds = payApplicationDTO.getBudgetDepartmentIds();
+                String budgetDepartmentIdData = payApplicationDTO.getBudgetDepartmentIdData();
+                if (StringUtils.isNotBlank(budgetDepartmentIdData)){
+                    List<Long> budgetDepartmentIds  = Arrays.asList(budgetDepartmentIdData.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
                     if (budgetDepartmentIds.size() == 1 && budgetDepartmentIds.get(0).equals(0L)) {
                         String corporation = "公司";
                         List<String> budgetDepartmentList = new ArrayList<>();
@@ -265,10 +294,10 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                             }
                         }
                     }
-
+                }
             }
-
-
+            //申请部门ID集合
+            List<Long> collect = bonusPayApplicationDTOS.stream().map(BonusPayApplicationDTO::getApplyDepartmentId).collect(Collectors.toList());
             //远程部门赋值
             R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect, SecurityConstants.INNER);
             List<DepartmentDTO> data = listR.getData();
@@ -292,7 +321,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             }
         }
         this.handleResult(bonusPayApplicationDTOS);
-        return this.packQueryBonusBudget(bonusPayApplicationDTO, bonusPayApplicationDTOS);
+        return bonusPayApplicationDTOS;
     }
     /**
      * 获取高级搜索后的组织ID传入params

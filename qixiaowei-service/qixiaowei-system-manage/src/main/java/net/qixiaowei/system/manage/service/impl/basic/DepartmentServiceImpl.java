@@ -134,6 +134,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
         this.handleResult(departmentDTOList);
+        if (StringUtils.isNotEmpty(departmentDTO.getParams())) {
+            return departmentDTOList;
+        }
         if (!CheckObjectIsNullUtils.isNull(departmentDTO)) {
             return departmentDTOList;
         } else {

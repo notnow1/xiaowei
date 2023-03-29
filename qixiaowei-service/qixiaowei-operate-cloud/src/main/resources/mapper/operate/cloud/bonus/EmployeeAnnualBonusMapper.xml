@@ -93,35 +93,35 @@
             AND eab.annual_bonus_year &lt;= #{employeeAnnualBonus.params.annualBonusYearEnd}
         </if>
         <!-- 一级部门过滤  -->
-        <if test="employeeAnnualBonus.params.departmentNameEqual != null and employeeAnnualBonus.params.departmentNameEqual.size() > 0">
-            AND eab.department_name IN
+        <if test="employeeAnnualBonus.params.departmentIdEqual != null and employeeAnnualBonus.params.departmentIdEqual.size() > 0">
+            AND eab.department_id IN
             <foreach item="item"
-                     collection="employeeAnnualBonus.params.departmentNameEqual"
+                     collection="employeeAnnualBonus.params.departmentIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="employeeAnnualBonus.params.departmentNameNotEqual != null and employeeAnnualBonus.params.departmentNameNotEqual.size() > 0">
-            AND eab.department_name NOT IN
+        <if test="employeeAnnualBonus.params.departmentIdNotEqual != null and employeeAnnualBonus.params.departmentIdNotEqual.size() > 0">
+            AND eab.department_id NOT IN
             <foreach item="item"
-                     collection="employeeAnnualBonus.params.departmentNameNotEqual"
+                     collection="employeeAnnualBonus.params.departmentIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
         <!-- 申请部门过滤  -->
-        <if test="employeeAnnualBonus.params.applyDepartmentNameEqual != null and employeeAnnualBonus.params.applyDepartmentNameEqual.size() > 0">
-            AND eab.apply_department_name IN
+        <if test="employeeAnnualBonus.params.applyDepartmentIdEqual != null and employeeAnnualBonus.params.applyDepartmentIdEqual.size() > 0">
+            AND eab.apply_department_id IN
             <foreach item="item"
-                     collection="employeeAnnualBonus.params.applyDepartmentNameEqual"
+                     collection="employeeAnnualBonus.params.applyDepartmentIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="employeeAnnualBonus.params.applyDepartmentNameNotEqual != null and employeeAnnualBonus.params.applyDepartmentNameNotEqual.size() > 0">
-            AND eab.apply_department_name NOT IN
+        <if test="employeeAnnualBonus.params.applyDepartmentIdNotEqual != null and employeeAnnualBonus.params.applyDepartmentIdNotEqual.size() > 0">
+            AND eab.apply_department_id NOT IN
             <foreach item="item"
-                     collection="employeeAnnualBonus.params.applyDepartmentNameNotEqual"
+                     collection="employeeAnnualBonus.params.applyDepartmentIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -156,6 +156,23 @@
             AND eab.comment_flag NOT IN
             <foreach item="item"
                      collection="employeeAnnualBonus.params.commentFlagNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!-- 状态流程过滤  -->
+        <if test="employeeAnnualBonus.params.statusEqual != null and employeeAnnualBonus.params.statusEqual.size() > 0">
+            AND eab.status IN
+            <foreach item="item"
+                     collection="employeeAnnualBonus.params.statusEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employeeAnnualBonus.params.statusNotEqual != null and employeeAnnualBonus.params.statusNotEqual.size() > 0">
+            AND eab.status NOT IN
+            <foreach item="item"
+                     collection="employeeAnnualBonus.params.statusNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>

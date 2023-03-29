@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -784,6 +785,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                         for (DepartmentDTO datum : data) {
                             if (employeeBudgetDetailsDTO.getDepartmentId().equals(datum.getDepartmentId())) {
                                 employeeBudgetDetailsDTO.setDepartmentName(datum.getDepartmentName());
+                                break;
                             }
                         }
                     }
@@ -802,6 +804,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                             if (employeeBudgetDetailsDTO.getOfficialRankSystemId().equals(datum.getOfficialRankSystemId())) {
                                 employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
                                 employeeBudgetDetailsDTO.setOfficialRankName(datum.getRankPrefixCode() + employeeBudgetDetailsDTO.getOfficialRank());
+                                break;
                             }
                         }
                     }
@@ -840,49 +843,83 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         String departmentName1 = employeeBudgetDTO.getDepartmentName();
         //职级体系名称
         String officialRankSystemName1 = employeeBudgetDTO.getOfficialRankSystemName();
-        if (StringUtils.isNotNull(employeeBudgetDTO)) {
+        //岗位职级名称
+        String officialRankName1 = employeeBudgetDTO.getOfficialRankName();
+        if (!CheckObjectIsNullUtils.isNull(employeeBudgetDTO)) {
             Pattern pattern = null;
             Pattern pattern1 = null;
-            if (StringUtils.isNotNull(departmentName1)) {
+            Pattern pattern2 = null;
+            if (StringUtils.isNotBlank(departmentName1)) {
                 //部门模糊查询
                 pattern = Pattern.compile(departmentName1);
             }
 
-            if (StringUtils.isNotNull(officialRankSystemName1)) {
+            if (StringUtils.isNotBlank(officialRankSystemName1)) {
                 //职级体系模糊查询
                 pattern1 = Pattern.compile(officialRankSystemName1);
+            }
+            if (StringUtils.isNotBlank(officialRankName1)) {
+                //部门模糊查询
+                pattern2 = Pattern.compile(officialRankName1);
             }
             for (EmployeeBudgetDetailsDTO budgetDetailsDTO : employeeBudgetDetailsDTOS) {
                 //部门名称
                 Matcher departmentName = null;
                 //职级体系名称
                 Matcher officialRankSystemName = null;
-                if (StringUtils.isNotNull(departmentName1)) {
+                //职级体系名称
+                Matcher officialRankName = null;
+                if (StringUtils.isNotBlank(departmentName1)) {
                     //部门名称
                     departmentName = pattern.matcher(budgetDetailsDTO.getDepartmentName());
                 }
-                if (StringUtils.isNotNull(officialRankSystemName1)) {
+                if (StringUtils.isNotBlank(officialRankSystemName1)) {
                     //职级体系名称
                     officialRankSystemName = pattern1.matcher(budgetDetailsDTO.getOfficialRankSystemName());
                 }
-                if (StringUtils.isNotNull(departmentName1) && StringUtils.isNotNull(officialRankSystemName1)) {
-                    if (departmentName.find() && officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                if (StringUtils.isNotBlank(officialRankName1)) {
+                    //岗位职级名称
+                    officialRankName = pattern2.matcher(budgetDetailsDTO.getOfficialRankName());
+                }
+
+                if (StringUtils.isNotBlank(departmentName1) && StringUtils.isNotBlank(officialRankSystemName1) && StringUtils.isNotBlank(officialRankName1)) {
+                    if (departmentName.find() && officialRankSystemName.find() && officialRankName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         emolumentPlanDTOList.add(budgetDetailsDTO);
                     }
-                } else {
-                    if (StringUtils.isNotNull(departmentName1)) {
-                        if (departmentName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                }else {
+                    if (StringUtils.isNotBlank(departmentName1) && StringUtils.isNotBlank(officialRankSystemName1) ){
+                        if (departmentName.find() && officialRankSystemName.find() ) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                             emolumentPlanDTOList.add(budgetDetailsDTO);
                         }
-                    }
-                    if (StringUtils.isNotNull(officialRankSystemName1)) {
-                        if (officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                    }else   if (StringUtils.isNotBlank(officialRankName1) && StringUtils.isNotBlank(departmentName1) ){
+                        if (departmentName.find() && officialRankName.find() ) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                             emolumentPlanDTOList.add(budgetDetailsDTO);
                         }
+                    }else   if (StringUtils.isNotBlank(officialRankName1) && StringUtils.isNotBlank(officialRankSystemName1) ){
+                        if (officialRankSystemName.find() && officialRankName.find() ) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                            emolumentPlanDTOList.add(budgetDetailsDTO);
+                        }
+                    }else {
+                        if (StringUtils.isNotBlank(departmentName1)) {
+                            if (departmentName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                                emolumentPlanDTOList.add(budgetDetailsDTO);
+                            }
+                        }
+                        if (StringUtils.isNotBlank(officialRankSystemName1)) {
+                            if (officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                                emolumentPlanDTOList.add(budgetDetailsDTO);
+                            }
+                        }
+                        if (StringUtils.isNotBlank(officialRankName1)) {
+                            if (officialRankName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                                emolumentPlanDTOList.add(budgetDetailsDTO);
+                            }
+                        }
                     }
+
                 }
             }
-            if (StringUtils.isNotNull(departmentName1) || StringUtils.isNotNull(officialRankSystemName1)) {
+            if (StringUtils.isNotBlank(departmentName1) || StringUtils.isNotBlank(officialRankSystemName1) || StringUtils.isNotBlank(officialRankName1)) {
                 return emolumentPlanDTOList;
             }
         }
@@ -968,7 +1005,6 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                                 employeeBudgetDetailsDTO.getOfficialRank().equals(datum.getEmployeeRank())) {
                             //人员id
                             employeeIds.add(datum.getEmployeeId());
-
                         }//取职级确定薪酬中位数
                         else {
                             OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(employeeBudgetDetailsDTO.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());

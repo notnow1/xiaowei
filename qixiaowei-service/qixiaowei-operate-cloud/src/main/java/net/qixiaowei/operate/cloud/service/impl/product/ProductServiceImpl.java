@@ -255,7 +255,10 @@ public class ProductServiceImpl implements IProductService {
             }
         }
         this.handleResult(productDTOList);
-        if (!CheckObjectIsNullUtils.isNull(productDTO)) {
+        if (StringUtils.isNotEmpty(productDTO.getParams())){
+            return productDTOList;
+        }
+        if (!CheckObjectIsNullUtils.isNull(productDTO) ) {
             return productDTOList;
         } else {
             if (StringUtils.isEmpty(productDTOList)) {

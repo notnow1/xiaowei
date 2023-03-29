@@ -170,6 +170,7 @@
         left join nation n
         on ei.nation = n.nation_id
         and n.delete_flag =0
+
         <if test="employee.residentCityName != null and employee.residentCityName != ''">
             left join region r
             on r.district_code=SUBSTRING_INDEX(ei.resident_city,',',-1)
@@ -471,6 +472,42 @@
         <if test="employee.params.employmentDateEnd != null and employee.params.employmentDateEnd != ''"><!-- 结束时间检索 -->
             AND e.employment_date &lt;= #{employee.params.employmentDateEnd}
         </if>
+        <!-- 离职日期过滤  -->
+        <if test="employee.params.departureDateEqual != null and employee.params.departureDateEqual.size() > 0">
+            AND e.departure_date IN
+            <foreach item="item"
+                     collection="employee.params.departureDateEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.departureDateNotEqual != null and employee.params.departureDateNotEqual.size() > 0">
+            AND (e.departure_date NOT IN
+            <foreach item="item"
+                     collection="employee.params.departureDateNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            or e.departure_date is null)
+        </if>
+        <if test="employee.params.departureDateBefore != null and employee.params.departureDateBefore != ''">
+            AND e.departure_date &lt; #{employee.params.departureDateBefore}
+        </if>
+        <if test="employee.params.departureDateNotBefore != null and employee.params.departureDateNotBefore != ''"><!-- 开始时间检索 -->
+            AND e.departure_date &gt;= #{employee.params.departureDateNotBefore}
+        </if>
+        <if test="employee.params.departureDateAfter != null and employee.params.departureDateAfter != ''"><!-- 开始时间检索 -->
+            AND e.departure_date &gt; #{employee.params.departureDateAfter}
+        </if>
+        <if test="employee.params.departureDateNotAfter != null and employee.params.departureDateNotAfter != ''"><!-- 结束时间检索 -->
+            AND e.departure_date &lt;= #{employee.params.departureDateNotAfter}
+        </if>
+        <if test="employee.params.departureDateStart != null and employee.params.departureDateStart != ''"><!-- 开始时间检索 -->
+            AND e.departure_date &gt;= #{employee.params.departureDateStart}
+        </if>
+        <if test="employee.params.departureDateEnd != null and employee.params.departureDateEnd != ''"><!-- 结束时间检索 -->
+            AND e.departure_date &lt;= #{employee.params.departureDateEnd}
+        </if>
         <!-- 员工状态过滤  -->
         <if test="employee.params.statusEqual != null and employee.params.statusEqual.size() > 0">
             AND e.status IN
@@ -491,60 +528,79 @@
             )
         </if>
         <!-- 员工部门过滤  -->
-        <if test="employee.params.employeeDepartmentNameEqual != null and employee.params.employeeDepartmentNameEqual.size() > 0">
-            AND d.department_name IN
+        <if test="employee.params.employeeDepartmentIdEqual != null and employee.params.employeeDepartmentIdEqual.size() > 0">
+            AND d.department_id IN
             <foreach item="item"
-                     collection="employee.params.employeeDepartmentNameEqual"
+                     collection="employee.params.employeeDepartmentIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="employee.params.employeeDepartmentNameNotEqual != null and employee.params.employeeDepartmentNameNotEqual.size() > 0">
-            AND (d.department_name NOT IN
+        <if test="employee.params.employeeDepartmentIdNotEqual != null and employee.params.employeeDepartmentIdNotEqual.size() > 0">
+            AND (d.department_id NOT IN
             <foreach item="item"
-                     collection="employee.params.employeeDepartmentNameNotEqual"
+                     collection="employee.params.employeeDepartmentIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR d.department_name IS NULL
+            OR d.department_id IS NULL
+            )
+        </if>
+        <!-- 员工一级部门过滤  -->
+        <if test="employee.params.topLevelDepartmentIdsEqual != null and employee.params.topLevelDepartmentIdsEqual.size() > 0">
+            AND d.department_id IN
+            <foreach item="item"
+                     collection="employee.params.topLevelDepartmentIdsEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.topLevelDepartmentIdsNotEqual != null and employee.params.topLevelDepartmentIdsNotEqual.size() > 0">
+            AND (d.department_id NOT IN
+            <foreach item="item"
+                     collection="employee.params.topLevelDepartmentIdsNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR d.department_id IS NULL
             )
         </if>
         <!-- 员工岗位过滤  -->
-        <if test="employee.params.employeePostNameEqual != null and employee.params.employeePostNameEqual.size() > 0">
-            AND p.post_name IN
+        <if test="employee.params.employeePostIdEqual != null and employee.params.employeePostIdEqual.size() > 0">
+            AND p.post_id IN
             <foreach item="item"
-                     collection="employee.params.employeePostNameEqual"
+                     collection="employee.params.employeePostIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="employee.params.employeePostNameNotEqual != null and employee.params.employeePostNameNotEqual.size() > 0">
-            AND (p.post_name NOT IN
+        <if test="employee.params.employeePostIdNotEqual != null and employee.params.employeePostIdNotEqual.size() > 0">
+            AND (p.post_id NOT IN
             <foreach item="item"
-                     collection="employee.params.employeePostNameNotEqual"
+                     collection="employee.params.employeePostIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR p.post_name IS NULL
+            OR p.post_id IS NULL
             )
         </if>
         <!-- 员工职级体系名称过滤  -->
-        <if test="employee.params.officialRankSystemNameEqual != null and employee.params.officialRankSystemNameEqual.size() > 0">
-            AND ors.official_rank_system_name IN
+        <if test="employee.params.officialRankSystemIdEqual != null and employee.params.officialRankSystemIdEqual.size() > 0">
+            AND ors.official_rank_system_id IN
             <foreach item="item"
-                     collection="employee.params.officialRankSystemNameEqual"
+                     collection="employee.params.officialRankSystemIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="employee.params.officialRankSystemNameNotEqual != null and employee.params.officialRankSystemNameNotEqual.size() > 0">
-            AND (ors.official_rank_system_name NOT IN
+        <if test="employee.params.officialRankSystemIdNotEqual != null and employee.params.officialRankSystemIdNotEqual.size() > 0">
+            AND (ors.official_rank_system_id NOT IN
             <foreach item="item"
-                     collection="employee.params.officialRankSystemNameNotEqual"
+                     collection="employee.params.officialRankSystemIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ors.official_rank_system_name IS NULL
+            OR ors.official_rank_system_id IS NULL
             )
         </if>
         <!-- 员工岗位职级过滤  -->

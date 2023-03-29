@@ -145,6 +145,35 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         Map<String, Object> params = employeeDTO.getParams();
+        if (StringUtils.isNotEmpty(params)) {
+            for (String key : params.keySet()) {
+                switch (key) {
+                    case "topLevelDepartmentIdEqual":
+                        String topLevelDepartmentIdEqual = params.get("topLevelDepartmentIdEqual").toString();
+                        if (StringUtils.isNotBlank(topLevelDepartmentIdEqual)) {
+                            List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(Long.valueOf(topLevelDepartmentIdEqual.replace("[", "").replace("]", "")));
+                            if (StringUtils.isNotEmpty(departmentDTOList)) {
+                                List<Long> departmentIds = departmentDTOList.stream().filter(f -> null != f.getDepartmentId()).map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                                params.put("topLevelDepartmentIdsEqual", departmentIds);
+                            }
+
+                        }
+                        break;
+                    case "topLevelDepartmentIdNotEqual":
+                        String topLevelDepartmentIdNotEqual = params.get("topLevelDepartmentIdNotEqual").toString();
+                        if (StringUtils.isNotBlank(topLevelDepartmentIdNotEqual)) {
+                            List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(Long.valueOf(topLevelDepartmentIdNotEqual.replace("[", "").replace("]", "")));
+                            if (StringUtils.isNotEmpty(departmentDTOList)) {
+                                List<Long> departmentIds = departmentDTOList.stream().filter(f -> null != f.getDepartmentId()).map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                                params.put("topLevelDepartmentIdsNotEqual", departmentIds);
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
         employee.setParams(params);
         List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeeList(employee);
         this.handleResult(employeeDTOS);
@@ -1311,7 +1340,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 List<SalaryPayDTO> salaryPayDTOList = salaryPayR.getData();
                 if (StringUtils.isNotEmpty(salaryPayDTOList)) {
                     throw new ServiceException("数据被引用！");
-                   // bonusPayObjectsErreo.append("人员被工资条引用 无法删除！\n");
+                    // bonusPayObjectsErreo.append("人员被工资条引用 无法删除！\n");
                 }
                 erreoEmp.append(deptErreo).append(userErreo).append(decomposeErreo).append(employeeAnnualBonusErreo).append(bonusPayObjectsErreo);
                 if (erreoEmp.length() > 0) {
@@ -1331,7 +1360,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @param employeeIds 人员id集合
      */
     private void isStrategyQuote(List<Long> employeeIds) {
-        if (StringUtils.isNotEmpty(employeeIds)){
+        if (StringUtils.isNotEmpty(employeeIds)) {
             GapAnalysisOpportunityDTO gapAnalysisOpportunityDTO = new GapAnalysisOpportunityDTO();
             Map<String, Object> params = new HashMap<>();
             params.put("proposeEmployeeIds", employeeIds);
@@ -1387,7 +1416,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             miMacroDetailDTO.setParams(params);
             R<List<MiMacroDetailDTO>> miMacroDetailList = remoteMarketInsightMacroService.remoteMiMacroDetailList(miMacroDetailDTO, SecurityConstants.INNER);
             List<MiMacroDetailDTO> miMacroDetailListData = miMacroDetailList.getData();
-            if (StringUtils.isNotEmpty(miMacroDetailListData)){
+            if (StringUtils.isNotEmpty(miMacroDetailListData)) {
                 throw new ServiceException("数据被引用!");
             }
         }
