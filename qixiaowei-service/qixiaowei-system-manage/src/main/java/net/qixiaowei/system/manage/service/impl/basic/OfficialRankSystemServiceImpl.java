@@ -97,7 +97,6 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     public List<OfficialRankSystemDTO> selectOfficialRankSystemList(OfficialRankSystemDTO officialRankSystemDTO) {
         OfficialRankSystem officialRankSystem = new OfficialRankSystem();
         BeanUtils.copyProperties(officialRankSystemDTO, officialRankSystem);
-        officialRankSystem.setStatus(1);
         List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemMapper.selectOfficialRankSystemList(officialRankSystem);
         writeOfficialRank(officialRankSystemDTOS);
         return officialRankSystemDTOS;

@@ -44,7 +44,7 @@ public class IndustryController extends BaseController {
     @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
     @GetMapping("/treeList")
     public AjaxResult treeList(IndustryDTO industryDTO) {
-        if (!CheckObjectIsNullUtils.isNull(industryDTO)) {
+        if (!CheckObjectIsNullUtils.isNull(industryDTO) || StringUtils.isNotEmpty(industryDTO.getParams())) {
             return AjaxResult.success(industryService.selectIndustryList(industryDTO));
         }
         return AjaxResult.success(industryService.selectIndustryTreeList(industryDTO));
@@ -162,7 +162,6 @@ public class IndustryController extends BaseController {
      */
     @GetMapping("/list")
     public AjaxResult list(IndustryDTO industryDTO) {
-        industryDTO.setStatus(1);
         List<IndustryDTO> list = industryService.selectIndustryList(industryDTO);
         return AjaxResult.success(list);
     }
