@@ -226,6 +226,25 @@
             </foreach>
             )
         </if>
+        <!--级别-->
+        <if test="annualKeyWork.params.planRankEqual != null and annualKeyWork.params.planRankEqual.size() > 0">
+            AND akw.plan_rank IN
+            <foreach item="item"
+                     collection="annualKeyWork.params.planRankEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="annualKeyWork.params.planRankNotEqual != null and annualKeyWork.params.planRankNotEqual.size() > 0">
+            AND (akw.plan_rank NOT IN
+            <foreach item="item"
+                     collection="annualKeyWork.params.planRankNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR akw.plan_rank IS NULL
+            )
+        </if>
         <!--行业-->
         <if test="annualKeyWork.params.industryIdEqual != null and annualKeyWork.params.industryIdEqual.size() > 0">
             and akw.industry_id IN

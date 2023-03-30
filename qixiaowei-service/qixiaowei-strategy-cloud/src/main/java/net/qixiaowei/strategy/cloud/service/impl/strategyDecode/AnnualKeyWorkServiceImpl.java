@@ -375,6 +375,7 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
         AnnualKeyWork annualKeyWorkParams = getAnnualKeyWorkParams(annualKeyWorkDTO, businessUnitDecompose);
         // 是否重复
         Integer planYear = annualKeyWorkDTO.getPlanYear();
+        annualKeyWorkParams.setPlanRank(planRank);
         annualKeyWorkParams.setPlanYear(planYear);
         annualKeyWorkParams.setPlanBusinessUnitId(annualKeyWorkDTO.getPlanBusinessUnitId());
         List<AnnualKeyWorkDTO> annualKeyWorkDTOS = annualKeyWorkMapper.selectAnnualKeyWorkList(annualKeyWorkParams);
