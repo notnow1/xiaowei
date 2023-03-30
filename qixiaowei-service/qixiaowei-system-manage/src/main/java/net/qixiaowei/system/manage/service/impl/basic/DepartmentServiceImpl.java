@@ -842,10 +842,6 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<DepartmentDTO> queryparent(Long departmentId,Integer status) {
-        //为空默认赋值生效
-        if (StringUtils.isNull(status)){
-            status=1;
-        }
         List<DepartmentDTO> queryparent = departmentMapper.queryparent(status);
         List<DepartmentDTO> tree = this.createTree(queryparent, 0);
             //为空默认赋值生效
