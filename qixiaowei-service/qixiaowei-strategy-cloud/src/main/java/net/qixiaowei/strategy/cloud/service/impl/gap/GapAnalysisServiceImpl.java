@@ -17,8 +17,6 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysis;
-import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysisOperate;
-import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
@@ -491,7 +489,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
     private void addAnalysisOperateList(Long gapAnalysisId, List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS, GapAnalysisDTO gapAnalysisDTO) {
         if (StringUtils.isNotEmpty(gapAnalysisOperateDTOS)) {
             Integer planYear = gapAnalysisDTO.getPlanYear();
-            List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
+            List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(indicatorIds)) {
                 R<List<IndicatorDTO>> indicatorByIdR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
                 List<IndicatorDTO> indicatorById = indicatorByIdR.getData();
@@ -500,9 +498,15 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                 }
                 List<Long> indicatorIdsById = indicatorById.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
                 for (GapAnalysisOperateDTO gapAnalysisOperateDTO : gapAnalysisOperateDTOS) {
+                    if (StringUtils.isNull(gapAnalysisOperateDTO.getIndicatorId())) {
+                        throw new ServiceException("指标不可以为空");
+                    }
                     if (StringUtils.isNotNull(gapAnalysisOperateDTO.getIndicatorId()) && !indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
                         throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
                     }
+                }
+                if (gapAnalysisOperateDTOS.size() != indicatorIds.size()) {
+                    throw new ServiceException("请不要选择相同的指标");
                 }
             }
             List<GapAnalysisOperateDTO> gapAnalysisOperates = new ArrayList<>();
@@ -734,7 +738,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
      * @param gapAnalysisById        根据ID查找DTO
      */
     private void editAnalysisOperateList(Long gapAnalysisId, List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS, GapAnalysisDTO gapAnalysisDTO, GapAnalysisDTO gapAnalysisById) {
-        List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
+        List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
         Integer planYear = gapAnalysisDTO.getPlanYear();
         Integer operateHistoryYear = gapAnalysisDTO.getOperateHistoryYear();
         if (StringUtils.isNotEmpty(indicatorIds)) {
@@ -745,9 +749,15 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             }
             List<Long> indicatorIdsById = indicatorById.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
             for (GapAnalysisOperateDTO gapAnalysisOperateDTO : gapAnalysisOperateDTOS) {
+                if (StringUtils.isNull(gapAnalysisOperateDTO.getIndicatorId())) {
+                    throw new ServiceException("指标不可以为空");
+                }
                 if (StringUtils.isNotNull(gapAnalysisOperateDTO.getIndicatorId()) && !indicatorIdsById.contains(gapAnalysisOperateDTO.getIndicatorId())) {
                     throw new ServiceException("历史经营情况列表指标已不存在 请检查指标配置");
                 }
+            }
+            if (gapAnalysisOperateDTOS.size() != indicatorIds.size()) {
+                throw new ServiceException("请不要选择相同的指标");
             }
         }
         List<GapAnalysisOperateDTO> gapAnalysisOperateDTOSAfter = new ArrayList<>();
@@ -924,6 +934,9 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             for (int i = 2; i < listMap.size(); i++) {
                 if (StringUtils.isNull(listMap.get(i).get(0)))
                     continue;
+                if (indicatorNames.contains(listMap.get(i).get(0))) {
+                    throw new ServiceException("导入失败 同一指标在相同年度下仅可存在一条数据");
+                }
                 indicatorNames.add(listMap.get(i).get(0));
             }
             List<IndicatorDTO> indicatorByNames = new ArrayList<>();

@@ -82,6 +82,14 @@ public class SalaryPayDTO extends BaseDTO {
      */
     private String employeeDepartmentName;
     /**
+     * 一级部门id
+     */
+    private Long topLevelDepartmentId;
+    /**
+     * 一级部门名称
+     */
+    private String topLevelDepartmentName;
+    /**
      * 发薪年份
      */
     private Integer payYear;

@@ -209,6 +209,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                         payDTO.setEmployeeName(dto.getEmployeeName());
                         payDTO.setEmployeeCode(dto.getEmployeeCode());
                         payDTO.setEmployeeDepartmentName(dto.getEmployeeDepartmentName());
+                        payDTO.setTopLevelDepartmentName(dto.getTopLevelDepartmentName());
                         payDTO.setEmployeePostName(dto.getEmployeePostName());
                         payDTO.setEmployeeRankName(dto.getEmployeeRankName());
                         payDTO.setEmployeeName(dto.getEmployeeName());
