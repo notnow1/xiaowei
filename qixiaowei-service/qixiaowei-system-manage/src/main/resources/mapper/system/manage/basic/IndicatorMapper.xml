@@ -133,7 +133,7 @@
             and t1.update_time=#{indicator.updateTime}
         </if>
         <if test="indicator.params.indicatorCategoryName != null">
-            and t2.indicator_category_name=#{indicator.indicatorCategoryName}
+            and t2.indicator_category_name like concat('%', #{indicator.params.indicatorCategoryName}, '%')
         </if>
         <!--    指标编码过滤-->
         <if test="indicator.params.indicatorCodeEqual != null and indicator.params.indicatorCodeEqual.size() > 0">
@@ -350,38 +350,38 @@
             OR t1.level IS NULL
             )
         </if>
-        <if test="indicator.params.levelGreaterThan != null">
-            AND
-            <foreach item="item"
-                     collection="indicator.params.levelGreaterThan"
-                     index="index" open="(" separator="OR" close=")">
-                t1.level &gt; #{item}
-            </foreach>
-        </if>
-        <if test="indicator.params.levelNotGreaterThan != null">
-            AND
-            <foreach item="item"
-                     collection="indicator.params.levelNotGreaterThan"
-                     index="index" open="(" separator="OR" close=")">
-                t1.level &lt;= #{item}
-            </foreach>
-        </if>
-        <if test="indicator.params.levelLessThan != null">
-            AND
-            <foreach item="item"
-                     collection="indicator.params.levelLessThan"
-                     index="index" open="(" separator="OR" close=")">
-                t1.level &lt; #{item}
-            </foreach>
-        </if>
-        <if test="indicator.params.levelNotLessThan != null">
-            AND
-            <foreach item="item"
-                     collection="indicator.params.levelNotLessThan"
-                     index="index" open="(" separator="OR" close=")">
-                t1.level &gt;= #{item}
-            </foreach>
-        </if>
+        <!--        <if test="indicator.params.levelGreaterThan != null">-->
+        <!--            AND-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="indicator.params.levelGreaterThan"-->
+        <!--                     index="index" open="(" separator="OR" close=")">-->
+        <!--                t1.level &gt; #{item}-->
+        <!--            </foreach>-->
+        <!--        </if>-->
+        <!--        <if test="indicator.params.levelNotGreaterThan != null">-->
+        <!--            AND-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="indicator.params.levelNotGreaterThan"-->
+        <!--                     index="index" open="(" separator="OR" close=")">-->
+        <!--                t1.level &lt;= #{item}-->
+        <!--            </foreach>-->
+        <!--        </if>-->
+        <!--        <if test="indicator.params.levelLessThan != null">-->
+        <!--            AND-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="indicator.params.levelLessThan"-->
+        <!--                     index="index" open="(" separator="OR" close=")">-->
+        <!--                t1.level &lt; #{item}-->
+        <!--            </foreach>-->
+        <!--        </if>-->
+        <!--        <if test="indicator.params.levelNotLessThan != null">-->
+        <!--            AND-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="indicator.params.levelNotLessThan"-->
+        <!--                     index="index" open="(" separator="OR" close=")">-->
+        <!--                t1.level &gt;= #{item}-->
+        <!--            </foreach>-->
+        <!--        </if>-->
         <!--    是否驱动因素过滤-->
         <if test="indicator.params.drivingFactorFlagEqual != null and indicator.params.drivingFactorFlagEqual.size() > 0">
             AND t1.driving_factor_flag IN

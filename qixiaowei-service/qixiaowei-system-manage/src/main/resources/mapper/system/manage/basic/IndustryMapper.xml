@@ -202,38 +202,38 @@
             OR i1.level IS NULL
             )
         </if>
-        <if test="industry.params.levelGreaterThan != null">
-            AND
-            <foreach item="item"
-                     collection="industry.params.levelGreaterThan"
-                     index="index" open="(" separator="OR" close=")">
-                i1.level &gt; #{item}
-            </foreach>
-        </if>
-        <if test="industry.params.levelNotGreaterThan != null">
-            AND
-            <foreach item="item"
-                     collection="industry.params.levelNotGreaterThan"
-                     index="index" open="(" separator="OR" close=")">
-                i1.level &lt;= #{item}
-            </foreach>
-        </if>
-        <if test="industry.params.levelLessThan != null">
-            AND
-            <foreach item="item"
-                     collection="industry.params.levelLessThan"
-                     index="index" open="(" separator="OR" close=")">
-                i1.level &lt; #{item}
-            </foreach>
-        </if>
-        <if test="industry.params.levelNotLessThan != null">
-            AND
-            <foreach item="item"
-                     collection="industry.params.levelNotLessThan"
-                     index="index" open="(" separator="OR" close=")">
-                i1.level &gt;= #{item}
-            </foreach>
-        </if>
+<!--        <if test="industry.params.levelGreaterThan != null">-->
+<!--            AND-->
+<!--            <foreach item="item"-->
+<!--                     collection="industry.params.levelGreaterThan"-->
+<!--                     index="index" open="(" separator="OR" close=")">-->
+<!--                i1.level &gt; #{item}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--        <if test="industry.params.levelNotGreaterThan != null">-->
+<!--            AND-->
+<!--            <foreach item="item"-->
+<!--                     collection="industry.params.levelNotGreaterThan"-->
+<!--                     index="index" open="(" separator="OR" close=")">-->
+<!--                i1.level &lt;= #{item}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--        <if test="industry.params.levelLessThan != null">-->
+<!--            AND-->
+<!--            <foreach item="item"-->
+<!--                     collection="industry.params.levelLessThan"-->
+<!--                     index="index" open="(" separator="OR" close=")">-->
+<!--                i1.level &lt; #{item}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--        <if test="industry.params.levelNotLessThan != null">-->
+<!--            AND-->
+<!--            <foreach item="item"-->
+<!--                     collection="industry.params.levelNotLessThan"-->
+<!--                     index="index" open="(" separator="OR" close=")">-->
+<!--                i1.level &gt;= #{item}-->
+<!--            </foreach>-->
+<!--        </if>-->
         <!--    行业状态过滤-->
         <if test="industry.params.statusEqual != null and industry.params.statusEqual.size() > 0">
             AND i1.status IN

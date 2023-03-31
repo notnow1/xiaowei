@@ -353,24 +353,48 @@
             AND date_format(ess.employment_date,'%y%m%d') &lt;=
             date_format(#{empSalaryAdjustPlan.params.employmentDateEnd},'%y%m%d')
         </if>
-        <!--    入职时间-->
-        <if test="empSalaryAdjustPlan.params.employmentDateEqual != null and empSalaryAdjustPlan.params.employmentDateEqual.size() > 0">
-            AND ess.employment_date IN
+        <!--    生效时间-->
+        <if test="empSalaryAdjustPlan.params.effectiveDateEqual != null and empSalaryAdjustPlan.params.effectiveDateEqual.size() > 0">
+            AND esa.effective_date IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.employmentDateEqual"
+                     collection="empSalaryAdjustPlan.params.effectiveDateEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="empSalaryAdjustPlan.params.employmentDateNotEqual != null and empSalaryAdjustPlan.params.employmentDateNotEqual.size() > 0">
-            AND (ess.employment_date NOT IN
+        <if test="empSalaryAdjustPlan.params.effectiveDateNotEqual != null and empSalaryAdjustPlan.params.effectiveDateNotEqual.size() > 0">
+            AND (esa.effective_date NOT IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.employmentDateNotEqual"
+                     collection="empSalaryAdjustPlan.params.effectiveDateNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ess.employment_date IS NULL
+            OR esa.effective_date IS NULL
             )
+        </if>
+        <if test="empSalaryAdjustPlan.params.effectiveDateBefore != null and empSalaryAdjustPlan.params.effectiveDateBefore != ''">
+            AND date_format(esa.effective_date,'%y%m%d') &lt;
+            date_format(#{empSalaryAdjustPlan.params.effectiveDateBefore},'%y%m%d')
+        </if>
+        <if test="empSalaryAdjustPlan.params.effectiveDateNotBefore != null and empSalaryAdjustPlan.params.effectiveDateNotBefore != ''">
+            AND date_format(esa.effective_date,'%y%m%d') &gt;=
+            date_format(#{empSalaryAdjustPlan.params.effectiveDateNotBefore},'%y%m%d')
+        </if>
+        <if test="empSalaryAdjustPlan.params.effectiveDateAfter != null and empSalaryAdjustPlan.params.effectiveDateAfter != ''">
+            AND date_format(esa.effective_date,'%y%m%d') &gt;
+            date_format(#{empSalaryAdjustPlan.params.effectiveDateAfter},'%y%m%d')
+        </if>
+        <if test="empSalaryAdjustPlan.params.effectiveDateNotAfter != null and empSalaryAdjustPlan.params.effectiveDateNotAfter != ''">
+            AND date_format(esa.effective_date,'%y%m%d') &lt;=
+            date_format(#{empSalaryAdjustPlan.params.effectiveDateNotAfter},'%y%m%d')
+        </if>
+        <if test="empSalaryAdjustPlan.params.effectiveDateStart != null and empSalaryAdjustPlan.params.effectiveDateStart != ''">
+            AND date_format(esa.effective_date,'%y%m%d') &gt;=
+            date_format(#{empSalaryAdjustPlan.params.effectiveDateStart},'%y%m%d')
+        </if>
+        <if test="empSalaryAdjustPlan.params.effectiveDateEnd != null and empSalaryAdjustPlan.params.effectiveDateEnd != ''">
+            AND date_format(esa.effective_date,'%y%m%d') &lt;=
+            date_format(#{empSalaryAdjustPlan.params.effectiveDateEnd},'%y%m%d')
         </if>
         <!--    调整职级体系-->
         <if test="empSalaryAdjustPlan.params.adjustOfficialRankSystemNameEqual != null and empSalaryAdjustPlan.params.adjustOfficialRankSystemNameEqual.size() > 0">
