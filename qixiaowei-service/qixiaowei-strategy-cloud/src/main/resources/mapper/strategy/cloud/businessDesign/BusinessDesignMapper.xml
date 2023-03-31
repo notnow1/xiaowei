@@ -5,12 +5,27 @@
     <select id="selectBusinessDesignByBusinessDesignId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
         SELECT
-        business_design_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
-        FROM business_design
-        WHERE business_design_id=#{businessDesignId}
-        and delete_flag=0
+        bd.business_design_id,
+        bd.plan_year,
+        bd.plan_business_unit_id,
+        bd.business_unit_decompose,
+        bd.area_id,
+        bd.department_id,
+        bd.product_id,
+        bd.industry_id,
+        bd.delete_flag,
+        bd.create_by,
+        bd.create_time,
+        bd.update_by,
+        bd.update_time,
+        pbu.business_unit_name
+        FROM business_design bd
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = bd.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE bd.business_design_id=#{businessDesignId}
+        and bd.delete_flag=0
     </select>
-
     <!--    批量查询业务设计表-->
     <select id="selectBusinessDesignByBusinessDesignIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
@@ -25,12 +40,12 @@
         </foreach>
         and delete_flag=0
     </select>
-
     <!--    查询业务设计表列表-->
     <select id="selectBusinessDesignList"
             resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
         SELECT
-        bd.business_design_id,plan_year,
+        bd.business_design_id,
+        bd.plan_year,
         bd.plan_business_unit_id,
         bd.business_unit_decompose,
         pbu.business_unit_name,
@@ -46,6 +61,8 @@
         bd.update_time
         FROM business_design bd
         LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = bd.plan_business_unit_id
+        AND pbu.delete_flag = 0
         WHERE bd.delete_flag=0
         <if test="businessDesign.businessDesignId != null">
             and bd.business_design_id=#{businessDesign.businessDesignId}
@@ -123,12 +140,355 @@
         <if test="businessDesign.params.planYearEnd != null and businessDesign.params.planYearEnd != ''"><!-- 结束时间检索 -->
             AND bd.plan_year &lt;= #{businessDesign.params.planYearEnd}
         </if>
-        <!--todo-->
-        <!--规划业务单元-->
+        <!-- 创建人等于过滤  -->
+        <if test="businessDesign.params.createByList != null and businessDesign.params.createByList.size() > 0">
+            AND bd.create_by IN
+            <foreach item="item"
+                     collection="businessDesign.params.createByList"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!--规划业务单元名称-->
+        <if test="businessDesign.params.businessUnitName != null and businessDesign.params.businessUnitName != ''">
+            and pbu.business_unit_name like concat('%', #{businessDesign.params.businessUnitName}, '%')
+        </if>
+        <!--年份过滤-->
+        <if test="businessDesign.params.planYearEqual != null and businessDesign.params.planYearEqual.size() > 0">
+            and bd.plan_year IN
+            <foreach item="item"
+                     collection="businessDesign.params.planYearEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.planYearNotEqual != null and businessDesign.params.planYearNotEqual.size() > 0">
+            AND (bd.plan_year NOT IN
+            <foreach item="item"
+                     collection="businessDesign.params.planYearNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR bd.plan_year IS NULL
+            )
+        </if>
+        <if test="businessDesign.params.planYearBefore != null and businessDesign.params.planYearBefore != ''">
+            AND bd.plan_year &lt; #{businessDesign.params.planYearBefore}
+        </if>
+        <if test="businessDesign.params.planYearNotBefore != null and businessDesign.params.planYearNotBefore != ''"><!-- 开始时间检索 -->
+            AND bd.plan_year &gt;= #{businessDesign.params.planYearNotBefore}
+        </if>
+        <if test="businessDesign.params.planYearAfter != null and businessDesign.params.planYearAfter != ''"><!-- 开始时间检索 -->
+            AND bd.plan_year &gt; #{businessDesign.params.planYearAfter}
+        </if>
+        <if test="businessDesign.params.planYearNotAfter != null and businessDesign.params.planYearNotAfter != ''"><!-- 结束时间检索 -->
+            AND bd.plan_year &lt;= #{businessDesign.params.planYearNotAfter}
+        </if>
+        <if test="businessDesign.params.planYearStart != null and businessDesign.params.planYearStart != ''"><!-- 开始时间检索 -->
+            AND bd.plan_year &gt;= #{businessDesign.params.planYearStart}
+        </if>
+        <if test="businessDesign.params.planYearEnd != null and businessDesign.params.planYearEnd != ''"><!-- 结束时间检索 -->
+            AND bd.plan_year &lt;= #{businessDesign.params.planYearEnd}
+        </if>
+        <!--规划业务单元名称高级搜索-->
+        <if test="businessDesign.params.businessUnitNameEqual != null and businessDesign.params.businessUnitNameEqual.size() > 0">
+            AND pbu.business_unit_name IN
+            <foreach item="item"
+                     collection="businessDesign.params.businessUnitNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.businessUnitNameNotEqual != null and businessDesign.params.businessUnitNameNotEqual.size() > 0">
+            AND (pbu.business_unit_name NOT IN
+            <foreach item="item"
+                     collection="businessDesign.params.businessUnitNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pbu.business_unit_name IS NULL
+            )
+        </if>
+        <if test="businessDesign.params.businessUnitNameLike != null and businessDesign.params.businessUnitNameLike.size() > 0">
+            AND (
+            <foreach item="item"
+                     collection="businessDesign.params.businessUnitNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                pbu.business_unit_name LIKE concat('%', #{item}, '%')
+            </foreach>
+            )
+        </if>
+        <if test="businessDesign.params.businessUnitNameNotLike != null and businessDesign.params.businessUnitNameNotLike.size() > 0">
+            AND (
+            <foreach item="item"
+                     collection="businessDesign.params.businessUnitNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+            )
+        </if>
+        <!--行业-->
+        <if test="businessDesign.params.industryIdEqual != null and businessDesign.params.industryIdEqual.size() > 0">
+            and bd.industry_id IN
+            <foreach item="item"
+                     collection="businessDesign.params.industryIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.industryIdNotEqual != null and businessDesign.params.industryIdNotEqual.size() > 0">
+            AND (bd.industry_id NOT IN
+            <foreach item="item"
+                     collection="businessDesign.params.industryIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR bd.industry_id IS NULL
+            )
+        </if>
+        <if test="businessDesign.params.industryIdNull != null">
+            AND (bd.industry_id IS NULL or bd.industry_id ='')
+        </if>
+        <if test="businessDesign.params.industryIdNotNull != null">
+            AND (bd.industry_id IS NOT NULL or bd.industry_id != '')
+        </if>
+        <!--区域-->
+        <if test="businessDesign.params.areaIdEqual != null and businessDesign.params.areaIdEqual.size() > 0">
+            and bd.area_id IN
+            <foreach item="item"
+                     collection="businessDesign.params.areaIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.areaIdNotEqual != null and businessDesign.params.areaIdNotEqual.size() > 0">
+            AND (bd.area_id NOT IN
+            <foreach item="item"
+                     collection="businessDesign.params.areaIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR bd.area_id IS NULL
+            )
+        </if>
+        <if test="businessDesign.params.areaIdNull != null">
+            AND (bd.area_id IS NULL or bd.area_id ='')
+        </if>
+        <if test="businessDesign.params.areaIdNotNull != null">
+            AND (bd.area_id IS NOT NULL or bd.area_id != '')
+        </if>
+        <!--产品-->
+        <if test="businessDesign.params.productIdEqual != null and businessDesign.params.productIdEqual.size() > 0">
+            and bd.product_id IN
+            <foreach item="item"
+                     collection="businessDesign.params.productIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.productIdNotEqual != null and businessDesign.params.productIdNotEqual.size() > 0">
+            AND (bd.product_id NOT IN
+            <foreach item="item"
+                     collection="businessDesign.params.productIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR bd.product_id IS NULL
+            )
+        </if>
+        <if test="businessDesign.params.productIdNull != null">
+            AND (bd.product_id IS NULL or bd.product_id ='')
+        </if>
+        <if test="businessDesign.params.productIdNotNull != null">
+            AND (bd.product_id IS NOT NULL or bd.product_id != '')
+        </if>
+        <!--部门-->
+        <if test="businessDesign.params.departmentIdEqual != null and businessDesign.params.departmentIdEqual.size() > 0">
+            and bd.department_id IN
+            <foreach item="item"
+                     collection="businessDesign.params.departmentIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.departmentIdNotEqual != null and businessDesign.params.departmentIdNotEqual.size() > 0">
+            AND (bd.department_id NOT IN
+            <foreach item="item"
+                     collection="businessDesign.params.departmentIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR bd.department_id IS NULL
+            )
+        </if>
+        <if test="businessDesign.params.departmentIdNull != null">
+            AND (bd.department_id IS NULL or bd.department_id ='')
+        </if>
+        <if test="businessDesign.params.departmentIdNotNull != null">
+            AND (bd.department_id IS NOT NULL or bd.department_id != '')
+        </if>
+        <!-- 创建人等于过滤  -->
+        <if test="businessDesign.params.createByNameEqual != null">
+            <!-- 创建人等于过滤  -->
+            <if test="businessDesign.params.createBys != null and businessDesign.params.createBys.size() > 0">
+                AND bd.create_by IN
+                <foreach item="item"
+                         collection="businessDesign.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人等于过滤  -->
+            <if test="businessDesign.params.createBys == null">
+                AND bd.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不等于过滤  -->
+        <if test=" businessDesign.params.createByNameNotEqual != null">
+            <!-- 创建人不等于过滤  -->
+            <if test="businessDesign.params.createBys != null and businessDesign.params.createBys.size() > 0">
+                AND (bd.create_by IN
+                <foreach item="item"
+                         collection="businessDesign.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
 
-        <!--录入人姓名-->
-        <!--录入人工号-->
-        <!--录入日期-->
+            <!-- 创建人不等于过滤  -->
+            <if test="businessDesign.params.createBys == null">
+                AND bd.create_by is null
+            </if>
+        </if>
+        <!-- 创建人包含过滤  -->
+        <if test="businessDesign.params.createByNameLike != null">
+            <!-- 创建人包含过滤  -->
+            <if test="businessDesign.params.createBys != null and businessDesign.params.createBys.size() > 0">
+                AND bd.create_by IN
+                <foreach item="item"
+                         collection="businessDesign.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人包含过滤  -->
+            <if test="businessDesign.params.createBys == null">
+                AND bd.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不包含过滤  -->
+        <if test=" businessDesign.params.createByNameNotLike != null">
+            <!-- 创建人不包含过滤  -->
+            <if test="businessDesign.params.createBys != null and businessDesign.params.createBys.size() > 0">
+                AND (bd.create_by IN
+                <foreach item="item"
+                         collection="businessDesign.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不包含过滤  -->
+            <if test="businessDesign.params.createBys == null">
+                AND bd.create_by is null
+            </if>
+        </if>
+
+        <!-- 创建时间过滤  -->
+        <if test="businessDesign.params.createTimeEqual != null and businessDesign.params.createTimeEqual.size() > 0">
+            AND date_format(bd.create_time,'%Y/%m/%d') IN
+            <foreach item="item"
+                     collection="businessDesign.params.createTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.createTimeNotEqual != null and businessDesign.params.createTimeNotEqual.size() > 0">
+            AND date_format(bd.create_time,'%Y/%m/%d') NOT IN
+            <foreach item="item"
+                     collection="businessDesign.params.createTimeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.createTimeBefore != null and businessDesign.params.createTimeBefore != ''">
+            AND date_format(bd.create_time,'%Y/%m/%d') &lt; #{businessDesign.params.createTimeBefore}
+        </if>
+        <if test="businessDesign.params.createTimeNotBefore != null and businessDesign.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
+            AND date_format(bd.create_time,'%Y/%m/%d') &gt;= #{businessDesign.params.createTimeNotBefore}
+        </if>
+        <if test="businessDesign.params.createTimeAfter != null and businessDesign.params.createTimeAfter != ''"><!-- 开始时间检索 -->
+            AND date_format(bd.create_time,'%Y/%m/%d') &gt; #{businessDesign.params.createTimeAfter}
+        </if>
+        <if test="businessDesign.params.createTimeNotAfter != null and businessDesign.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
+            AND date_format(bd.create_time,'%Y/%m/%d') &lt;= #{businessDesign.params.createTimeNotAfter}
+        </if>
+        <if test="businessDesign.params.createTimeStart != null and businessDesign.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(bd.create_time,'%Y/%m/%d') &gt;= #{businessDesign.params.createTimeStart}
+        </if>
+        <if test="businessDesign.params.createTimeEnd != null and businessDesign.params.createTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(bd.create_time,'%Y/%m/%d') &lt;= #{businessDesign.params.createTimeEnd}
+        </if>
+        GROUP BY bd.business_design_id
+        ${businessDesign.params.dataScope}
+        ORDER BY bd.create_time DESC
+    </select>
+    <!--查询最近一次-->
+    <select id="selectBusinessDesignRecently"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
+        SELECT
+        bd.business_design_id,
+        bd.plan_year,
+        bd.plan_business_unit_id,
+        bd.business_unit_decompose,
+        bd.area_id,
+        bd.department_id,
+        bd.product_id,
+        bd.industry_id,
+        bd.delete_flag,
+        bd.create_by,
+        bd.create_time,
+        bd.update_by,
+        bd.update_time,
+        pbu.business_unit_name
+        FROM business_design bd
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = bd.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE bd.delete_flag=0
+        AND bd.plan_year = #{planYear}
+        ORDER BY bd.update_time DESC
+        limit 1
+    </select>
+    <!--根据维度ID集合查询-->
+    <select id="selectBusinessDesignByPlanBusinessUnitIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
+        SELECT
+        bd.business_design_id,
+        bd.plan_year,
+        bd.plan_business_unit_id,
+        bd.business_unit_decompose,
+        bd.area_id,
+        bd.department_id,
+        bd.product_id,
+        bd.industry_id,
+        bd.delete_flag,
+        bd.create_by,
+        bd.create_time,
+        bd.update_by,
+        bd.update_time,
+        pbu.business_unit_name
+        FROM business_design bd
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = bd.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE bd.delete_flag=0
+        AND bd.plan_business_unit_id IN
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
     <!--新增业务设计表-->
     <insert id="insertBusinessDesign" useGeneratedKeys="true" keyProperty="businessDesignId">

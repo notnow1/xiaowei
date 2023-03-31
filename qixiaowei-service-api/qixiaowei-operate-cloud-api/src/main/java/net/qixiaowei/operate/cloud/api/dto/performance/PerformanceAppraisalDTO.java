@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.api.dto.performance;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -21,7 +22,7 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-public class PerformanceAppraisalDTO {
+public class PerformanceAppraisalDTO extends BaseDTO {
 
     //查询检验
     public interface QueryPerformanceAppraisalDTO extends Default {
@@ -59,12 +60,12 @@ public class PerformanceAppraisalDTO {
     /**
      * 考核年度
      */
-    @NotNull(message = "考核年度不能为空", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
+    @NotNull(message = "请选择考核年度", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
     private Integer appraisalYear;
     /**
      * 考核名称
      */
-    @NotBlank(message = "考核名称不能为空", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
+    @NotBlank(message = "请输入考核名称", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
     private String appraisalName;
     /**
      * 周期性考核标记:0否;1是
@@ -88,6 +89,14 @@ public class PerformanceAppraisalDTO {
      * 考核周期名称
      */
     private String cycleNumberName;
+    /**
+     * 评议周期类型:1月度;2季度;3半年度;4年度
+     */
+    private Integer evaluationType;
+    /**
+     * 评议周期类型:1月度;2季度;3半年度;4年度
+     */
+    private String evaluationTypeName;
     /**
      * 考核开始日期
      */
@@ -170,24 +179,6 @@ public class PerformanceAppraisalDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
      * 考核任务范围
      */
     @NotEmpty(message = "请选择考核任务范围", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
@@ -208,7 +199,5 @@ public class PerformanceAppraisalDTO {
      * 查询类型(1-全部，2-一级组织，0-自定义)
      */
     private Integer queryType;
-
-    private Map<String, Object> params;
 }
 

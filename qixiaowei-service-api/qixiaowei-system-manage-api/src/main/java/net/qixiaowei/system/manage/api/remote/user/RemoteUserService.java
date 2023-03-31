@@ -9,6 +9,7 @@ import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.factory.user.RemoteUserFallbackFactory;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
+import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,15 @@ public interface RemoteUserService {
      */
     @GetMapping(API_PREFIX_USER + "/infoByUserId")
     R<UserDTO> getUserInfoByUserId(@RequestParam("userId") Long userId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 初始化用户缓存信息
+     *
+     * @param userId 用户ID
+     * @return 结果
+     */
+    @GetMapping(API_PREFIX_USER + "/initUserCache")
+    R<UserProfileVO> initUserCache(@RequestParam("userId") Long userId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过用户ID集合查询用户列表信息

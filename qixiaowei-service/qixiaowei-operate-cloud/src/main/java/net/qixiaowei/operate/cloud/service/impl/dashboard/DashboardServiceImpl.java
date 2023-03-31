@@ -951,7 +951,7 @@ public class DashboardServiceImpl implements IDashboardService {
             targetLeaderboardDTO.setRanking(i);
         }
         List<BigDecimal> cycleActual = targetLeaderboardDTORevers.stream().map(TargetLeaderboardDTO::getCycleActualSum).collect(Collectors.toList());
-        List<String> targetDecomposeDetailsNames = targetLeaderboardDTOS.stream().sorted(Comparator.comparing(TargetLeaderboardDTO::getCycleActualSum)).collect(Collectors.toList())
+        List<String> targetDecomposeDetailsNames = targetLeaderboardDTOS.stream().sorted(Comparator.comparing(TargetLeaderboardDTO::getCycleActualSum).reversed()).collect(Collectors.toList())
                 .stream().map(TargetLeaderboardDTO::getTargetDecomposeDetailsName).collect(Collectors.toList());
         Map<String, Object> map = new HashMap<>();
         map.put("cycleActual", cycleActual);

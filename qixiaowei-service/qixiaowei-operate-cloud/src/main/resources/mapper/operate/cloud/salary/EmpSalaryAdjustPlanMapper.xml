@@ -298,7 +298,7 @@
             AND
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.employeeNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 ess.employee_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -546,7 +546,7 @@
             AND
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.employeeNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 ess.employee_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -722,7 +722,9 @@
                 #{item}
             </foreach>
         </if>
-        ORDER BY esa.update_time DESC
+        <!-- 数据范围过滤 -->
+        ${empSalaryAdjustPlan.params.dataScope}
+        ORDER BY esa.create_time DESC
     </select>
     <!--根据员工ID获取个人调薪计划表-->
     <select id="selectByEmployeeId"

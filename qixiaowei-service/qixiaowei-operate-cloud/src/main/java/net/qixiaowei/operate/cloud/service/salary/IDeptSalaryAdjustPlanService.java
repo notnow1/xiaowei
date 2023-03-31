@@ -32,6 +32,14 @@ public interface IDeptSalaryAdjustPlanService {
     List<DeptSalaryAdjustPlanDTO> selectDeptSalaryAdjustPlanList(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO);
 
     /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<DeptSalaryAdjustPlanDTO> result);
+
+    /**
      * 新增部门调薪计划表
      *
      * @param deptSalaryAdjustPlanDTO 部门调薪计划表
@@ -150,4 +158,11 @@ public interface IDeptSalaryAdjustPlanService {
      * @return Integer
      */
     Integer getMaxYear();
+
+    /**
+     * 获取已存在的年份
+     *
+     * @return list
+     */
+    List<String> getExistYear();
 }

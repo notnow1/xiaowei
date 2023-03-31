@@ -3,14 +3,34 @@ package net.qixiaowei.strategy.cloud.service.impl.plan;
 import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
+import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.strategy.cloud.api.domain.businessDesign.BusinessDesign;
+import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysis;
+import net.qixiaowei.strategy.cloud.api.domain.marketInsight.*;
 import net.qixiaowei.strategy.cloud.api.domain.plan.PlanBusinessUnit;
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.AnnualKeyWork;
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasure;
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMetrics;
+import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.*;
 import net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
+import net.qixiaowei.strategy.cloud.mapper.businessDesign.BusinessDesignMapper;
+import net.qixiaowei.strategy.cloud.mapper.gap.GapAnalysisMapper;
+import net.qixiaowei.strategy.cloud.mapper.marketInsight.*;
 import net.qixiaowei.strategy.cloud.mapper.plan.PlanBusinessUnitMapper;
+import net.qixiaowei.strategy.cloud.mapper.strategyDecode.AnnualKeyWorkMapper;
+import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyMeasureMapper;
+import net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyMetricsMapper;
+import net.qixiaowei.strategy.cloud.service.impl.marketInsight.PackCopyMarketInsight;
 import net.qixiaowei.strategy.cloud.service.plan.IPlanBusinessUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,13 +49,27 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
     @Autowired
     private PlanBusinessUnitMapper planBusinessUnitMapper;
 
-    public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.<String, String>of(
-            "region", "区域",
-            "department", "部门",
-            "product", "产品",
-            "industry", "行业",
-            "company", "公司级"
-    );
+    @Autowired
+    private MarketInsightCustomerMapper marketInsightCustomerMapper;//看客户
+    @Autowired
+    private MarketInsightIndustryMapper marketInsightIndustryMapper;//看行业
+    @Autowired
+    private MarketInsightMacroMapper marketInsightMacroMapper;//看宏观
+    @Autowired
+    private MarketInsightOpponentMapper marketInsightOpponentMapper;//看对手
+    @Autowired
+    private MarketInsightSelfMapper marketInsightSelfMapper;//看自身
+    @Autowired
+    private GapAnalysisMapper gapAnalysisMapper;//差距分析
+    @Autowired
+    private BusinessDesignMapper businessDesignMapper;//业务设计
+    @Autowired
+    private AnnualKeyWorkMapper annualKeyWorkMapper;//年度重点工作
+    @Autowired
+    private StrategyMeasureMapper strategyMeasureMapper;//战略举措清单
+    @Autowired
+    private StrategyMetricsMapper strategyMetricsMapper;//战略衡量指标
+
 
     /**
      * 查询规划业务单元
@@ -54,14 +88,8 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
         }
         String businessUnitDecompose = planBusinessUnitDTO.getBusinessUnitDecompose();
         if (StringUtils.isNotNull(businessUnitDecompose)) {
-            StringBuilder businessUnitDecomposeName = new StringBuilder("");
-            List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
-            businessUnitDecomposeList.forEach(decompose -> {
-                if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
-                    businessUnitDecomposeName.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
-                }
-            });
-            planBusinessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
+            planBusinessUnitDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
+            planBusinessUnitDTO.setBusinessUnitDecomposeName(PlanBusinessUnitCode.getBusinessUnitDecomposeName(businessUnitDecompose));
         }
         return planBusinessUnitDTO;
     }
@@ -82,23 +110,8 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
         for (PlanBusinessUnitDTO businessUnitDTO : planBusinessUnitDTOS) {
             String businessUnitDecompose = businessUnitDTO.getBusinessUnitDecompose();
             if (StringUtils.isNotNull(businessUnitDecompose)) {
-                StringBuilder businessUnitDecomposeName = new StringBuilder("");
-                List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
-                businessUnitDecomposeList.forEach(decompose -> {
-                    if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
-                        businessUnitDecomposeName.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
-                    }
-                });
-                businessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
-                List<String> businessUnitDecomposeNames = Arrays.asList(businessUnitDecomposeName.toString().split(";"));
-                List<Map<String, Object>> businessUnitDecomposes = new ArrayList<>();
-                for (int i = 0; i < businessUnitDecomposeList.size(); i++) {
-                    Map<String, Object> businessUnitDecomposeMap = new HashMap<>();
-                    businessUnitDecomposeMap.put("label", businessUnitDecomposeNames.get(i));
-                    businessUnitDecomposeMap.put("value", businessUnitDecomposeList.get(i));
-                    businessUnitDecomposes.add(businessUnitDecomposeMap);
-                }
-                businessUnitDTO.setBusinessUnitDecomposes(businessUnitDecomposes);
+                businessUnitDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
+                businessUnitDTO.setBusinessUnitDecomposeName(PlanBusinessUnitCode.getBusinessUnitDecomposeName(businessUnitDecompose));
             }
         }
         return planBusinessUnitDTOS;
@@ -131,7 +144,7 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
         }
         List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
         businessUnitDecomposeList.forEach(business -> {
-            if (!BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(business))
+            if (!PlanBusinessUnitCode.contains(business) && !business.equals("company"))
                 throw new ServiceException("规划业务单元维度标识不匹配 请检查");
         });
         // 名称重复校验
@@ -215,6 +228,58 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
         if (planBusinessUnitDTOS.size() != planBusinessUnitIds.size()) {
             throw new ServiceException("部分规划业务单元的数据已不存在");
         }
+        //看客户
+        List<MarketInsightCustomerDTO> marketInsightCustomerDTOS = marketInsightCustomerMapper.selectMarketInsightCustomerByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(marketInsightCustomerDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看行业
+        List<MarketInsightIndustryDTO> marketInsightIndustryDTOS = marketInsightIndustryMapper.selectMarketInsightIndustryByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(marketInsightIndustryDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看宏观
+        List<MarketInsightMacroDTO> marketInsightMacroDTOS = marketInsightMacroMapper.selectMarketInsightMacroByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(marketInsightMacroDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看对手
+        List<MarketInsightOpponentDTO> marketInsightOpponentDTOS = marketInsightOpponentMapper.selectMarketInsightOpponentByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(marketInsightOpponentDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看自身
+        {
+            List<MarketInsightSelfDTO> marketInsightSelfDTOS = marketInsightSelfMapper.selectMarketInsightSelfByPlanBusinessUnitIds(planBusinessUnitIds);
+            if (StringUtils.isNotEmpty(marketInsightSelfDTOS)) {
+                throw new ServiceException("数据被引用！");
+            }
+        }
+        // 差距分析
+        List<GapAnalysisDTO> gapAnalysisDTOS = gapAnalysisMapper.selectGapAnalysisByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(gapAnalysisDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        // 业务设计
+        List<BusinessDesignDTO> businessDesignDTOS = businessDesignMapper.selectBusinessDesignByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(businessDesignDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        // 年度重点工作
+        List<AnnualKeyWorkDTO> annualKeyWorkDTOS = annualKeyWorkMapper.selectAnnualKeyWorkByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(annualKeyWorkDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        // 战略举措清单
+        List<StrategyMeasureDTO> strategyMeasureDTOS = strategyMeasureMapper.selectStrategyMeasureByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(strategyMeasureDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        // 战略衡量指标
+        List<StrategyMetricsDTO> strategyMetricsDTOS = strategyMetricsMapper.selectStrategyMetricsByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (StringUtils.isNotEmpty(strategyMetricsDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
         return planBusinessUnitMapper.logicDeletePlanBusinessUnitByPlanBusinessUnitIds(planBusinessUnitIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -272,6 +337,7 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
      */
     @Override
     public int logicDeletePlanBusinessUnitByPlanBusinessUnitId(PlanBusinessUnitDTO planBusinessUnitDTO) {
+        int i = 0;
         Long planBusinessUnitId = planBusinessUnitDTO.getPlanBusinessUnitId();
         if (StringUtils.isNull(planBusinessUnitId)) {
             throw new ServiceException("请传入规划业务单元ID");
@@ -284,7 +350,81 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
         planBusinessUnit.setPlanBusinessUnitId(planBusinessUnitDTO.getPlanBusinessUnitId());
         planBusinessUnit.setUpdateTime(DateUtils.getNowDate());
         planBusinessUnit.setUpdateBy(SecurityUtils.getUserId());
-        return planBusinessUnitMapper.logicDeletePlanBusinessUnitByPlanBusinessUnitId(planBusinessUnit);
+        //看客户
+        MarketInsightCustomer marketInsightCustomer = new MarketInsightCustomer();
+        PackCopyMarketInsight.copyProperties(planBusinessUnitDTO, marketInsightCustomer);
+        List<MarketInsightCustomerDTO> marketInsightCustomerDTOS = marketInsightCustomerMapper.selectMarketInsightCustomerList(marketInsightCustomer);
+        if (StringUtils.isNotEmpty(marketInsightCustomerDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看行业
+        MarketInsightIndustry marketInsightIndustry = new MarketInsightIndustry();
+        PackCopyMarketInsight.copyProperties(planBusinessUnitDTO, marketInsightIndustry);
+        List<MarketInsightIndustryDTO> marketInsightIndustryDTOS = marketInsightIndustryMapper.selectMarketInsightIndustryList(marketInsightIndustry);
+        if (StringUtils.isNotEmpty(marketInsightIndustryDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看宏观
+        MarketInsightMacro marketInsightMacro = new MarketInsightMacro();
+        PackCopyMarketInsight.copyProperties(planBusinessUnitDTO, marketInsightMacro);
+        List<MarketInsightMacroDTO> marketInsightMacroDTOS = marketInsightMacroMapper.selectMarketInsightMacroList(marketInsightMacro);
+        if (StringUtils.isNotEmpty(marketInsightMacroDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看对手
+        MarketInsightOpponent marketInsightOpponent = new MarketInsightOpponent();
+        PackCopyMarketInsight.copyProperties(planBusinessUnitDTO, marketInsightOpponent);
+        List<MarketInsightOpponentDTO> marketInsightOpponentDTOS = marketInsightOpponentMapper.selectMarketInsightOpponentList(marketInsightOpponent);
+        if (StringUtils.isNotEmpty(marketInsightOpponentDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //看自身
+        MarketInsightSelf marketInsightSelf = new MarketInsightSelf();
+        PackCopyMarketInsight.copyProperties(planBusinessUnitDTO, marketInsightSelf);
+        {
+            List<MarketInsightSelfDTO> marketInsightSelfDTOS = marketInsightSelfMapper.selectMarketInsightSelfList(marketInsightSelf);
+            if (StringUtils.isNotEmpty(marketInsightSelfDTOS)) {
+                throw new ServiceException("数据被引用！");
+            }
+        }
+        //差距分析
+        GapAnalysis gapAnalysis = new GapAnalysis();
+        PackCopyMarketInsight.copyProperties(planBusinessUnitDTO, gapAnalysis);
+        List<GapAnalysisDTO> gapAnalysisDTOS = gapAnalysisMapper.selectGapAnalysisList(gapAnalysis);
+        if (StringUtils.isNotEmpty(gapAnalysisDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //业务设计
+        BusinessDesign businessDesign = new BusinessDesign();
+        PackCopyMarketInsight.copyProperties(planBusinessUnitDTO, businessDesign);
+        List<BusinessDesignDTO> businessDesignDTOS = businessDesignMapper.selectBusinessDesignList(businessDesign);
+        if (StringUtils.isNotEmpty(businessDesignDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //年度重点工作
+        AnnualKeyWork annualKeyWork = new AnnualKeyWork();
+        PackCopyMarketInsight.copyProperties(planBusinessUnitDTO, annualKeyWork);
+        List<AnnualKeyWorkDTO> annualKeyWorkDTOS = annualKeyWorkMapper.selectAnnualKeyWorkList(annualKeyWork);
+        if (StringUtils.isNotEmpty(annualKeyWorkDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //战略举措清单
+        StrategyMeasure strategyMeasure = new StrategyMeasure();
+        PackCopyMarketInsight.copyProperties(planBusinessUnitDTO, strategyMeasure);
+        List<StrategyMeasureDTO> strategyMeasureDTOS = strategyMeasureMapper.selectStrategyMeasureList(strategyMeasure);
+        if (StringUtils.isNotEmpty(strategyMeasureDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+        //战略衡量指标
+        StrategyMetrics strategyMetrics = new StrategyMetrics();
+        PackCopyMarketInsight.copyProperties(planBusinessUnitDTO, strategyMetrics);
+        List<StrategyMetricsDTO> strategyMetricsDTOS = strategyMetricsMapper.selectStrategyMetricsList(strategyMetrics);
+        if (StringUtils.isNotEmpty(strategyMetricsDTOS)) {
+            throw new ServiceException("数据被引用！");
+        }
+
+        i = planBusinessUnitMapper.logicDeletePlanBusinessUnitByPlanBusinessUnitId(planBusinessUnit);
+        return i;
     }
 
     /**

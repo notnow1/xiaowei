@@ -38,14 +38,14 @@ public class RemoteEmployeeBudget implements RemoteEmployeeBudgetService {
 
     /**
      * 根据部门ID集合查询预算表
-     * @param departmentId
+     * @param departmentIds
      * @param source
      * @return
      */
     @Override
     @InnerAuth
-    @GetMapping("/queryDepartmentId")
-    public R<List<EmployeeBudgetDTO>> selectByDepartmentId(@RequestParam("departmentId") Long departmentId, String source) {
-        return R.ok(employeeBudgetService.selectByDepartmentId(departmentId));
+    @PostMapping("/queryDepartmentIds")
+    public R<List<EmployeeBudgetDTO>> selectByDepartmentIds(@RequestBody List<Long> departmentIds, String source) {
+        return R.ok(employeeBudgetService.selectByDepartmentIds(departmentIds));
     }
 }

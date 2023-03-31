@@ -5,10 +5,9 @@ import java.util.*;
 import net.qixiaowei.file.api.RemoteFileService;
 import net.qixiaowei.file.api.dto.FileDTO;
 import net.qixiaowei.integration.common.config.FileConfig;
-import net.qixiaowei.integration.common.constant.BusinessConstants;
-import net.qixiaowei.integration.common.constant.Constants;
-import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.constant.*;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.system.RoleDataScope;
 import net.qixiaowei.integration.common.enums.tenant.TenantStatus;
 import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -16,7 +15,10 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.file.FileTypeUtils;
 import net.qixiaowei.integration.common.utils.file.MimeTypeUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.service.TokenService;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
@@ -24,6 +26,7 @@ import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserStatusDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserUpdatePasswordDTO;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
@@ -49,7 +52,6 @@ import net.qixiaowei.system.manage.api.domain.user.User;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.user.IUserService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -97,6 +99,9 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private IUserConfigService userConfigService;
 
+    @Autowired
+    private RedisService redisService;
+
 
     @Override
     @IgnoreTenant
@@ -133,6 +138,28 @@ public class UserServiceImpl implements IUserService {
         userDTO.setTenantLogo(this.convertToFullFilePath(userDTO.getTenantLogo()));
         //角色集合
         Set<String> roles = userRoleService.getRoleCodes(userDTO);
+        List<RoleDTO> roleList = userDTO.getRoles();
+        Long departmentId = userDTO.getDepartmentId();
+        Long employeeId = userDTO.getEmployeeId();
+        //设置查看用户ID集合
+        Set<Integer> dataScope = new HashSet<>();
+        Set<Long> userIds = new HashSet<>();
+        userIds.add(userDTO.getUserId());
+        Set<Long> userIdSet = null;
+        roleList.forEach(roleDTO -> dataScope.add(roleDTO.getDataScope()));
+        if (!dataScope.contains(RoleDataScope.ALL.getCode())) {
+            if (dataScope.contains(RoleDataScope.ALL_SUB_DEPARTMENT.getCode())) {
+                userIdSet = userMapper.selectUserIdsByDepartmentId(departmentId, employeeId, RoleDataScope.ALL_SUB_DEPARTMENT.getCode());
+            } else if (dataScope.contains(RoleDataScope.DEPARTMENT.getCode())) {
+                userIdSet = userMapper.selectUserIdsByDepartmentId(departmentId, employeeId, RoleDataScope.DEPARTMENT.getCode());
+            } else if (dataScope.contains(RoleDataScope.SELF_AND_SUBORDINATE.getCode())) {
+                userIdSet = userMapper.selectUserIdsByDepartmentId(departmentId, employeeId, RoleDataScope.SELF_AND_SUBORDINATE.getCode());
+            }
+            if (StringUtils.isNotEmpty(userIdSet)) {
+                userIds.addAll(userIdSet);
+            }
+        }
+        userDTO.setUserIds(userIds);
         //权限集合
         Set<String> permissions = roleMenuService.getMenuPermission(userDTO);
         LoginUserVO sysUserVo = new LoginUserVO();
@@ -305,6 +332,25 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
+     * 初始化用户缓存
+     *
+     * @param userId 用户表主键
+     * @return 用户表
+     */
+    @Override
+    public UserProfileVO initUserCache(Long userId) {
+        UserDTO userDTO = userMapper.selectUserByUserId(userId);
+        UserProfileVO userProfileVO = null;
+        if (StringUtils.isNotNull(userDTO)) {
+            String key = CacheConstants.USER_KEY + userId;
+            userProfileVO = new UserProfileVO();
+            BeanUtils.copyProperties(userDTO, userProfileVO);
+            redisService.setCacheObject(key, userProfileVO);
+        }
+        return userProfileVO;
+    }
+
+    /**
      * 根据用户ID查询用户角色列表
      *
      * @param userId 用户表主键
@@ -323,6 +369,7 @@ public class UserServiceImpl implements IUserService {
      * @return 用户表
      */
     @Override
+    @DataScope(userAlias = "u")
     public List<UserDTO> selectUserList(UserDTO userDTO) {
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
@@ -333,6 +380,24 @@ public class UserServiceImpl implements IUserService {
         }
         user.setParams(params);
         return userMapper.selectUserList(user);
+    }
+
+    /**
+     * 处理返回
+     *
+     * @param result 用户表
+     * @return 用户表集合
+     */
+    @Override
+    public void handleResult(List<UserDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(UserDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -371,12 +436,14 @@ public class UserServiceImpl implements IUserService {
         }
         //新增用户
         int row = userMapper.insertUser(user);
+        Long userId = user.getUserId();
         //初始化用户配置
-        userConfigService.initUserConfig(user.getUserId());
-        userDTO.setUserId(user.getUserId());
+        userConfigService.initUserConfig(userId);
+        this.initUserCache(userId);
+        userDTO.setUserId(userId);
         //新增用户角色
         insertUserRole(userDTO);
-        userDTO.setUserId(user.getUserId());
+        userDTO.setUserId(userId);
         return userDTO;
     }
 
@@ -394,9 +461,6 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isNull(userByUserId)) {
             throw new ServiceException("修改失败，当前用户不存在");
         }
-        if (userByUserId.isAdmin()) {
-            throw new ServiceException("系统管理员帐号不可操作。");
-        }
         this.checkUserUnique(userDTO);
         //数据权限 todo
         //查找当前用户角色
@@ -410,9 +474,15 @@ public class UserServiceImpl implements IUserService {
         }
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
+        //头像修改放到用户自己编辑
+        user.setAvatar(null);
         user.setUpdateTime(DateUtils.getNowDate());
         user.setUpdateBy(SecurityUtils.getUserId());
-        return userMapper.updateUser(user);
+        int row = userMapper.updateUser(user);
+        if (row > 0) {
+            this.initUserCache(userId);
+        }
+        return row;
     }
 
     /**
@@ -432,7 +502,7 @@ public class UserServiceImpl implements IUserService {
             }
         }
         if (userIds.contains(userId)) {
-            throw new ServiceException("当前用户【" + userAccount + "】不能删除");
+            throw new ServiceException("不能删除当前用户");
         }
         List<UserDTO> userDTOS = userMapper.selectUserListByUserIds(userIds);
         if (StringUtils.isEmpty(userDTOS)) {
@@ -508,10 +578,7 @@ public class UserServiceImpl implements IUserService {
         Long operateUserId = SecurityUtils.getUserId();
         UserDTO userByUserId = userMapper.selectUserByUserId(userId);
         if (StringUtils.isNull(userByUserId)) {
-            throw new ServiceException("重置密码失败，当前用户不存在");
-        }
-        if (userByUserId.isAdmin()) {
-            throw new ServiceException("重置密码失败，系统管理员帐号不可操作。");
+            throw new ServiceException("当前用户不存在");
         }
         User user = new User();
         user.setUserId(userId);
@@ -519,6 +586,43 @@ public class UserServiceImpl implements IUserService {
         user.setUpdateTime(nowDate);
         user.setUpdateBy(operateUserId);
         return userMapper.updateUser(user);
+    }
+
+    /**
+     * 编辑用户状态
+     *
+     * @param userStatusDTO
+     * @return 结果
+     */
+    @Override
+    public int editUserStatus(UserStatusDTO userStatusDTO) {
+        Set<Long> userIds = userStatusDTO.getUserIds();
+        Integer status = userStatusDTO.getStatus();
+        if (!Arrays.asList(BusinessConstants.NORMAL, BusinessConstants.DISABLE).contains(status)) {
+            throw new ServiceException("状态错误");
+        }
+        boolean disable = BusinessConstants.DISABLE.equals(status);
+        Long userId = SecurityUtils.getUserId();
+        String userAccount = SecurityUtils.getUserAccount();
+        if (disable && userIds.contains(userId)) {
+            throw new ServiceException("当前用户【" + userAccount + "】不能停用");
+        }
+        List<UserDTO> userDTOS = userMapper.selectUserListByUserIds(userIds);
+        if (StringUtils.isEmpty(userDTOS)) {
+            throw new ServiceException("用户状态修改失败，用户不存在");
+        }
+        if (disable) {
+            userDTOS.forEach(userDTO -> {
+                if (userDTO.isAdmin()) {
+                    throw new ServiceException("系统管理员帐号不可停用，请重新勾选。");
+                }
+            });
+        }
+        if (userIds.size() != userDTOS.size()) {
+            userIds = userDTOS.stream().map(UserDTO::getUserId).collect(Collectors.toSet());
+        }
+        Date nowDate = DateUtils.getNowDate();
+        return userMapper.updateUserStatusByUserIds(userIds, status, userId, nowDate);
     }
 
     /**
@@ -553,7 +657,7 @@ public class UserServiceImpl implements IUserService {
             throw new ServiceException("原密码错误，请重新输入");
         }
         if (SecurityUtils.matchesPassword(newPassword, password)) {
-            throw new ServiceException("新密码与原密码相同，请重新输入");
+            throw new ServiceException("新密码与原密码一致，请重新输入");
         }
         newPassword = SecurityUtils.encryptPassword(newPassword);
         User user = new User();
@@ -682,34 +786,28 @@ public class UserServiceImpl implements IUserService {
         List<UserDTO> userDTOS = userMapper.checkUserUnique(userDTO);
         Long userId = userDTO.getUserId();
         if (StringUtils.isNotEmpty(userDTOS)) {
-            boolean addFlag = true;
             if (StringUtils.isNotNull(userId)) {
                 userDTOS = userDTOS.stream().filter(user -> !userId.equals(user.getUserId())).collect(Collectors.toList());
-                addFlag = false;
             }
             if (StringUtils.isNotEmpty(userDTOS)) {
-                StringBuilder resultMessage = new StringBuilder();
-                resultMessage.append(addFlag ? "新增用户" : "修改用户");
-                resultMessage.append("失败，已存在:");
                 userDTOS.forEach(user -> {
                     Long employeeId = user.getEmployeeId();
                     String userAccount = user.getUserAccount();
                     String mobilePhone = user.getMobilePhone();
                     String email = user.getEmail();
                     if (StringUtils.isNotNull(employeeId) && employeeId.equals(userDTO.getEmployeeId())) {
-                        resultMessage.append("｛员工帐号｝");
+                        throw new ServiceException("账号已存在");
                     }
                     if (StringUtils.isNotEmpty(userAccount) && userAccount.equals(userDTO.getUserAccount())) {
-                        resultMessage.append("｛帐号｝");
+                        throw new ServiceException("账号已存在");
                     }
                     if (StringUtils.isNotEmpty(mobilePhone) && mobilePhone.equals(userDTO.getMobilePhone())) {
-                        resultMessage.append("｛手机号码｝");
+                        throw new ServiceException("手机号码已存在");
                     }
                     if (StringUtils.isNotEmpty(email) && email.equals(userDTO.getEmail())) {
-                        resultMessage.append("｛邮箱｝");
+                        throw new ServiceException("邮箱已存在");
                     }
                 });
-                throw new ServiceException(resultMessage.toString());
             }
         }
     }

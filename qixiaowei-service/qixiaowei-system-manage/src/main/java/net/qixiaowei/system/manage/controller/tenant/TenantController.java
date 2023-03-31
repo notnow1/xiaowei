@@ -54,6 +54,7 @@ public class TenantController extends BaseController {
     public TableDataInfo pageList(TenantDTO tenantDTO) {
         startPage();
         List<TenantDTO> list = tenantService.selectTenantList(tenantDTO);
+        tenantService.handleResult(list);
         return getDataTable(list);
     }
 

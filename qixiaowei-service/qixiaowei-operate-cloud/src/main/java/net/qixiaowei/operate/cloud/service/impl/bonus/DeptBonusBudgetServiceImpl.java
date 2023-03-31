@@ -7,14 +7,13 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptBonusBudget;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptBonusBudgetDetails;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptBonusBudgetItems;
-import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDetailsDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetItemsDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.*;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.*;
@@ -37,6 +36,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemServ
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -218,6 +218,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @param deptBonusBudgetDTO 部门奖金包预算表
      * @return 部门奖金包预算表
      */
+    @DataScope(businessAlias = "dbb")
     @Override
     public List<DeptBonusBudgetDTO> selectDeptBonusBudgetList(DeptBonusBudgetDTO deptBonusBudgetDTO) {
         List<String> createBys = new ArrayList<>();
@@ -225,11 +226,12 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         BeanUtils.copyProperties(deptBonusBudgetDTO, deptBonusBudget);
         if (StringUtils.isNotNull(deptBonusBudgetDTO.getCreateByName())) {
             UserDTO userDTO = new UserDTO();
+            userDTO.setEmployeeName(deptBonusBudgetDTO.getCreateByName());
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
-            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(employeeIds)) {
-                employeeIds.forEach(e -> {
+            List<Long> userIds = userListData.stream().filter(f -> f.getUserId() != null).map(UserDTO::getUserId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(userIds)) {
+                userIds.forEach(e -> {
                     createBys.add(String.valueOf(e));
                 });
             } else {
@@ -238,21 +240,6 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         }
         deptBonusBudget.setCreateBys(createBys);
         List<DeptBonusBudgetDTO> deptBonusBudgetDTOS = deptBonusBudgetMapper.selectDeptBonusBudgetList(deptBonusBudget);
-        if (StringUtils.isNotEmpty(deptBonusBudgetDTOS)) {
-            Set<Long> collect = deptBonusBudgetDTOS.stream().map(DeptBonusBudgetDTO::getCreateBy).collect(Collectors.toSet());
-            //远程调用人员查询姓名
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(collect, SecurityConstants.INNER);
-            List<UserDTO> data = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(data)) {
-                for (DeptBonusBudgetDTO bonusBudgetDTO : deptBonusBudgetDTOS) {
-                    for (UserDTO datum : data) {
-                        if (bonusBudgetDTO.getCreateBy().equals(datum.getUserId())) {
-                            bonusBudgetDTO.setCreateByName(datum.getEmployeeName());
-                        }
-                    }
-                }
-            }
-        }
         //模糊查询名称
         String createByName = deptBonusBudgetDTO.getCreateByName();
         if (StringUtils.isNotNull(createByName)) {
@@ -272,7 +259,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             }
             return deptBonusBudgetDTOList;
         }
-
+        this.handleResult(deptBonusBudgetDTOS);
         return deptBonusBudgetDTOS;
     }
 
@@ -283,6 +270,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public DeptBonusBudgetDTO insertDeptBonusBudget(DeptBonusBudgetDTO deptBonusBudgetDTO) {
 
         //部门奖金包预算表
@@ -429,6 +417,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateDeptBonusBudget(DeptBonusBudgetDTO deptBonusBudgetDTO) {
         int i = 0;
         //部门奖金包预算表
@@ -519,6 +508,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDeptBonusBudgetByDeptBonusBudgetIds(List<Long> deptBonusBudgetIds) {
         int i = 0;
         List<DeptBonusBudgetDTO> deptBonusBudgetDTOS = deptBonusBudgetMapper.selectDeptBonusBudgetByDeptBonusBudgetIds(deptBonusBudgetIds);
@@ -977,6 +967,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDeptBonusBudgetByDeptBonusBudgetId(DeptBonusBudgetDTO deptBonusBudgetDTO) {
         int i = 0;
         DeptBonusBudget deptBonusBudget = new DeptBonusBudget();
@@ -1099,6 +1090,18 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             deptBonusBudgetList.add(deptBonusBudget);
         }
         return deptBonusBudgetMapper.updateDeptBonusBudgets(deptBonusBudgetList);
+    }
+
+    @Override
+    public void handleResult(List<DeptBonusBudgetDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(DeptBonusBudgetDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 }
 

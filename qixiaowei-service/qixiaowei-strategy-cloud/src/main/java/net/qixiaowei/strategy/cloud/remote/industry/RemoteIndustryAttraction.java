@@ -23,15 +23,5 @@ public class RemoteIndustryAttraction implements RemoteIndustryAttractionService
     private IIndustryAttractionService iIndustryAttractionService;
 
 
-    /**
-     * 初始化行业吸引力配置
-     * @param source
-     * @return
-     */
-    @Override
-    @InnerAuth
-    @PostMapping("/initIndustryAttraction")
-    public R<Boolean> initIndustryAttraction(String source) {
-        return R.ok(iIndustryAttractionService.initIndustryAttraction());
-    }
+
 }

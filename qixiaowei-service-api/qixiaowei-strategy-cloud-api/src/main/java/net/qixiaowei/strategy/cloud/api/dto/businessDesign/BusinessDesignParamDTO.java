@@ -56,6 +56,10 @@ public class BusinessDesignParamDTO {
      */
     private Integer paramDimension;
     /**
+     * 参数维度:1产品;2客户;3区域
+     */
+    private String paramDimensionName;
+    /**
      * 参数关联ID
      */
     private Long paramRelationId;

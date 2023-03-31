@@ -56,6 +56,10 @@ public class PerformanceAppraisal extends TenantEntity {
      */
     private Integer cycleNumber;
     /**
+     * 评议周期类型:1月度;2季度;3半年度;4年度
+     */
+    private Integer evaluationType;
+    /**
      * 考核开始日期
      */
     private LocalDate appraisalStartDate;

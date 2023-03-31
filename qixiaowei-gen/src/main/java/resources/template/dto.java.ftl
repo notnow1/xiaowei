@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Map;
-
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 /**
 * ${table.comment!}
 * @author ${author}
@@ -16,7 +16,7 @@ import java.util.Map;
 */
 @Data
 @Accessors(chain = true)
-public class ${entity}DTO {
+public class ${entity}DTO extends BaseDTO{
 
     //查询检验
     public interface Query${entity}DTO extends Default{
@@ -37,18 +37,18 @@ public class ${entity}DTO {
     }
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list table.fields as field>
+    <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime"&&"${field.propertyName}"!="remark">
     /**
     * ${field.comment}
     */
-    <#if "${field.propertyType}"=="LocalDateTime">
+    </#if>
+    <#if "${field.propertyType}"=="LocalDateTime"&&("${field.propertyName}"!="createTime" && "${field.propertyName}"!="updateTime")>
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     </#if>
-    private <#if "${field.propertyType}"=="LocalDateTime"> Date <#else> ${field.propertyType}</#if> ${field.propertyName};
+    <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime"&&"${field.propertyName}"!="remark">
+    private <#if "${field.propertyType}"=="LocalDateTime" || "${field.propertyType}"=="LocalDate" > Date <#else> ${field.propertyType}</#if>  ${field.propertyName};
+    </#if>
 </#list>
 
-    /**
-    * 请求参数
-    */
-    private Map<String, Object> params;
 }
 

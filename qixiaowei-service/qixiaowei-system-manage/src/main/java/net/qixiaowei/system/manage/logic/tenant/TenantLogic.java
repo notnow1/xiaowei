@@ -9,7 +9,6 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
-import net.qixiaowei.integration.common.enums.system.DictionaryTypeCode;
 import net.qixiaowei.integration.common.enums.system.RoleCode;
 import net.qixiaowei.integration.common.enums.system.RoleDataScope;
 import net.qixiaowei.integration.common.enums.system.RoleType;
@@ -22,12 +21,9 @@ import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.integration.tenant.utils.TenantUtils;
 import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
-import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
-import net.qixiaowei.strategy.cloud.api.remote.industry.RemoteIndustryAttractionService;
+import net.qixiaowei.operate.cloud.api.remote.RemoteOperateCloudInitDataService;
+import net.qixiaowei.strategy.cloud.api.remote.RemoteStrategyCloudInitDataService;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
-import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
-import net.qixiaowei.system.manage.api.domain.basic.DictionaryType;
-import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.domain.system.Role;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
@@ -37,14 +33,13 @@ import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.mapper.basic.ConfigMapper;
-import net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper;
-import net.qixiaowei.system.manage.mapper.basic.DictionaryTypeMapper;
-import net.qixiaowei.system.manage.mapper.basic.IndicatorMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
+import net.qixiaowei.system.manage.service.basic.IDictionaryTypeService;
+import net.qixiaowei.system.manage.service.basic.IIndicatorService;
 import net.qixiaowei.system.manage.service.user.IUserConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -60,49 +55,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @Component
 @Slf4j
 public class TenantLogic {
-
-
-    private static final List<DictionaryData> INIT_DICTIONARY_DATA = new ArrayList<>(6);
-
-    private static final Map<Integer, Indicator> INIT_INDICATOR = new HashMap<>();
-
-    static {
-        //初始化枚举值
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("通用件").dictionaryValue("1").defaultFlag(1).sort(1).status(BusinessConstants.NORMAL).build());
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("标准件").dictionaryValue("2").defaultFlag(0).sort(2).status(BusinessConstants.NORMAL).build());
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("自制件").dictionaryValue("3").defaultFlag(0).sort(3).status(BusinessConstants.NORMAL).build());
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("外购件").dictionaryValue("4").defaultFlag(0).sort(4).status(BusinessConstants.NORMAL).build());
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("外协件").dictionaryValue("5").defaultFlag(0).sort(5).status(BusinessConstants.NORMAL).build());
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("原材料").dictionaryValue("6").defaultFlag(0).sort(6).status(BusinessConstants.NORMAL).build());
-        //初始化指标
-        INIT_INDICATOR.put(1, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW001").indicatorName("订单（不含税）").sort(1).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(2, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW002").indicatorName("销售收入").sort(2).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(3, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW003").indicatorName("销售成本").sort(3).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(4, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW004").indicatorName("材料成本").sort(1).level(2).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(5, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW005").indicatorName("材料成本率").sort(2).level(2).indicatorValueType(2).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(6, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW006").indicatorName("直接制造人工").sort(3).level(2).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(7, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW007").indicatorName("直接制造人工率").sort(4).level(2).indicatorValueType(2).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(8, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW008").indicatorName("间接制造人工").sort(5).level(2).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(9, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW009").indicatorName("间接制造人工率").sort(6).level(2).indicatorValueType(2).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(10, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW010").indicatorName("销售毛利").sort(4).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(11, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW011").indicatorName("销售毛利率").sort(5).level(1).indicatorValueType(2).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(12, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW012").indicatorName("研发费用").sort(6).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(13, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW013").indicatorName("销售费用").sort(7).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(14, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW014").indicatorName("管理费用").sort(8).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(15, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW015").indicatorName("其他业务收支").sort(9).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(16, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW016").indicatorName("营业利润（EBIT）").sort(10).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(17, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW017").indicatorName("财务费用").sort(11).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(18, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW018").indicatorName("税前利润").sort(12).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(19, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW019").indicatorName("企业所得税").sort(13).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(20, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW020").indicatorName("净利润").sort(14).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(21, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW021").indicatorName("净利润率").sort(15).level(1).indicatorValueType(2).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(22, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW022").indicatorName("回款金额（含税）").sort(16).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(23, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW023").indicatorName("经营性现金流").sort(17).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(24, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW024").indicatorName("总资产").sort(18).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(25, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW025").indicatorName("资产负债率").sort(19).level(1).indicatorValueType(2).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(26, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW026").indicatorName("现金及现金等价物").sort(20).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-        INIT_INDICATOR.put(27, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW027").indicatorName("运营资产（存货+应收）").sort(21).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
-    }
 
     @Autowired
     private UserMapper userMapper;
@@ -120,18 +72,16 @@ public class TenantLogic {
     private ConfigMapper configMapper;
 
     @Autowired
-    private DictionaryTypeMapper dictionaryTypeMapper;
+    private IDictionaryTypeService dictionaryTypeService;
 
     @Autowired
-    private DictionaryDataMapper dictionaryDataMapper;
+    private IIndicatorService iIndicatorService;
 
     @Autowired
-    private IndicatorMapper indicatorMapper;
+    private RemoteOperateCloudInitDataService remoteOperateCloudInitDataService;
 
     @Autowired
-    private RemoteSalaryItemService remoteSalaryItemService;
-    @Autowired
-    private RemoteIndustryAttractionService remoteIndustryAttractionService;
+    private RemoteStrategyCloudInitDataService remoteStrategyCloudInitDataService;
 
     @Autowired
     private RemoteBacklogService remoteBacklogService;
@@ -160,18 +110,18 @@ public class TenantLogic {
             //1、初始化用户、用户配置---user
             //2、初始化用户角色+用户关联角色---role、user_role
             //3、角色赋权---role_menu
-            boolean initUserInfo = this.initUserInfo(tenant, initMenuIds);
+            Long userId = this.initUserInfo(tenant, initMenuIds);
             //4、配置，如启用行业配置---config
-            boolean initConfig = this.initConfig();
-            //5、初始化产品类别---dictionary_type、dictionary_data
-            boolean initDictionary = this.initDictionary();
+            boolean initConfig = this.initConfig(userId);
+            //5、初始化枚举值---dictionary_type、dictionary_data
+            boolean initDictionary = this.initDictionary(userId);
             //6、初始化预置指标---indicator
-            boolean initIndicator = this.initIndicator();
-            //7、初始化工资条---salary_item
-            boolean initSalaryItem = this.initSalaryItem();
-            //7、初始化工资条---salary_item
-            boolean initIndustryAttraction = this.initIndustryAttraction();
-            initSuccess.set(initUserInfo && initConfig && initDictionary && initIndicator && initSalaryItem && initIndustryAttraction);
+            boolean initIndicator = this.initIndicator(userId);
+            //7、初始化经营云
+            boolean initSalaryItem = this.initOperateCloud(userId);
+            //8、初始化战略云
+            boolean initStrategyCloud = this.initStrategyCloud(userId);
+            initSuccess.set(initConfig && initDictionary && initIndicator && initSalaryItem && initStrategyCloud);
             //continue...
         });
         return initSuccess.get();
@@ -202,6 +152,7 @@ public class TenantLogic {
     public void updateTenantAuth(Set<Long> initMenuIds) {
         //更新租户用户授权
         //找到租户管理员目前的权限。
+        Long userId = 0L;
         Long roleIdOfAdmin = roleMapper.selectRoleIdOfAdmin();
         if (StringUtils.isNull(roleIdOfAdmin)) {
             return;
@@ -209,7 +160,7 @@ public class TenantLogic {
         Set<Long> nowMenuIds = roleMenuMapper.selectMenuIdsByRoleId(roleIdOfAdmin);
         //新增权限。只给管理员角色。
         if (StringUtils.isEmpty(nowMenuIds)) {
-            this.initRoleMenu(initMenuIds, roleIdOfAdmin);
+            this.initRoleMenu(initMenuIds, roleIdOfAdmin, userId);
             return;
         }
         Set<Long> addMenuIds = new HashSet<>();
@@ -223,7 +174,7 @@ public class TenantLogic {
             }
         }
         //新增权限。只给管理员角色。
-        this.initRoleMenu(addMenuIds, roleIdOfAdmin);
+        this.initRoleMenu(addMenuIds, roleIdOfAdmin, userId);
         //取消权限。改租户所有角色。
         this.cancelRoleMenu(nowMenuIds);
     }
@@ -236,8 +187,7 @@ public class TenantLogic {
      * @param: [tenant, initMenuIds]
      * @return: boolean
      **/
-    public boolean initUserInfo(Tenant tenant, Set<Long> initMenuIds) {
-        Long userId = SecurityUtils.getUserId();
+    public Long initUserInfo(Tenant tenant, Set<Long> initMenuIds) {
         Date nowDate = DateUtils.getNowDate();
         //新增用户
         User user = new User();
@@ -248,11 +198,14 @@ public class TenantLogic {
         user.setStatus(BusinessConstants.NORMAL);
         user.setUserName(RoleCode.TENANT_ADMIN.getInfo());
         user.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        user.setCreateBy(userId);
-        user.setUpdateBy(userId);
+        user.setCreateBy(0L);
+        user.setUpdateBy(0L);
         user.setCreateTime(nowDate);
         user.setUpdateTime(nowDate);
         boolean userSuccess = userMapper.insertUser(user) > 0;
+        if (!userSuccess) {
+            throw new ServiceException("用户初始化异常，请联系管理员");
+        }
         Long userIdOfInit = user.getUserId();
         //新增用户配置
         userConfigService.initUserConfig(userIdOfInit);
@@ -264,17 +217,20 @@ public class TenantLogic {
         role.setRoleName(RoleCode.TENANT_ADMIN.getInfo());
         role.setStatus(BusinessConstants.NORMAL);
         role.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        role.setCreateBy(userId);
-        role.setUpdateBy(userId);
+        role.setCreateBy(userIdOfInit);
+        role.setUpdateBy(userIdOfInit);
         role.setCreateTime(nowDate);
         role.setUpdateTime(nowDate);
         boolean roleSuccess = roleMapper.insertRole(role) > 0;
         //角色赋权
         Long roleId = role.getRoleId();
-        boolean initRoleMenuSuccess = this.initRoleMenu(initMenuIds, roleId);
+        boolean initRoleMenuSuccess = this.initRoleMenu(initMenuIds, roleId, userIdOfInit);
         //新增用户角色关联
-        boolean userRoleSuccess = this.initUserRole(userId, nowDate, userIdOfInit, roleId);
-        return userSuccess && roleSuccess && initRoleMenuSuccess && userRoleSuccess;
+        boolean userRoleSuccess = this.initUserRole(userIdOfInit, nowDate, userIdOfInit, roleId);
+        if (!roleSuccess || !initRoleMenuSuccess || !userRoleSuccess) {
+            throw new ServiceException("用户角色初始化异常，请联系管理员");
+        }
+        return userIdOfInit;
     }
 
     /**
@@ -300,15 +256,14 @@ public class TenantLogic {
      * @description: 初始化角色菜单
      * @Author: hzk
      * @date: 2023/1/31 17:45
-     * @param: [initMenuIds, roleId]
+     * @param: [initMenuIds, roleId,userId]
      * @return: boolean
      **/
-    private boolean initRoleMenu(Set<Long> initMenuIds, Long roleId) {
+    private boolean initRoleMenu(Set<Long> initMenuIds, Long roleId, Long userId) {
         if (StringUtils.isEmpty(initMenuIds)) {
             return true;
         }
         boolean initRoleMenu = true;
-        Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         List<RoleMenu> list = new ArrayList<>();
         for (Long menuId : initMenuIds) {
@@ -348,11 +303,10 @@ public class TenantLogic {
      * @description: 初始化配置
      * @Author: hzk
      * @date: 2022/12/13 10:47
-     * @param: []
+     * @param: [userId]
      * @return: boolean
      **/
-    public boolean initConfig() {
-        Long userId = SecurityUtils.getUserId();
+    public boolean initConfig(Long userId) {
         Date nowDate = DateUtils.getNowDate();
         //初始化基础的配置
         Config basicConfig = new Config();
@@ -392,39 +346,8 @@ public class TenantLogic {
      * @param: []
      * @return: boolean
      **/
-    public boolean initDictionary() {
-        Long userId = SecurityUtils.getUserId();
-        Date nowDate = DateUtils.getNowDate();
-        //初始化字典类型
-        DictionaryType dictionaryType = new DictionaryType();
-        dictionaryType.setDictionaryType(DictionaryTypeCode.PRODUCT_CATEGORY.getCode());
-        dictionaryType.setDictionaryName(DictionaryTypeCode.PRODUCT_CATEGORY.getInfo());
-        dictionaryType.setMenuZerothName("设置管理");
-        dictionaryType.setMenuFirstName("经营云配置");
-        dictionaryType.setMenuSecondName("产品配置");
-        dictionaryType.setRemark("");
-        dictionaryType.setStatus(BusinessConstants.NORMAL);
-        dictionaryType.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        dictionaryType.setCreateBy(userId);
-        dictionaryType.setUpdateBy(userId);
-        dictionaryType.setCreateTime(nowDate);
-        dictionaryType.setUpdateTime(nowDate);
-        boolean dictionaryTypeSuccess = dictionaryTypeMapper.insertDictionaryType(dictionaryType) > 0;
-        Long dictionaryTypeId = dictionaryType.getDictionaryTypeId();
-        //初始化字典数据
-        List<DictionaryData> dictionaryData = new ArrayList<>(6);
-        for (DictionaryData initDictionaryData : INIT_DICTIONARY_DATA) {
-            initDictionaryData.setDictionaryTypeId(dictionaryTypeId);
-            initDictionaryData.setRemark("");
-            initDictionaryData.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            initDictionaryData.setCreateBy(userId);
-            initDictionaryData.setUpdateBy(userId);
-            initDictionaryData.setCreateTime(nowDate);
-            initDictionaryData.setUpdateTime(nowDate);
-            dictionaryData.add(initDictionaryData);
-        }
-        boolean dictionaryDataSuccess = dictionaryDataMapper.batchDictionaryData(dictionaryData) > 0;
-        return dictionaryTypeSuccess && dictionaryDataSuccess;
+    public boolean initDictionary(Long userId) {
+        return dictionaryTypeService.initData(userId);
     }
 
     /**
@@ -434,75 +357,52 @@ public class TenantLogic {
      * @param: []
      * @return: boolean
      **/
-    public boolean initIndicator() {
-        Long userId = SecurityUtils.getUserId();
-        Date nowDate = DateUtils.getNowDate();
-        //先初始化销售成本
-        Indicator indicator = INIT_INDICATOR.get(3);
-        indicator.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        indicator.setCreateBy(userId);
-        indicator.setUpdateBy(userId);
-        indicator.setCreateTime(nowDate);
-        indicator.setUpdateTime(nowDate);
-        boolean indicatorSuccess = indicatorMapper.insertIndicator(indicator) > 0;
-        Long indicatorId = indicator.getIndicatorId();
-        List<Indicator> indicators = new ArrayList<>(26);
-        for (Map.Entry<Integer, Indicator> entry : INIT_INDICATOR.entrySet()) {
-            Integer key = entry.getKey();
-            Indicator value = entry.getValue();
-            if (key == 3) {
-                continue;
-            }
-            //销售成本下的二级指标处理
-            if (key > 3 && key < 10) {
-                value.setParentIndicatorId(indicatorId);
-                value.setAncestors(indicatorId.toString());
-            }
-            value.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            value.setCreateBy(userId);
-            value.setUpdateBy(userId);
-            value.setCreateTime(nowDate);
-            value.setUpdateTime(nowDate);
-            indicators.add(value);
-        }
-        //初始化指标
-        boolean indicatorsSuccess = indicatorMapper.batchIndicator(indicators) > 0;
-        return indicatorSuccess && indicatorsSuccess;
+    public boolean initIndicator(Long userId) {
+        return iIndicatorService.initData(userId);
     }
 
     /**
-     * @description: 初始化工资条
+     * @description: 初始化经营云
      * @Author: hzk
      * @date: 2022/12/13 10:47
-     * @param: []
+     * @param: [userId]
      * @return: boolean
      **/
-    public boolean initSalaryItem() {
-        boolean initSalaryItem = true;
-        R<Boolean> booleanR = remoteSalaryItemService.initSalaryItem(SecurityConstants.INNER);
+    public boolean initOperateCloud(Long userId) {
+        boolean initOperateCloud = true;
+        R<Boolean> booleanR = remoteOperateCloudInitDataService.initData(userId, SecurityConstants.INNER);
         if (R.SUCCESS != booleanR.getCode()) {
-            initSalaryItem = false;
+            initOperateCloud = false;
         } else {
             Boolean data = booleanR.getData();
             if (!data) {
-                initSalaryItem = false;
+                initOperateCloud = false;
             }
         }
-        return initSalaryItem;
+        return initOperateCloud;
     }
-    public boolean initIndustryAttraction() {
-        boolean initSalaryItem = true;
-//        R<Boolean> booleanR = remoteIndustryAttractionService.initIndustryAttraction(SecurityConstants.INNER);
-//        if (R.SUCCESS != booleanR.getCode()) {
-//            initSalaryItem = false;
-//        } else {
-//            Boolean data = booleanR.getData();
-//            if (!data) {
-//                initSalaryItem = false;
-//            }
-//        }
-        return initSalaryItem;
+
+    /**
+     * @description: 初始化战略云
+     * @Author: hzk
+     * @date: 2023/3/24 13:37
+     * @param: [userId]
+     * @return: boolean
+     **/
+    public boolean initStrategyCloud(Long userId) {
+        boolean initStrategyCloud = true;
+        R<Boolean> booleanR = remoteStrategyCloudInitDataService.initData(userId, SecurityConstants.INNER);
+        if (R.SUCCESS != booleanR.getCode()) {
+            initStrategyCloud = false;
+        } else {
+            Boolean data = booleanR.getData();
+            if (!data) {
+                initStrategyCloud = false;
+            }
+        }
+        return initStrategyCloud;
     }
+
     /**
      * @description: 发送待办给客服
      * @Author: hzk

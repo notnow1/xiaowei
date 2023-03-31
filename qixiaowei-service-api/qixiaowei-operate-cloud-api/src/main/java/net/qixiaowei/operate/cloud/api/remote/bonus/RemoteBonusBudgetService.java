@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.api.factory.bonus.RemoteBonusBudgetFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -21,5 +22,5 @@ public interface RemoteBonusBudgetService {
      * 根据人员id查询个人年终奖 奖金发放对象ID(员工id)
      */
     @PostMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryIndicatorIdBonusBudget")
-    R<BonusBudgetDTO> selectBonusBudgetByIndicatorId(@RequestBody BonusBudgetDTO bonusBudgetDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<List<BonusBudgetParametersDTO>> selectBonusBudgetByIndicatorId(@RequestBody BonusBudgetDTO bonusBudgetDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

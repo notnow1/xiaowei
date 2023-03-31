@@ -5,12 +5,28 @@
     <select id="selectGapAnalysisByGapAnalysisId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO">
         SELECT
-        gap_analysis_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,operate_history_year,delete_flag,create_by,create_time,update_by,update_time
-        FROM gap_analysis
-        WHERE gap_analysis_id=#{gapAnalysisId}
-        and delete_flag=0
+        ga.gap_analysis_id,
+        ga.plan_year,
+        ga.plan_business_unit_id,
+        ga.business_unit_decompose,
+        ga.area_id,
+        ga.department_id,
+        ga.product_id,
+        ga.industry_id,
+        ga.operate_history_year,
+        ga.delete_flag,
+        ga.create_by,
+        ga.create_time,
+        ga.update_by,
+        ga.update_time,
+        pbu.business_unit_name
+        FROM gap_analysis ga
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = ga.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE ga.gap_analysis_id=#{gapAnalysisId}
+        and ga.delete_flag=0
     </select>
-
     <!--    批量查询差距分析表-->
     <select id="selectGapAnalysisByGapAnalysisIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO">
@@ -25,7 +41,37 @@
         </foreach>
         and delete_flag=0
     </select>
-
+    <!--根据维度ID集合查找-->
+    <select id="selectGapAnalysisByPlanBusinessUnitIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO">
+        SELECT
+        ga.gap_analysis_id,plan_year,
+        ga.plan_business_unit_id,
+        ga.business_unit_decompose,
+        ga.area_id,
+        ga.department_id,
+        ga.product_id,
+        ga.industry_id,
+        ga.operate_history_year,
+        ga.delete_flag,
+        ga.create_by,
+        ga.create_time,
+        ga.update_by,
+        ga.update_time,
+        pbu.business_unit_code,
+        pbu.business_unit_name
+        FROM gap_analysis ga
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = ga.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE ga.delete_flag=0
+        AND ga.plan_business_unit_id IN
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--    查询差距分析表列表-->
     <select id="selectGapAnalysisList" resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO">
         SELECT
@@ -79,9 +125,6 @@
         <if test="gapAnalysis.deleteFlag != null">
             and ga.delete_flag=#{gapAnalysis.deleteFlag}
         </if>
-        <if test="gapAnalysis.createBy != null">
-            and ga.create_by=#{gapAnalysis.createBy}
-        </if>
         <if test="gapAnalysis.createTime != null">
             and ga.create_time=#{gapAnalysis.createTime}
         </if>
@@ -91,7 +134,20 @@
         <if test="gapAnalysis.updateTime != null">
             and ga.update_time=#{gapAnalysis.updateTime}
         </if>
-        <!--    行业编码过滤-->
+        <!-- 创建人等于过滤  -->
+        <if test="gapAnalysis.params.createByList != null and gapAnalysis.params.createByList.size() > 0">
+            AND ga.create_by IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.createByList"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!--规划业务单元名称-->
+        <if test="gapAnalysis.params.businessUnitName != null and gapAnalysis.params.businessUnitName != ''">
+            and pbu.business_unit_name like concat('%', #{gapAnalysis.params.businessUnitName}, '%')
+        </if>
+        <!--年份过滤-->
         <if test="gapAnalysis.params.planYearEqual != null and gapAnalysis.params.planYearEqual.size() > 0">
             and ga.plan_year IN
             <foreach item="item"
@@ -128,12 +184,247 @@
         <if test="gapAnalysis.params.planYearEnd != null and gapAnalysis.params.planYearEnd != ''"><!-- 结束时间检索 -->
             AND ga.plan_year &lt;= #{gapAnalysis.params.planYearEnd}
         </if>
-        <!--todo-->
-        <!--规划业务单元-->
-        <!--录入人姓名-->
-        <!--录入人工号-->
-        <!--录入日期-->
-        <!--find_in_set(hobby, ‘hobby');-->
+        <!--规划业务单元名称高级搜索-->
+        <if test="gapAnalysis.params.businessUnitNameEqual != null and gapAnalysis.params.businessUnitNameEqual.size() > 0">
+            AND pbu.business_unit_name IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.businessUnitNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.businessUnitNameNotEqual != null and gapAnalysis.params.businessUnitNameNotEqual.size() > 0">
+            AND (pbu.business_unit_name NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.businessUnitNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pbu.business_unit_name IS NULL
+            )
+        </if>
+        <if test="gapAnalysis.params.businessUnitNameLike != null and gapAnalysis.params.businessUnitNameLike.size() > 0">
+            AND (
+            <foreach item="item"
+                     collection="gapAnalysis.params.businessUnitNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                pbu.business_unit_name LIKE concat('%', #{item}, '%')
+            </foreach>
+            )
+        </if>
+        <if test="gapAnalysis.params.businessUnitNameNotLike != null and gapAnalysis.params.businessUnitNameNotLike.size() > 0">
+            AND (
+            <foreach item="item"
+                     collection="gapAnalysis.params.businessUnitNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+            )
+        </if>
+        <!--行业-->
+        <if test="gapAnalysis.params.industryIdEqual != null and gapAnalysis.params.industryIdEqual.size() > 0">
+            and ga.industry_id IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.industryIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.industryIdNotEqual != null and gapAnalysis.params.industryIdNotEqual.size() > 0">
+            AND (ga.industry_id NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.industryIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ga.industry_id IS NULL
+            )
+        </if>
+        <if test="gapAnalysis.params.industryIdNull != null">
+            AND (ga.industry_id IS NULL or ga.industry_id ='')
+        </if>
+        <if test="gapAnalysis.params.industryIdNotNull != null">
+            AND (ga.industry_id IS NOT NULL or ga.industry_id != '')
+        </if>
+        <!--区域-->
+        <if test="gapAnalysis.params.areaIdEqual != null and gapAnalysis.params.areaIdEqual.size() > 0">
+            and ga.area_id IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.areaIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.areaIdNotEqual != null and gapAnalysis.params.areaIdNotEqual.size() > 0">
+            AND (ga.area_id NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.areaIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ga.area_id IS NULL
+            )
+        </if>
+        <if test="gapAnalysis.params.areaIdNull != null">
+            AND (ga.area_id IS NULL or ga.area_id ='')
+        </if>
+        <if test="gapAnalysis.params.areaIdNotNull != null">
+            AND (ga.area_id IS NOT NULL or ga.area_id != '')
+        </if>
+        <!--产品-->
+        <if test="gapAnalysis.params.productIdEqual != null and gapAnalysis.params.productIdEqual.size() > 0">
+            and ga.product_id IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.productIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.productIdNotEqual != null and gapAnalysis.params.productIdNotEqual.size() > 0">
+            AND (ga.product_id NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.productIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ga.product_id IS NULL
+            )
+        </if>
+        <if test="gapAnalysis.params.productIdNull != null">
+            AND (ga.product_id IS NULL or ga.product_id ='')
+        </if>
+        <if test="gapAnalysis.params.productIdNotNull != null">
+            AND (ga.product_id IS NOT NULL or ga.product_id != '')
+        </if>
+        <!--部门-->
+        <if test="gapAnalysis.params.departmentIdEqual != null and gapAnalysis.params.departmentIdEqual.size() > 0">
+            and ga.department_id IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.departmentIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.departmentIdNotEqual != null and gapAnalysis.params.departmentIdNotEqual.size() > 0">
+            AND (ga.department_id NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.departmentIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ga.department_id IS NULL
+            )
+        </if>
+        <if test="gapAnalysis.params.departmentIdNull != null">
+            AND (ga.department_id IS NULL or ga.department_id ='')
+        </if>
+        <if test="gapAnalysis.params.departmentIdNotNull != null">
+            AND (ga.department_id IS NOT NULL or ga.department_id != '')
+        </if>
+        <!-- 创建人等于过滤  -->
+        <if test="gapAnalysis.params.createByNameEqual != null">
+            <!-- 创建人等于过滤  -->
+            <if test="gapAnalysis.params.createBys != null and gapAnalysis.params.createBys.size() > 0">
+                AND ga.create_by IN
+                <foreach item="item"
+                         collection="gapAnalysis.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人等于过滤  -->
+            <if test="gapAnalysis.params.createBys == null">
+                AND ga.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不等于过滤  -->
+        <if test=" gapAnalysis.params.createByNameNotEqual != null">
+            <!-- 创建人不等于过滤  -->
+            <if test="gapAnalysis.params.createBys != null and gapAnalysis.params.createBys.size() > 0">
+                AND (ga.create_by IN
+                <foreach item="item"
+                         collection="gapAnalysis.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不等于过滤  -->
+            <if test="gapAnalysis.params.createBys == null">
+                AND ga.create_by is null
+            </if>
+        </if>
+        <!-- 创建人包含过滤  -->
+        <if test="gapAnalysis.params.createByNameLike != null">
+            <!-- 创建人包含过滤  -->
+            <if test="gapAnalysis.params.createBys != null and gapAnalysis.params.createBys.size() > 0">
+                AND ga.create_by IN
+                <foreach item="item"
+                         collection="gapAnalysis.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人包含过滤  -->
+            <if test="gapAnalysis.params.createBys == null">
+                AND ga.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不包含过滤  -->
+        <if test=" gapAnalysis.params.createByNameNotLike != null">
+            <!-- 创建人不包含过滤  -->
+            <if test="gapAnalysis.params.createBys != null and gapAnalysis.params.createBys.size() > 0">
+                AND (ga.create_by IN
+                <foreach item="item"
+                         collection="gapAnalysis.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不包含过滤  -->
+            <if test="gapAnalysis.params.createBys == null">
+                AND ga.create_by is null
+            </if>
+        </if>
+
+        <!-- 创建时间过滤  -->
+        <if test="gapAnalysis.params.createTimeEqual != null and gapAnalysis.params.createTimeEqual.size() > 0">
+            AND date_format(ga.create_time,'%Y/%m/%d') IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.createTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.createTimeNotEqual != null and gapAnalysis.params.createTimeNotEqual.size() > 0">
+            AND date_format(ga.create_time,'%Y/%m/%d') NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.createTimeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.createTimeBefore != null and gapAnalysis.params.createTimeBefore != ''">
+            AND date_format(ga.create_time,'%Y/%m/%d') &lt; #{gapAnalysis.params.createTimeBefore}
+        </if>
+        <if test="gapAnalysis.params.createTimeNotBefore != null and gapAnalysis.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
+            AND date_format(ga.create_time,'%Y/%m/%d') &gt;= #{gapAnalysis.params.createTimeNotBefore}
+        </if>
+        <if test="gapAnalysis.params.createTimeAfter != null and gapAnalysis.params.createTimeAfter != ''"><!-- 开始时间检索 -->
+            AND date_format(ga.create_time,'%Y/%m/%d') &gt; #{gapAnalysis.params.createTimeAfter}
+        </if>
+        <if test="gapAnalysis.params.createTimeNotAfter != null and gapAnalysis.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
+            AND date_format(ga.create_time,'%Y/%m/%d') &lt;= #{gapAnalysis.params.createTimeNotAfter}
+        </if>
+        <if test="gapAnalysis.params.createTimeStart != null and gapAnalysis.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(ga.create_time,'%Y/%m/%d') &gt;= #{gapAnalysis.params.createTimeStart}
+        </if>
+        <if test="gapAnalysis.params.createTimeEnd != null and gapAnalysis.params.createTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(ga.create_time,'%Y/%m/%d') &lt;= #{gapAnalysis.params.createTimeEnd}
+        </if>
+        ${gapAnalysis.params.dataScope}
+        ORDER BY ga.create_time DESC
     </select>
     <!--新增差距分析表-->
     <insert id="insertGapAnalysis" useGeneratedKeys="true" keyProperty="gapAnalysisId">

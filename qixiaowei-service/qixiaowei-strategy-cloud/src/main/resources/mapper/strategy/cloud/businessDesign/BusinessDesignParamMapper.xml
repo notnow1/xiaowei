@@ -108,6 +108,24 @@
         <if test="businessDesignParam.updateTime != null">
             and update_time=#{businessDesignParam.updateTime}
         </if>
+        <if test="businessDesignParam.params.areaIds != null and businessDesignParam.params.areaIds.size()>0">
+            and param_dimension = 3
+            and param_relation_id IN
+            <foreach item="item"
+                     collection="businessDesignParam.params.areaIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesignParam.params.productIds != null and businessDesignParam.params.productIds.size()>0">
+            and param_dimension = 1
+            and param_relation_id IN
+            <foreach item="item"
+                     collection="businessDesignParam.params.productIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
     <select id="selectBusinessDesignParamByBusinessDesignId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO">

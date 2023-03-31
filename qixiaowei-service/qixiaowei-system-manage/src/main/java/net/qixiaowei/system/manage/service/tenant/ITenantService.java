@@ -36,6 +36,14 @@ public interface ITenantService {
     List<TenantDTO> selectTenantList(TenantDTO tenantDTO);
 
     /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<TenantDTO> result);
+
+    /**
      * 生成租户编码
      *
      * @return 租户编码

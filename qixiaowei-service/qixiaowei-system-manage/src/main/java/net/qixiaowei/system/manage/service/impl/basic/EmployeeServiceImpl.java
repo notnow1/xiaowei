@@ -6,11 +6,12 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
-import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
@@ -24,6 +25,16 @@ import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppra
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisPerformanceDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureTaskDTO;
+import net.qixiaowei.strategy.cloud.api.remote.gap.RemoteGapAnalysisService;
+import net.qixiaowei.strategy.cloud.api.remote.marketInsight.RemoteMarketInsightMacroService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteAnnualKeyWorkService;
+import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMeasureService;
+import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 import net.qixiaowei.system.manage.api.domain.basic.*;
 import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
@@ -93,7 +104,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private RemoteBonusPayApplicationService remoteBonusPayApplicationService;
     @Autowired
     private RemoteSalaryItemService salaryPayService;
+    @Autowired
+    private RemoteGapAnalysisService gapAnalysisService;
+    @Autowired
+    private RemoteStrategyMeasureService strategyMeasureService;
+    @Autowired
+    private RemoteAnnualKeyWorkService annualKeyWorkService;
 
+    @Autowired
+    private RemoteMarketInsightMacroService remoteMarketInsightMacroService;
 
     /**
      * 查询员工表
@@ -108,6 +127,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Override
     public List<EmployeeDTO> selectEmployeeByEmployeeIds(List<Long> employeeIds) {
+        if (StringUtils.isEmpty(employeeIds)) {
+            return null;
+        }
         return employeeMapper.selectEmployeeByEmployeeIds(employeeIds);
     }
 
@@ -117,13 +139,28 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @param employeeDTO 员工表
      * @return 员工表
      */
+    @DataScope(deptAlias = "d")
     @Override
     public List<EmployeeDTO> selectEmployeeList(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         Map<String, Object> params = employeeDTO.getParams();
         employee.setParams(params);
-        return employeeMapper.selectEmployeeList(employee);
+        List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeeList(employee);
+        this.handleResult(employeeDTOS);
+        return employeeDTOS;
+    }
+
+    @Override
+    public void handleResult(List<EmployeeDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(EmployeeDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -134,22 +171,22 @@ public class EmployeeServiceImpl implements IEmployeeService {
      */
     @Override
     public List<EmployeeDTO> selectDropEmployeeList(EmployeeDTO employeeDTO) {
-        List<EmployeeDTO> employeeDTOList =new ArrayList<>();
+        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
-            String employeeFlag = employeeDTO.getEmployeeFlag();
-            //生效在职有账号的员工
-            if (StringUtils.equals("user",employeeFlag)){
-                employeeDTOList = employeeMapper.getUseEmployeeUser();
-            }//生效包含在职离职有账号的员工
-            else if (StringUtils.equals("userAll",employeeFlag)){
-                employeeDTOList = employeeMapper.getUseEmployeeStatus();
-            }//生效包含在职离职的员工
-            else if (StringUtils.equals("1",employeeFlag)){
-                employeeDTOList = employeeMapper.getAllUseEmployee();
-            }else {
-                employeeDTOList = employeeMapper.selectDropEmployeeList(employee);
-            }
+        String employeeFlag = employeeDTO.getEmployeeFlag();
+        //生效在职有账号的员工
+        if (StringUtils.equals("user", employeeFlag)) {
+            employeeDTOList = employeeMapper.getUseEmployeeUser();
+        }//生效包含在职离职有账号的员工
+        else if (StringUtils.equals("userAll", employeeFlag)) {
+            employeeDTOList = employeeMapper.getUseEmployeeStatus();
+        }//生效包含在职离职的员工
+        else if (StringUtils.equals("1", employeeFlag)) {
+            employeeDTOList = employeeMapper.getAllUseEmployee();
+        } else {
+            employeeDTOList = employeeMapper.selectDropEmployeeList(employee);
+        }
 
         return employeeDTOList;
     }
@@ -242,7 +279,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //查询是否已经存在员工
         EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeCode(employeeDTO.getEmployeeCode());
         if (null != employeeDTO1) {
-            throw new ServiceException("工号已存在请重新添加！");
+            throw new ServiceException("工号已存在");
         }
         //员工表
         Employee employee = new Employee();
@@ -328,11 +365,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public int logicDeleteEmployeeByEmployeeIds(List<Long> employeeIds) {
         int i = 0;
         // todo 校检是否被引用 被引用无法删除
-        for (Long employeeId : employeeIds) {
-            this.quoteEmployee(employeeId);
-        }
-
-
+        this.quoteEmployee(employeeIds);
         return employeeMapper.logicDeleteEmployeeByEmployeeIds(employeeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -1159,8 +1192,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public int logicDeleteEmployeeByEmployeeId(EmployeeDTO employeeDTO) {
         int i = 0;
-        //是否被引用
-        Employee employee = this.quoteEmployee(employeeDTO.getEmployeeId());
+        Employee employee = new Employee();
+        employee.setEmployeeId(employeeDTO.getEmployeeId());
+        employee.setUpdateBy(SecurityUtils.getUserId());
+        employee.setUpdateTime(DateUtils.getNowDate());
+        this.quoteEmployee(Collections.singletonList(employeeDTO.getEmployeeId()));
         try {
             i = employeeMapper.logicDeleteEmployeeByEmployeeId(employee, SecurityUtils.getUserId(), DateUtils.getNowDate());
         } catch (Exception e) {
@@ -1172,10 +1208,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
     /**
      * 是否被引用
      *
-     * @param employeeId
+     * @param employeeIds
      * @return
      */
-    private Employee quoteEmployee(Long employeeId) {
+    private void quoteEmployee(List<Long> employeeIds) {
         //组织引用
         StringBuffer deptErreo = new StringBuffer();
 
@@ -1188,92 +1224,173 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //奖金发放申请引用
         StringBuffer bonusPayObjectsErreo = new StringBuffer();
         StringBuffer erreoEmp = new StringBuffer();
-        //员工表
-        Employee employee = new Employee();
-        employee.setEmployeeId(employeeId);
-        employee.setUpdateTime(DateUtils.getNowDate());
-        employee.setUpdateBy(SecurityUtils.getUserId());
-        //查询数据
-        EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeId(employeeId);
-        if (null == employeeDTO1) {
-            throw new ServiceException("数据不存在无法删除！");
+        if (StringUtils.isNotEmpty(employeeIds)) {
+            //查询数据
+            List<EmployeeDTO> employeeDTOList1 = employeeMapper.selectEmployeeByEmployeeIds(employeeIds);
+            if (StringUtils.isEmpty(employeeDTOList1)) {
+                throw new ServiceException("数据不存在无法删除！");
+            }
+            // todo 校检是否被引用 被引用无法删除
+            List<EmployeeDTO> employeeDTOList = departmentMapper.deleteFlagEmployee(employeeIds);
+            List<EmployeeDTO> employeeDTOList2 = employeeDTOList;
+            //用户引用
+            String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+            //组织负责人引用(这里字段是组织名称)
+            String departmentLeaderName = employeeDTOList.stream().map(EmployeeDTO::getDepartmentLeaderName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+            //考核负责人引用(这里字段是组织名称)
+            String examinationLeaderName = employeeDTOList.stream().map(EmployeeDTO::getExaminationLeaderName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+            //远程调用目标分解数据(分解维度是否有人员引用)
+            if (StringUtils.isNotEmpty(employeeDTOList)) {
+                List<Long> employeeIdList = employeeDTOList.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+                TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
+                targetDecomposeDetailsDTO.setEmployeeIds(employeeIdList);
+                this.quoteTargetDecompose(employeeDTOList, targetDecomposeDetailsDTO);
+            }
+            //远程调用目标分解数据(滚动预测负责人是否有人员引用)
+            if (StringUtils.isNotEmpty(employeeDTOList)) {
+                TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
+                targetDecomposeDetailsDTO.setPrincipalEmployeeIds(employeeIds);
+                this.quoteTargetDecompose(employeeDTOList2, targetDecomposeDetailsDTO);
+            }
+            //目标分解指标名称(分解维度是否有人员引用)
+            String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+            //目标分解指标名称(滚动预测负责人是否有人员引用)
+            String indicatorName2 = employeeDTOList2.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+            if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName, "[]")) {
+                //decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被" + indicatorName + "目标分解" + "引用  无法删除！\n");
+                throw new ServiceException("数据被引用！");
+            }
+            if (StringUtils.isNotBlank(indicatorName2) && !StringUtils.equals(indicatorName2, "[]")) {
+                throw new ServiceException("数据被引用！");
+                //decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被" + indicatorName2 + "目标分解滚动预测负责人" + "引用  无法删除！\n");
+            }
+            if (StringUtils.isNotBlank(username) && !StringUtils.equals(username, "[]")) {
+                throw new ServiceException("数据被引用！");
+                //userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
+            }
+            if (StringUtils.isNotBlank(departmentLeaderName) && !StringUtils.equals(departmentLeaderName, "[]")) {
+                throw new ServiceException("数据被引用！");
+                //deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "在该部门" + departmentLeaderName + "已引用组织负责人  无法删除！\n");
+            }
+            if (StringUtils.isNotBlank(examinationLeaderName) && !StringUtils.equals(examinationLeaderName, "[]")) {
+                throw new ServiceException("数据被引用！");
+                //deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "在该部门" + examinationLeaderName + "已引用考核负责人 无法删除！\n");
+            }
+            //远程查看根据人员id查询个人年终奖 申请人id
+            R<List<EmployeeAnnualBonus>> employeeAnnualBonusData = remoteEmployeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeIds(employeeIds, SecurityConstants.INNER);
+            List<EmployeeAnnualBonus> employeeAnnualBonusList = employeeAnnualBonusData.getData();
+            if (StringUtils.isNotEmpty(employeeAnnualBonusList)) {
+                throw new ServiceException("数据被引用！");
+                //employeeAnnualBonusErreo.append("人员被个人年终奖引用 无法删除！\n");
+            }
+            //根据人员id查询个人年终奖 奖金发放对象ID(员工id)
+            R<List<BonusPayObjectsDTO>> bonusPayObjectsDTOData = remoteBonusPayApplicationService.selectBonusPayApplicationByEmployeeIds(employeeIds, SecurityConstants.INNER);
+            List<BonusPayObjectsDTO> bonusPayObjectsDTOList = bonusPayObjectsDTOData.getData();
+            if (StringUtils.isNotEmpty(bonusPayObjectsDTOList)) {
+                throw new ServiceException("数据被引用！");
+                //bonusPayObjectsErreo.append("人员被奖金发放申请引用 无法删除！\n");
+            }
+
+            for (Long employeeId : employeeIds) {
+                //根据人员id查询个人绩效考核
+                R<List<PerformanceAppraisalObjectsDTO>> performanceAppraisalObjectsR = performanceAppraisalService.queryQuoteEmployeeById(employeeId, SecurityConstants.INNER);
+                List<PerformanceAppraisalObjectsDTO> appraisalObjectsData = performanceAppraisalObjectsR.getData();
+                if (StringUtils.isNotEmpty(bonusPayObjectsDTOList)) {
+                    throw new ServiceException("数据被引用！");
+                    //bonusPayObjectsErreo.append("人员被个人绩效考核引用 无法删除！\n");
+                }
+                //根据人员id查询个人调薪计划
+                R<List<EmpSalaryAdjustPlanDTO>> empSalaryAdjustPlanR = salaryAdjustPlanService.selectByEmployeeId(employeeId, SecurityConstants.INNER);
+                List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanR.getData();
+                if (StringUtils.isNotEmpty(empSalaryAdjustPlanDTOS)) {
+                    throw new ServiceException("数据被引用！");
+                    //bonusPayObjectsErreo.append("人员被个人调薪计划引用 无法删除！\n");
+                }
+                //根据人员id查询工资条
+                R<List<SalaryPayDTO>> salaryPayR = salaryPayService.selectByEmployeeId(employeeId, SecurityConstants.INNER);
+                List<SalaryPayDTO> salaryPayDTOList = salaryPayR.getData();
+                if (StringUtils.isNotEmpty(salaryPayDTOList)) {
+                    throw new ServiceException("数据被引用！");
+                   // bonusPayObjectsErreo.append("人员被工资条引用 无法删除！\n");
+                }
+                erreoEmp.append(deptErreo).append(userErreo).append(decomposeErreo).append(employeeAnnualBonusErreo).append(bonusPayObjectsErreo);
+                if (erreoEmp.length() > 0) {
+                    throw new ServiceException(erreoEmp.toString());
+                }
+            }
+
+            // 战略云引用校验
+            isStrategyQuote(employeeIds);
         }
-        // todo 校检是否被引用 被引用无法删除
-        List<EmployeeDTO> employeeDTOList = departmentMapper.deleteFlagEmployee(employeeId);
-        List<EmployeeDTO> employeeDTOList2 = employeeDTOList;
-        //用户引用
-        String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-        //组织负责人引用(这里字段是组织名称)
-        String departmentLeaderName = employeeDTOList.stream().map(EmployeeDTO::getDepartmentLeaderName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-        //考核负责人引用(这里字段是组织名称)
-        String examinationLeaderName = employeeDTOList.stream().map(EmployeeDTO::getExaminationLeaderName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-        //远程调用目标分解数据(分解维度是否有人员引用)
-        if (StringUtils.isNotEmpty(employeeDTOList)) {
-            List<Long> employeeIds = employeeDTOList.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
-            TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-            targetDecomposeDetailsDTO.setEmployeeIds(employeeIds);
-            this.quoteTargetDecompose(employeeDTOList, targetDecomposeDetailsDTO);
+
+    }
+
+    /**
+     * 战略云引用校验
+     *
+     * @param employeeIds 人员id集合
+     */
+    private void isStrategyQuote(List<Long> employeeIds) {
+        if (StringUtils.isNotEmpty(employeeIds)){
+            GapAnalysisOpportunityDTO gapAnalysisOpportunityDTO = new GapAnalysisOpportunityDTO();
+            Map<String, Object> params = new HashMap<>();
+            params.put("proposeEmployeeIds", employeeIds);
+            gapAnalysisOpportunityDTO.setParams(params);
+            R<List<GapAnalysisOpportunityDTO>> gapAnalysisOpportunityDTOSR = gapAnalysisService.remoteOpportunityList(gapAnalysisOpportunityDTO, SecurityConstants.INNER);
+            List<GapAnalysisOpportunityDTO> gapAnalysisOpportunityDTOS = gapAnalysisOpportunityDTOSR.getData();
+            if (gapAnalysisOpportunityDTOSR.getCode() != 200) {
+                throw new ServiceException("远程调用差距分析机会差距失败");
+            }
+            if (StringUtils.isNotEmpty(gapAnalysisOpportunityDTOS)) {
+                throw new ServiceException("数据被引用!");
+            }
+            GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO = new GapAnalysisPerformanceDTO();
+            params = new HashMap<>();
+            params.put("proposeEmployeeIds", employeeIds);
+            gapAnalysisPerformanceDTO.setParams(params);
+            R<List<GapAnalysisPerformanceDTO>> gapAnalysisPerformanceDTOSR = gapAnalysisService.remotePerformanceList(gapAnalysisPerformanceDTO, SecurityConstants.INNER);
+            List<GapAnalysisPerformanceDTO> gapAnalysisPerformanceDTOS = gapAnalysisPerformanceDTOSR.getData();
+            if (gapAnalysisPerformanceDTOSR.getCode() != 200) {
+                throw new ServiceException("远程调用差距分析业绩差距失败");
+            }
+            if (StringUtils.isNotEmpty(gapAnalysisPerformanceDTOS)) {
+                throw new ServiceException("数据被引用!");
+            }
+            StrategyMeasureDetailVO strategyMeasureDetailVO = new StrategyMeasureDetailVO();
+            params = new HashMap<>();
+            params.put("dutyEmployeeIds", employeeIds);
+            strategyMeasureDetailVO.setParams(params);
+            R<List<StrategyMeasureTaskDTO>> strategyMeasureTaskDTOSR = strategyMeasureService.remoteDutyMeasure(strategyMeasureDetailVO, SecurityConstants.INNER);
+            List<StrategyMeasureTaskDTO> strategyMeasureTaskDTOS = strategyMeasureTaskDTOSR.getData();
+            if (strategyMeasureTaskDTOSR.getCode() != 200) {
+                throw new ServiceException("远程调用战略举措清单失败");
+            }
+            if (StringUtils.isNotEmpty(strategyMeasureTaskDTOS)) {
+                throw new ServiceException("数据被引用!");
+            }
+            AnnualKeyWorkDetailDTO annualKeyWorkDetailDTO = new AnnualKeyWorkDetailDTO();
+            params = new HashMap<>();
+            params.put("employeeIds", employeeIds);
+            annualKeyWorkDetailDTO.setParams(params);
+            R<List<AnnualKeyWorkDetailDTO>> annualKeyWorkDetailDTOSR = annualKeyWorkService.remoteAnnualKeyWorkDepartment(annualKeyWorkDetailDTO, SecurityConstants.INNER);
+            List<AnnualKeyWorkDetailDTO> annualKeyWorkDetailDTOS = annualKeyWorkDetailDTOSR.getData();
+            if (annualKeyWorkDetailDTOSR.getCode() != 200) {
+                throw new ServiceException("远程调用年度重点工作失败");
+            }
+            if (StringUtils.isNotEmpty(annualKeyWorkDetailDTOS)) {
+                throw new ServiceException("数据被引用!");
+            }
+            //看宏观-提出人姓名
+            MiMacroDetailDTO miMacroDetailDTO = new MiMacroDetailDTO();
+            params = new HashMap<>();
+            params.put("employeeIds", employeeIds);
+            miMacroDetailDTO.setParams(params);
+            R<List<MiMacroDetailDTO>> miMacroDetailList = remoteMarketInsightMacroService.remoteMiMacroDetailList(miMacroDetailDTO, SecurityConstants.INNER);
+            List<MiMacroDetailDTO> miMacroDetailListData = miMacroDetailList.getData();
+            if (StringUtils.isNotEmpty(miMacroDetailListData)){
+                throw new ServiceException("数据被引用!");
+            }
         }
-        //远程调用目标分解数据(滚动预测负责人是否有人员引用)
-        if (StringUtils.isNotEmpty(employeeDTOList)) {
-            TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-            targetDecomposeDetailsDTO.setPrincipalEmployeeId(employeeId);
-            this.quoteTargetDecompose(employeeDTOList2, targetDecomposeDetailsDTO);
-        }
-        //目标分解指标名称(分解维度是否有人员引用)
-        String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-        //目标分解指标名称(滚动预测负责人是否有人员引用)
-        String indicatorName2 = employeeDTOList2.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-        if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName, "[]")) {
-            decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被" + indicatorName + "目标分解" + "引用  无法删除！\n");
-        }
-        if (StringUtils.isNotBlank(indicatorName2) && !StringUtils.equals(indicatorName2, "[]")) {
-            decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被" + indicatorName2 + "目标分解滚动预测负责人" + "引用  无法删除！\n");
-        }
-        if (StringUtils.isNotBlank(username) && !StringUtils.equals(username, "[]")) {
-            userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
-        }
-        if (StringUtils.isNotBlank(departmentLeaderName) && !StringUtils.equals(departmentLeaderName, "[]")) {
-            deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "在该部门" + departmentLeaderName + "已引用组织负责人  无法删除！\n");
-        }
-        if (StringUtils.isNotBlank(examinationLeaderName) && !StringUtils.equals(examinationLeaderName, "[]")) {
-            deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "在该部门" + examinationLeaderName + "已引用考核负责人 无法删除！\n");
-        }
-        //远程查看根据人员id查询个人年终奖 申请人id
-        R<List<EmployeeAnnualBonus>> employeeAnnualBonusData = remoteEmployeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeId(employeeId, SecurityConstants.INNER);
-        List<EmployeeAnnualBonus> employeeAnnualBonusList = employeeAnnualBonusData.getData();
-        if (StringUtils.isNotEmpty(employeeAnnualBonusList)) {
-            employeeAnnualBonusErreo.append("人员被个人年终奖引用 无法删除！\n");
-        }
-        //根据人员id查询个人年终奖 奖金发放对象ID(员工id)
-        R<List<BonusPayObjectsDTO>> bonusPayObjectsDTOData = remoteBonusPayApplicationService.selectBonusPayApplicationByEmployeeId(employeeId, SecurityConstants.INNER);
-        List<BonusPayObjectsDTO> bonusPayObjectsDTOList = bonusPayObjectsDTOData.getData();
-        if (StringUtils.isNotEmpty(bonusPayObjectsDTOList)) {
-            bonusPayObjectsErreo.append("人员被奖金发放申请引用 无法删除！\n");
-        }
-        //根据人员id查询个人绩效考核
-        R<List<PerformanceAppraisalObjectsDTO>> performanceAppraisalObjectsR = performanceAppraisalService.queryQuoteEmployeeById(employeeId, SecurityConstants.INNER);
-        List<PerformanceAppraisalObjectsDTO> appraisalObjectsData = performanceAppraisalObjectsR.getData();
-        if (StringUtils.isNotEmpty(bonusPayObjectsDTOList)) {
-            bonusPayObjectsErreo.append("人员被个人绩效考核引用 无法删除！\n");
-        }
-        //根据人员id查询个人调薪计划
-        R<List<EmpSalaryAdjustPlanDTO>> empSalaryAdjustPlanR = salaryAdjustPlanService.selectByEmployeeId(employeeId, SecurityConstants.INNER);
-        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanR.getData();
-        if (StringUtils.isNotEmpty(empSalaryAdjustPlanDTOS)) {
-            bonusPayObjectsErreo.append("人员被个人调薪计划引用 无法删除！\n");
-        }
-        //根据人员id查询工资条
-        R<List<SalaryPayDTO>> salaryPayR = salaryPayService.selectByEmployeeId(employeeId, SecurityConstants.INNER);
-        List<SalaryPayDTO> salaryPayDTOList = salaryPayR.getData();
-        if (StringUtils.isNotEmpty(salaryPayDTOList)) {
-            bonusPayObjectsErreo.append("人员被工资条引用 无法删除！\n");
-        }
-        erreoEmp.append(deptErreo).append(userErreo).append(decomposeErreo).append(employeeAnnualBonusErreo).append(bonusPayObjectsErreo);
-        if (erreoEmp.length() > 0) {
-            throw new ServiceException(erreoEmp.toString());
-        }
-        return employee;
     }
 
     /**
@@ -1535,6 +1652,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 查询有账号的员工
+     *
      * @return
      */
     @Override
@@ -1556,23 +1674,23 @@ public class EmployeeServiceImpl implements IEmployeeService {
             switch (adjustmentType) {
                 case 1:// 调岗-调部门
                     Long adjustPostId = employeeSalarySnapVO.getAdjustPostId();
-                    if (StringUtils.isNotNull(adjustPostId) && !employeeById.getEmployeePostId().equals(adjustPostId)) {
+                    if (StringUtils.isNotNull(adjustPostId) && !adjustPostId.equals(employeeById.getEmployeePostId())) {
                         employee.setEmployeePostId(adjustPostId);
                     }
                     Long adjustDepartmentId = employeeSalarySnapVO.getAdjustDepartmentId();
-                    if (StringUtils.isNotNull(adjustDepartmentId) && !employeeById.getEmployeeDepartmentId().equals(adjustDepartmentId)) {
+                    if (StringUtils.isNotNull(adjustDepartmentId) && !adjustDepartmentId.equals(employeeById.getEmployeeDepartmentId())) {
                         employee.setEmployeeDepartmentId(adjustDepartmentId);
                     }
                     break;
                 case 2:// 调级
                     Integer adjustOfficialRank = employeeSalarySnapVO.getAdjustOfficialRank();
-                    if (StringUtils.isNotNull(adjustOfficialRank) && !employeeById.getEmployeeRank().equals(adjustOfficialRank)) {
+                    if (StringUtils.isNotNull(adjustOfficialRank) && !adjustOfficialRank.equals(employeeById.getEmployeeRank())) {
                         employee.setEmployeeRank(adjustOfficialRank);
                     }
                     break;
                 case 3:// 调薪
                     BigDecimal adjustEmolument = employeeSalarySnapVO.getAdjustEmolument();
-                    if (StringUtils.isNotNull(adjustEmolument) && employeeById.getEmployeeBasicWage().compareTo(adjustEmolument) != 0) {
+                    if (StringUtils.isNotNull(adjustEmolument) && adjustEmolument.compareTo(Optional.ofNullable(employeeById.getEmployeeBasicWage()).orElse(BigDecimal.ZERO)) != 0) {
                         employee.setEmployeeBasicWage(adjustEmolument);
                     }
                     break;

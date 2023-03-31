@@ -1,6 +1,6 @@
 package net.qixiaowei.operate.cloud.service.performance;
 
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
+import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalItems;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalItemsExcel;
 
@@ -51,9 +51,8 @@ public interface IPerformanceAppraisalItemsService {
      * 批量修改绩效考核项目表
      *
      * @param performanceAppraisalItemsDtoS 绩效考核项目表
-     * @return 结果
      */
-    int updatePerformanceAppraisalItemsS(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDtoS);
+    void updatePerformanceAppraisalItemsS(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDtoS);
 
     /**
      * 批量新增绩效考核项目表
@@ -61,15 +60,14 @@ public interface IPerformanceAppraisalItemsService {
      * @param performanceAppraisalItemsDtos 绩效考核项目表
      * @return 结果
      */
-    int insertPerformanceAppraisalItemss(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDtos);
+    List<PerformanceAppraisalItems> insertPerformanceAppraisalItemss(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDtos);
 
     /**
      * 逻辑批量删除绩效考核项目表
      *
      * @param performAppraisalItemsIds 需要删除的绩效考核项目表集合
-     * @return 结果
      */
-    int logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds(List<Long> performAppraisalItemsIds);
+    void logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds(List<Long> performAppraisalItemsIds);
 
     /**
      * 逻辑删除绩效考核项目表信息

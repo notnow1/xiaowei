@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.remote.bonus;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteBonusBudgetService;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusBudgetService;
@@ -33,7 +34,7 @@ public class RemoteBonusBudget implements RemoteBonusBudgetService {
     @Override
     @InnerAuth
     @PostMapping("/queryIndicatorIdBonusBudget")
-    public R<BonusBudgetDTO> selectBonusBudgetByIndicatorId(@RequestBody BonusBudgetDTO bonusBudgetDTO, String source) {
+    public R<List<BonusBudgetParametersDTO>> selectBonusBudgetByIndicatorId(@RequestBody BonusBudgetDTO bonusBudgetDTO, String source) {
         return R.ok(bonusBudgetService.selectBonusBudgetByIndicatorId(bonusBudgetDTO));
     }
 }

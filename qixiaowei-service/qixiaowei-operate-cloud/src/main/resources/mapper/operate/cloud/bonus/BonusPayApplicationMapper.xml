@@ -58,7 +58,7 @@
         distinct
         bpa.bonus_pay_application_id,
         bpa.salary_item_id,
-        si.third_level_item  as salaryItemName,
+        si.third_level_item as salaryItemName,
         bpa.award_code,
         bpa.award_name,
         bpa.award_year,
@@ -118,18 +118,18 @@
         </if>
         <if test="bonusPayApplication.params.awardCodeLike != null and bonusPayApplication.params.awardCodeLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="bonusPayApplication.params.awardCodeLike"
-                     index="index" open="(" separator="AND" close=")">
-                bpa.award_code  LIKE concat('%', #{item}, '%')
-            </foreach>
+            (     <foreach item="item"
+                           collection="bonusPayApplication.params.awardCodeLike"
+                           index="index" open="(" separator="OR" close=")">
+            bpa.award_code LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="bonusPayApplication.params.awardCodeNotLike != null and bonusPayApplication.params.awardCodeNotLike.size() > 0">
             AND
             <foreach item="item"
                      collection="bonusPayApplication.params.awardCodeNotLike"
                      index="index" open="(" separator="AND" close=")">
-                bpa.award_code  NOT LIKE concat('%', #{item}, '%')
+                bpa.award_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <!-- 奖项名称过滤  -->
@@ -153,18 +153,18 @@
         </if>
         <if test="bonusPayApplication.params.awardNameLike != null and bonusPayApplication.params.awardNameLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="bonusPayApplication.params.awardNameLike"
-                     index="index" open="(" separator="AND" close=")">
-                bpa.award_name  LIKE concat('%', #{item}, '%')
-            </foreach>
+            (  <foreach item="item"
+                        collection="bonusPayApplication.params.awardNameLike"
+                        index="index" open="(" separator="OR" close=")">
+            bpa.award_name LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="bonusPayApplication.params.awardNameNotLike != null and bonusPayApplication.params.awardNameNotLike.size() > 0">
             AND
             <foreach item="item"
                      collection="bonusPayApplication.params.awardNameNotLike"
                      index="index" open="(" separator="AND" close=")">
-                bpa.award_name  NOT LIKE concat('%', #{item}, '%')
+                bpa.award_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <!-- 申请部门过滤  -->
@@ -180,7 +180,7 @@
             </if>
             <!-- 申请部门过滤  -->
             <if test="bonusPayApplication.params.applyDepartmentIds == null">
-                AND  (bpa.apply_department_id ='' or bpa.apply_department_id is null)
+                AND (bpa.apply_department_id ='' or bpa.apply_department_id is null)
             </if>
         </if>
         <!-- 申请部门过滤  -->
@@ -192,18 +192,19 @@
                          collection="bonusPayApplication.params.applyDepartmentIds"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (bpa.apply_department_id ='' or bpa.apply_department_id is null))
+                </foreach>
+                or (bpa.apply_department_id ='' or bpa.apply_department_id is null))
             </if>
 
             <!-- 申请部门过滤  -->
             <if test="bonusPayApplication.params.applyDepartmentIds == null">
-                AND  (bpa.apply_department_id ='' or bpa.apply_department_id is null)
+                AND (bpa.apply_department_id ='' or bpa.apply_department_id is null)
             </if>
         </if>
         <!-- 获奖时间过滤  -->
         <if test="bonusPayApplication.params.awardYearMonthEqual != null and bonusPayApplication.params.awardYearMonthEqual.size() > 0">
-            AND (case when  bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
-            when  bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) IN
+            AND (case when bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
+            when bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) IN
             <foreach item="item"
                      collection="bonusPayApplication.params.awardYearMonthEqual"
                      index="index" open="(" separator="," close=")">
@@ -211,8 +212,8 @@
             </foreach>
         </if>
         <if test="bonusPayApplication.params.awardYearMonthNotEqual != null and bonusPayApplication.params.awardYearMonthNotEqual.size() > 0">
-            AND (case when  bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
-            when  bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) NOT IN
+            AND (case when bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
+            when bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) NOT IN
             <foreach item="item"
                      collection="bonusPayApplication.params.awardYearMonthNotEqual"
                      index="index" open="(" separator="," close=")">
@@ -220,28 +221,34 @@
             </foreach>
         </if>
         <if test="bonusPayApplication.params.awardYearMonthBefore != null and bonusPayApplication.params.awardYearMonthBefore != ''">
-            AND (case when  bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
-            when  bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &lt; #{bonusPayApplication.params.awardYearMonthBefore}
+            AND (case when bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
+            when bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &lt;
+            #{bonusPayApplication.params.awardYearMonthBefore}
         </if>
         <if test="bonusPayApplication.params.awardYearMonthNotBefore != null and bonusPayApplication.params.awardYearMonthNotBefore != ''"><!-- 开始时间检索 -->
-            AND (case when  bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
-            when  bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &gt;= #{bonusPayApplication.params.awardYearMonthNotBefore}
+            AND (case when bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
+            when bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &gt;=
+            #{bonusPayApplication.params.awardYearMonthNotBefore}
         </if>
         <if test="bonusPayApplication.params.awardYearMonthAfter != null and bonusPayApplication.params.awardYearMonthAfter != ''"><!-- 开始时间检索 -->
-            AND (case when  bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
-            when  bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &gt; #{bonusPayApplication.params.awardYearMonthAfter}
+            AND (case when bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
+            when bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &gt;
+            #{bonusPayApplication.params.awardYearMonthAfter}
         </if>
         <if test="bonusPayApplication.params.awardYearMonthNotAfter != null and bonusPayApplication.params.awardYearMonthNotAfter != ''"><!-- 结束时间检索 -->
-            AND (case when  bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
-            when  bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &lt;= #{bonusPayApplication.params.awardYearMonthNotAfter}
+            AND (case when bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
+            when bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &lt;=
+            #{bonusPayApplication.params.awardYearMonthNotAfter}
         </if>
         <if test="bonusPayApplication.params.awardYearMonthStart != null and bonusPayApplication.params.awardYearMonthStart != ''"><!-- 开始时间检索 -->
-            AND (case when  bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
-            when  bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &gt;= #{bonusPayApplication.params.awardYearMonthStart}
+            AND (case when bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
+            when bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &gt;=
+            #{bonusPayApplication.params.awardYearMonthStart}
         </if>
         <if test="bonusPayApplication.params.awardYearMonthEnd != null and bonusPayApplication.params.awardYearMonthEnd != ''"><!-- 结束时间检索 -->
-            AND (case when  bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
-            when  bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &lt;= #{bonusPayApplication.params.awardYearMonthEnd}
+            AND (case when bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
+            when bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) &lt;=
+            #{bonusPayApplication.params.awardYearMonthEnd}
         </if>
         <!-- 奖项总金额过滤  -->
         <if test="bonusPayApplication.params.awardTotalAmountEqual != null and bonusPayApplication.params.awardTotalAmountEqual.size() > 0">
@@ -293,8 +300,8 @@
         </if>
 
         <if test="bonusPayApplication.awardYearMonth != null and bonusPayApplication.awardYearMonth != ''">
-            and (case when  bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
-            when  bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) =
+            and (case when bpa.award_month &gt; 9 then CONCAT( bpa.award_year,"/", bpa.award_month)
+            when bpa.award_month &lt; 10 then CONCAT( bpa.award_year,"/0", bpa.award_month) end) =
             #{bonusPayApplication.awardYearMonth}
         </if>
         <if test="bonusPayApplication.thirdLevelItem != null and bonusPayApplication.thirdLevelItem != ''">
@@ -345,6 +352,9 @@
         <if test="bonusPayApplication.updateTime != null">
             and bpa.update_time=#{bonusPayApplication.updateTime}
         </if>
+        <!-- 数据范围过滤 -->
+        ${bonusPayApplication.params.dataScope}
+        ORDER BY bpa.create_time DESC
     </select>
     <!--    取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计-->
     <select id="selectBonusPayApplicationAddDeptAnnual" resultType="java.math.BigDecimal">

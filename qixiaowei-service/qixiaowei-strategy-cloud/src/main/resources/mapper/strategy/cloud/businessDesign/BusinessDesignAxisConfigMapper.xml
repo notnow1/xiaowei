@@ -75,6 +75,7 @@
         FROM business_design_axis_config
         WHERE delete_flag=0
         AND business_design_id = #{businessDesignId}
+        ORDER BY param_dimension
     </select>
     <!--根据业务设计ID集合查找业务设计轴配置表信息-->
     <select id="selectBusinessDesignAxisConfigByBusinessDesignIds"

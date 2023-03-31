@@ -5,7 +5,9 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceRank;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -64,12 +67,27 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
      * @param performanceRankDTO 绩效等级表
      * @return 绩效等级表
      */
+    @DataScope(businessAlias = "pr")
     @Override
     public List<PerformanceRankDTO> selectPerformanceRankList(PerformanceRankDTO performanceRankDTO) {
 
         PerformanceRank performanceRank = new PerformanceRank();
         BeanUtils.copyProperties(performanceRankDTO, performanceRank);
-        return performanceRankMapper.selectPerformanceRankList(performanceRank);
+        List<PerformanceRankDTO> performanceRankDTOS = performanceRankMapper.selectPerformanceRankList(performanceRank);
+        this.handleResult(performanceRankDTOS);
+        return performanceRankDTOS;
+    }
+
+    @Override
+    public void handleResult(List<PerformanceRankDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(PerformanceRankDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -91,7 +109,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         }
         int count = performanceRankMapper.checkUniqueName(performanceRankName, performanceRankCategory);
         if (count > 0) {
-            throw new ServiceException("绩效等级名称不能重复");
+            throw new ServiceException("绩效等级名称已存在");
         }
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceRankDTO.getPerformanceRankFactorDTOS();
         if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
@@ -126,7 +144,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
             throw new ServiceException("绩效等级配置id不能为空");
         }
         if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
-            throw new ServiceException("等级系数信息不可以为空");
+            throw new ServiceException("等级系数信息不能为空");
         }
         int count = performanceRankMapper.checkUniqueName(performanceRankName, performanceRankCategory);
         PerformanceRank performanceRank = new PerformanceRank();

@@ -87,6 +87,14 @@
         <if test="gapAnalysisPerformance.updateTime != null">
             and update_time=#{gapAnalysisPerformance.updateTime}
         </if>
+        <if test="gapAnalysisPerformance.params.proposeEmployeeIds != null">
+            AND propose_employee_id IN
+            <foreach item="item"
+                     collection="gapAnalysisPerformance.params.proposeEmployeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
     <!--根据差距分析ID查找业绩差距-->
     <select id="selectGapAnalysisPerformanceByGapAnalysisId"

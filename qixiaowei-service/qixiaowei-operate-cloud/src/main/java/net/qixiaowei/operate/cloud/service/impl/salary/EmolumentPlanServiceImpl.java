@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.EmolumentPlan;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
 import net.qixiaowei.operate.cloud.mapper.salary.EmolumentPlanMapper;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -157,24 +159,21 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
         }
         emolumentPlan.setCreateBys(createBys);
         List<EmolumentPlanDTO> emolumentPlanDTOS = emolumentPlanMapper.selectEmolumentPlanList(emolumentPlan);
-        //远程查询创建人姓名
-        Set<Long> collect = emolumentPlanDTOS.stream().map(EmolumentPlanDTO::getCreateBy).collect(Collectors.toSet());
-        if (StringUtils.isNotEmpty(collect)) {
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(collect, SecurityConstants.INNER);
-            List<UserDTO> data = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(data)) {
-                for (EmolumentPlanDTO planDTO : emolumentPlanDTOS) {
-                    for (UserDTO datum : data) {
-                        if (planDTO.getCreateBy().equals(datum.getUserId())) {
-                            //员工姓名
-                            planDTO.setCreateByName(datum.getEmployeeName());
-                        }
-                    }
+        //薪酬规划列表list计算
+        this.queryCalculateList(emolumentPlanDTOS);
+        this.handleResult(emolumentPlanDTOS);
+        if (StringUtils.isNotEmpty(emolumentPlanDTOS)){
+            for (EmolumentPlanDTO planDTO : emolumentPlanDTOS) {
+                BigDecimal emolumentRevenueImprove = planDTO.getEmolumentRevenueImprove();
+                BigDecimal er = planDTO.getEr();
+                if (null == er){
+                    planDTO.setEr(new BigDecimal("0"));
+                }
+                if (null == emolumentRevenueImprove){
+                    planDTO.setEmolumentRevenueImprove(new BigDecimal("0"));
                 }
             }
         }
-        //薪酬规划列表list计算
-        this.queryCalculateList(emolumentPlanDTOS);
         return emolumentPlanDTOS;
     }
 
@@ -292,7 +291,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
         BeanUtils.copyProperties(emolumentPlanDTO, emolumentPlan);
         EmolumentPlanDTO emolumentPlanDTO1 = emolumentPlanMapper.selectEmolumentPlanByPlanYear(emolumentPlan.getPlanYear());
         if (StringUtils.isNotNull(emolumentPlanDTO1)) {
-            throw new ServiceException("该预算年度已操作薪酬规划计划！！！");
+            throw new ServiceException(emolumentPlanDTO.getPlanYear()+"年薪酬规划已存在");
         }
         emolumentPlan.setCreateBy(SecurityUtils.getUserId());
         emolumentPlan.setCreateTime(DateUtils.getNowDate());
@@ -393,20 +392,28 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
      * @param emolumentPlanDTO
      */
     private void addCalculate(EmolumentPlanDTO emolumentPlanDTO) {
-        if (StringUtils.isNotNull(emolumentPlanDTO)) {
+        if (StringUtils.isNotNull(emolumentPlanDTO)){
+            //预算年前一年总薪酬包
+            BigDecimal emolumentPackageBeforeOne = new BigDecimal("0");
             //预算年前一年销售收入
             BigDecimal revenueBeforeOne = emolumentPlanDTO.getRevenueBeforeOne();
             if (null != revenueBeforeOne && revenueBeforeOne.compareTo(new BigDecimal("0")) != 0) {
-                revenueBeforeOne = revenueBeforeOne.multiply(new BigDecimal("10000")).setScale(10, BigDecimal.ROUND_HALF_UP);
+                revenueBeforeOne = revenueBeforeOne.setScale(10, BigDecimal.ROUND_HALF_UP);
             }
-            //预算年前一年总薪酬包
-            BigDecimal emolumentPackageBeforeOne = emolumentPlanDTO.getEmolumentPackageBeforeOne();
+            BigDecimal emolumentPackageBeforeOne1 = emolumentPlanDTO.getEmolumentPackageBeforeOne();
+            if (null != emolumentPackageBeforeOne1 && emolumentPackageBeforeOne1.compareTo(new BigDecimal("0")) != 0){
+                //预算年前一年总薪酬包
+                emolumentPackageBeforeOne =emolumentPackageBeforeOne1.divide(new BigDecimal("10000"),10,BigDecimal.ROUND_HALF_UP);
+            }
+
             if (null != revenueBeforeOne && revenueBeforeOne.compareTo(new BigDecimal("0")) != 0 && null != emolumentPackageBeforeOne && emolumentPackageBeforeOne.compareTo(new BigDecimal("0")) != 0) {
-                BigDecimal erBeforeOne = emolumentPackageBeforeOne.divide(revenueBeforeOne, 10, BigDecimal.ROUND_HALF_UP);
+                BigDecimal erBeforeOne = emolumentPackageBeforeOne.divide(revenueBeforeOne, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                 if (erBeforeOne.compareTo(new BigDecimal("0")) > 0) {
                     emolumentPlanDTO.setErBeforeOne(erBeforeOne);
                 }
             }
+
+            emolumentPlanDTO.setEmolumentPackageBeforeOne(emolumentPackageBeforeOne);
         }
 
     }
@@ -499,6 +506,18 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             emolumentPlanList.add(emolumentPlan);
         }
         return emolumentPlanMapper.updateEmolumentPlans(emolumentPlanList);
+    }
+
+    @Override
+    public void handleResult(List<EmolumentPlanDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(EmolumentPlanDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 }
 

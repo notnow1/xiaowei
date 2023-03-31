@@ -8,19 +8,18 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
-import net.qixiaowei.system.manage.api.domain.basic.Employee;
 import net.qixiaowei.system.manage.api.domain.basic.Post;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
-import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.excel.post.PostExcel;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper;
@@ -36,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 /**
@@ -86,11 +84,26 @@ public class PostServiceImpl implements IPostService {
      * @param postDTO 岗位表
      * @return 岗位表
      */
+    @DataScope(businessAlias = "p")
     @Override
     public List<PostDTO> selectPostList(PostDTO postDTO) {
         Post post = new Post();
         BeanUtils.copyProperties(postDTO, post);
-        return postMapper.selectPostList(post);
+        List<PostDTO> postDTOS = postMapper.selectPostList(post);
+        this.handleResult(postDTOS);
+        return postDTOS;
+    }
+
+    @Override
+    public void handleResult(List<PostDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(PostDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -140,12 +153,12 @@ public class PostServiceImpl implements IPostService {
         //先查询 重复无法添加
         PostDTO postDTO1 = postMapper.selectPostCode(postDTO.getPostCode());
         if (StringUtils.isNotNull(postDTO1)) {
-            throw new ServiceException("岗位编码已存在！");
+            throw new ServiceException("岗位编码已存在");
         }
         //先查询 重复无法添加
         PostDTO postDTO2 = postMapper.selectPostName(postDTO.getPostName());
         if (StringUtils.isNotNull(postDTO2)) {
-            throw new ServiceException("岗位名称已存在！");
+            throw new ServiceException("岗位名称已存在");
         }
         //岗位表
         Post post = new Post();
@@ -539,6 +552,7 @@ public class PostServiceImpl implements IPostService {
         //失败List
         List<PostExcel> errorExcelList = new ArrayList<>();
 
+        List<String> parentDepartmentExcelNameList = new ArrayList<>();
         //返回报错信息
         StringBuffer postError = new StringBuffer();
         if (StringUtils.isNotEmpty(postExcelList)) {
@@ -576,7 +590,7 @@ public class PostServiceImpl implements IPostService {
                             //适用组织 部门名称(excel用)
                             String parentDepartmentExcelName = postExcelDistinct.get(i).getParentDepartmentExcelName();
                             if (postExcelDistinct.size() == 1) {
-                                this.onlyOne(officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
+                                this.onlyOne(departmentDTOList,officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
                                 if (stringBuffer.length() > 1) {
                                     postError.append(stringBuffer);
                                     errorExcelList.addAll(postExcelDistinct);
@@ -595,6 +609,8 @@ public class PostServiceImpl implements IPostService {
                                         departmentPost.setUpdateTime(DateUtils.getNowDate());
                                         departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
 
+                                    }else {
+                                        parentDepartmentExcelNameList.add(parentDepartmentExcelName);
                                     }
                                 } else {
                                     throw new ServiceException("适用组织不存在! 请先配置组织数据");
@@ -618,7 +634,7 @@ public class PostServiceImpl implements IPostService {
                                 successExcelList.add(post);
 
                             } else {
-                                this.onlyOne(officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
+                                this.onlyOne(departmentDTOList, officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
                                 if (stringBuffer.length() > 1) {
                                     postError.append(stringBuffer);
                                     errorExcelList.addAll(postExcelDistinct);
@@ -672,6 +688,10 @@ public class PostServiceImpl implements IPostService {
                 }
             }
         }
+        if (StringUtils.isNotEmpty(parentDepartmentExcelNameList)){
+            List<String> collect = parentDepartmentExcelNameList.stream().distinct().collect(Collectors.toList());
+            postError.append(String.join(",",collect));
+        }
         if (postError.length() > 1) {
             throw new ServiceException(postError.toString());
         }
@@ -680,6 +700,7 @@ public class PostServiceImpl implements IPostService {
     /**
      * 先插入岗位主表 再插入关联表
      *
+     * @param departmentDTOList
      * @param officialRankSystemDTOS
      * @param postNames
      * @param postCodes
@@ -692,8 +713,8 @@ public class PostServiceImpl implements IPostService {
      * @param postRankUpperName
      * @param postStatus
      */
-    private void onlyOne(List<OfficialRankSystemDTO> officialRankSystemDTOS, List<String> postNames, List<String> postCodes, List<PostExcel> postExcelDistinct, int i, Post post, StringBuffer stringBuffer, String officialRankSystemName, String postRankLowerName, String postRankUpperName, String postStatus) {
-        this.validPost(postNames, postCodes, stringBuffer, postExcelDistinct.get(i));
+    private void onlyOne(List<DepartmentDTO> departmentDTOList, List<OfficialRankSystemDTO> officialRankSystemDTOS, List<String> postNames, List<String> postCodes, List<PostExcel> postExcelDistinct, int i, Post post, StringBuffer stringBuffer, String officialRankSystemName, String postRankLowerName, String postRankUpperName, String postStatus) {
+        this.validPost(departmentDTOList,postNames, postCodes, stringBuffer, postExcelDistinct.get(i));
         BeanUtils.copyProperties(postExcelDistinct.get(i), post);
         if (StringUtils.isNotNull(officialRankSystemName)) {
             List<OfficialRankSystemDTO> OfficialRankSystemDTO = officialRankSystemDTOS.stream().filter(f -> StringUtils.equals(f.getOfficialRankSystemName(), officialRankSystemName)).collect(Collectors.toList());
@@ -720,9 +741,9 @@ public class PostServiceImpl implements IPostService {
         }
         //岗位状态
         if (StringUtils.equals(postStatus, "生效")) {
-            post.setStatus(0);
-        } else if (StringUtils.equals(postStatus, "失效")) {
             post.setStatus(1);
+        } else if (StringUtils.equals(postStatus, "失效")) {
+            post.setStatus(0);
         } else {
             post.setStatus(0);
         }
@@ -731,12 +752,13 @@ public class PostServiceImpl implements IPostService {
     /**
      * 检验数据
      *
+     * @param departmentDTOList
      * @param postNames
      * @param postCodes
      * @param stringBuffer
      * @param postExcel
      */
-    private void validPost(List<String> postNames, List<String> postCodes, StringBuffer stringBuffer, PostExcel postExcel) {
+    private void validPost(List<DepartmentDTO> departmentDTOList, List<String> postNames, List<String> postCodes, StringBuffer stringBuffer, PostExcel postExcel) {
         //岗位名称
         String postName = postExcel.getPostName();
         //岗位编码
@@ -783,6 +805,10 @@ public class PostServiceImpl implements IPostService {
         }
         if (StringUtils.isNull(parentDepartmentExcelName)) {
             stringBuffer.append("适用组织为必填项！");
+        }
+        List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
+        if (StringUtils.isEmpty(departmentDTO)) {
+            stringBuffer.append(parentDepartmentExcelName+"组织不存在！");
         }
     }
 }

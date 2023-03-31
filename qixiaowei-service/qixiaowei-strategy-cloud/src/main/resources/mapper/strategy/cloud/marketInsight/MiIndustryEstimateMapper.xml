@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MiIndustryEstimateMapper">
+    <!--    查询市场洞察行业预估表-->
+    <select id="selectMiIndustryEstimateByMiMacroEstimateId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryEstimateDTO">
+        SELECT
+        mi_macro_estimate_id,market_insight_industry_id,mi_industry_detail_id,plan_year,overall_space_amount,participate_space_amount,target_market_space_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_estimate
+        WHERE  mi_macro_estimate_id=#{miMacroEstimateId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察行业预估表-->
+    <select id="selectMiIndustryEstimateByMiMacroEstimateIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryEstimateDTO">
+        SELECT
+        mi_macro_estimate_id,market_insight_industry_id,mi_industry_detail_id,plan_year,overall_space_amount,participate_space_amount,target_market_space_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_estimate
+        WHERE  mi_macro_estimate_id in
+            <foreach item="item"
+                     collection="miMacroEstimateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察行业预估表列表-->
+    <select id="selectMiIndustryEstimateList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryEstimateDTO">
+        SELECT
+        mi_macro_estimate_id,market_insight_industry_id,mi_industry_detail_id,plan_year,overall_space_amount,participate_space_amount,target_market_space_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_estimate
+        WHERE delete_flag=0
+                        <if test="miIndustryEstimate.miMacroEstimateId != null">
+                            and mi_macro_estimate_id=#{miIndustryEstimate.miMacroEstimateId}
+                        </if>
+                        <if test="miIndustryEstimate.marketInsightIndustryId != null">
+                            and market_insight_industry_id=#{miIndustryEstimate.marketInsightIndustryId}
+                        </if>
+                        <if test="miIndustryEstimate.miIndustryDetailId != null">
+                            and mi_industry_detail_id=#{miIndustryEstimate.miIndustryDetailId}
+                        </if>
+                        <if test="miIndustryEstimate.planYear != null">
+                            and plan_year=#{miIndustryEstimate.planYear}
+                        </if>
+                        <if test="miIndustryEstimate.overallSpaceAmount != null">
+                            and overall_space_amount=#{miIndustryEstimate.overallSpaceAmount}
+                        </if>
+                        <if test="miIndustryEstimate.participateSpaceAmount != null">
+                            and participate_space_amount=#{miIndustryEstimate.participateSpaceAmount}
+                        </if>
+                        <if test="miIndustryEstimate.targetMarketSpaceAmount != null">
+                            and target_market_space_amount=#{miIndustryEstimate.targetMarketSpaceAmount}
+                        </if>
+                        <if test="miIndustryEstimate.deleteFlag != null">
+                            and delete_flag=#{miIndustryEstimate.deleteFlag}
+                        </if>
+                        <if test="miIndustryEstimate.createBy != null">
+                            and create_by=#{miIndustryEstimate.createBy}
+                        </if>
+                        <if test="miIndustryEstimate.createTime != null">
+                            and create_time=#{miIndustryEstimate.createTime}
+                        </if>
+                        <if test="miIndustryEstimate.updateBy != null">
+                            and update_by=#{miIndustryEstimate.updateBy}
+                        </if>
+                        <if test="miIndustryEstimate.updateTime != null">
+                            and update_time=#{miIndustryEstimate.updateTime}
+                        </if>
+    </select>
+<!--    根据市场洞察行业详情表主键查询市场洞察行业预估表-->
+    <select id="selectMiIndustryEstimateByMiIndustryDetailId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryEstimateDTO">
+        SELECT mi_macro_estimate_id,
+               market_insight_industry_id,
+               mi_industry_detail_id,
+               plan_year,
+               overall_space_amount,
+               participate_space_amount,
+               target_market_space_amount,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM mi_industry_estimate
+        WHERE mi_industry_detail_id = #{miIndustryDetailId}
+          and delete_flag = 0
+    </select>
+<!--    根据市场洞察行业详情表主键集合批量查询市场洞察行业预估表-->
+    <select id="selectMiIndustryEstimateByMiIndustryDetailIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryEstimateDTO">
+        SELECT
+        mi_macro_estimate_id,market_insight_industry_id,mi_industry_detail_id,plan_year,overall_space_amount,participate_space_amount,target_market_space_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_estimate
+        WHERE  mi_industry_detail_id in
+        <foreach item="item"
+                 collection="miIndustryDetailIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+    <!--新增市场洞察行业预估表-->
+    <insert id="insertMiIndustryEstimate" useGeneratedKeys="true" keyProperty="miMacroEstimateId">
+        INSERT INTO mi_industry_estimate (market_insight_industry_id,mi_industry_detail_id,plan_year,overall_space_amount,participate_space_amount,target_market_space_amount,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{miIndustryEstimate.marketInsightIndustryId},#{miIndustryEstimate.miIndustryDetailId},#{miIndustryEstimate.planYear},#{miIndustryEstimate.overallSpaceAmount},#{miIndustryEstimate.participateSpaceAmount},#{miIndustryEstimate.targetMarketSpaceAmount},#{miIndustryEstimate.deleteFlag},#{miIndustryEstimate.createBy},#{miIndustryEstimate.createTime},#{miIndustryEstimate.updateBy},#{miIndustryEstimate.updateTime})
+    </insert>
+    <!--修改市场洞察行业预估表-->
+    <update id="updateMiIndustryEstimate">
+        UPDATE mi_industry_estimate
+        SET
+                    <if test="miIndustryEstimate.marketInsightIndustryId != null">
+                        market_insight_industry_id=#{miIndustryEstimate.marketInsightIndustryId},
+                    </if>
+                    <if test="miIndustryEstimate.miIndustryDetailId != null">
+                        mi_industry_detail_id=#{miIndustryEstimate.miIndustryDetailId},
+                    </if>
+                    <if test="miIndustryEstimate.planYear != null">
+                        plan_year=#{miIndustryEstimate.planYear},
+                    </if>
+                    <if test="miIndustryEstimate.overallSpaceAmount != null">
+                        overall_space_amount=#{miIndustryEstimate.overallSpaceAmount},
+                    </if>
+                    <if test="miIndustryEstimate.participateSpaceAmount != null">
+                        participate_space_amount=#{miIndustryEstimate.participateSpaceAmount},
+                    </if>
+                    <if test="miIndustryEstimate.targetMarketSpaceAmount != null">
+                        target_market_space_amount=#{miIndustryEstimate.targetMarketSpaceAmount},
+                    </if>
+                    <if test="miIndustryEstimate.deleteFlag != null">
+                        delete_flag=#{miIndustryEstimate.deleteFlag},
+                    </if>
+                    <if test="miIndustryEstimate.createBy != null">
+                        create_by=#{miIndustryEstimate.createBy},
+                    </if>
+                    <if test="miIndustryEstimate.createTime != null">
+                        create_time=#{miIndustryEstimate.createTime},
+                    </if>
+                    <if test="miIndustryEstimate.updateBy != null">
+                        update_by=#{miIndustryEstimate.updateBy},
+                    </if>
+                    <if test="miIndustryEstimate.updateTime != null">
+                        update_time=#{miIndustryEstimate.updateTime}
+                    </if>
+        WHERE
+                 mi_macro_estimate_id=#{miIndustryEstimate.miMacroEstimateId}
+    </update>
+    <!--逻辑删除市场洞察行业预估表-->
+    <update id="logicDeleteMiIndustryEstimateByMiMacroEstimateId">
+        UPDATE mi_industry_estimate
+        SET     delete_flag= 1,
+                update_by=#{miIndustryEstimate.updateBy},
+                update_time=#{miIndustryEstimate.updateTime}
+        WHERE
+                mi_macro_estimate_id=#{miIndustryEstimate.miMacroEstimateId}
+    </update>
+    <!--逻辑批量删除市场洞察行业预估表-->
+    <update id="logicDeleteMiIndustryEstimateByMiMacroEstimateIds">
+        UPDATE mi_industry_estimate
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         mi_macro_estimate_id IN
+            <foreach item="item"
+                     collection="miMacroEstimateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察行业预估表-->
+    <insert id="batchMiIndustryEstimate" useGeneratedKeys="true" keyProperty="miMacroEstimateId">
+        INSERT INTO mi_industry_estimate (market_insight_industry_id,mi_industry_detail_id,plan_year,overall_space_amount,participate_space_amount,target_market_space_amount,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="miIndustryEstimates"
+                 separator=",">
+            (#{item.marketInsightIndustryId},#{item.miIndustryDetailId},#{item.planYear},#{item.overallSpaceAmount},#{item.participateSpaceAmount},#{item.targetMarketSpaceAmount},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察行业预估表-->
+    <delete id="deleteMiIndustryEstimateByMiMacroEstimateId">
+        DELETE FROM mi_industry_estimate
+        WHERE  mi_macro_estimate_id=#{miIndustryEstimate}
+
+    </delete>
+    <!--物理批量删除市场洞察行业预估表-->
+    <delete id="deleteMiIndustryEstimateByMiMacroEstimateIds">
+        DELETE FROM mi_industry_estimate
+        WHERE  mi_macro_estimate_id IN
+            <foreach item="item"
+                     collection="miMacroEstimateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察行业预估表-->
+    <update id="updateMiIndustryEstimates">
+        update mi_industry_estimate
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="market_insight_industry_id=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.marketInsightIndustryId != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.marketInsightIndustryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="mi_industry_detail_id=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.miIndustryDetailId != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.miIndustryDetailId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="plan_year=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.planYear != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.planYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="overall_space_amount=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.overallSpaceAmount != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.overallSpaceAmount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="participate_space_amount=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.participateSpaceAmount != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.participateSpaceAmount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="target_market_space_amount=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.targetMarketSpaceAmount != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.targetMarketSpaceAmount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="miIndustryEstimateList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="miIndustryEstimateList" separator="or" item="item" index="index">
+                    mi_macro_estimate_id=#{item.miMacroEstimateId}
+        </foreach>
+    </update>
+</mapper>
+
+

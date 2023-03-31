@@ -6,8 +6,11 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.system.manage.api.domain.basic.IndicatorCategory;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
@@ -19,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -36,10 +42,10 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     private IndicatorMapper indicatorMapper;
 
     /**
-     * 查询指标分类表
+     * 查询指标类型表
      *
-     * @param indicatorCategoryId 指标分类表主键
-     * @return 指标分类表
+     * @param indicatorCategoryId 指标类型表主键
+     * @return 指标类型表
      */
     @Override
     public IndicatorCategoryDTO selectIndicatorCategoryByIndicatorCategoryId(Long indicatorCategoryId) {
@@ -47,22 +53,37 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
-     * 查询指标分类表列表
+     * 查询指标类型表列表
      *
-     * @param indicatorCategoryDTO 指标分类表
-     * @return 指标分类表
+     * @param indicatorCategoryDTO 指标类型表
+     * @return 指标类型表
      */
+    @DataScope(businessAlias = "ic")
     @Override
     public List<IndicatorCategoryDTO> selectIndicatorCategoryList(IndicatorCategoryDTO indicatorCategoryDTO) {
         IndicatorCategory indicatorCategory = new IndicatorCategory();
         BeanUtils.copyProperties(indicatorCategoryDTO, indicatorCategory);
-        return indicatorCategoryMapper.selectIndicatorCategoryList(indicatorCategory);
+        List<IndicatorCategoryDTO> indicatorCategoryDTOS = indicatorCategoryMapper.selectIndicatorCategoryList(indicatorCategory);
+        this.handleResult(indicatorCategoryDTOS);
+        return indicatorCategoryDTOS;
+    }
+
+    @Override
+    public void handleResult(List<IndicatorCategoryDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(IndicatorCategoryDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
-     * 生成指标分类编码
+     * 生成指标类型编码
      *
-     * @return 指标分类编码
+     * @return 指标类型编码
      */
     @Override
     public String generateIndicatorCategoryCode(Integer indicatorType) {
@@ -98,9 +119,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
-     * 新增指标分类表
+     * 新增指标类型表
      *
-     * @param indicatorCategoryDTO 指标分类表
+     * @param indicatorCategoryDTO 指标类型表
      * @return 结果
      */
     @Transactional
@@ -109,19 +130,23 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         String indicatorCategoryCode = indicatorCategoryDTO.getIndicatorCategoryCode();
         String indicatorCategoryName = indicatorCategoryDTO.getIndicatorCategoryName();
         Long indicatorCategoryId = indicatorCategoryDTO.getIndicatorCategoryId();
+        Integer indicatorType = indicatorCategoryDTO.getIndicatorType();
         if (StringUtils.isEmpty(indicatorCategoryName)) {
-            throw new ServiceException("指标分类名称不能为空");
+            throw new ServiceException("指标类型名称不能为空");
         }
         if (StringUtils.isEmpty(indicatorCategoryCode)) {
-            throw new ServiceException("指标分类编码不能为空");
+            throw new ServiceException("指标类型编码不能为空");
         }
         IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkCodeUnique(indicatorCategoryCode);
         if (StringUtils.isNotNull(indicatorCategoryByCode)) {
-            throw new ServiceException("指标类型编码重复");
+            throw new ServiceException("指标类型编码已存在");
         }
         IndicatorCategoryDTO indicatorCategoryByName = indicatorCategoryMapper.checkNameUnique(indicatorCategoryName);
         if (StringUtils.isNotNull(indicatorCategoryByName)) {
-            throw new ServiceException("指标分类名称重复");
+            throw new ServiceException("指标类型名称已存在");
+        }
+        if (StringUtils.isNull(indicatorType)) {
+            throw new ServiceException("指标类型不可以为空");
         }
         IndicatorCategory indicatorCategory = new IndicatorCategory();
         BeanUtils.copyProperties(indicatorCategoryDTO, indicatorCategory);
@@ -135,9 +160,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
-     * 修改指标分类表
+     * 修改指标类型表
      *
-     * @param indicatorCategoryDTO 指标分类表
+     * @param indicatorCategoryDTO 指标类型表
      * @return 结果
      */
     @Transactional
@@ -147,22 +172,22 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         Long indicatorCategoryId = indicatorCategoryDTO.getIndicatorCategoryId();
         String indicatorCategoryName = indicatorCategoryDTO.getIndicatorCategoryName();
         if (StringUtils.isNull(indicatorCategoryId)) {
-            throw new ServiceException("指标分类id不能为空");
+            throw new ServiceException("指标类型id不能为空");
         }
         if (StringUtils.isEmpty(indicatorCategoryCode)) {
-            throw new ServiceException("指标分类编码不能为空");
+            throw new ServiceException("指标类型编码不能为空");
         }
         IndicatorCategoryDTO indicatorCategoryById = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryId(indicatorCategoryId);
         if (StringUtils.isNull(indicatorCategoryById)) {
-            throw new ServiceException("当前指标分类不存在");
+            throw new ServiceException("当前指标类型不存在");
         }
         IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkCodeUnique(indicatorCategoryCode);
         if ((StringUtils.isNotNull(indicatorCategoryByCode)) && !indicatorCategoryByCode.getIndicatorCategoryId().equals(indicatorCategoryId)) {
-            throw new ServiceException("更新指标" + indicatorCategoryName + "失败,指标编码重复");
+            throw new ServiceException("指标类型编码已存在");
         }
         IndicatorCategoryDTO indicatorCategoryByName = indicatorCategoryMapper.checkNameUnique(indicatorCategoryName);
         if (StringUtils.isNotNull(indicatorCategoryByName) && !indicatorCategoryByName.getIndicatorCategoryId().equals(indicatorCategoryId)) {
-            throw new ServiceException("更新指标" + indicatorCategoryName + "失败,指标编码重复");
+            throw new ServiceException("指标类型名称已存在");
         }
 
         IndicatorCategory indicatorCategory = new IndicatorCategory();
@@ -173,9 +198,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
-     * 逻辑批量删除指标分类表
+     * 逻辑批量删除指标类型表
      *
-     * @param indicatorCategoryIds 需要删除的指标分类表主键
+     * @param indicatorCategoryIds 需要删除的指标类型表主键
      * @return 结果
      */
     @Transactional
@@ -183,7 +208,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     public int logicDeleteIndicatorCategoryByIndicatorCategoryIds(List<Long> indicatorCategoryIds) {
         List<IndicatorCategoryDTO> indicatorCategoryByIds = indicatorCategoryMapper.selectIndicatorCategoryIds(indicatorCategoryIds);
         if (StringUtils.isEmpty(indicatorCategoryByIds)) {
-            throw new ServiceException("指标分类不存在");
+            throw new ServiceException("指标类型不存在");
         }
         isQuote(indicatorCategoryIds, indicatorCategoryByIds);
         return indicatorCategoryMapper.logicDeleteIndicatorCategoryByIndicatorCategoryIds(indicatorCategoryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
@@ -192,8 +217,8 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     /**
      * 引用校验
      *
-     * @param indicatorCategoryIds   需要删除的指标分类表主键
-     * @param indicatorCategoryByIds 指标分类DTO集合
+     * @param indicatorCategoryIds   需要删除的指标类型表主键
+     * @param indicatorCategoryByIds 指标类型DTO集合
      */
     private void isQuote(List<Long> indicatorCategoryIds, List<IndicatorCategoryDTO> indicatorCategoryByIds) {
         StringBuilder quoteReminder = new StringBuilder("");
@@ -216,9 +241,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
-     * 物理删除指标分类表信息
+     * 物理删除指标类型表信息
      *
-     * @param indicatorCategoryId 指标分类表主键
+     * @param indicatorCategoryId 指标类型表主键
      * @return 结果
      */
     @Transactional
@@ -246,9 +271,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
-     * 逻辑删除指标分类表信息
+     * 逻辑删除指标类型表信息
      *
-     * @param indicatorCategoryId 指标分类表
+     * @param indicatorCategoryId 指标类型表
      * @return 结果
      */
     @Transactional
@@ -260,9 +285,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
-     * 物理删除指标分类表信息
+     * 物理删除指标类型表信息
      *
-     * @param indicatorCategoryDTO 指标分类表
+     * @param indicatorCategoryDTO 指标类型表
      * @return 结果
      */
     @Transactional
@@ -274,9 +299,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
-     * 物理批量删除指标分类表
+     * 物理批量删除指标类型表
      *
-     * @param indicatorCategoryDtos 需要删除的指标分类表主键
+     * @param indicatorCategoryDtos 需要删除的指标类型表主键
      * @return 结果
      */
     @Transactional
@@ -290,9 +315,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
-     * 批量新增指标分类表信息
+     * 批量新增指标类型表信息
      *
-     * @param indicatorCategoryDtos 指标分类表对象
+     * @param indicatorCategoryDtos 指标类型表对象
      */
     @Override
     @Transactional
@@ -312,9 +337,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
-     * 批量修改指标分类表信息
+     * 批量修改指标类型表信息
      *
-     * @param indicatorCategoryDtos 指标分类表对象
+     * @param indicatorCategoryDtos 指标类型表对象
      */
     @Override
     @Transactional

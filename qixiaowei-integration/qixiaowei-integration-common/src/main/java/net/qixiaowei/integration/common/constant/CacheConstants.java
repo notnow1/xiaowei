@@ -65,6 +65,11 @@ public interface CacheConstants {
     String PWD_RESET_ERR_CNT_KEY = "pwd_reset_err_cnt:";
 
     /**
+     * 重置账户密码间隔 redis key
+     */
+    String PWD_RESET_INTERVAL_KEY = "pwd_reset_interval:";
+
+    /**
      * 租户ID集合 redis key
      */
     String TENANT_IDS_KEY = "tenant_ids:";
@@ -73,4 +78,9 @@ public interface CacheConstants {
      * 用户配置 redis key
      */
     String USER_CONFIG_KEY = "user_config:";
+
+    /**
+     * 用户 redis key
+     */
+    String USER_KEY = "user:";
 }

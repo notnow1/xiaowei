@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MiIndustryAttractionDataMapper">
+    <!--    查询市场洞察行业吸引力数据表-->
+    <select id="selectMiIndustryAttractionDataByMiIndustryAttractionDataId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
+        SELECT
+        mi_industry_attraction_data_id,market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_attraction_data
+        WHERE  mi_industry_attraction_data_id=#{miIndustryAttractionDataId}
+        and delete_flag=0
+    </select>
+
+
+
+    <!--    查询市场洞察行业吸引力数据表列表-->
+    <select id="selectMiIndustryAttractionDataList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
+        SELECT
+        mi_industry_attraction_data_id,market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_attraction_data
+        WHERE delete_flag=0
+                        <if test="miIndustryAttractionData.miIndustryAttractionDataId != null">
+                            and mi_industry_attraction_data_id=#{miIndustryAttractionData.miIndustryAttractionDataId}
+                        </if>
+                        <if test="miIndustryAttractionData.marketInsightIndustryId != null">
+                            and market_insight_industry_id=#{miIndustryAttractionData.marketInsightIndustryId}
+                        </if>
+                        <if test="miIndustryAttractionData.miIndustryDetailId != null">
+                            and mi_industry_detail_id=#{miIndustryAttractionData.miIndustryDetailId}
+                        </if>
+                        <if test="miIndustryAttractionData.miIndustryAttractionId != null">
+                            and mi_industry_attraction_id=#{miIndustryAttractionData.miIndustryAttractionId}
+                        </if>
+                        <if test="miIndustryAttractionData.industryAttractionElementId != null">
+                            and industry_attraction_element_id=#{miIndustryAttractionData.industryAttractionElementId}
+                        </if>
+                        <if test="miIndustryAttractionData.deleteFlag != null">
+                            and delete_flag=#{miIndustryAttractionData.deleteFlag}
+                        </if>
+                        <if test="miIndustryAttractionData.createBy != null">
+                            and create_by=#{miIndustryAttractionData.createBy}
+                        </if>
+                        <if test="miIndustryAttractionData.createTime != null">
+                            and create_time=#{miIndustryAttractionData.createTime}
+                        </if>
+                        <if test="miIndustryAttractionData.updateBy != null">
+                            and update_by=#{miIndustryAttractionData.updateBy}
+                        </if>
+                        <if test="miIndustryAttractionData.updateTime != null">
+                            and update_time=#{miIndustryAttractionData.updateTime}
+                        </if>
+    </select>
+<!--    根据市场洞察行业详情表主键查询市场洞察行业吸引力数据表-->
+    <select id="selectMiIndustryAttractionDataByNiIndustryDetailId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
+        SELECT miad.mi_industry_attraction_data_id,
+               miad.market_insight_industry_id,
+               miad.mi_industry_detail_id,
+               miad.mi_industry_attraction_id,
+               iae.assess_standard_name ,
+               iae.assess_standard_description,
+               iae.display_color,
+               miad.industry_attraction_element_id,
+               miad.delete_flag,
+               miad.create_by,
+               miad.create_time,
+               miad.update_by,
+               miad.update_time
+        FROM mi_industry_attraction_data miad
+                 left join industry_attraction_element iae
+                           on miad.industry_attraction_element_id =iae.industry_attraction_element_id
+                               and iae.delete_flag =0
+        WHERE miad.mi_industry_detail_id = #{miIndustryDetailId}
+          and miad.delete_flag = 0
+    </select>
+<!--    根据市场洞察行业详情表主键集合批量查询市场洞察行业吸引力数据表-->
+    <select id="selectMiIndustryAttractionDataByMiIndustryDetailIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
+        SELECT miad.mi_industry_attraction_data_id,
+        miad.market_insight_industry_id,
+        miad.mi_industry_detail_id,
+        miad.mi_industry_attraction_id,
+        miad.industry_attraction_element_id,
+        miad.delete_flag,
+        miad.create_by,
+        miad.create_time,
+        miad.update_by,
+        miad.update_time
+        FROM mi_industry_attraction_data miad
+        WHERE  miad.mi_industry_detail_id in
+        <foreach item="item"
+                 collection="miIndustryDetailIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and miad.delete_flag=0
+    </select>
+    <!--    批量查询市场洞察行业吸引力数据表-->
+    <select id="selectMiIndustryAttractionDataByMiIndustryAttractionDataIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
+        SELECT
+        mi_industry_attraction_data_id,market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_attraction_data
+        WHERE  mi_industry_attraction_data_id in
+        <foreach item="item"
+                 collection="miIndustryAttractionDataIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+<!--    根据行业吸引力要素主键查询市场洞察行业吸引力数据表-->
+    <select id="selectMiIndustryAttractionDataByIndustryAttractionElementId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO">
+        SELECT
+            mi_industry_attraction_data_id,market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_industry_attraction_data
+        WHERE  industry_attraction_element_id=#{industryAttractionElementId}
+          and delete_flag=0
+    </select>
+    <!--新增市场洞察行业吸引力数据表-->
+    <insert id="insertMiIndustryAttractionData" useGeneratedKeys="true" keyProperty="miIndustryAttractionDataId">
+        INSERT INTO mi_industry_attraction_data (market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{miIndustryAttractionData.marketInsightIndustryId},#{miIndustryAttractionData.miIndustryDetailId},#{miIndustryAttractionData.miIndustryAttractionId},#{miIndustryAttractionData.industryAttractionElementId},#{miIndustryAttractionData.deleteFlag},#{miIndustryAttractionData.createBy},#{miIndustryAttractionData.createTime},#{miIndustryAttractionData.updateBy},#{miIndustryAttractionData.updateTime})
+    </insert>
+    <!--修改市场洞察行业吸引力数据表-->
+    <update id="updateMiIndustryAttractionData">
+        UPDATE mi_industry_attraction_data
+        SET
+                    <if test="miIndustryAttractionData.marketInsightIndustryId != null">
+                        market_insight_industry_id=#{miIndustryAttractionData.marketInsightIndustryId},
+                    </if>
+                    <if test="miIndustryAttractionData.miIndustryDetailId != null">
+                        mi_industry_detail_id=#{miIndustryAttractionData.miIndustryDetailId},
+                    </if>
+                    <if test="miIndustryAttractionData.miIndustryAttractionId != null">
+                        mi_industry_attraction_id=#{miIndustryAttractionData.miIndustryAttractionId},
+                    </if>
+                    <if test="miIndustryAttractionData.industryAttractionElementId != null">
+                        industry_attraction_element_id=#{miIndustryAttractionData.industryAttractionElementId},
+                    </if>
+                    <if test="miIndustryAttractionData.deleteFlag != null">
+                        delete_flag=#{miIndustryAttractionData.deleteFlag},
+                    </if>
+                    <if test="miIndustryAttractionData.createBy != null">
+                        create_by=#{miIndustryAttractionData.createBy},
+                    </if>
+                    <if test="miIndustryAttractionData.createTime != null">
+                        create_time=#{miIndustryAttractionData.createTime},
+                    </if>
+                    <if test="miIndustryAttractionData.updateBy != null">
+                        update_by=#{miIndustryAttractionData.updateBy},
+                    </if>
+                    <if test="miIndustryAttractionData.updateTime != null">
+                        update_time=#{miIndustryAttractionData.updateTime}
+                    </if>
+        WHERE
+                 mi_industry_attraction_data_id=#{miIndustryAttractionData.miIndustryAttractionDataId}
+    </update>
+    <!--逻辑删除市场洞察行业吸引力数据表-->
+    <update id="logicDeleteMiIndustryAttractionDataByMiIndustryAttractionDataId">
+        UPDATE mi_industry_attraction_data
+        SET     delete_flag= 1,
+                update_by=#{miIndustryAttractionData.updateBy},
+                update_time=#{miIndustryAttractionData.updateTime}
+        WHERE
+                mi_industry_attraction_data_id=#{miIndustryAttractionData.miIndustryAttractionDataId}
+    </update>
+    <!--逻辑批量删除市场洞察行业吸引力数据表-->
+    <update id="logicDeleteMiIndustryAttractionDataByMiIndustryAttractionDataIds">
+        UPDATE mi_industry_attraction_data
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         mi_industry_attraction_data_id IN
+            <foreach item="item"
+                     collection="miIndustryAttractionDataIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察行业吸引力数据表-->
+    <insert id="batchMiIndustryAttractionData" useGeneratedKeys="true" keyProperty="miIndustryAttractionDataId">
+        INSERT INTO mi_industry_attraction_data (market_insight_industry_id,mi_industry_detail_id,mi_industry_attraction_id,industry_attraction_element_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="miIndustryAttractionDatas"
+                 separator=",">
+            (#{item.marketInsightIndustryId},#{item.miIndustryDetailId},#{item.miIndustryAttractionId},#{item.industryAttractionElementId},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察行业吸引力数据表-->
+    <delete id="deleteMiIndustryAttractionDataByMiIndustryAttractionDataId">
+        DELETE FROM mi_industry_attraction_data
+        WHERE  mi_industry_attraction_data_id=#{miIndustryAttractionData}
+
+    </delete>
+    <!--物理批量删除市场洞察行业吸引力数据表-->
+    <delete id="deleteMiIndustryAttractionDataByMiIndustryAttractionDataIds">
+        DELETE FROM mi_industry_attraction_data
+        WHERE  mi_industry_attraction_data_id IN
+            <foreach item="item"
+                     collection="miIndustryAttractionDataIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察行业吸引力数据表-->
+    <update id="updateMiIndustryAttractionDatas">
+        update mi_industry_attraction_data
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="market_insight_industry_id=case" suffix="end,">
+                        <foreach collection="miIndustryAttractionDataList" item="item" index="index">
+                                <if test="item.marketInsightIndustryId != null">
+                                    when mi_industry_attraction_data_id=#{item.miIndustryAttractionDataId} then #{item.marketInsightIndustryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="mi_industry_detail_id=case" suffix="end,">
+                        <foreach collection="miIndustryAttractionDataList" item="item" index="index">
+                                <if test="item.miIndustryDetailId != null">
+                                    when mi_industry_attraction_data_id=#{item.miIndustryAttractionDataId} then #{item.miIndustryDetailId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="mi_industry_attraction_id=case" suffix="end,">
+                        <foreach collection="miIndustryAttractionDataList" item="item" index="index">
+                                <if test="item.miIndustryAttractionId != null">
+                                    when mi_industry_attraction_data_id=#{item.miIndustryAttractionDataId} then #{item.miIndustryAttractionId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="industry_attraction_element_id=case" suffix="end,">
+                        <foreach collection="miIndustryAttractionDataList" item="item" index="index">
+                                <if test="item.industryAttractionElementId != null">
+                                    when mi_industry_attraction_data_id=#{item.miIndustryAttractionDataId} then #{item.industryAttractionElementId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="miIndustryAttractionDataList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when mi_industry_attraction_data_id=#{item.miIndustryAttractionDataId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="miIndustryAttractionDataList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when mi_industry_attraction_data_id=#{item.miIndustryAttractionDataId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="miIndustryAttractionDataList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when mi_industry_attraction_data_id=#{item.miIndustryAttractionDataId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="miIndustryAttractionDataList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when mi_industry_attraction_data_id=#{item.miIndustryAttractionDataId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="miIndustryAttractionDataList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when mi_industry_attraction_data_id=#{item.miIndustryAttractionDataId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="miIndustryAttractionDataList" separator="or" item="item" index="index">
+                    mi_industry_attraction_data_id=#{item.miIndustryAttractionDataId}
+        </foreach>
+    </update>
+</mapper>
+
+

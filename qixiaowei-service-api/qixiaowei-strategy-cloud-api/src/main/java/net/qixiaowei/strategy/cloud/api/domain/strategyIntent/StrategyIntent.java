@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 战略意图表
@@ -58,6 +59,9 @@ public class StrategyIntent extends TenantEntity {
      * 创建人名称
      */
     private String createByName;
-
+    /**
+     * 创建人集合
+     */
+    private List<String> createBys;
 }
 

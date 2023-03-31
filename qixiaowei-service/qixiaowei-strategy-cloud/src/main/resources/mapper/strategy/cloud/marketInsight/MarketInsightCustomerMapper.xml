@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MarketInsightCustomerMapper">
+    <!--    查询市场洞察客户表-->
+    <select id="selectMarketInsightCustomerByMarketInsightCustomerId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO">
+        SELECT mic.market_insight_customer_id,
+               mic.plan_year,
+               mic.plan_business_unit_id,
+               pbu.business_unit_name as planBusinessUnitName,
+               mic.business_unit_decompose,
+               mic.area_id,
+               mic.department_id,
+               mic.product_id,
+               mic.industry_id,
+               mic.delete_flag,
+               mic.create_by,
+               mic.create_time,
+               mic.update_by,
+               mic.update_time
+        FROM market_insight_customer mic
+                 left join plan_business_unit pbu
+                           on pbu.plan_business_unit_id = mic.plan_business_unit_id
+                               and pbu.delete_flag = 0
+        WHERE mic.market_insight_customer_id = #{marketInsightCustomerId}
+          and mic.delete_flag = 0
+    </select>
+
+    <!--    批量查询市场洞察客户表-->
+    <select id="selectMarketInsightCustomerByMarketInsightCustomerIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO">
+        SELECT
+        market_insight_customer_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_customer
+        WHERE market_insight_customer_id in
+        <foreach item="item"
+                 collection="marketInsightCustomerIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察客户表列表-->
+    <select id="selectMarketInsightCustomerList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO">
+        select
+        mic.market_insight_customer_id,
+        mic.plan_year,
+        mic.plan_business_unit_id,
+        pbu.business_unit_name as planBusinessUnitName,
+        mic.business_unit_decompose,
+        mic.area_id,
+        mic.department_id,
+        mic.product_id,
+        mic.industry_id,
+        mic.delete_flag,
+        mic.create_by,
+        mic.create_time,
+        mic.update_by,
+        mic.update_time
+        from
+        market_insight_customer mic
+        left join plan_business_unit pbu
+        on pbu.plan_business_unit_id=mic.plan_business_unit_id
+        and pbu.delete_flag =0
+        where
+        mic.delete_flag = 0
+        <!-- 规划年度过滤  -->
+        <if test="marketInsightCustomer.params.planYearEqual != null and marketInsightCustomer.params.planYearEqual.size() > 0">
+            AND mic.plan_year IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.planYearEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.planYearNotEqual != null and marketInsightCustomer.params.planYearNotEqual.size() > 0">
+            AND mic.plan_year NOT IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.planYearNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.planYearBefore != null and marketInsightCustomer.params.planYearBefore != ''">
+            AND mic.plan_year &lt; #{marketInsightCustomer.params.planYearBefore}
+        </if>
+        <if test="marketInsightCustomer.params.planYearNotBefore != null and marketInsightCustomer.params.planYearNotBefore != ''"><!-- 开始时间检索 -->
+            AND mic.plan_year &gt;= #{marketInsightCustomer.params.planYearNotBefore}
+        </if>
+        <if test="marketInsightCustomer.params.planYearAfter != null and marketInsightCustomer.params.planYearAfter != ''"><!-- 开始时间检索 -->
+            AND mic.plan_year &gt; #{marketInsightCustomer.params.planYearAfter}
+        </if>
+        <if test="marketInsightCustomer.params.planYearNotAfter != null and marketInsightCustomer.params.planYearNotAfter != ''"><!-- 结束时间检索 -->
+            AND mic.plan_year &lt;= #{marketInsightCustomer.params.planYearNotAfter}
+        </if>
+        <if test="marketInsightCustomer.params.planYearStart != null and marketInsightCustomer.params.planYearStart != ''"><!-- 开始时间检索 -->
+            AND mic.plan_year &gt;= #{marketInsightCustomer.params.planYearStart}
+        </if>
+        <if test="marketInsightCustomer.params.planYearEnd != null and marketInsightCustomer.params.planYearEnd != ''"><!-- 结束时间检索 -->
+            AND mic.plan_year &lt;= #{marketInsightCustomer.params.planYearEnd}
+        </if>
+        <!-- 规划业务单元  -->
+        <if test="marketInsightCustomer.params.planBusinessUnitNameLike != null and marketInsightCustomer.params.planBusinessUnitNameLike.size() > 0">
+            AND
+            (    <foreach item="item"
+                          collection="marketInsightCustomer.params.planBusinessUnitNameLike"
+                          index="index" open="(" separator="OR" close=")">
+            pbu.business_unit_name LIKE concat('%', #{item}, '%')
+        </foreach>)
+        </if>
+        <if test="marketInsightCustomer.params.planBusinessUnitNameNotLike != null and marketInsightCustomer.params.planBusinessUnitNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.planBusinessUnitNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.planBusinessUnitNameEqual != null and marketInsightCustomer.params.planBusinessUnitNameEqual.size() > 0">
+            AND pbu.business_unit_name IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.planBusinessUnitNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.planBusinessUnitNameNotEqual != null and marketInsightCustomer.params.planBusinessUnitNameNotEqual.size() > 0">
+            AND (pbu.business_unit_name NOT IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.planBusinessUnitNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pbu.business_unit_name IS NULL
+            )
+        </if>
+        <!-- 区域ID过滤  -->
+        <if test="marketInsightCustomer.params.areaIdEqual != null and marketInsightCustomer.params.areaIdEqual.size() > 0">
+            AND mic.area_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.areaIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.areaIdNotEqual != null and marketInsightCustomer.params.areaIdNotEqual.size() > 0">
+            AND (mic.area_id NOT IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.areaIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR mic.area_id IS NULL)
+        </if>
+        <!-- 区域ID为空  -->
+        <if test="marketInsightCustomer.params.areaIdNull != null">
+            AND mic.area_id is null
+        </if>
+        <!-- 区域ID不为空  -->
+        <if test="marketInsightCustomer.params.areaIdNotNull != null">
+            AND mic.area_id is not null
+        </if>
+        <!-- 部门ID过滤  -->
+        <if test="marketInsightCustomer.params.departmentIdEqual != null and marketInsightCustomer.params.departmentIdEqual.size() > 0">
+            AND mic.department_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.departmentIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.departmentIdNotEqual != null and marketInsightCustomer.params.departmentIdNotEqual.size() > 0">
+            AND (mic.department_id NOT IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.departmentIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR mic.department_id IS NULL)
+        </if>
+        <!-- 部门ID为空  -->
+        <if test="marketInsightCustomer.params.departmentIdNull != null">
+            AND mic.department_id is null
+        </if>
+        <!-- 部门ID不为空  -->
+        <if test="marketInsightCustomer.params.departmentIdNotNull != null">
+            AND mic.department_id is not null
+        </if>
+        <!-- 产品ID过滤  -->
+        <if test="marketInsightCustomer.params.productIdEqual != null and marketInsightCustomer.params.productIdEqual.size() > 0">
+            AND mic.product_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.productIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.productIdNotEqual != null and marketInsightCustomer.params.productIdNotEqual.size() > 0">
+            AND (mic.product_id NOT IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.productIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR mic.product_id IS NULL)
+        </if>
+        <!-- 产品ID为空  -->
+        <if test="marketInsightCustomer.params.productIdNull != null">
+            AND mic.product_id is null
+        </if>
+        <!-- 产品ID不为空  -->
+        <if test="marketInsightCustomer.params.productIdNotNull != null">
+            AND mic.product_id is not null
+        </if>
+        <!-- 行业ID过滤  -->
+        <if test="marketInsightCustomer.params.industryIdEqual != null and marketInsightCustomer.params.industryIdEqual.size() > 0">
+            AND mic.industry_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.industryIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.industryIdNotEqual != null and marketInsightCustomer.params.industryIdNotEqual.size() > 0">
+            AND (mic.industry_id NOT IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.industryIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR mic.industry_id IS NULL)
+        </if>
+        <!-- 行业ID为空  -->
+        <if test="marketInsightCustomer.params.industryIdNull != null">
+            AND mic.industry_id is null
+        </if>
+        <!-- 行业ID不为空  -->
+        <if test="marketInsightCustomer.params.industryIdNotNull != null">
+            AND mic.industry_id is not null
+        </if>
+        <!-- 创建人等于过滤  -->
+        <if test="marketInsightCustomer.params.createByNameEqual != null">
+            <!-- 创建人等于过滤  -->
+            <if test="marketInsightCustomer.params.createBys != null and marketInsightCustomer.params.createBys.size() > 0">
+                AND mic.create_by IN
+                <foreach item="item"
+                         collection="marketInsightCustomer.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人等于过滤  -->
+            <if test="marketInsightCustomer.params.createBys == null">
+                AND  mic.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不等于过滤  -->
+        <if test=" marketInsightCustomer.params.createByNameNotEqual != null">
+            <!-- 创建人不等于过滤  -->
+            <if test="marketInsightCustomer.params.createBys != null and marketInsightCustomer.params.createBys.size() > 0">
+                AND (mic.create_by IN
+                <foreach item="item"
+                         collection="marketInsightCustomer.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不等于过滤  -->
+            <if test="marketInsightCustomer.params.createBys == null">
+                AND mic.create_by is null
+            </if>
+        </if>
+        <!-- 创建人包含过滤  -->
+        <if test="marketInsightCustomer.params.createByNameLike != null">
+            <!-- 创建人包含过滤  -->
+            <if test="marketInsightCustomer.params.createBys != null and marketInsightCustomer.params.createBys.size() > 0">
+                AND mic.create_by IN
+                <foreach item="item"
+                         collection="marketInsightCustomer.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人包含过滤  -->
+            <if test="marketInsightCustomer.params.createBys == null">
+                AND  mic.create_by is null
+            </if>
+        </if>
+        <!-- 创建人不包含过滤  -->
+        <if test=" marketInsightCustomer.params.createByNameNotLike != null">
+            <!-- 创建人不包含过滤  -->
+            <if test="marketInsightCustomer.params.createBys != null and marketInsightCustomer.params.createBys.size() > 0">
+                AND (mic.create_by IN
+                <foreach item="item"
+                         collection="marketInsightCustomer.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>)
+            </if>
+
+            <!-- 创建人不包含过滤  -->
+            <if test="marketInsightCustomer.params.createBys == null">
+                AND mic.create_by is null
+            </if>
+        </if>
+        <!-- 创建时间过滤  -->
+        <if test="marketInsightCustomer.params.createTimeEqual != null and marketInsightCustomer.params.createTimeEqual.size() > 0">
+            AND date_format(mic.create_time,'%Y/%m/%d') IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.createTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.createTimeNotEqual != null and marketInsightCustomer.params.createTimeNotEqual.size() > 0">
+            AND date_format(mic.create_time,'%Y/%m/%d') NOT IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.createTimeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.createTimeBefore != null and marketInsightCustomer.params.createTimeBefore != ''">
+            AND date_format(mic.create_time,'%Y/%m/%d') &lt; #{marketInsightCustomer.params.createTimeBefore}
+        </if>
+        <if test="marketInsightCustomer.params.createTimeNotBefore != null and marketInsightCustomer.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
+            AND date_format(mic.create_time,'%Y/%m/%d') &gt;= #{marketInsightCustomer.params.createTimeNotBefore}
+        </if>
+        <if test="marketInsightCustomer.params.createTimeAfter != null and marketInsightCustomer.params.createTimeAfter != ''"><!-- 开始时间检索 -->
+            AND date_format(mic.create_time,'%Y/%m/%d') &gt; #{marketInsightCustomer.params.createTimeAfter}
+        </if>
+        <if test="marketInsightCustomer.params.createTimeNotAfter != null and marketInsightCustomer.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
+            AND date_format(mic.create_time,'%Y/%m/%d') &lt;= #{marketInsightCustomer.params.createTimeNotAfter}
+        </if>
+        <if test="marketInsightCustomer.params.createTimeStart != null and marketInsightCustomer.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(mic.create_time,'%Y/%m/%d') &gt;= #{marketInsightCustomer.params.createTimeStart}
+        </if>
+        <if test="marketInsightCustomer.params.createTimeEnd != null and marketInsightCustomer.params.createTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(mic.create_time,'%Y/%m/%d') &lt;= #{marketInsightCustomer.params.createTimeEnd}
+        </if>
+
+        <if test="marketInsightCustomer.createBys != null and marketInsightCustomer.createBys.size() >0">
+            and mic.create_by in
+            <foreach item="item"
+                     collection="marketInsightCustomer.createBys"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.marketInsightCustomerId != null">
+            and mic.market_insight_customer_id=#{marketInsightCustomer.marketInsightCustomerId}
+        </if>
+        <if test="marketInsightCustomer.planYear != null">
+            and mic.plan_year=#{marketInsightCustomer.planYear}
+        </if>
+        <if test="marketInsightCustomer.planBusinessUnitId != null">
+            and mic.plan_business_unit_id=#{marketInsightCustomer.planBusinessUnitId}
+        </if>
+        <if test="marketInsightCustomer.businessUnitDecompose != null and marketInsightCustomer.businessUnitDecompose != ''">
+            and mic.business_unit_decompose=#{marketInsightCustomer.businessUnitDecompose}
+        </if>
+        <if test="marketInsightCustomer.areaId != null">
+            and mic.area_id=#{marketInsightCustomer.areaId}
+        </if>
+        <if test="marketInsightCustomer.departmentId != null">
+            and mic.department_id=#{marketInsightCustomer.departmentId}
+        </if>
+        <if test="marketInsightCustomer.productId != null">
+            and mic.product_id=#{marketInsightCustomer.productId}
+        </if>
+        <if test="marketInsightCustomer.industryId != null">
+            and mic.industry_id=#{marketInsightCustomer.industryId}
+        </if>
+        <if test="marketInsightCustomer.deleteFlag != null">
+            and mic.delete_flag=#{marketInsightCustomer.deleteFlag}
+        </if>
+        <if test="marketInsightCustomer.createBy != null">
+            and mic.create_by=#{marketInsightCustomer.createBy}
+        </if>
+        <if test="marketInsightCustomer.createTime != null">
+            and mic.create_time=#{marketInsightCustomer.createTime}
+        </if>
+        <if test="marketInsightCustomer.updateBy != null">
+            and mic.update_by=#{marketInsightCustomer.updateBy}
+        </if>
+        <if test="marketInsightCustomer.updateTime != null">
+            and mic.update_time=#{marketInsightCustomer.updateTime}
+        </if>
+        <if test="marketInsightCustomer.planBusinessUnitName != null">
+            AND pbu.business_unit_name LIKE concat('%', #{marketInsightCustomer.planBusinessUnitName}, '%')
+        </if>
+        <!-- 数据范围过滤 -->
+        ${marketInsightCustomer.params.dataScope}
+        ORDER BY mic.create_time desc
+    </select>
+<!--    根据规划业务单元集合批量查询市场洞察客户表-->
+    <select id="selectMarketInsightCustomerByPlanBusinessUnitIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO">
+        SELECT
+        market_insight_customer_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM market_insight_customer
+        WHERE plan_business_unit_id in
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+<!--    远程查询看客户是否被引用-->
+    <select id="remoteMarketInsightCustomerList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightCustomerDTO">
+        select
+        mic.market_insight_customer_id,
+        mic.plan_year,
+        mic.plan_business_unit_id,
+        pbu.business_unit_name as planBusinessUnitName,
+        mic.business_unit_decompose,
+        mic.area_id,
+        mic.department_id,
+        mic.product_id,
+        mic.industry_id,
+        mic.delete_flag,
+        mic.create_by,
+        mic.create_time,
+        mic.update_by,
+        mic.update_time
+        from
+        market_insight_customer mic
+        left join plan_business_unit pbu
+        on pbu.plan_business_unit_id=mic.plan_business_unit_id
+        and pbu.delete_flag =0
+        where
+        mic.delete_flag = 0
+        <if test="marketInsightCustomer.params.productIds != null and marketInsightCustomer.params.productIds.size()>0">
+            AND mic.product_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.productIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.industryIds != null and marketInsightCustomer.params.industryIds.size()>0">
+            AND mic.industry_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.areaIds != null and marketInsightCustomer.params.areaIds.size()>0">
+            AND  mic.area_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.areaIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightCustomer.params.departmentIds != null and marketInsightCustomer.params.departmentIds.size()>0">
+            AND mic.department_id IN
+            <foreach item="item"
+                     collection="marketInsightCustomer.params.departmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by mic.create_time desc
+    </select>
+    <!--新增市场洞察客户表-->
+    <insert id="insertMarketInsightCustomer" useGeneratedKeys="true" keyProperty="marketInsightCustomerId">
+        INSERT INTO market_insight_customer (plan_year, plan_business_unit_id, business_unit_decompose, area_id,
+                                             department_id, product_id, industry_id, delete_flag, create_by,
+                                             create_time, update_by, update_time)
+        VALUES (#{marketInsightCustomer.planYear}, #{marketInsightCustomer.planBusinessUnitId},
+                #{marketInsightCustomer.businessUnitDecompose}, #{marketInsightCustomer.areaId},
+                #{marketInsightCustomer.departmentId}, #{marketInsightCustomer.productId},
+                #{marketInsightCustomer.industryId}, #{marketInsightCustomer.deleteFlag},
+                #{marketInsightCustomer.createBy}, #{marketInsightCustomer.createTime},
+                #{marketInsightCustomer.updateBy}, #{marketInsightCustomer.updateTime})
+    </insert>
+    <!--修改市场洞察客户表-->
+    <update id="updateMarketInsightCustomer">
+        UPDATE market_insight_customer
+        SET
+        <if test="marketInsightCustomer.planYear != null">
+            plan_year=#{marketInsightCustomer.planYear},
+        </if>
+        <if test="marketInsightCustomer.planBusinessUnitId != null">
+            plan_business_unit_id=#{marketInsightCustomer.planBusinessUnitId},
+        </if>
+        <if test="marketInsightCustomer.businessUnitDecompose != null and marketInsightCustomer.businessUnitDecompose != ''">
+            business_unit_decompose=#{marketInsightCustomer.businessUnitDecompose},
+        </if>
+        <if test="marketInsightCustomer.areaId != null">
+            area_id=#{marketInsightCustomer.areaId},
+        </if>
+        <if test="marketInsightCustomer.departmentId != null">
+            department_id=#{marketInsightCustomer.departmentId},
+        </if>
+        <if test="marketInsightCustomer.productId != null">
+            product_id=#{marketInsightCustomer.productId},
+        </if>
+        <if test="marketInsightCustomer.industryId != null">
+            industry_id=#{marketInsightCustomer.industryId},
+        </if>
+        <if test="marketInsightCustomer.deleteFlag != null">
+            delete_flag=#{marketInsightCustomer.deleteFlag},
+        </if>
+        <if test="marketInsightCustomer.createBy != null">
+            create_by=#{marketInsightCustomer.createBy},
+        </if>
+        <if test="marketInsightCustomer.createTime != null">
+            create_time=#{marketInsightCustomer.createTime},
+        </if>
+        <if test="marketInsightCustomer.updateBy != null">
+            update_by=#{marketInsightCustomer.updateBy},
+        </if>
+        <if test="marketInsightCustomer.updateTime != null">
+            update_time=#{marketInsightCustomer.updateTime}
+        </if>
+        WHERE
+        market_insight_customer_id=#{marketInsightCustomer.marketInsightCustomerId}
+    </update>
+    <!--逻辑删除市场洞察客户表-->
+    <update id="logicDeleteMarketInsightCustomerByMarketInsightCustomerId">
+        UPDATE market_insight_customer
+        SET delete_flag= 1,
+            update_by=#{marketInsightCustomer.updateBy},
+            update_time=#{marketInsightCustomer.updateTime}
+        WHERE market_insight_customer_id = #{marketInsightCustomer.marketInsightCustomerId}
+    </update>
+    <!--逻辑批量删除市场洞察客户表-->
+    <update id="logicDeleteMarketInsightCustomerByMarketInsightCustomerIds">
+        UPDATE market_insight_customer
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        market_insight_customer_id IN
+        <foreach item="item"
+                 collection="marketInsightCustomerIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增市场洞察客户表-->
+    <insert id="batchMarketInsightCustomer">
+        INSERT INTO market_insight_customer
+        (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="marketInsightCustomers"
+                 separator=",">
+            (#{item.planYear},#{item.planBusinessUnitId},#{item.businessUnitDecompose},#{item.areaId},#{item.departmentId},#{item.productId},#{item.industryId},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察客户表-->
+    <delete id="deleteMarketInsightCustomerByMarketInsightCustomerId">
+        DELETE
+        FROM market_insight_customer
+        WHERE market_insight_customer_id = #{marketInsightCustomer}
+
+    </delete>
+    <!--物理批量删除市场洞察客户表-->
+    <delete id="deleteMarketInsightCustomerByMarketInsightCustomerIds">
+        DELETE FROM market_insight_customer
+        WHERE market_insight_customer_id IN
+        <foreach item="item"
+                 collection="marketInsightCustomerIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改市场洞察客户表-->
+    <update id="updateMarketInsightCustomers">
+        update market_insight_customer
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="plan_year=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.planYear != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.planYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="plan_business_unit_id=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.planBusinessUnitId != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.planBusinessUnitId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_unit_decompose=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then
+                        #{item.businessUnitDecompose}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="area_id=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.areaId != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.areaId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_id=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.departmentId != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.departmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_id=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.productId != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.productId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="industry_id=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.industryId != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.industryId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="marketInsightCustomerList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when market_insight_customer_id=#{item.marketInsightCustomerId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="marketInsightCustomerList" separator="or" item="item" index="index">
+            market_insight_customer_id=#{item.marketInsightCustomerId}
+        </foreach>
+    </update>
+</mapper>
+
+

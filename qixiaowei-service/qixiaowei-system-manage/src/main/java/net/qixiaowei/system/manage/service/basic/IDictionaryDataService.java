@@ -27,6 +27,13 @@ public interface IDictionaryDataService{
      */
     List<DictionaryDataDTO> selectDictionaryDataByDictionaryDataIds(List<Long> dictionaryDataIds);
     /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<DictionaryDataDTO> result);
+    /**
     * 查询字典数据表列表
     *
     * @param dictionaryDataDTO 字典数据表
@@ -109,8 +116,9 @@ public interface IDictionaryDataService{
     /**
      * 根据枚举查询产品应用字典名称数据
      * @return
+     * @param dictionaryType
      */
-    DictionaryTypeDTO selectDictionaryTypeByProduct();
+    DictionaryTypeDTO selectDictionaryTypeByProduct(String dictionaryType);
 
     /**
      * 根据typeId查询字典数据
@@ -125,4 +133,11 @@ public interface IDictionaryDataService{
      * @return
      */
     List<DictionaryDataDTO> remoteDictionaryDataId(DictionaryDataDTO dictionaryDataDTO);
+
+    /**
+     * 查询字典数据表列表包括失效
+     * @param dictionaryDataDTO
+     * @return
+     */
+     List<DictionaryDataDTO> selectDictionaryDataListAll(DictionaryDataDTO dictionaryDataDTO);
 }

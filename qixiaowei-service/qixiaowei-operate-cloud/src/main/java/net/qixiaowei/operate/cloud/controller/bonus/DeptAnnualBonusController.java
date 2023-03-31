@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.controller.bonus;
 
 import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -9,11 +10,14 @@ import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO;
 import net.qixiaowei.operate.cloud.service.bonus.IDeptAnnualBonusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -106,6 +110,20 @@ public class DeptAnnualBonusController extends BaseController {
     public AjaxResult list(DeptAnnualBonusDTO deptAnnualBonusDTO) {
         List<DeptAnnualBonusDTO> list = deptAnnualBonusService.selectDeptAnnualBonusList(deptAnnualBonusDTO);
         return AjaxResult.success(list);
+    }
+
+    /**
+     * 查询部门年终奖表列表(返回年份List)
+     */
+    @RequiresPermissions("operate:cloud:deptAnnualBonus:add")
+    @GetMapping("/getExistYear")
+    public AjaxResult getExistYear(DeptAnnualBonusDTO deptAnnualBonusDTO) {
+        List<String> listYears = new ArrayList<>();
+        List<DeptAnnualBonusDTO> list = deptAnnualBonusService.selectDeptAnnualBonusList(deptAnnualBonusDTO);
+        if (StringUtils.isNotEmpty(list)){
+            listYears = list.stream().filter(f -> f.getAnnualBonusYear() != null).map(DeptAnnualBonusDTO::getAnnualBonusYear).collect(Collectors.toList()).stream().map(String::valueOf).collect(Collectors.toList());
+        }
+        return AjaxResult.success(listYears);
     }
 
 }

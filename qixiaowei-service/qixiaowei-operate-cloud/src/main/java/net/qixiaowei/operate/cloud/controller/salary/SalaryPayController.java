@@ -2,8 +2,12 @@ package net.qixiaowei.operate.cloud.controller.salary;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.metadata.Head;
+import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
+import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
@@ -26,6 +30,9 @@ import net.qixiaowei.operate.cloud.excel.salary.SalaryPayImportListener;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayDetailsService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayService;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -180,7 +187,19 @@ public class SalaryPayController extends BaseController {
                     , CharsetKit.UTF_8);
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
             ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
-            WriteSheet sheet = EasyExcel.writerSheet(0, "Sheet1").head(headTemplate).build();
+            WriteSheet sheet = EasyExcel
+                    .writerSheet(0, "Sheet1")
+                    .head(headTemplate)
+                    .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                        @Override
+                        protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head,
+                                                      Integer relativeRowIndex, Boolean isHead) {
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            sheet.setColumnWidth(cell.getColumnIndex(), 6000);
+                            cell.setCellType(CellType.STRING);
+                        }
+                    })
+                    .build();
             excelWriter.write(new ArrayList<>(), sheet);
             excelWriter.finish();
         } catch (IOException e) {

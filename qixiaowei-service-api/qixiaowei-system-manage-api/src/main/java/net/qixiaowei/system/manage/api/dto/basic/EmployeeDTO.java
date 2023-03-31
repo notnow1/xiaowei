@@ -16,6 +16,7 @@ import javax.validation.constraints.*;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -27,7 +28,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Data
 @Accessors(chain = true)
-public class EmployeeDTO implements Serializable {
+public class EmployeeDTO extends BaseDTO {
     private static final long serialVersionUID = 1L;
 
     //查询检验
@@ -119,7 +120,7 @@ public class EmployeeDTO implements Serializable {
     /**
      * 员工手机号
      */
-    @Pattern(regexp = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "手机号码有误！")
+    @Pattern(regexp = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "请输入正确的手机号码")
 //    @NotBlank(message = "员工手机号不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private String employeeMobile;
     /**
@@ -254,7 +255,7 @@ public class EmployeeDTO implements Serializable {
     /**
      * 紧急联系人电话
      */
-    @Pattern(regexp = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "紧急联系人手机号码有误！")
+    @Pattern(regexp = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "请输入正确的手机号码")
 //    @NotBlank(message = "紧急联系人电话不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private String emergencyMobile;
     /**
@@ -275,30 +276,6 @@ public class EmployeeDTO implements Serializable {
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
-    /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-
-
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
     /**
      * 主管
      */

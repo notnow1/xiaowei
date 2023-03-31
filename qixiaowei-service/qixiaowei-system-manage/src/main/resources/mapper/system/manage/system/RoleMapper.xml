@@ -40,52 +40,57 @@
 
     <!--    查询角色表列表-->
     <select id="selectRoleList" resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
-        SELECT
-        role_id,role_type,role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time
-        FROM role
-        WHERE delete_flag=0
+        SELECT DISTINCT
+        r.role_id,r.role_type,r.role_code,r.role_name,r.data_scope,r.product_package,r.sort,r.remark,r.status,r.delete_flag,r.create_by,r.create_time,r.update_by,r.update_time
+        FROM role r
+        LEFT JOIN user_role ur on ur.role_id = r.role_id
+        LEFT JOIN user u on u.user_id = ur.user_id
+        WHERE r.delete_flag=0
         <if test="role.roleId != null">
-            and role_id=#{role.roleId}
+            and r.role_id=#{role.roleId}
         </if>
         <if test="role.roleType != null">
-            and role_type=#{role.roleType}
+            and r.role_type=#{role.roleType}
         </if>
         <if test="role.roleCode != null and role.roleCode != ''">
-            and role_code LIKE concat('%', #{role.roleCode}, '%')
+            and r.role_code LIKE concat('%', #{role.roleCode}, '%')
         </if>
         <if test="role.roleName != null and role.roleName != ''">
-            and role_name LIKE concat('%', #{role.roleName}, '%')
+            and r.role_name LIKE concat('%', #{role.roleName}, '%')
         </if>
         <if test="role.dataScope != null">
-            and data_scope=#{role.dataScope}
+            and r.data_scope=#{role.dataScope}
         </if>
         <if test="role.productPackage != null and role.productPackage != ''">
-            and product_package LIKE concat('%', #{role.productPackage}, '%')
+            and r.product_package LIKE concat('%', #{role.productPackage}, '%')
         </if>
         <if test="role.sort != null">
-            and sort=#{role.sort}
+            and r.sort=#{role.sort}
         </if>
         <if test="role.remark != null and role.remark != ''">
-            and remark=#{role.remark}
+            and r.remark=#{role.remark}
         </if>
         <if test="role.status != null">
-            and status=#{role.status}
+            and r.status=#{role.status}
         </if>
         <if test="role.deleteFlag != null">
-            and delete_flag=#{role.deleteFlag}
+            and r.delete_flag=#{role.deleteFlag}
         </if>
         <if test="role.createBy != null">
-            and create_by=#{role.createBy}
+            and r.create_by=#{role.createBy}
         </if>
         <if test="role.createTime != null">
-            and create_time=#{role.createTime}
+            and r.create_time=#{role.createTime}
         </if>
         <if test="role.updateBy != null">
-            and update_by=#{role.updateBy}
+            and r.update_by=#{role.updateBy}
         </if>
         <if test="role.updateTime != null">
-            and update_time=#{role.updateTime}
+            and r.update_time=#{role.updateTime}
         </if>
+        <!-- 数据范围过滤 -->
+        ${role.params.dataScope}
+        ORDER BY r.create_time DESC
     </select>
 
 

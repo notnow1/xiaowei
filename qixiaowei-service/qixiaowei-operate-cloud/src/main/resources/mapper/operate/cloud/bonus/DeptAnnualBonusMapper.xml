@@ -37,42 +37,45 @@
     <!--    查询部门年终奖表列表-->
     <select id="selectDeptAnnualBonusList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO">
         SELECT
-        dept_annual_bonus_id,annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time
-        FROM dept_annual_bonus
-        WHERE delete_flag=0
+        dab.dept_annual_bonus_id,dab.annual_bonus_year,dab.company_annual_bonus,dab.department_annual_bonus,dab.status,dab.delete_flag,dab.create_by,dab.create_time,dab.update_by,dab.update_time
+        FROM dept_annual_bonus dab
+        WHERE dab.delete_flag=0
         <if test="deptAnnualBonus.createTimeYear != null">
-            and date_format(create_time ,'%Y') like '%${deptAnnualBonus.createTimeYear}%'
+            and dab.date_format(create_time ,'%Y') like '%${deptAnnualBonus.createTimeYear}%'
         </if>
         <if test="deptAnnualBonus.deptAnnualBonusId != null">
-            and dept_annual_bonus_id=#{deptAnnualBonus.deptAnnualBonusId}
+            and dab.dept_annual_bonus_id=#{deptAnnualBonus.deptAnnualBonusId}
         </if>
         <if test="deptAnnualBonus.annualBonusYear != null">
-            and annual_bonus_year=#{deptAnnualBonus.annualBonusYear}
+            and dab.annual_bonus_year=#{deptAnnualBonus.annualBonusYear}
         </if>
         <if test="deptAnnualBonus.companyAnnualBonus != null">
-            and company_annual_bonus=#{deptAnnualBonus.companyAnnualBonus}
+            and dab.company_annual_bonus=#{deptAnnualBonus.companyAnnualBonus}
         </if>
         <if test="deptAnnualBonus.departmentAnnualBonus != null">
-            and department_annual_bonus=#{deptAnnualBonus.departmentAnnualBonus}
+            and dab.department_annual_bonus=#{deptAnnualBonus.departmentAnnualBonus}
         </if>
         <if test="deptAnnualBonus.status != null">
-            and status=#{deptAnnualBonus.status}
+            and dab.status=#{deptAnnualBonus.status}
         </if>
         <if test="deptAnnualBonus.deleteFlag != null">
-            and delete_flag=#{deptAnnualBonus.deleteFlag}
+            and dab.delete_flag=#{deptAnnualBonus.deleteFlag}
         </if>
         <if test="deptAnnualBonus.createBy != null">
-            and create_by=#{deptAnnualBonus.createBy}
+            and dab.create_by=#{deptAnnualBonus.createBy}
         </if>
         <if test="deptAnnualBonus.createTimeFormat != null and deptAnnualBonus.createTimeFormat != ''">
-            and date_format(create_time,'%Y/%m/%d') =#{deptAnnualBonus.createTimeFormat}
+            and dab.date_format(create_time,'%Y/%m/%d') =#{deptAnnualBonus.createTimeFormat}
         </if>
         <if test="deptAnnualBonus.updateBy != null">
-            and update_by=#{deptAnnualBonus.updateBy}
+            and dab.update_by=#{deptAnnualBonus.updateBy}
         </if>
         <if test="deptAnnualBonus.updateTime != null">
-            and update_time=#{deptAnnualBonus.updateTime}
+            and dab.update_time=#{deptAnnualBonus.updateTime}
         </if>
+        <!-- 数据范围过滤 -->
+        ${deptAnnualBonus.params.dataScope}
+        ORDER BY dab.annual_bonus_year,dab.create_time DESC
     </select>
     <!--    根据年份和一级部门年终奖-->
     <select id="selectDeptAnnualBonusByAnnualBonusYear"

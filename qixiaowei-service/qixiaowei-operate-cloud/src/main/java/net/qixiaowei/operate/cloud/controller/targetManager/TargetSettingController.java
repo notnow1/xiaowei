@@ -52,7 +52,7 @@ public class TargetSettingController extends BaseController {
      */
     @RequiresPermissions(value = {"operate:cloud:targetSetting:order:info", "operate:cloud:targetSetting:order:save"}, logical = Logical.OR)
     @GetMapping("/order/info")
-    public AjaxResult listOrder(TargetSettingDTO targetSettingDTO) {
+    public AjaxResult listOrder(@Validated(TargetSettingDTO.QueryTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectOrderTargetSettingList(targetSettingDTO));
     }
 
@@ -63,7 +63,7 @@ public class TargetSettingController extends BaseController {
     @RequiresPermissions("operate:cloud:targetSetting:order:save")
     @PostMapping("/order/save")
     public AjaxResult saveOrder(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.saveOrderTargetSetting(targetSettingDTO));
+        return AjaxResult.success("编辑成功", targetSettingService.saveOrderTargetSetting(targetSettingDTO));
     }
 
     /**
@@ -102,7 +102,7 @@ public class TargetSettingController extends BaseController {
      */
     @RequiresPermissions(value = {"operate:cloud:targetSetting:income:info", "operate:cloud:targetSetting:income:save"}, logical = Logical.OR)
     @GetMapping("/income/info")
-    public AjaxResult listIncome(@RequestParam Integer targetYear) {
+    public AjaxResult listIncome(@Validated(TargetSettingDTO.QueryTargetSettingDTO.class) @RequestParam("targetYear") Integer targetYear) {
         return AjaxResult.success(targetSettingService.selectIncomeTargetSettingList(targetYear));
     }
 
@@ -113,7 +113,7 @@ public class TargetSettingController extends BaseController {
     @RequiresPermissions("operate:cloud:targetSetting:income:save")
     @PostMapping("/income/save")
     public AjaxResult saveIncome(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.saveIncomeTargetSetting(targetSettingDTO));
+        return AjaxResult.success("编辑成功", targetSettingService.saveIncomeTargetSetting(targetSettingDTO));
     }
 
     /**
@@ -142,7 +142,7 @@ public class TargetSettingController extends BaseController {
      */
     @RequiresPermissions(value = {"operate:cloud:targetSetting:recovery:info", "operate:cloud:targetSetting:recovery:save"}, logical = Logical.OR)
     @GetMapping("/recovery/info")
-    public AjaxResult listRecovery(TargetSettingDTO targetSettingDTO) {
+    public AjaxResult listRecovery(@Validated(TargetSettingDTO.QueryTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectRecoveryTargetSettingList(targetSettingDTO));
     }
 
@@ -153,7 +153,7 @@ public class TargetSettingController extends BaseController {
     @RequiresPermissions("operate:cloud:targetSetting:recovery:save")
     @PostMapping("/recovery/save")
     public AjaxResult saveRecoveries(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.saveRecoveryTargetSetting(targetSettingDTO));
+        return AjaxResult.success("编辑成功", targetSettingService.saveRecoveryTargetSetting(targetSettingDTO));
     }
 
     /**
@@ -194,7 +194,7 @@ public class TargetSettingController extends BaseController {
     @RequiresPermissions("operate:cloud:targetSetting:edit")
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<TargetSettingDTO> targetSettingDTOS) {
-        return AjaxResult.success(targetSettingService.saveTargetSettings(targetSettingDTOS));
+        return AjaxResult.success("编辑成功", targetSettingService.saveTargetSettings(targetSettingDTOS));
     }
 
     /**

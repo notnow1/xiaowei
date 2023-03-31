@@ -54,7 +54,7 @@ public class BusinessDesignDTO {
     /**
      * 规划业务单元ID
      */
-    @NotNull(message = "规划年度不能为空", groups = {BusinessDesignDTO.AddBusinessDesignDTO.class})
+    @NotNull(message = "规划业务单元ID不能为空", groups = {BusinessDesignDTO.AddBusinessDesignDTO.class})
     private Long planBusinessUnitId;
     /**
      * 规划业务单元名称
@@ -64,6 +64,10 @@ public class BusinessDesignDTO {
      * 规划业务单元维度(region,department,product,industry)
      */
     private String businessUnitDecompose;
+    /**
+     * 规划业务单元维度列表
+     */
+    List<Map<String, Object>> businessUnitDecomposes;
     /**
      * 规划业务单元维度(region,department,product,industry)
      */
@@ -109,6 +113,10 @@ public class BusinessDesignDTO {
      */
     private Long createBy;
     /**
+     * 创建人
+     */
+    private String createByName;
+    /**
      * 创建时间
      */
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
@@ -138,6 +146,6 @@ public class BusinessDesignDTO {
     /**
      * 业务设计轴配置表
      */
-    private List<BusinessDesignAxisConfigDTO> businessDesignAxisConfigDTOS;
+    private List<Map<String, Object>> businessDesignAxisConfigMap;
 }
 

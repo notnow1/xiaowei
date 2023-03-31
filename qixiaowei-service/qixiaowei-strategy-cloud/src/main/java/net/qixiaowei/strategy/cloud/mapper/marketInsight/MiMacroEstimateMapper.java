@@ -26,7 +26,7 @@ public interface MiMacroEstimateMapper{
      * @param miMacroDetailId 市场洞察宏观详情表主键
      * @return 市场洞察宏观预估表
      */
-    MiMacroEstimateDTO selectMiMacroEstimateByMiMacroDetailId(@Param("miMacroDetailId")Long miMacroDetailId);
+    List<MiMacroEstimateDTO> selectMiMacroEstimateByMiMacroDetailId(@Param("miMacroDetailId")Long miMacroDetailId);
 
 
     /**

@@ -1,7 +1,6 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryStructureDTO;
@@ -34,7 +33,13 @@ public interface ISalaryPayService {
      * @return 工资发薪表集合
      */
     List<SalaryPayDTO> selectSalaryPayList(SalaryPayDTO salaryPayDTO);
-
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<SalaryPayDTO> result);
     /**
      * 新增工资发薪表
      *

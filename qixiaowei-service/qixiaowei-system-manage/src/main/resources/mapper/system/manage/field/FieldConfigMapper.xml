@@ -210,20 +210,6 @@
                     </if>
                 </foreach>
             </trim>
-            <trim prefix="create_by=case" suffix="end,">
-                <foreach collection="fieldConfigList" item="item" index="index">
-                    <if test="item.createBy != null">
-                        when field_config_id=#{item.fieldConfigId} then #{item.createBy}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_time=case" suffix="end,">
-                <foreach collection="fieldConfigList" item="item" index="index">
-                    <if test="item.createTime != null">
-                        when field_config_id=#{item.fieldConfigId} then #{item.createTime}
-                    </if>
-                </foreach>
-            </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="fieldConfigList" item="item" index="index">
                     <if test="item.updateBy != null">

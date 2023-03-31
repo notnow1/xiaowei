@@ -10,6 +10,14 @@ import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 * @since 2022-10-15
 */
 public interface IDictionaryTypeService{
+
+    /**
+     * 初始化数据
+     *
+     * @return 是否成功
+     */
+    Boolean initData(Long userId);
+
     /**
     * 查询字典类型表
     *

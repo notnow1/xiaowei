@@ -574,6 +574,7 @@ CREATE TABLE performance_appraisal(
     appraisal_name VARCHAR(128)    COMMENT '考核名称' ,
     cycle_flag TINYINT UNSIGNED NOT NULL   COMMENT '周期性考核标记:0否;1是' ,
     cycle_type TINYINT UNSIGNED NOT NULL   COMMENT '周期类型:1月度;2季度;3半年度;4年度' ,
+    evaluation_type TINYINT UNSIGNED NOT NULL   COMMENT '评议周期类型:1月度;2季度;3半年度;4年度' ,
     cycle_number TINYINT UNSIGNED NOT NULL   COMMENT '考核周期' ,
     appraisal_start_date DATE    COMMENT '考核开始日期' ,
     appraisal_end_date DATE    COMMENT '考核结束日期' ,
@@ -603,6 +604,7 @@ CREATE TABLE performance_appraisal_objects(
     appraisal_result VARCHAR(64)    COMMENT '考核结果' ,
     appraisal_object_status TINYINT UNSIGNED NOT NULL   COMMENT '考核对象状态:1待制定目标;2已制定目标-草稿;3待评议;4已评议-草稿;5待排名' ,
     sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    remark VARCHAR(512)    COMMENT '备注' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
     create_time DATETIME NOT NULL   COMMENT '创建时间' ,
@@ -647,6 +649,7 @@ CREATE TABLE performance_appraisal_items(
     guaranteed_value DECIMAL(18,2)    COMMENT '保底值' ,
     actual_value DECIMAL(18,2)    COMMENT '实际值' ,
     weight DECIMAL(5,2)    COMMENT '权重百分比(%)' ,
+    remark VARCHAR(512)    COMMENT '备注' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
     create_time DATETIME NOT NULL   COMMENT '创建时间' ,
@@ -655,6 +658,22 @@ CREATE TABLE performance_appraisal_items(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (perform_appraisal_items_id)
 )  COMMENT = '绩效考核项目表';
+
+
+CREATE TABLE perform_appraisal_evaluate(
+    perform_appraisal_evaluate_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    perform_appraisal_objects_id BIGINT UNSIGNED NOT NULL   COMMENT '绩效考核对象ID' ,
+    perform_appraisal_items_id BIGINT UNSIGNED NOT NULL   COMMENT '绩效考核项目ID' ,
+    evaluate_number TINYINT UNSIGNED NOT NULL   COMMENT '评议周期' ,
+    actual_value DECIMAL(18,2)    COMMENT '实际值' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (perform_appraisal_evaluate_id)
+)  COMMENT = '绩效考核评议表';
 
 
 CREATE TABLE performance_appraisal_columns(

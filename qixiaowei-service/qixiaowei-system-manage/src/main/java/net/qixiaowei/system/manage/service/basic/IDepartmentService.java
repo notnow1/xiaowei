@@ -5,6 +5,8 @@ import java.util.List;
 import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 /**
@@ -30,6 +32,13 @@ public interface IDepartmentService {
      */
     List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO);
 
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<DepartmentDTO> result);
 
     /**
      * 查询部门名称附加父级名称
@@ -143,11 +152,11 @@ public interface IDepartmentService {
 
     /**
      * 查询上级组织
-     *
      * @param departmentId
+     * @param status
      * @return
      */
-    List<DepartmentDTO> queryparent(Long departmentId);
+    List<DepartmentDTO> queryparent(Long departmentId,Integer status);
 
     /**
      * 部门岗位详情

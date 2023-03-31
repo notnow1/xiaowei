@@ -134,8 +134,13 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
                 "8、编辑导入模板时，若涉及到需要填充数字的字段，请注意单元格格式，避免以“0”作为开头的数字被省略掉“0”；\n" +
                 "9、产品量纲、产品类别、是否上下架为下拉选择。");
         head4.add("产品基本信息");
-        head4.add(dictionaryTypeDTO.getDictionaryName());
-        selectMap.put(4, dictionaryLabels);
+        if (StringUtils.isNotNull(dictionaryTypeDTO)){
+            head4.add(dictionaryTypeDTO.getDictionaryName());
+
+        }
+        if (StringUtils.isNotEmpty(dictionaryLabels)){
+            selectMap.put(4, dictionaryLabels);
+        }
         // 第六列
         List<String> head5 = new ArrayList<String>();
         head5.add("填写说明：\n" +
@@ -273,8 +278,12 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
         // 第五列
         List<String> head4 = new ArrayList<String>();
         head4.add("产品基本信息");
-        head4.add(dictionaryTypeDTO.getDictionaryName());
-        selectMap.put(4, dictionaryLabels);
+        if (StringUtils.isNotNull(dictionaryTypeDTO)){
+            head4.add(dictionaryTypeDTO.getDictionaryName());
+        }
+        if (StringUtils.isNotEmpty(dictionaryLabels)){
+            selectMap.put(4, dictionaryLabels);
+        }
         // 第六列
         List<String> head5 = new ArrayList<String>();
         head5.add("产品基本信息");
@@ -504,7 +513,7 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
                     //添加list
                     list.add(productExcel1);
                 } catch (Exception e) {
-                    throw new ServiceException("读取excel数据 转换实体类失败！");
+                    throw new ServiceException("模板格式不正确！");
                 }
             }
 

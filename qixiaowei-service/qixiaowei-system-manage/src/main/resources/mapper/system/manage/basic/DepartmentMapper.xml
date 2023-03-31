@@ -90,11 +90,11 @@
         </if>
         <if test="department.params.departmentCodeLike != null and department.params.departmentCodeLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="department.params.departmentCodeLike"
-                     index="index" open="(" separator="AND" close=")">
-                dm.department_code LIKE concat('%', #{item}, '%')
-            </foreach>
+            (          <foreach item="item"
+                                collection="department.params.departmentCodeLike"
+                                index="index" open="(" separator="OR" close=")">
+            dm.department_code LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="department.params.departmentCodeNotLike != null and department.params.departmentCodeNotLike.size() > 0">
             AND
@@ -125,11 +125,11 @@
         </if>
         <if test="department.params.departmentNameLike != null and department.params.departmentNameLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="department.params.departmentNameLike"
-                     index="index" open="(" separator="AND" close=")">
-                dm.department_name LIKE concat('%', #{item}, '%')
-            </foreach>
+            (        <foreach item="item"
+                              collection="department.params.departmentNameLike"
+                              index="index" open="(" separator="OR" close=")">
+            dm.department_name LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="department.params.departmentNameNotLike != null and department.params.departmentNameNotLike.size() > 0">
             AND
@@ -283,7 +283,8 @@
                      collection="department.params.departmentImportanceFactorNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
-            </foreach> or  (dm.department_importance_factor='' or dm.department_importance_factor is null))
+            </foreach>
+            or (dm.department_importance_factor='' or dm.department_importance_factor is null))
         </if>
         <if test="department.params.departmentImportanceFactorGreaterThan != null ">
             AND dm.department_importance_factor &gt;#{department.params.departmentImportanceFactorGreaterThan}
@@ -343,11 +344,11 @@
         </if>
         <if test="department.params.budgetDepartmentNamesLike != null and department.params.budgetDepartmentNamesLike.size() > 0">
             AND
-            <foreach item="item"
-                     collection="department.params.budgetDepartmentNamesLike"
-                     index="index" open="(" separator="AND" close=")">
-                dm.department_name LIKE concat('%', #{item}, '%')
-            </foreach>
+            (            <foreach item="item"
+                                  collection="department.params.budgetDepartmentNamesLike"
+                                  index="index" open="(" separator="OR" close=")">
+            dm.department_name LIKE concat('%', #{item}, '%')
+        </foreach>)
         </if>
         <if test="department.params.budgetDepartmentNamesNotLike != null and department.params.budgetDepartmentNamesNotLike.size() > 0">
             AND
@@ -393,10 +394,12 @@
         <if test="department.sort != null">
             and dm.sort like '%${department.sort}%'
         </if>
-        <if test="department.status != null">
+        <if test="department.status != null and (department.status ==0 or department.status == 1)">
             and dm.status = #{department.status}
         </if>
-
+        <!-- 数据范围过滤 -->
+        ${department.params.dataScope}
+        ORDER BY dm.create_time DESC
     </select>
 
     <select id="getDepartmentCodes" resultType="java.lang.String">
@@ -584,31 +587,50 @@
     </select>
     <!--    查询上级组织-->
     <select id="queryparent" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
-        select distinct e.employee_name as departmentLeaderName,
-                        d.department_id,
-                        d.parent_department_id,
-                        d.ancestors,
-                        d.department_code,
-                        d.department_name,
-                        d.level,
-                        d.department_leader_id,
-                        d.department_leader_post_id,
-                        d.examination_leader_id,
-                        d.department_importance_factor,
-                        d.department_description,
-                        d.sort,
-                        d.status,
-                        d.delete_flag,
-                        d.create_by,
-                        d.create_time,
-                        d.update_by,
-                        d.update_time
-        from department d
-                 left join employee e
-                           on e.employee_id = d.department_leader_id
-                               and e.delete_flag = 0
-        where d.delete_flag = 0
-        and d.status =1
+        select
+        ee.employee_name as department_leader_name,
+        ee2.employee_name as examination_leader_name,
+        p.post_name as department_leader_post_name,
+        dm.department_id,
+        dm.parent_department_id,
+        dm.ancestors,
+        dm.department_code,
+        dm.department_name,
+        dm2.department_name as parentDepartmentName,
+        dm.level,
+        dm.department_leader_id,
+        dm.department_leader_post_id,
+        dm.examination_leader_id,
+        dm.department_importance_factor,
+        dm.department_description,
+        dm.sort,
+        dm.status,
+        dm.create_by,
+        dm.create_time,
+        dm.update_by,
+        dm.update_time
+        from
+        department dm
+        left join employee ee
+        on ee.employee_id = dm.department_leader_id
+        and ee.delete_flag =0
+        left join post p2
+        on p2.post_id = ee.employee_post_id
+        and p2.delete_flag =0
+        left join employee ee2
+        on ee2.employee_id = dm.examination_leader_id
+        and ee2.delete_flag =0
+        left join post p
+        on p.post_id = dm.department_leader_post_id
+        and p.delete_flag =0
+        left join department dm2
+        on dm.parent_department_id = dm2.department_id
+        and dm2.delete_flag =0
+        where dm.delete_flag =0
+        <if test="status != null and (status ==0 or status ==1)">
+            and dm.status = #{status}
+        </if>
+
     </select>
     <!--    查询code编码是否已经存在-->
     <select id="selectDepartmentCode" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
@@ -658,12 +680,17 @@
                  left join official_rank_decompose ord
                            on ord.delete_flag = 0
                                and ord.rank_decompose_dimension = 1
-                               and ord.decompose_dimension = #{departmentId}
+                               and ord.decompose_dimension = deptpost.department_id
                  left join official_rank_system ors2 on
                     ord.official_rank_system_id = ors2.official_rank_system_id
                 and ors2.delete_flag = 0
         where deptpost.delete_flag = 0
-          and deptpost.department_id = #{departmentId}
+          and deptpost.department_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         order by deptpost.post_sort
     </select>
     <!--    分页查询部门人员表列表-->
@@ -753,7 +780,12 @@
                  left join `user` u
                            on u.employee_id = ee.employee_id
                                and u.delete_flag = 0
-        where ee.employee_id = #{employeeId}
+        where ee.employee_id in
+        <foreach item="item"
+                 collection="employeeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
           and ee.delete_flag = 0
     </select>
 
@@ -942,6 +974,60 @@
     <!--    远程查询所有部门-->
     <select id="getAll" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
 
+    </select>
+<!--    查询部门是否被人员引用！-->
+    <select id="queryDeptEmployees" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        select
+        dept.department_name,
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        p.post_name as employee_post_name,
+        e.employee_rank,
+        case when ors.rank_prefix_code is null then e.employee_rank
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,e.employee_rank) end as
+        employee_rank_name,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag,
+        e.create_by,
+        e.create_time,
+        e.update_by,
+        e.update_time
+        from
+        department dept
+        inner join
+        employee e
+        on
+        dept.department_id = e.employee_department_id
+        and e.delete_flag = 0
+        left join post p
+        on p.post_id = e.employee_post_id
+        and p.delete_flag = 0
+        left join official_rank_system ors
+        on ors.official_rank_system_id = p.official_rank_system_id
+        and ors.delete_flag =0
+        where
+        dept.delete_flag = 0
+       and dept.department_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and e.employment_status =1
+        and e.status =1
     </select>
 
     <!--新增部门表-->

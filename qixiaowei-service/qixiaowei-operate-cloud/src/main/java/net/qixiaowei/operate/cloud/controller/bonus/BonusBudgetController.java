@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -30,6 +32,7 @@ public class BonusBudgetController extends BaseController {
 
     @Autowired
     private IBonusBudgetService bonusBudgetService;
+
     /**
      * 分页查询奖金预算表列表
      */
@@ -124,6 +127,7 @@ public class BonusBudgetController extends BaseController {
         }
         return AjaxResult.success(bonusBudgetParametersDTO);
     }
+
     /**
      * 新增总奖金包预算阶梯预制数据
      */
@@ -143,6 +147,24 @@ public class BonusBudgetController extends BaseController {
     public AjaxResult list(BonusBudgetDTO bonusBudgetDTO) {
         List<BonusBudgetDTO> list = bonusBudgetService.selectBonusBudgetList(bonusBudgetDTO);
         return AjaxResult.success(list);
+    }
+
+
+    /**
+     * 查询已制定的总奖金预算(返回年份List)
+     *
+     * @param bonusBudgetDTO
+     * @return
+     */
+    @RequiresPermissions("operate:cloud:bonusBudget:add")
+    @GetMapping("/getExistYear")
+    public AjaxResult getExistYear(BonusBudgetDTO bonusBudgetDTO) {
+        List<String> listYears = new ArrayList<>();
+        List<BonusBudgetDTO> list = bonusBudgetService.selectBonusBudgetList(bonusBudgetDTO);
+        if (StringUtils.isNotEmpty(list)) {
+            listYears = list.stream().filter(f -> f.getBudgetYear() != null).map(BonusBudgetDTO::getBudgetYear).collect(Collectors.toList()).stream().map(String::valueOf).collect(Collectors.toList());
+        }
+        return AjaxResult.success(listYears);
     }
 
 }

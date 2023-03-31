@@ -1,13 +1,11 @@
 package net.qixiaowei.operate.cloud.api.dto.targetManager;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import javax.validation.groups.Default;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -18,7 +16,7 @@ import java.util.Set;
  */
 @Data
 @Accessors(chain = true)
-public class TargetOutcomeDTO {
+public class TargetOutcomeDTO extends BaseDTO {
 
     //查询检验
     public interface QueryTargetOutcomeDTO extends Default {
@@ -53,28 +51,6 @@ public class TargetOutcomeDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建人
-     */
-    private String createByName;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
      * 目标结果列表
      */
     private List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList;
@@ -82,8 +58,6 @@ public class TargetOutcomeDTO {
      * 员工ID集合
      */
     private Set<Long> createBys;
-
-    Map<String, Object> params;
 
 }
 

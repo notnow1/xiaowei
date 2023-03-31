@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.controller.bonus;
 
 import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -10,12 +11,15 @@ import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
 import net.qixiaowei.operate.cloud.service.bonus.IDeptBonusBudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -129,5 +133,19 @@ public class DeptBonusBudgetController extends BaseController {
         return AjaxResult.success(list);
     }
 
+
+    /**
+     * 查询部门奖金包预算表列表(返回年份List)
+     */
+    @RequiresPermissions("operate:cloud:deptBonusBudget:add")
+    @GetMapping("/getExistYear")
+    public AjaxResult getExistYear(DeptBonusBudgetDTO deptBonusBudgetDTO) {
+        List<String> listYears = new ArrayList<>();
+        List<DeptBonusBudgetDTO> list = deptBonusBudgetService.selectDeptBonusBudgetList(deptBonusBudgetDTO);
+        if (StringUtils.isNotEmpty(list)){
+            listYears = list.stream().filter(f -> f.getBudgetYear() != null).map(DeptBonusBudgetDTO::getBudgetYear).collect(Collectors.toList()).stream().map(String::valueOf).collect(Collectors.toList());
+        }
+        return AjaxResult.success(listYears);
+    }
 
 }

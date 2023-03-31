@@ -40,6 +40,14 @@ public interface IRoleService {
     List<RoleDTO> selectRoleList(RoleDTO roleDTO);
 
     /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<RoleDTO> result);
+
+    /**
      * 生成角色编码
      *
      * @return 角色编码

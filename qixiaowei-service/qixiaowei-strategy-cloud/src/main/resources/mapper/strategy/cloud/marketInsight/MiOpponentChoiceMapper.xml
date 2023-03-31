@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MiOpponentChoiceMapper">
+    <!--    查询市场洞察对手选择表-->
+    <select id="selectMiOpponentChoiceByMiOpponentChoiceId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO">
+        SELECT
+        mi_opponent_choice_id,market_insight_opponent_id,industry_id,opponent_name,comparison_item,ability_assess_score,analysis_opponent_core_ability,own_advantage,own_disadvantage,competitor_category,competition_strategy_type,operate_history_period,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_choice
+        WHERE  mi_opponent_choice_id=#{miOpponentChoiceId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察对手选择表-->
+    <select id="selectMiOpponentChoiceByMiOpponentChoiceIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO">
+        SELECT
+        mi_opponent_choice_id,market_insight_opponent_id,industry_id,opponent_name,comparison_item,ability_assess_score,analysis_opponent_core_ability,own_advantage,own_disadvantage,competitor_category,competition_strategy_type,operate_history_period,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_choice
+        WHERE  mi_opponent_choice_id in
+            <foreach item="item"
+                     collection="miOpponentChoiceIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察对手选择表列表-->
+    <select id="selectMiOpponentChoiceList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO">
+        SELECT
+        mi_opponent_choice_id,market_insight_opponent_id,industry_id,opponent_name,comparison_item,ability_assess_score,analysis_opponent_core_ability,own_advantage,own_disadvantage,competitor_category,competition_strategy_type,operate_history_period,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_choice
+        WHERE delete_flag=0
+                        <if test="miOpponentChoice.miOpponentChoiceId != null">
+                            and mi_opponent_choice_id=#{miOpponentChoice.miOpponentChoiceId}
+                        </if>
+                        <if test="miOpponentChoice.marketInsightOpponentId != null">
+                            and market_insight_opponent_id=#{miOpponentChoice.marketInsightOpponentId}
+                        </if>
+                        <if test="miOpponentChoice.industryId != null">
+                            and industry_id=#{miOpponentChoice.industryId}
+                        </if>
+                        <if test="miOpponentChoice.opponentName != null and miOpponentChoice.opponentName != ''">
+                            and opponent_name=#{miOpponentChoice.opponentName}
+                        </if>
+                        <if test="miOpponentChoice.comparisonItem != null">
+                            and comparison_item=#{miOpponentChoice.comparisonItem}
+                        </if>
+                        <if test="miOpponentChoice.abilityAssessScore != null">
+                            and ability_assess_score=#{miOpponentChoice.abilityAssessScore}
+                        </if>
+                        <if test="miOpponentChoice.analysisOpponentCoreAbility != null and miOpponentChoice.analysisOpponentCoreAbility != ''">
+                            and analysis_opponent_core_ability=#{miOpponentChoice.analysisOpponentCoreAbility}
+                        </if>
+                        <if test="miOpponentChoice.ownAdvantage != null and miOpponentChoice.ownAdvantage != ''">
+                            and own_advantage=#{miOpponentChoice.ownAdvantage}
+                        </if>
+                        <if test="miOpponentChoice.ownDisadvantage != null and miOpponentChoice.ownDisadvantage != ''">
+                            and own_disadvantage=#{miOpponentChoice.ownDisadvantage}
+                        </if>
+                        <if test="miOpponentChoice.competitorCategory != null">
+                            and competitor_category=#{miOpponentChoice.competitorCategory}
+                        </if>
+                        <if test="miOpponentChoice.competitionStrategyType != null">
+                            and competition_strategy_type=#{miOpponentChoice.competitionStrategyType}
+                        </if>
+                        <if test="miOpponentChoice.operateHistoryPeriod != null">
+                            and operate_history_period=#{miOpponentChoice.operateHistoryPeriod}
+                        </if>
+                        <if test="miOpponentChoice.sort != null">
+                            and sort=#{miOpponentChoice.sort}
+                        </if>
+                        <if test="miOpponentChoice.deleteFlag != null">
+                            and delete_flag=#{miOpponentChoice.deleteFlag}
+                        </if>
+                        <if test="miOpponentChoice.createBy != null">
+                            and create_by=#{miOpponentChoice.createBy}
+                        </if>
+                        <if test="miOpponentChoice.createTime != null">
+                            and create_time=#{miOpponentChoice.createTime}
+                        </if>
+                        <if test="miOpponentChoice.updateBy != null">
+                            and update_by=#{miOpponentChoice.updateBy}
+                        </if>
+                        <if test="miOpponentChoice.updateTime != null">
+                            and update_time=#{miOpponentChoice.updateTime}
+                        </if>
+    </select>
+<!--    根据市场洞察对手主表主键查询市场洞察对手选择表-->
+    <select id="selectMiOpponentChoiceByMarketInsightOpponentId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO">
+        SELECT
+            mi_opponent_choice_id,market_insight_opponent_id,industry_id,opponent_name,comparison_item,ability_assess_score,analysis_opponent_core_ability,own_advantage,own_disadvantage,competitor_category,competition_strategy_type,operate_history_period,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_choice
+        WHERE  market_insight_opponent_id=#{marketInsightOpponentId}
+          and delete_flag=0
+            order by sort
+    </select>
+<!--    根据市场洞察对手主表主键集合批量查询市场洞察对手选择表-->
+    <select id="selectMiOpponentChoiceByMarketInsightOpponentIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO">
+        SELECT
+        mi_opponent_choice_id,market_insight_opponent_id,industry_id,opponent_name,comparison_item,ability_assess_score,analysis_opponent_core_ability,own_advantage,own_disadvantage,competitor_category,competition_strategy_type,operate_history_period,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_choice
+        WHERE  mi_opponent_choice_id in
+        <foreach item="item"
+                 collection="marketInsightOpponentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+<!--    市场洞察对手选择远程查询列表是否被引用-->
+    <select id="remoteMiOpponentChoiceList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentChoiceDTO">
+        SELECT
+            mi_opponent_choice_id,market_insight_opponent_id,industry_id,opponent_name,comparison_item,ability_assess_score,analysis_opponent_core_ability,own_advantage,own_disadvantage,competitor_category,competition_strategy_type,operate_history_period,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_opponent_choice
+        WHERE delete_flag=0
+        <if test="miOpponentChoice.params.industryIds != null and miOpponentChoice.params.industryIds.size()>0">
+            AND industry_id IN
+            <foreach item="item"
+                     collection="miOpponentChoice.params.industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <!--新增市场洞察对手选择表-->
+    <insert id="insertMiOpponentChoice" useGeneratedKeys="true" keyProperty="miOpponentChoiceId">
+        INSERT INTO mi_opponent_choice (market_insight_opponent_id,industry_id,opponent_name,comparison_item,ability_assess_score,analysis_opponent_core_ability,own_advantage,own_disadvantage,competitor_category,competition_strategy_type,operate_history_period,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{miOpponentChoice.marketInsightOpponentId},#{miOpponentChoice.industryId},#{miOpponentChoice.opponentName},#{miOpponentChoice.comparisonItem},#{miOpponentChoice.abilityAssessScore},#{miOpponentChoice.analysisOpponentCoreAbility},#{miOpponentChoice.ownAdvantage},#{miOpponentChoice.ownDisadvantage},#{miOpponentChoice.competitorCategory},#{miOpponentChoice.competitionStrategyType},#{miOpponentChoice.operateHistoryPeriod},#{miOpponentChoice.sort},#{miOpponentChoice.deleteFlag},#{miOpponentChoice.createBy},#{miOpponentChoice.createTime},#{miOpponentChoice.updateBy},#{miOpponentChoice.updateTime})
+    </insert>
+    <!--修改市场洞察对手选择表-->
+    <update id="updateMiOpponentChoice">
+        UPDATE mi_opponent_choice
+        SET
+                    <if test="miOpponentChoice.marketInsightOpponentId != null">
+                        market_insight_opponent_id=#{miOpponentChoice.marketInsightOpponentId},
+                    </if>
+                    <if test="miOpponentChoice.industryId != null">
+                        industry_id=#{miOpponentChoice.industryId},
+                    </if>
+                    <if test="miOpponentChoice.opponentName != null and miOpponentChoice.opponentName != ''">
+                        opponent_name=#{miOpponentChoice.opponentName},
+                    </if>
+                    <if test="miOpponentChoice.comparisonItem != null">
+                        comparison_item=#{miOpponentChoice.comparisonItem},
+                    </if>
+                    <if test="miOpponentChoice.abilityAssessScore != null">
+                        ability_assess_score=#{miOpponentChoice.abilityAssessScore},
+                    </if>
+                    <if test="miOpponentChoice.analysisOpponentCoreAbility != null and miOpponentChoice.analysisOpponentCoreAbility != ''">
+                        analysis_opponent_core_ability=#{miOpponentChoice.analysisOpponentCoreAbility},
+                    </if>
+                    <if test="miOpponentChoice.ownAdvantage != null and miOpponentChoice.ownAdvantage != ''">
+                        own_advantage=#{miOpponentChoice.ownAdvantage},
+                    </if>
+                    <if test="miOpponentChoice.ownDisadvantage != null and miOpponentChoice.ownDisadvantage != ''">
+                        own_disadvantage=#{miOpponentChoice.ownDisadvantage},
+                    </if>
+                    <if test="miOpponentChoice.competitorCategory != null">
+                        competitor_category=#{miOpponentChoice.competitorCategory},
+                    </if>
+                    <if test="miOpponentChoice.competitionStrategyType != null">
+                        competition_strategy_type=#{miOpponentChoice.competitionStrategyType},
+                    </if>
+                    <if test="miOpponentChoice.operateHistoryPeriod != null">
+                        operate_history_period=#{miOpponentChoice.operateHistoryPeriod},
+                    </if>
+                    <if test="miOpponentChoice.sort != null">
+                        sort=#{miOpponentChoice.sort},
+                    </if>
+                    <if test="miOpponentChoice.deleteFlag != null">
+                        delete_flag=#{miOpponentChoice.deleteFlag},
+                    </if>
+                    <if test="miOpponentChoice.createBy != null">
+                        create_by=#{miOpponentChoice.createBy},
+                    </if>
+                    <if test="miOpponentChoice.createTime != null">
+                        create_time=#{miOpponentChoice.createTime},
+                    </if>
+                    <if test="miOpponentChoice.updateBy != null">
+                        update_by=#{miOpponentChoice.updateBy},
+                    </if>
+                    <if test="miOpponentChoice.updateTime != null">
+                        update_time=#{miOpponentChoice.updateTime}
+                    </if>
+        WHERE
+                 mi_opponent_choice_id=#{miOpponentChoice.miOpponentChoiceId}
+    </update>
+    <!--逻辑删除市场洞察对手选择表-->
+    <update id="logicDeleteMiOpponentChoiceByMiOpponentChoiceId">
+        UPDATE mi_opponent_choice
+        SET     delete_flag= 1,
+                update_by=#{miOpponentChoice.updateBy},
+                update_time=#{miOpponentChoice.updateTime}
+        WHERE
+                mi_opponent_choice_id=#{miOpponentChoice.miOpponentChoiceId}
+    </update>
+    <!--逻辑批量删除市场洞察对手选择表-->
+    <update id="logicDeleteMiOpponentChoiceByMiOpponentChoiceIds">
+        UPDATE mi_opponent_choice
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         mi_opponent_choice_id IN
+            <foreach item="item"
+                     collection="miOpponentChoiceIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察对手选择表-->
+    <insert id="batchMiOpponentChoice" useGeneratedKeys="true" keyProperty="miOpponentChoiceId">
+        INSERT INTO mi_opponent_choice (market_insight_opponent_id,industry_id,opponent_name,comparison_item,ability_assess_score,analysis_opponent_core_ability,own_advantage,own_disadvantage,competitor_category,competition_strategy_type,operate_history_period,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="miOpponentChoices"
+                 separator=",">
+            (#{item.marketInsightOpponentId},#{item.industryId},#{item.opponentName},#{item.comparisonItem},#{item.abilityAssessScore},#{item.analysisOpponentCoreAbility},#{item.ownAdvantage},#{item.ownDisadvantage},#{item.competitorCategory},#{item.competitionStrategyType},#{item.operateHistoryPeriod},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察对手选择表-->
+    <delete id="deleteMiOpponentChoiceByMiOpponentChoiceId">
+        DELETE FROM mi_opponent_choice
+        WHERE  mi_opponent_choice_id=#{miOpponentChoice}
+
+    </delete>
+    <!--物理批量删除市场洞察对手选择表-->
+    <delete id="deleteMiOpponentChoiceByMiOpponentChoiceIds">
+        DELETE FROM mi_opponent_choice
+        WHERE  mi_opponent_choice_id IN
+            <foreach item="item"
+                     collection="miOpponentChoiceIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察对手选择表-->
+    <update id="updateMiOpponentChoices">
+        update mi_opponent_choice
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="market_insight_opponent_id=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.marketInsightOpponentId != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.marketInsightOpponentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="industry_id=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.industryId != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.industryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="opponent_name=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.opponentName != null and item.opponentName != ''">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.opponentName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="comparison_item=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.comparisonItem != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.comparisonItem}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="ability_assess_score=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.abilityAssessScore != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.abilityAssessScore}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="analysis_opponent_core_ability=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.analysisOpponentCoreAbility != null and item.analysisOpponentCoreAbility != ''">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.analysisOpponentCoreAbility}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="own_advantage=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.ownAdvantage != null and item.ownAdvantage != ''">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.ownAdvantage}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="own_disadvantage=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.ownDisadvantage != null and item.ownDisadvantage != ''">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.ownDisadvantage}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="competitor_category=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.competitorCategory != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.competitorCategory}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="competition_strategy_type=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.competitionStrategyType != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.competitionStrategyType}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="operate_history_period=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.operateHistoryPeriod != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.operateHistoryPeriod}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="miOpponentChoiceList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when mi_opponent_choice_id=#{item.miOpponentChoiceId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="miOpponentChoiceList" separator="or" item="item" index="index">
+                    mi_opponent_choice_id=#{item.miOpponentChoiceId}
+        </foreach>
+    </update>
+</mapper>
+
+

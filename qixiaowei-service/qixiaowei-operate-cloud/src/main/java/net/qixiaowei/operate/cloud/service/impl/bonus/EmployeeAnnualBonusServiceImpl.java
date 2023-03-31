@@ -9,7 +9,9 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.message.api.dto.backlog.BacklogDTO;
 import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
@@ -17,10 +19,7 @@ import net.qixiaowei.operate.cloud.api.domain.bonus.DeptAnnualBonus;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmpAnnualBonusObjects;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmpAnnualBonusSnapshot;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
-import net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.*;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.mapper.bonus.DeptAnnualBonusMapper;
@@ -30,7 +29,6 @@ import net.qixiaowei.operate.cloud.mapper.bonus.EmployeeAnnualBonusMapper;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalObjectsMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IEmployeeAnnualBonusService;
-import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
@@ -100,6 +98,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      * @param employeeAnnualBonusDTO 个人年终奖表
      * @return 个人年终奖表
      */
+    @DataScope(businessAlias = "eab")
     @Override
     public List<EmployeeAnnualBonusDTO> selectEmployeeAnnualBonusList(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         EmployeeAnnualBonus employeeAnnualBonus = new EmployeeAnnualBonus();
@@ -110,6 +109,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             //申请年终奖总额
             packApplyBonusAmount(employeeAnnualBonusDTOS);
         }
+        this.handleResult(employeeAnnualBonusDTOS);
         //模糊查询申请年终奖金额
         BigDecimal applyBonusAmount = employeeAnnualBonusDTO.getApplyBonusAmount();
         if (StringUtils.isNotNull(applyBonusAmount)) {
@@ -763,9 +763,6 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
         if (commentFlag == 0) {
             if (submitFlag == 0) {
-                //评议日期
-                employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
-                employeeAnnualBonus.setStatus(Constants.ZERO);
                 packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus,null);
             } else {
                 //评议日期
@@ -807,11 +804,16 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             List<UserDTO> UserData = listR.getData();
             if (StringUtils.isNotEmpty(UserData)){
                 for (EmpAnnualBonusObjects empAnnualBonusObjects : empAnnualBonusObjectsList) {
-                    for (UserDTO userDatum : UserData) {
-                        if (empAnnualBonusObjects.getResponsibleEmployeeId().equals(userDatum.getEmployeeId())){
-                            empAnnualBonusObjects.setUserId(userDatum.getUserId());
+                    if (StringUtils.isNotNull(empAnnualBonusObjects.getResponsibleEmployeeId())){
+                        for (UserDTO userDatum : UserData) {
+                            if (StringUtils.isNotNull(userDatum.getEmployeeId())){
+                                if (empAnnualBonusObjects.getResponsibleEmployeeId().equals(userDatum.getEmployeeId())){
+                                    empAnnualBonusObjects.setUserId(userDatum.getUserId());
+                                }
+                            }
                         }
                     }
+
                 }
                 //根据主管id分组
                 Map<Long, List<EmpAnnualBonusObjects>> employeeMap = empAnnualBonusObjectsList.parallelStream().filter(f -> f.getResponsibleEmployeeId() != null).collect(Collectors.groupingBy(EmpAnnualBonusObjects::getResponsibleEmployeeId));
@@ -1066,23 +1068,23 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     /**
      * 根据人员id查询个人年终奖 申请人id
      *
-     * @param employeeId
+     * @param employeeIds
      * @return
      */
     @Override
-    public List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByEmployeeId(Long employeeId) {
-        return employeeAnnualBonusMapper.selectEmployeeAnnualBonusByEmployeeId(employeeId);
+    public List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByEmployeeIds(List<Long> employeeIds) {
+        return employeeAnnualBonusMapper.selectEmployeeAnnualBonusByEmployeeIds(employeeIds);
     }
 
     /**
      * 根据部门id查询个人年终奖 (一级部门,申请部门)
      *
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
     @Override
-    public List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByDepartmentId(Long departmentId) {
-        return employeeAnnualBonusMapper.selectEmployeeAnnualBonusByDepartmentId(departmentId);
+    public List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByDepartmentIds(List<Long> departmentIds) {
+        return employeeAnnualBonusMapper.selectEmployeeAnnualBonusByDepartmentIds(departmentIds);
     }
 
     /**
@@ -1214,6 +1216,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteEmployeeAnnualBonusByEmployeeAnnualBonusId(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         int i = 0;
         EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusDTO.getEmployeeAnnualBonusId());
@@ -1328,6 +1331,18 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             employeeAnnualBonusList.add(employeeAnnualBonus);
         }
         return employeeAnnualBonusMapper.updateEmployeeAnnualBonuss(employeeAnnualBonusList);
+    }
+
+    @Override
+    public void handleResult(List<EmployeeAnnualBonusDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(EmployeeAnnualBonusDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 }
 

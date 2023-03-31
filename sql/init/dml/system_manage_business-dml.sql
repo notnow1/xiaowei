@@ -33,7 +33,7 @@ INSERT INTO user_role (user_role_id, user_id, role_id, delete_flag, create_by, c
 -- init of config
 -- ----------------------------
 INSERT INTO config (config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, 0, '', 'basic', NULL, '基础配置', 1, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO config (config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(2, 1, 'basic', 'industry_enable', '0', '行业启用：1系统；2自定义', 1, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO config (config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(2, 1, 'basic', 'industry_enable', '1', '行业启用：1系统；2自定义', 1, 0, 1, sysdate(), 1, sysdate());
 
 
 -- ----------------------------
@@ -71,18 +71,128 @@ INSERT INTO `indicator` (`indicator_id`, `parent_indicator_id`, `ancestors`, `in
 -- ----------------------------
 -- init of dictionary_type
 -- ----------------------------
-INSERT INTO dictionary_type (dictionary_type_id, dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, 'PRODUCT_CATEGORY', '产品类别', '设置管理', '经营云配置', '产品配置', '', 1, 0, 0, sysdate(), 0, sysdate());
+INSERT INTO dictionary_type (dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES('PRODUCT_CATEGORY', '产品类别', '设置管理', '经营云配置', '产品配置', '', 1, 0, 0, sysdate(), 0, sysdate(),0);
 
 
 -- ----------------------------
 -- init of dictionary_data
 -- ----------------------------
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, 1, '通用件', '1', 1, 1, '', 1, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(2, 1, '标准件', '2', 0, 2, '', 1, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(3, 1, '自制件', '3', 0, 3, '', 1, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(4, 1, '外购件', '4', 0, 4, '', 1, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(5, 1, '外协件', '5', 0, 5, '', 1, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(6, 1, '原材料', '6', 0, 6, '', 1, 0, 1, sysdate(), 1, sysdate());
+Set @dictionary_type_id = (select dictionary_type_id  from dictionary_type where  dictionary_type='PRODUCT_CATEGORY' and tenant_id =0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id, '通用件', '1', 1, 1, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id, '标准件', '2', 0, 2, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id, '自制件', '3', 0, 3, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id, '外购件', '4', 0, 4, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id, '外协件', '5', 0, 5, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id, '原材料', '6', 0, 6, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_type
+-- ----------------------------
+INSERT INTO dictionary_type (dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES('MARKET_INSIGHT_MACRO_VISUAL_ANGLE', '视角', '战略云', '市场洞察', '看宏观', '', 1, 0, 0, sysdate(), 0, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_data
+-- ----------------------------
+Set @dictionary_type_id2 = (select dictionary_type_id  from dictionary_type where  dictionary_type='MARKET_INSIGHT_MACRO_VISUAL_ANGLE' and tenant_id =0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id2, '政策', '1', 0, 1, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id2, '经济', '2', 0, 2, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id2, '社会', '3', 0, 3, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id2, '技术', '4', 0, 4, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_type
+-- ----------------------------
+INSERT INTO dictionary_type (dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES('STRATEGY_MEASURE_SOURCE', '来源', '战略云', '战略解码', '战略举措清单', '', 1, 0, 0, sysdate(), 0, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_data
+-- ----------------------------
+Set @dictionary_type_id3 = (select dictionary_type_id  from dictionary_type where  dictionary_type='STRATEGY_MEASURE_SOURCE' and tenant_id =0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES ( @dictionary_type_id3, '差距分析', '1', 0, 1, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES ( @dictionary_type_id3, '看宏观', '2', 0, 2, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES ( @dictionary_type_id3, '看行业', '3', 0, 3, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES ( @dictionary_type_id3, '看客户', '4', 0, 4, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES ( @dictionary_type_id3, '看对手', '5', 0, 5, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES ( @dictionary_type_id3, '看自身', '6', 0, 6, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES ( @dictionary_type_id3, '战略意图', '7', 0, 7, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_type
+-- ----------------------------
+INSERT INTO dictionary_type (dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES('MARKET_INSIGHT_CUSTOMER_CUSTOMER_CATEGORY', '客户类别', '战略云', '市场洞察', '看客户', '', 1, 0, 0, sysdate(), 0, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_data
+-- ----------------------------
+Set @dictionary_type_id4 = (select dictionary_type_id  from dictionary_type where  dictionary_type='MARKET_INSIGHT_CUSTOMER_CUSTOMER_CATEGORY' and tenant_id =0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id4, '战略大客户', '1', 0, 1, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id4, '战略拓展客户', '2', 0, 2, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id4, '战略潜在客户', '3', 0, 3, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id4, '检验客户（普通客户）', '4', 0, 4, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id4, '空白客户（零星客户）', '5', 0, 5, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+
+
+
+-- ----------------------------
+-- init of dictionary_type
+-- ----------------------------
+INSERT INTO dictionary_type (dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES('MARKET_INSIGHT_INDUSTRY_INDUSTRY_TYPE', '行业类型', '战略云', '市场洞察', '看行业', '', 1, 0, 0, sysdate(), 0, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_data
+-- ----------------------------
+Set @dictionary_type_id5 = (select dictionary_type_id  from dictionary_type where  dictionary_type='MARKET_INSIGHT_INDUSTRY_INDUSTRY_TYPE' and tenant_id =0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id5, '改造型', '1', 0, 1, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id5, '替代型', '2', 0, 2, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id5, '创新型', '3', 0, 3, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+
+
+-- ----------------------------
+-- init of dictionary_type
+-- ----------------------------
+INSERT INTO dictionary_type (dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES('MARKET_INSIGHT_SELF_CAPACITY_FACTOR', '能力要素', '战略云', '市场洞察', '看对手;看自身', '', 1, 0, 0, sysdate(), 0, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_data
+-- ----------------------------
+Set @dictionary_type_id6 = (select dictionary_type_id  from dictionary_type where  dictionary_type='MARKET_INSIGHT_SELF_CAPACITY_FACTOR' and  tenant_id =0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id6, '品牌', '1', 0, 1, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id6, '客户关系', '2', 0, 2, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id6, '技术', '3', 0, 3, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id6, '成本', '4', 0, 4, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id6, '质量', '5', 0, 5, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id6, '服务', '6', 0, 6, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+
+
+-- ----------------------------
+-- init of dictionary_type
+-- ----------------------------
+INSERT INTO dictionary_type (dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES('MARKET_INSIGHT_OPPONENT_COMPETITOR_CATEGORY', '竞争对手类别', '战略云', '市场洞察', '看对手', '', 1, 0, 0, sysdate(), 0, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_data
+-- ----------------------------
+Set @dictionary_type_id7 = (select dictionary_type_id  from dictionary_type where  dictionary_type='MARKET_INSIGHT_OPPONENT_COMPETITOR_CATEGORY' and tenant_id =0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id7, '标杆企业', '1', 0, 1, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id7, '战略合作', '2', 0, 2, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id7, '战略竞争', '3', 0, 3, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id7, '一般竞争', '4', 0, 4, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_type
+-- ----------------------------
+INSERT INTO dictionary_type (dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES('MARKET_INSIGHT_OPPONENT_COMPETITION_STRATEGY_TYPE', '竞争策略类型', '战略云', '市场洞察', '看对手', '', 1, 0, 0, sysdate(), 0, sysdate(),0);
+
+-- ----------------------------
+-- init of dictionary_data
+-- ----------------------------
+Set @dictionary_type_id8 = (select dictionary_type_id  from dictionary_type where  dictionary_type='MARKET_INSIGHT_OPPONENT_COMPETITION_STRATEGY_TYPE' and tenant_id =0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id8, '先发制人策略', '1', 0, 1, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data ( dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id8, '硬碰硬策略', '2', 0, 2, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id8, '迂回策略', '3', 0, 3, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id8, '各个击破策略', '4', 0, 4, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id8, '拖延策略', '5', 0, 5, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time,tenant_id) VALUES( @dictionary_type_id8, '产品价格恶性竞争', '6', 0, 6, '', 1, 0, 1, sysdate(), 1, sysdate(),0);
 
 
 -- ----------------------------

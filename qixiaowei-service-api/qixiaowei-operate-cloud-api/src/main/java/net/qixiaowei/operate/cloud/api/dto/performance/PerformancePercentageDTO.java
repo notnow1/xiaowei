@@ -15,6 +15,7 @@ import javax.validation.constraints.Size;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO;
 
 /**
@@ -25,7 +26,7 @@ import net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO;
  */
 @Data
 @Accessors(chain = true)
-public class PerformancePercentageDTO {
+public class PerformancePercentageDTO extends BaseDTO {
 
     //查询检验
     public interface QueryPerformancePercentageDTO extends Default {
@@ -80,24 +81,6 @@ public class PerformancePercentageDTO {
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
-    /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
     /**
      * 组织菜单
      */

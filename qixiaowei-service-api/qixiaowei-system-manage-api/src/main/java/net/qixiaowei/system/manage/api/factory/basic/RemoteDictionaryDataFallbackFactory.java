@@ -36,7 +36,7 @@ public class RemoteDictionaryDataFallbackFactory implements FallbackFactory<Remo
             }
 
             @Override
-            public R<DictionaryTypeDTO> selectDictionaryTypeByProduct(String source) {
+            public R<DictionaryTypeDTO> selectDictionaryTypeByCode(String dictionaryType, String source) {
                 return R.fail("根据枚举查询产品应用字典名称数据失败:" + throwable.getMessage());
             }
 

@@ -53,10 +53,20 @@ public interface UserMapper {
      * 查询用户表
      *
      * @param userAccount 用户帐号
-     * @param tenantId 租户ID
+     * @param tenantId    租户ID
      * @return 用户表
      */
     UserDTO selectUserByUserAccountAndTenantId(@Param("userAccount") String userAccount, @Param("tenantId") Long tenantId);
+
+    /**
+     * 查询用户表
+     *
+     * @param departmentId 部门ID
+     * @param employeeId 员工ID
+     * @param dataScope    数据权限
+     * @return 用户表
+     */
+    Set<Long> selectUserIdsByDepartmentId(@Param("departmentId") Long departmentId, @Param("employeeId") Long employeeId, @Param("dataScope") Integer dataScope);
 
     /**
      * 查询用户表
@@ -154,6 +164,13 @@ public interface UserMapper {
      */
     int logicDeleteUserByUserIds(@Param("userIds") Set<Long> userIds, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
 
+    /**
+     * 更新用户状态表
+     *
+     * @param userIds 需要更改的数据主键集合
+     * @return 结果
+     */
+    int updateUserStatusByUserIds(@Param("userIds") Set<Long> userIds, @Param("status") Integer status, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
 
     /**
      * 物理删除用户表

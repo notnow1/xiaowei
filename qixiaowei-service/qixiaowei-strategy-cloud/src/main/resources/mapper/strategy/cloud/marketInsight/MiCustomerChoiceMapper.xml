@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MiCustomerChoiceMapper">
+    <!--    查询市场洞察客户选择表-->
+    <select id="selectMiCustomerChoiceByMiCustomerChoiceId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO">
+        SELECT
+        mi_customer_choice_id,market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_choice
+        WHERE  mi_customer_choice_id=#{miCustomerChoiceId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察客户选择表-->
+    <select id="selectMiCustomerChoiceByMiCustomerChoiceIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO">
+        SELECT
+        mi_customer_choice_id,market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_choice
+        WHERE  mi_customer_choice_id in
+            <foreach item="item"
+                     collection="miCustomerChoiceIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察客户选择表列表-->
+    <select id="selectMiCustomerChoiceList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO">
+        SELECT
+        mi_customer_choice_id,market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_choice
+        WHERE delete_flag=0
+                        <if test="miCustomerChoice.miCustomerChoiceId != null">
+                            and mi_customer_choice_id=#{miCustomerChoice.miCustomerChoiceId}
+                        </if>
+                        <if test="miCustomerChoice.marketInsightCustomerId != null">
+                            and market_insight_customer_id=#{miCustomerChoice.marketInsightCustomerId}
+                        </if>
+                        <if test="miCustomerChoice.industryId != null">
+                            and industry_id=#{miCustomerChoice.industryId}
+                        </if>
+                        <if test="miCustomerChoice.customerName != null and miCustomerChoice.customerName != ''">
+                            and customer_name=#{miCustomerChoice.customerName}
+                        </if>
+                        <if test="miCustomerChoice.admissionFlag != null">
+                            and admission_flag=#{miCustomerChoice.admissionFlag}
+                        </if>
+                        <if test="miCustomerChoice.customerCategory != null">
+                            and customer_category=#{miCustomerChoice.customerCategory}
+                        </if>
+                        <if test="miCustomerChoice.sort != null">
+                            and sort=#{miCustomerChoice.sort}
+                        </if>
+                        <if test="miCustomerChoice.deleteFlag != null">
+                            and delete_flag=#{miCustomerChoice.deleteFlag}
+                        </if>
+                        <if test="miCustomerChoice.createBy != null">
+                            and create_by=#{miCustomerChoice.createBy}
+                        </if>
+                        <if test="miCustomerChoice.createTime != null">
+                            and create_time=#{miCustomerChoice.createTime}
+                        </if>
+                        <if test="miCustomerChoice.updateBy != null">
+                            and update_by=#{miCustomerChoice.updateBy}
+                        </if>
+                        <if test="miCustomerChoice.updateTime != null">
+                            and update_time=#{miCustomerChoice.updateTime}
+                        </if>
+    </select>
+<!--    根据市场洞察客户主表主键查询市场洞察客户选择表-->
+    <select id="selectMiCustomerChoiceByMarketInsightCustomerId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO">
+        SELECT
+            mi_customer_choice_id,market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_choice
+        WHERE  market_insight_customer_id=#{marketInsightCustomerId}
+          and delete_flag=0
+        order by sort
+    </select>
+<!--    根据市场洞察客户主表主键集合批量查询市场洞察客户选择表-->
+    <select id="selectMiCustomerChoiceByMarketInsightCustomerIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO">
+        SELECT
+        mi_customer_choice_id,market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_choice
+        WHERE  market_insight_customer_id in
+        <foreach item="item"
+                 collection="marketInsightCustomerIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+<!--    远程查询看市场洞察客户选择集合是否被引用-->
+    <select id="remoteMiCustomerChoiceList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerChoiceDTO">
+        SELECT
+            mi_customer_choice_id,market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_choice
+        WHERE delete_flag=0
+        <if test="miCustomerChoice.params.industryIds != null and miCustomerChoice.params.industryIds.size()>0">
+            AND industry_id IN
+            <foreach item="item"
+                     collection="miCustomerChoice.params.industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <!--新增市场洞察客户选择表-->
+    <insert id="insertMiCustomerChoice" useGeneratedKeys="true" keyProperty="miCustomerChoiceId">
+        INSERT INTO mi_customer_choice (market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{miCustomerChoice.marketInsightCustomerId},#{miCustomerChoice.industryId},#{miCustomerChoice.customerName},#{miCustomerChoice.admissionFlag},#{miCustomerChoice.customerCategory},#{miCustomerChoice.sort},#{miCustomerChoice.deleteFlag},#{miCustomerChoice.createBy},#{miCustomerChoice.createTime},#{miCustomerChoice.updateBy},#{miCustomerChoice.updateTime})
+    </insert>
+    <!--修改市场洞察客户选择表-->
+    <update id="updateMiCustomerChoice">
+        UPDATE mi_customer_choice
+        SET
+                    <if test="miCustomerChoice.marketInsightCustomerId != null">
+                        market_insight_customer_id=#{miCustomerChoice.marketInsightCustomerId},
+                    </if>
+                    <if test="miCustomerChoice.industryId != null">
+                        industry_id=#{miCustomerChoice.industryId},
+                    </if>
+                    <if test="miCustomerChoice.customerName != null and miCustomerChoice.customerName != ''">
+                        customer_name=#{miCustomerChoice.customerName},
+                    </if>
+                    <if test="miCustomerChoice.admissionFlag != null">
+                        admission_flag=#{miCustomerChoice.admissionFlag},
+                    </if>
+                    <if test="miCustomerChoice.customerCategory != null">
+                        customer_category=#{miCustomerChoice.customerCategory},
+                    </if>
+                    <if test="miCustomerChoice.sort != null">
+                        sort=#{miCustomerChoice.sort},
+                    </if>
+                    <if test="miCustomerChoice.deleteFlag != null">
+                        delete_flag=#{miCustomerChoice.deleteFlag},
+                    </if>
+                    <if test="miCustomerChoice.createBy != null">
+                        create_by=#{miCustomerChoice.createBy},
+                    </if>
+                    <if test="miCustomerChoice.createTime != null">
+                        create_time=#{miCustomerChoice.createTime},
+                    </if>
+                    <if test="miCustomerChoice.updateBy != null">
+                        update_by=#{miCustomerChoice.updateBy},
+                    </if>
+                    <if test="miCustomerChoice.updateTime != null">
+                        update_time=#{miCustomerChoice.updateTime}
+                    </if>
+        WHERE
+                 mi_customer_choice_id=#{miCustomerChoice.miCustomerChoiceId}
+    </update>
+    <!--逻辑删除市场洞察客户选择表-->
+    <update id="logicDeleteMiCustomerChoiceByMiCustomerChoiceId">
+        UPDATE mi_customer_choice
+        SET     delete_flag= 1,
+                update_by=#{miCustomerChoice.updateBy},
+                update_time=#{miCustomerChoice.updateTime}
+        WHERE
+                mi_customer_choice_id=#{miCustomerChoice.miCustomerChoiceId}
+    </update>
+    <!--逻辑批量删除市场洞察客户选择表-->
+    <update id="logicDeleteMiCustomerChoiceByMiCustomerChoiceIds">
+        UPDATE mi_customer_choice
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         mi_customer_choice_id IN
+            <foreach item="item"
+                     collection="miCustomerChoiceIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察客户选择表-->
+    <insert id="batchMiCustomerChoice" useGeneratedKeys="true" keyProperty="miCustomerChoiceId">
+        INSERT INTO mi_customer_choice (market_insight_customer_id,industry_id,customer_name,admission_flag,customer_category,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="miCustomerChoices"
+                 separator=",">
+            (#{item.marketInsightCustomerId},#{item.industryId},#{item.customerName},#{item.admissionFlag},#{item.customerCategory},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察客户选择表-->
+    <delete id="deleteMiCustomerChoiceByMiCustomerChoiceId">
+        DELETE FROM mi_customer_choice
+        WHERE  mi_customer_choice_id=#{miCustomerChoice}
+
+    </delete>
+    <!--物理批量删除市场洞察客户选择表-->
+    <delete id="deleteMiCustomerChoiceByMiCustomerChoiceIds">
+        DELETE FROM mi_customer_choice
+        WHERE  mi_customer_choice_id IN
+            <foreach item="item"
+                     collection="miCustomerChoiceIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察客户选择表-->
+    <update id="updateMiCustomerChoices">
+        update mi_customer_choice
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="market_insight_customer_id=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.marketInsightCustomerId != null">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.marketInsightCustomerId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="industry_id=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.industryId != null">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.industryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="customer_name=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.customerName != null and item.customerName != ''">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.customerName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="admission_flag=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.admissionFlag != null">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.admissionFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="customer_category=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.customerCategory != null">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.customerCategory}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="miCustomerChoiceList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when mi_customer_choice_id=#{item.miCustomerChoiceId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="miCustomerChoiceList" separator="or" item="item" index="index">
+                    mi_customer_choice_id=#{item.miCustomerChoiceId}
+        </foreach>
+    </update>
+</mapper>
+
+

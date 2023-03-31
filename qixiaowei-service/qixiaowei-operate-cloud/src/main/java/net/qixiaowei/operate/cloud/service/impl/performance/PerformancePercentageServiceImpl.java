@@ -5,7 +5,9 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformancePercentage;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceRank;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -125,6 +128,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
      * @param performancePercentageDTO 绩效比例表
      * @return 绩效比例列表
      */
+    @DataScope(businessAlias = "t1")
     @Override
     public List<PerformancePercentageDTO> selectPerformancePercentageList(PerformancePercentageDTO performancePercentageDTO) {
         List<PerformancePercentageDTO> performancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageList(performancePercentageDTO);
@@ -151,7 +155,20 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
             percentageDTO.setOrgPerformanceRankName(orgPerformanceRankMap.get(percentageDTO.getOrgPerformanceRankId()));
             percentageDTO.setPersonPerformanceRankName(personPerformanceRankMap.get(percentageDTO.getPersonPerformanceRankId()));
         }
+        this.handleResult(performancePercentageDTOS);
         return performancePercentageDTOS;
+    }
+
+    @Override
+    public void handleResult(List<PerformancePercentageDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(PerformancePercentageDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -167,7 +184,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
         List<Map<String, String>> receiveList = performancePercentageDTO.getReceiveList();
         int count = performancePercentageMapper.isUnique(performancePercentageName);
         if (count > 0) {
-            throw new ServiceException("该绩效比例名称重复");
+            throw new ServiceException("绩效比例名称已存在");
         }
         // todo 校验组织和个人绩效等级是否存在且对应
         PerformancePercentage performancePercentage = new PerformancePercentage();
@@ -199,7 +216,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
         List<Map<String, String>> receiveList = performancePercentageDTO.getReceiveList();
         PerformancePercentageDTO percentageDTO = performancePercentageMapper.selectPerformancePercentageByPerformancePercentageName(performancePercentageName);
         if (StringUtils.isNotNull(percentageDTO) && !percentageDTO.getPerformancePercentageId().equals(performancePercentageId)) {
-            throw new ServiceException("该绩效比例名称重复");
+            throw new ServiceException("绩效比例名称已存在");
         }
         // todo 校验组织和个人绩效等级是否存在且对应
         PerformancePercentage performancePercentage = new PerformancePercentage();

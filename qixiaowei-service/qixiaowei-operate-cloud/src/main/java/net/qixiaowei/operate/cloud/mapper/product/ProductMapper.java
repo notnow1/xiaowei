@@ -163,10 +163,10 @@ public interface ProductMapper {
 
     /**
      * 是否被引用
-     * @param productId
+     * @param productIds
      * @return
      */
-    List<ProductDTO> selectProductQuote(@Param("productId") Long productId);
+    List<ProductDTO> selectProductQuote(@Param("productIds") List<Long> productIds);
 
     /**
      * 根据产品code集合查询产品数据

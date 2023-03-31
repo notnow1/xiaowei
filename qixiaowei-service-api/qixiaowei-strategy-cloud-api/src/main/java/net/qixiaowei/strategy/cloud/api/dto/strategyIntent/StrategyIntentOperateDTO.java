@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.Map;
 */
 @Data
 @Accessors(chain = true)
-public class StrategyIntentOperateDTO {
+public class StrategyIntentOperateDTO extends BaseDTO {
 
     //查询检验
     public interface QueryStrategyIntentOperateDTO extends Default{
@@ -70,29 +71,12 @@ public class StrategyIntentOperateDTO {
     */
     private  Integer deleteFlag;
     /**
-    * 创建人
-    */
-    private  Long createBy;
-    /**
-    * 创建时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
-    private  Date  createTime;
-    /**
-    * 更新人
-    */
-    private  Long updateBy;
-    /**
-    * 更新时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
-    private  Date  updateTime;
+     * 指标值类型:1金额;2比率
+     */
+    private Integer indicatorValueType;
 
 
-    /**
-    * 请求参数
-    */
-    private Map<String, Object> params;
+
     /**
      * 年度指标对应值集合
      */

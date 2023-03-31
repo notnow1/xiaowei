@@ -1,21 +1,15 @@
 package net.qixiaowei.operate.cloud.api.dto.performance;
 
-import java.awt.*;
-import java.time.LocalDate;
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
-import java.util.Date;
+import javax.validation.groups.Default;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
-import javax.validation.groups.Default;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 /**
  * 绩效考核对象表
@@ -25,7 +19,7 @@ import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
  */
 @Data
 @Accessors(chain = true)
-public class PerformanceAppraisalObjectsDTO {
+public class PerformanceAppraisalObjectsDTO extends BaseDTO {
 
     //查询检验
     public interface QueryPerformanceAppraisalObjectsDTO extends Default {
@@ -75,6 +69,14 @@ public class PerformanceAppraisalObjectsDTO {
      * 周期类型:1月度;2季度;3半年度;4年度
      */
     private String CycleTypeName;
+    /**
+     * 评议周期类型:1月度;2季度;3半年度;4年度
+     */
+    private Integer evaluationType;
+    /**
+     * 评议周期类型:1月度;2季度;3半年度;4年度
+     */
+    private String evaluationTypeName;
     /**
      * 名次
      */
@@ -203,27 +205,17 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
+     * 备注
      */
-    private Long createBy;
+    private String remark;
     /**
-     * 创建时间
+     * 页数
      */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
-    private Date createTime;
+    private Integer pageNum;
     /**
-     * 更新人
+     * 页数
      */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
-    private Date updateTime;
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
+    private Integer pageSize;
 
 }
 

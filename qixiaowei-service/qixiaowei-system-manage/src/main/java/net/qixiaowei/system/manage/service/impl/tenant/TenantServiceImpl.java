@@ -2,6 +2,9 @@ package net.qixiaowei.system.manage.service.impl.tenant;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.ReUtil;
+import cn.hutool.core.util.StrUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.CacheConstants;
@@ -14,6 +17,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
@@ -108,7 +112,7 @@ public class TenantServiceImpl implements ITenantService {
     public TenantDTO selectTenantByTenantId(Long tenantId) {
         TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
         if (StringUtils.isNull(tenantDTO)) {
-            throw new ServiceException("租户数据不存在");
+            throw new ServiceException("企业数据不存在");
         }
         //租户登录背景图片URL
         tenantDTO.setLoginBackground(fileConfig.getFullDomain(tenantDTO.getLoginBackground()));
@@ -156,6 +160,18 @@ public class TenantServiceImpl implements ITenantService {
         return tenantMapper.selectTenantList(tenant);
     }
 
+    @Override
+    public void handleResult(List<TenantDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(TenantDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
+    }
+
     /**
      * 生成租户编码
      *
@@ -197,21 +213,23 @@ public class TenantServiceImpl implements ITenantService {
      * @param tenantDTO 租户表
      * @return 结果
      */
-    @Transactional
+    @GlobalTransactional(name = "system:manage:tenant:add", rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public TenantDTO insertTenant(TenantDTO tenantDTO) {
-        String domain = tenantDTO.getDomain();
+        String domain = getDomain(tenantDTO);
         String tenantCode = tenantDTO.getTenantCode();
         this.checkDomain(domain);
         TenantDTO selectTenantByTenantCode = tenantMapper.selectTenantByTenantCode(tenantCode);
         if (StringUtils.isNotNull(selectTenantByTenantCode)) {
-            throw new ServiceException("保存失败:租户编码[" + tenantCode + "]已存在。");
+            throw new ServiceException("企业编码已存在");
         }
         //租户
         Tenant tenant = new Tenant();
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         BeanUtils.copyProperties(tenantDTO, tenant);
+        tenant.setDomain(domain);
         tenant.setSupportStaff(tenant.getSupportStaff());
         tenant.setCreateBy(userId);
         tenant.setUpdateBy(userId);
@@ -229,10 +247,11 @@ public class TenantServiceImpl implements ITenantService {
         Set<Long> initMenuIds = this.saveTenantContract(tenantContractDTOList, tenantId, userId, nowDate);
         //初始化租户数据
         Boolean initSuccess = tenantLogic.initTenantData(tenant, initMenuIds);
-        if (initSuccess) {
-            tenant.setTenantStatus(BusinessConstants.NORMAL);
-            tenantMapper.updateTenant(tenant);
+        if (!initSuccess) {
+            throw new ServiceException("初始化数据异常，请联系管理员");
         }
+        tenant.setTenantStatus(BusinessConstants.NORMAL);
+        tenantMapper.updateTenant(tenant);
         this.setTenantIdsCache();
         //返回数据
         tenantDTO.setTenantId(tenantId);
@@ -320,11 +339,11 @@ public class TenantServiceImpl implements ITenantService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateTenant(TenantDTO tenantDTO) {
-        String domain = tenantDTO.getDomain();
+        String domain = getDomain(tenantDTO);;
         Long tenantId = tenantDTO.getTenantId();
         TenantDTO tenantOfDB = tenantMapper.selectTenantByTenantId(tenantId);
         if (StringUtils.isNull(tenantOfDB)) {
-            throw new ServiceException("修改租户失败:找不到该租户!");
+            throw new ServiceException("企业不存在");
         }
         if (!StringUtils.equalsIgnoreCase(domain, tenantOfDB.getDomain())) {
             this.checkDomain(domain);
@@ -333,7 +352,7 @@ public class TenantServiceImpl implements ITenantService {
         if (StringUtils.isNotEmpty(tenantCode) && !tenantCode.equals(tenantOfDB.getTenantCode())) {
             TenantDTO selectTenantByTenantCode = tenantMapper.selectTenantByTenantCode(tenantCode);
             if (StringUtils.isNotNull(selectTenantByTenantCode)) {
-                throw new ServiceException("修改租户失败:租户编码[" + tenantCode + "]已存在。");
+                throw new ServiceException("企业编码已存在");
             }
         }
         Integer tenantStatus = tenantDTO.getTenantStatus();
@@ -355,6 +374,10 @@ public class TenantServiceImpl implements ITenantService {
         if (TenantStatus.OVERDUE.getCode().equals(tenantOfDB.getTenantStatus()) && null != initMenuIds) {
             updateTenant.setTenantStatus(TenantStatus.NORMAL.getCode());
         }
+        updateTenant.setDomain(domain);
+        //管理员修改租户，不更改：租户登录背景图片URL、租户logo图片URL
+        updateTenant.setLoginBackground(null);
+        updateTenant.setTenantLogo(null);
         updateTenant.setUpdateBy(userId);
         updateTenant.setUpdateTime(nowDate);
         i = tenantMapper.updateTenant(updateTenant);
@@ -607,7 +630,7 @@ public class TenantServiceImpl implements ITenantService {
         Long tenantId = SecurityUtils.getTenantId();
         TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
         if (StringUtils.isNull(tenantDTO)) {
-            throw new ServiceException("租户数据不存在");
+            throw new ServiceException("企业不存在");
         }
         String domain = tenantDTO.getDomain();
         TenantInfoVO tenantInfoVO = new TenantInfoVO();
@@ -659,12 +682,12 @@ public class TenantServiceImpl implements ITenantService {
         Long tenantId = SecurityUtils.getTenantId();
         TenantDTO tenantByDB = tenantMapper.selectTenantByTenantId(tenantId);
         if (StringUtils.isNull(tenantByDB)) {
-            throw new ServiceException("修改企业信息失败:找不到企业信息");
+            throw new ServiceException("企业不存在");
         }
         if (!BusinessConstants.NORMAL.equals(tenantByDB.getTenantStatus())) {
             throw new ServiceException("修改企业信息失败:企业状态异常");
         }
-        String domain = tenantDTO.getDomain();
+        String domain = getDomain(tenantDTO);;
         Long userId = SecurityUtils.getUserId();
         String userAccount = SecurityUtils.getUserAccount();
         Date nowDate = DateUtils.getNowDate();
@@ -1042,12 +1065,17 @@ public class TenantServiceImpl implements ITenantService {
      * @return: void
      **/
     private void checkDomain(String domain) {
-        if (tenantConfig.getExistedDomains().contains(domain.toLowerCase())) {
-            throw new ServiceException("域名[" + domain + "]已经被占用!");
+        // 正则条件
+        String canonical = "^[0-9a-zA-Z-]{3,30}$";
+        if (domain.startsWith(StrUtil.DASHED) || !ReUtil.isMatch(canonical, domain)) {
+            throw new ServiceException("域名由3-30位字母、数字、中划线组成，不能以中划线开头");
+        }
+        if (tenantConfig.getExistedDomains().contains(domain)) {
+            throw new ServiceException("域名已存在");
         }
         TenantDTO tenantByDomain = tenantMapper.selectTenantByDomain(domain);
         if (StringUtils.isNotNull(tenantByDomain)) {
-            throw new ServiceException("域名[" + domain + "]已经被占用!");
+            throw new ServiceException("域名已存在");
 
         }
     }
@@ -1063,8 +1091,23 @@ public class TenantServiceImpl implements ITenantService {
         Long tenantIndustry = tenantDTO.getTenantIndustry();
         IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(tenantIndustry);
         if (StringUtils.isNull(industryDefaultDTO)) {
-            throw new ServiceException("行业不存在。");
+            throw new ServiceException("行业不存在");
         }
+    }
+
+    /**
+     * @description: 域名获取-转为小写
+     * @Author: hzk
+     * @date: 2023/3/6 16:12
+     * @param: [tenantDTO]
+     * @return: java.lang.String
+     **/
+    private static String getDomain(TenantDTO tenantDTO) {
+        String domain = tenantDTO.getDomain();
+        if (StringUtils.isNotEmpty(domain)) {
+            domain = domain.toLowerCase();
+        }
+        return domain;
     }
 }
 

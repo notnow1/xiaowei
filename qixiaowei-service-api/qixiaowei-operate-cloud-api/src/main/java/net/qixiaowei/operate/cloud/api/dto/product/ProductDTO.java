@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 /**
 * 产品表
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 */
 @Data
 @Accessors(chain = true)
-public class ProductDTO {
+public class ProductDTO extends BaseDTO {
 
     //查询检验
     public interface QueryProductDTO extends Default{
@@ -86,7 +87,7 @@ public class ProductDTO {
     /**
     * 产品单位ID
     */
-    @NotNull(message = "产品单位不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
+    @NotNull(message = "产品量纲不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  Long productUnitId;
     private  String productUnitName;
     /**
@@ -115,24 +116,6 @@ public class ProductDTO {
     */
     private  Integer deleteFlag;
     /**
-    * 创建人
-    */
-    private  Long createBy;
-    /**
-    * 创建时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private  Date  createTime;
-    /**
-    * 更新人
-    */
-    private  Long updateBy;
-    /**
-    * 更新时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private  Date  updateTime;
-    /**
      * 产品规格参数表集合
      */
     private List<ProductSpecificationParamDTO> productSpecificationParamDTOList;
@@ -150,9 +133,5 @@ public class ProductDTO {
      * 组织子节点信息
      */
     private List<ProductDTO> children;
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
 }
 

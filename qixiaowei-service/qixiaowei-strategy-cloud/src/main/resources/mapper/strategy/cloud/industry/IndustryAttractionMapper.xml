@@ -36,7 +36,7 @@
                             and industry_attraction_id=#{industryAttraction.industryAttractionId}
                         </if>
                         <if test="industryAttraction.attractionElementName != null and industryAttraction.attractionElementName != ''">
-                            and attraction_element_name=#{industryAttraction.attractionElementName}
+                            and attraction_element_name like  concat('%', #{industryAttraction.attractionElementName}, '%')
                         </if>
                         <if test="industryAttraction.status != null">
                             and status=#{industryAttraction.status}
@@ -56,6 +56,7 @@
                         <if test="industryAttraction.updateTime != null">
                             and update_time=#{industryAttraction.updateTime}
                         </if>
+    order by create_time desc
     </select>
 <!--    根据行业吸引力要素名称查询行业吸引力表-->
     <select id="selectIndustryAttractionByAttractionElementName"
@@ -65,6 +66,16 @@
         FROM industry_attraction
         WHERE  attraction_element_name=#{attractionElementName}
           and delete_flag=0
+    </select>
+<!--    预制表头查询行业吸引力表列表-->
+    <select id="selectPreIndustryAttractionList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO">
+        SELECT
+        industry_attraction_id,attraction_element_name,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM industry_attraction
+        WHERE delete_flag=0
+       and status=1
+        order by create_time desc
     </select>
     <!--新增行业吸引力表-->
     <insert id="insertIndustryAttraction" useGeneratedKeys="true" keyProperty="industryAttractionId">

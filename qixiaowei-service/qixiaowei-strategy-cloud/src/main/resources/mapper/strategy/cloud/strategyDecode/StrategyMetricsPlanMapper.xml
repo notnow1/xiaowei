@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyMetricsPlanMapper">
+    <!--    查询战略衡量指标规划表-->
+    <select id="selectStrategyMetricsPlanByStrategyMetricsPlanId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsPlanDTO">
+        SELECT
+        strategy_metrics_plan_id,strategy_metrics_id,strategy_metrics_detail_id,plan_year,plan_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_metrics_plan
+        WHERE strategy_metrics_plan_id=#{strategyMetricsPlanId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询战略衡量指标规划表-->
+    <select id="selectStrategyMetricsPlanByStrategyMetricsPlanIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsPlanDTO">
+        SELECT
+        strategy_metrics_plan_id,strategy_metrics_id,strategy_metrics_detail_id,plan_year,plan_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_metrics_plan
+        WHERE strategy_metrics_plan_id in
+        <foreach item="item"
+                 collection="strategyMetricsPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询战略衡量指标规划表列表-->
+    <select id="selectStrategyMetricsPlanList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsPlanDTO">
+        SELECT
+        strategy_metrics_plan_id,strategy_metrics_id,strategy_metrics_detail_id,plan_year,plan_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_metrics_plan
+        WHERE delete_flag=0
+        <if test="strategyMetricsPlan.strategyMetricsPlanId != null">
+            and strategy_metrics_plan_id=#{strategyMetricsPlan.strategyMetricsPlanId}
+        </if>
+        <if test="strategyMetricsPlan.strategyMetricsId != null">
+            and strategy_metrics_id=#{strategyMetricsPlan.strategyMetricsId}
+        </if>
+        <if test="strategyMetricsPlan.strategyMetricsDetailId != null">
+            and strategy_metrics_detail_id=#{strategyMetricsPlan.strategyMetricsDetailId}
+        </if>
+        <if test="strategyMetricsPlan.planYear != null">
+            and plan_year=#{strategyMetricsPlan.planYear}
+        </if>
+        <if test="strategyMetricsPlan.planValue != null">
+            and plan_value=#{strategyMetricsPlan.planValue}
+        </if>
+        <if test="strategyMetricsPlan.deleteFlag != null">
+            and delete_flag=#{strategyMetricsPlan.deleteFlag}
+        </if>
+        <if test="strategyMetricsPlan.createBy != null">
+            and create_by=#{strategyMetricsPlan.createBy}
+        </if>
+        <if test="strategyMetricsPlan.createTime != null">
+            and create_time=#{strategyMetricsPlan.createTime}
+        </if>
+        <if test="strategyMetricsPlan.updateBy != null">
+            and update_by=#{strategyMetricsPlan.updateBy}
+        </if>
+        <if test="strategyMetricsPlan.updateTime != null">
+            and update_time=#{strategyMetricsPlan.updateTime}
+        </if>
+    </select>
+    <select id="selectStrategyMetricsPlanByStrategyMetricsDetailIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsPlanDTO">
+        SELECT
+        strategy_metrics_plan_id,strategy_metrics_id,strategy_metrics_detail_id,plan_year,plan_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_metrics_plan
+        WHERE strategy_metrics_detail_id IN
+        <foreach collection="strategyMetricsDetailIds" item="item" open="(" close=")" separator="," index="index">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+    <!--新增战略衡量指标规划表-->
+    <insert id="insertStrategyMetricsPlan" useGeneratedKeys="true" keyProperty="strategyMetricsPlanId">
+        INSERT INTO strategy_metrics_plan
+        (strategy_metrics_id,strategy_metrics_detail_id,plan_year,plan_value,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{strategyMetricsPlan.strategyMetricsId},#{strategyMetricsPlan.strategyMetricsDetailId},#{strategyMetricsPlan.planYear},#{strategyMetricsPlan.planValue},#{strategyMetricsPlan.deleteFlag},#{strategyMetricsPlan.createBy},#{strategyMetricsPlan.createTime},#{strategyMetricsPlan.updateBy},#{strategyMetricsPlan.updateTime})
+    </insert>
+    <!--修改战略衡量指标规划表-->
+    <update id="updateStrategyMetricsPlan">
+        UPDATE strategy_metrics_plan
+        SET
+        <if test="strategyMetricsPlan.strategyMetricsId != null">
+            strategy_metrics_id=#{strategyMetricsPlan.strategyMetricsId},
+        </if>
+        <if test="strategyMetricsPlan.strategyMetricsDetailId != null">
+            strategy_metrics_detail_id=#{strategyMetricsPlan.strategyMetricsDetailId},
+        </if>
+        <if test="strategyMetricsPlan.planYear != null">
+            plan_year=#{strategyMetricsPlan.planYear},
+        </if>
+        <if test="strategyMetricsPlan.planValue != null">
+            plan_value=#{strategyMetricsPlan.planValue},
+        </if>
+        <if test="strategyMetricsPlan.deleteFlag != null">
+            delete_flag=#{strategyMetricsPlan.deleteFlag},
+        </if>
+        <if test="strategyMetricsPlan.createBy != null">
+            create_by=#{strategyMetricsPlan.createBy},
+        </if>
+        <if test="strategyMetricsPlan.createTime != null">
+            create_time=#{strategyMetricsPlan.createTime},
+        </if>
+        <if test="strategyMetricsPlan.updateBy != null">
+            update_by=#{strategyMetricsPlan.updateBy},
+        </if>
+        <if test="strategyMetricsPlan.updateTime != null">
+            update_time=#{strategyMetricsPlan.updateTime}
+        </if>
+        WHERE
+        strategy_metrics_plan_id=#{strategyMetricsPlan.strategyMetricsPlanId}
+    </update>
+    <!--逻辑删除战略衡量指标规划表-->
+    <update id="logicDeleteStrategyMetricsPlanByStrategyMetricsPlanId">
+        UPDATE strategy_metrics_plan
+        SET delete_flag= 1,
+        update_by=#{strategyMetricsPlan.updateBy},
+        update_time=#{strategyMetricsPlan.updateTime}
+        WHERE
+        strategy_metrics_plan_id=#{strategyMetricsPlan.strategyMetricsPlanId}
+    </update>
+    <!--逻辑批量删除战略衡量指标规划表-->
+    <update id="logicDeleteStrategyMetricsPlanByStrategyMetricsPlanIds">
+        UPDATE strategy_metrics_plan
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        strategy_metrics_plan_id IN
+        <foreach item="item"
+                 collection="strategyMetricsPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增战略衡量指标规划表-->
+    <insert id="batchStrategyMetricsPlan">
+        INSERT INTO strategy_metrics_plan
+        (strategy_metrics_id,strategy_metrics_detail_id,plan_year,plan_value,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="strategyMetricsPlans"
+                 separator=",">
+            (#{item.strategyMetricsId},#{item.strategyMetricsDetailId},#{item.planYear},#{item.planValue},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除战略衡量指标规划表-->
+    <delete id="deleteStrategyMetricsPlanByStrategyMetricsPlanId">
+        DELETE FROM strategy_metrics_plan
+        WHERE strategy_metrics_plan_id=#{strategyMetricsPlan}
+
+    </delete>
+    <!--物理批量删除战略衡量指标规划表-->
+    <delete id="deleteStrategyMetricsPlanByStrategyMetricsPlanIds">
+        DELETE FROM strategy_metrics_plan
+        WHERE strategy_metrics_plan_id IN
+        <foreach item="item"
+                 collection="strategyMetricsPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改战略衡量指标规划表-->
+    <update id="updateStrategyMetricsPlans">
+        update strategy_metrics_plan
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="strategy_metrics_id=case" suffix="end,">
+                <foreach collection="strategyMetricsPlanList" item="item" index="index">
+                    <if test="item.strategyMetricsId != null">
+                        when strategy_metrics_plan_id=#{item.strategyMetricsPlanId} then #{item.strategyMetricsId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="strategy_metrics_detail_id=case" suffix="end,">
+                <foreach collection="strategyMetricsPlanList" item="item" index="index">
+                    <if test="item.strategyMetricsDetailId != null">
+                        when strategy_metrics_plan_id=#{item.strategyMetricsPlanId} then #{item.strategyMetricsDetailId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="plan_year=case" suffix="end,">
+                <foreach collection="strategyMetricsPlanList" item="item" index="index">
+                    <if test="item.planYear != null">
+                        when strategy_metrics_plan_id=#{item.strategyMetricsPlanId} then #{item.planYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="plan_value=case" suffix="end,">
+                <foreach collection="strategyMetricsPlanList" item="item" index="index">
+                    <if test="item.planValue != null">
+                        when strategy_metrics_plan_id=#{item.strategyMetricsPlanId} then #{item.planValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="strategyMetricsPlanList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when strategy_metrics_plan_id=#{item.strategyMetricsPlanId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="strategyMetricsPlanList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when strategy_metrics_plan_id=#{item.strategyMetricsPlanId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="strategyMetricsPlanList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when strategy_metrics_plan_id=#{item.strategyMetricsPlanId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="strategyMetricsPlanList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when strategy_metrics_plan_id=#{item.strategyMetricsPlanId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="strategyMetricsPlanList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when strategy_metrics_plan_id=#{item.strategyMetricsPlanId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="strategyMetricsPlanList" separator="or" item="item" index="index">
+            strategy_metrics_plan_id=#{item.strategyMetricsPlanId}
+        </foreach>
+    </update>
+</mapper>
+
+

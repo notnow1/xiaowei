@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.basic;
 
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,14 @@ public interface IOfficialRankSystemService {
      * @return 职级体系表集合
      */
     List<OfficialRankSystemDTO> selectOfficialRankSystemList(OfficialRankSystemDTO officialRankSystemDTO);
+
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<OfficialRankSystemDTO> result);
 
     /**
      * 新增职级体系表

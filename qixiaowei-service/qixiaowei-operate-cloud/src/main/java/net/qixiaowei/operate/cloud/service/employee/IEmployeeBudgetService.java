@@ -2,7 +2,6 @@ package net.qixiaowei.operate.cloud.service.employee;
 
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetExcel;
 
@@ -31,6 +30,13 @@ public interface IEmployeeBudgetService {
      * @return 人力预算表集合
      */
     List<EmployeeBudgetDTO> selectEmployeeBudgetList(EmployeeBudgetDTO employeeBudgetDTO);
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<EmployeeBudgetDTO> result);
 
     /**
      * 新增人力预算表
@@ -146,8 +152,8 @@ public interface IEmployeeBudgetService {
 
     /**
      * 远程 根据部门ID集合查询预算表
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
-    List<EmployeeBudgetDTO> selectByDepartmentId(Long departmentId);
+    List<EmployeeBudgetDTO> selectByDepartmentIds(List<Long> departmentIds);
 }

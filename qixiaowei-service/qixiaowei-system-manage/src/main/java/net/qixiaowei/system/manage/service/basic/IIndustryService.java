@@ -30,6 +30,14 @@ public interface IIndustryService {
     List<IndustryDTO> selectIndustryPageList(IndustryDTO industryDTO);
 
     /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<IndustryDTO> result);
+
+    /**
      * 查询行业列表
      *
      * @param industryDTO

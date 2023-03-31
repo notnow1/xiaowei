@@ -3,11 +3,13 @@ package net.qixiaowei.system.manage.service.user;
 import java.util.List;
 import java.util.Set;
 
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserStatusDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserUpdatePasswordDTO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
@@ -60,6 +62,14 @@ public interface IUserService {
     UserDTO selectUserByUserId(Long userId);
 
     /**
+     * 初始化用户缓存
+     *
+     * @param userId 用户表主键
+     * @return 用户表
+     */
+    UserProfileVO initUserCache(Long userId);
+
+    /**
      * 根据用户ID查询用户角色列表
      *
      * @param userId 用户表主键
@@ -74,6 +84,14 @@ public interface IUserService {
      * @return 用户表集合
      */
     List<UserDTO> selectUserList(UserDTO userDTO);
+
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<UserDTO> result);
 
     /**
      * 查询用户表列表
@@ -138,6 +156,13 @@ public interface IUserService {
      * @return 结果
      */
     int resetPwd(UserDTO userDTO);
+    /**
+     * 编辑用户状态
+     *
+     * @param userStatusDTO
+     * @return 结果
+     */
+    int editUserStatus(UserStatusDTO userStatusDTO);
 
     /**
      * 校验用户是否存在
