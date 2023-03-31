@@ -492,7 +492,6 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         Integer rankEnd = officialRankSystemDTO.getRankEnd();
         String rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
         Integer rankDecomposeDimensionAfter = officialRankSystemDTO.getRankDecomposeDimension();
-        List<OfficialRankDecomposeDTO> officialRankDecomposeDTOAfter = officialRankSystemDTO.getOfficialRankDecomposeDTOS();
         if (StringUtils.isNull(officialRankSystemId)) {
             throw new ServiceException("职级体系表id不能为空");
         }
