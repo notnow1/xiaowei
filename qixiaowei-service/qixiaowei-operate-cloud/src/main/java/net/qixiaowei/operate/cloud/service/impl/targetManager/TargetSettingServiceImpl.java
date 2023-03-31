@@ -2199,9 +2199,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     }
                 }
             }
-            challengeMap.put("期末应收账款余额", salesRevenueChallenge);
-            targetMap.put("期末应收账款余额", salesRevenueTarget);
-            guaranteedMap.put("期末应收账款余额", salesRevenueGuaranteed);
+            challengeMap.put("期末应收账款余额", endingBalanceChallenge);
+            targetMap.put("期末应收账款余额", endingBalanceTarget);
+            guaranteedMap.put("期末应收账款余额", endingBalanceGuaranteed);
             challengeMap.put("回款总目标", totalChallenge);
             targetMap.put("回款总目标", totalTarget);
             guaranteedMap.put("回款总目标", totalGuaranteed);
