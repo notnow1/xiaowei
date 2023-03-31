@@ -1042,6 +1042,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     Date employmentDate = dto.getEmploymentDate();
                     employeeExcel.setEmploymentDate(DateUtils.format(employmentDate));
                 }
+                //离职日期
+                if (null != dto.getDepartureDate()) {
+                    Date departureDate = dto.getDepartureDate();
+                    employeeExcel.setDepartureDate(DateUtils.format(departureDate));
+                }
                 //部门*
                 if (null != dto.getEmployeeDepartmentId()) {
 
@@ -1064,6 +1069,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 //基本工资
                 if (null != dto.getEmployeeBasicWage()) {
                     employeeExcel.setEmployeeBasicWage(String.valueOf(dto.getEmployeeBasicWage()));
+                }else {
+                    employeeExcel.setEmployeeBasicWage("0");
                 }
                 //通信地址
                 if (null != dto.getContactAddress()) {

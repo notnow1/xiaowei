@@ -19,6 +19,7 @@ import com.alibaba.excel.write.metadata.holder.WriteTableHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
+import com.alibaba.excel.write.style.row.SimpleRowHeightStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.text.CharsetKit;
@@ -144,6 +145,8 @@ public class TenantController extends BaseController {
 
                         //设置文本
                         DataFormatData dataFormatData = new DataFormatData();
+                        dataFormatData.setIndex((short) 49);
+                        writeCellStyle.setDataFormatData(dataFormatData);
                         // 设置字体
                         WriteFont headWriteFont = new WriteFont();
                         if (context.getRowIndex() == 0) {
@@ -155,6 +158,8 @@ public class TenantController extends BaseController {
                             writeCellStyle.setWriteFont(headWriteFont);
                             //靠左
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            //垂直居中
+                            writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                             //设置 自动换行
                             writeCellStyle.setWrapped(true);
                             //设置边框
@@ -181,8 +186,8 @@ public class TenantController extends BaseController {
                             cellData.setOriginCellStyle(xssfCellColorStyle);
                             cell.setCellStyle(cellStyle);
                         } else {
-                            //居中
-                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                            //居左
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //设置 自动换行
                             writeCellStyle.setWrapped(true);
                             headWriteFont.setColor(IndexedColors.BLACK.getIndex());
@@ -190,16 +195,7 @@ public class TenantController extends BaseController {
                             headWriteFont.setFontName("微软雅黑");
                             writeCellStyle.setWriteFont(headWriteFont);
                         }
-                        writeCellStyle.setDataFormatData(dataFormatData);
-                    }
-                })
-                //列宽
-                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
-                    @Override
-                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
-                        // 使用sheet对象 简单设置 index所对应的列的列宽
-                        Sheet sheet = writeSheetHolder.getSheet();
-                        sheet.setColumnWidth(cell.getColumnIndex(), 5300);
+
                     }
                 })
                 .doWrite(tenantExcelList);
