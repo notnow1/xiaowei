@@ -191,6 +191,25 @@
         <if test="performanceAppraisal.params.appraisalYearEnd != null and performanceAppraisal.params.appraisalYearEnd != ''">
             AND pa.appraisal_year &lt;= #{performanceAppraisal.params.appraisalYearEnd}
         </if>
+        <!--    绩效等级-->
+        <if test="performanceAppraisal.params.performanceRankIdEqual != null and performanceAppraisal.params.performanceRankIdEqual.size() > 0">
+            AND pa.performance_rank_id IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.performanceRankIdNotEqual != null and performanceAppraisal.params.performanceRankIdNotEqual.size() > 0">
+            AND (pa.performance_rank_id NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.performanceRankIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.performance_rank_id IS NULL
+            )
+        </if>
         <!--    周期类型-->
         <if test="performanceAppraisal.params.cycleTypeEqual != null and performanceAppraisal.params.cycleTypeEqual.size() > 0">
             AND pa.cycle_type IN

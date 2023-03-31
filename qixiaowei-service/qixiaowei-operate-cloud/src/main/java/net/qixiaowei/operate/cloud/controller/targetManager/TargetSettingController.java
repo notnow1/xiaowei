@@ -276,6 +276,7 @@ public class TargetSettingController extends BaseController {
                         headWriteFont.setFontHeightInPoints((short) 11);
                         headWriteFont.setFontName("微软雅黑");
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                         //居中(第二行第2列第17行居中)
                         //居中(第三行第2列剧中)
                         if (context.getRowIndex() == 1) {
