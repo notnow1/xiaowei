@@ -355,6 +355,33 @@ public class EmployeeController extends BaseController {
                 //设置文本
                 .registerWriteHandler(new CellWriteHandler() {
                     @Override
+                    public void afterCellDispose(WriteSheetHolder writeSheetHolder, WriteTableHolder writeTableHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+
+                        if (cell.getRowIndex() == 0){
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            Workbook workbook = sheet.getWorkbook();
+                            // xlsx格式，如果是老版本格式的话就用 HSSFRichTextString
+                            XSSFRichTextString richString = new XSSFRichTextString(cell.getStringCellValue());
+                            Font font1 = workbook.createFont();
+                            font1.setFontName("微软雅黑");
+                            font1.setFontHeightInPoints((short) 11);
+                            font1.setColor(IndexedColors.RED.getIndex());
+                            font1.setBold(true);
+                            richString.applyFont(0, 3, font1);
+                            Font font2 = workbook.createFont();
+                            font2.setFontName("微软雅黑");
+                            font2.setFontHeightInPoints((short) 11);
+                            font2.setColor(IndexedColors.BLACK.getIndex());
+                            // 从哪到哪，你想设置成什么样的字体都行startIndex，endIndex
+                            richString.applyFont(3, 99, font2);
+                            // 再设置回每个单元格里
+                            cell.setCellValue(richString);
+                        }
+                    }
+                })
+                //设置文本
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
                     public void afterCellDispose(CellWriteHandlerContext context) {
                         Cell cell = context.getCell();
                         int rowIndex = cell.getRowIndex();
@@ -408,33 +435,6 @@ public class EmployeeController extends BaseController {
                             }
                         }
                         cellData.setWriteCellStyle(writeCellStyle);
-                    }
-                })
-                //设置文本
-                .registerWriteHandler(new CellWriteHandler() {
-                    @Override
-                    public void afterCellDispose(WriteSheetHolder writeSheetHolder, WriteTableHolder writeTableHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
-
-                        if (cell.getRowIndex() == 0){
-                            Sheet sheet = writeSheetHolder.getSheet();
-                            Workbook workbook = sheet.getWorkbook();
-                            // xlsx格式，如果是老版本格式的话就用 HSSFRichTextString
-                            XSSFRichTextString richString = new XSSFRichTextString(cell.getStringCellValue());
-                            Font font1 = workbook.createFont();
-                            font1.setFontName("微软雅黑");
-                            font1.setFontHeightInPoints((short) 11);
-                            font1.setColor(IndexedColors.RED.getIndex());
-                            font1.setBold(true);
-                            richString.applyFont(0, 3, font1);
-                            Font font2 = workbook.createFont();
-                            font2.setFontName("微软雅黑");
-                            font2.setFontHeightInPoints((short) 11);
-                            font2.setColor(IndexedColors.BLACK.getIndex());
-                            // 从哪到哪，你想设置成什么样的字体都行startIndex，endIndex
-                            richString.applyFont(3, 99, font2);
-                            // 再设置回每个单元格里
-                            cell.setCellValue(richString);
-                        }
                     }
                 })
                 .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
