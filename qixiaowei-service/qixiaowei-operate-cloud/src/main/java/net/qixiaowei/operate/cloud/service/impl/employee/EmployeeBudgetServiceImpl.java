@@ -7,7 +7,9 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudget;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetAdjusts;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetDetails;
@@ -156,6 +158,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      * @param employeeBudgetDTO 人力预算表
      * @return 人力预算表
      */
+    @DataScope(businessAlias = "eb")
     @Override
     public List<EmployeeBudgetDTO> selectEmployeeBudgetList(EmployeeBudgetDTO employeeBudgetDTO) {
         List<String> departmentIds = new ArrayList<>();
@@ -218,7 +221,19 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             //年度平均人数 = 上年期末数+平均新增人数
             budgetDTO.setAnnualAverageNum(annualAverageNum);
         }
+        this.handleResult(employeeBudgetDTOS);
         return employeeBudgetDTOS;
+    }
+    @Override
+    public void handleResult(List<EmployeeBudgetDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(EmployeeBudgetDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -299,7 +314,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         BeanUtils.copyProperties(employeeBudgetDTO, employeeBudget);
         EmployeeBudgetDTO employeeBudgetDTO1 = employeeBudgetMapper.selectEmployeeBudget(employeeBudget);
         if (StringUtils.isNotNull(employeeBudgetDTO1)) {
-            throw new ServiceException("人力预算已存在！");
+            throw new ServiceException("人力预算已存在");
         }
         employeeBudget.setCreateBy(SecurityUtils.getUserId());
         employeeBudget.setCreateTime(DateUtils.getNowDate());
@@ -443,6 +458,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateEmployeeBudget(EmployeeBudgetDTO employeeBudgetDTO) {
         int i = 0;
         //人力预算主表
@@ -906,12 +922,12 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     /**
      * 远程 根据部门ID集合查询预算表
      *
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
     @Override
-    public List<EmployeeBudgetDTO> selectByDepartmentId(Long departmentId) {
-        List<EmployeeBudgetDTO> employeeBudgetDTOList = employeeBudgetMapper.selectByDepartmentId(departmentId);
+    public List<EmployeeBudgetDTO> selectByDepartmentIds(List<Long> departmentIds) {
+        List<EmployeeBudgetDTO> employeeBudgetDTOList = employeeBudgetMapper.selectByDepartmentIds(departmentIds);
         if (StringUtils.isNotEmpty(employeeBudgetDTOList)) {
             List<Long> officialRankSystemIds = employeeBudgetDTOList.stream().map(EmployeeBudgetDTO::getOfficialRankSystemId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
 
@@ -944,6 +960,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             List<EmployeeDTO> data = listR.getData();
             if (StringUtils.isNotEmpty(data) && StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
                 for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                    OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(employeeBudgetDetailsDTO.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
                     //人员id集合
                     List<Long> employeeIds = new ArrayList<>();
                     for (EmployeeDTO datum : data) {
@@ -955,7 +972,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
 
                         }//取职级确定薪酬中位数
                         else {
-                            OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(employeeBudgetDetailsDTO.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
+
                             if (StringUtils.isNotNull(officialRankEmolumentDTO)) {
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(10, BigDecimal.ROUND_HALF_UP));
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);

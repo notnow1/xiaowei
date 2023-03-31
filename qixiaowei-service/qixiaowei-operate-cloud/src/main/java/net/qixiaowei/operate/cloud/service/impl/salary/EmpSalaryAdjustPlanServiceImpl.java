@@ -7,7 +7,9 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.EmpSalaryAdjustPlan;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPerformDTO;
@@ -256,6 +258,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      * @param empSalaryAdjustPlanDTO 个人调薪计划表
      * @return 个人调薪计划表
      */
+    @DataScope(businessAlias = "esa")
     @Override
     public List<EmpSalaryAdjustPlanDTO> selectEmpSalaryAdjustPlanList(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
         Map<String, Object> params;
@@ -271,13 +274,13 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         List<String> workingAgeNotEqualList = (List<String>) params1.get("workingAgeNotEqual");
         List<Integer> workingAgeEqual = new ArrayList<>();
         List<Integer> workingAgeNotEqual = new ArrayList<>();
-        if (StringUtils.isNotNull(workingAgeEqualList)){
+        if (StringUtils.isNotNull(workingAgeEqualList)) {
             for (String s : workingAgeEqualList) {
                 workingAgeEqual.add(Integer.valueOf(s));
             }
             params1.put("workingAgeEqual", workingAgeEqual);
         }
-        if (StringUtils.isNotNull(workingAgeNotEqualList)){
+        if (StringUtils.isNotNull(workingAgeNotEqualList)) {
             for (String s : workingAgeNotEqualList) {
                 workingAgeNotEqual.add(Integer.valueOf(s));
             }
@@ -289,6 +292,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
             empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
         }
+        this.handleResult(empSalaryAdjustPlanDTOS);
         return empSalaryAdjustPlanDTOS;
     }
 
@@ -722,10 +726,10 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         }
         if (isSubmit == 1) {
             if (StringUtils.isEmpty(adjustmentTypeList)) {
-                throw new ServiceException("至少选择一个调岗/调薪/调级才可以提交");
+                throw new ServiceException("请选择调整类型");
             }
             if (StringUtils.isNull(effectiveDate)) {
-                throw new ServiceException("请提供生效日期");
+                throw new ServiceException("请选择生效日期");
             }
         }
     }
@@ -1038,9 +1042,22 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         }
         R<Integer> empAdjustR = employeeService.empAdjustUpdates(employeeSalarySnapVOS, SecurityConstants.FROM_SOURCE);
         if (empAdjustR.getCode() != 200) {
-            throw new ServiceException("远程根据调整策略进行更新人员薪资，岗位，职级失败 请联系管理员");
+            throw new ServiceException(empAdjustR.getMsg());
+//            throw new ServiceException("个人调薪到达生效日期更新员工信息失败 请联系管理员");
         }
         return 1;
+    }
+
+    @Override
+    public void handleResult(List<EmpSalaryAdjustPlanDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(EmpSalaryAdjustPlanDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 }
 

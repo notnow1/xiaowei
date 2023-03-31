@@ -95,4 +95,12 @@ public class DictionaryDataController extends BaseController {
         List<DictionaryDataDTO> list = dictionaryDataService.selectDictionaryDataList(dictionaryDataDTO);
         return AjaxResult.success(list);
     }
+    /**
+     * 查询字典数据表列表包括失效
+     */
+    @GetMapping("/listAll")
+    public AjaxResult listAll(DictionaryDataDTO dictionaryDataDTO) {
+        List<DictionaryDataDTO> list = dictionaryDataService.selectDictionaryDataListAll(dictionaryDataDTO);
+        return AjaxResult.success(list);
+    }
 }

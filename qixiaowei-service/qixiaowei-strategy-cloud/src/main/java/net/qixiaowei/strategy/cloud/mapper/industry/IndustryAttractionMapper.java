@@ -107,4 +107,11 @@ public interface IndustryAttractionMapper{
     * @return 结果
     */
     int batchIndustryAttraction(@Param("industryAttractions")List<IndustryAttraction> industryAttractions);
+
+    /**
+     * 预制表头查询行业吸引力表列表
+     * @param industryAttraction
+     * @return
+     */
+    List<IndustryAttractionDTO> selectPreIndustryAttractionList(@Param("industryAttraction")IndustryAttraction industryAttraction);
 }

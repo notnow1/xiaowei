@@ -7,7 +7,9 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
@@ -279,10 +281,10 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      * @param targetOutcomeDTO 目标结果表
      * @return 目标结果表
      */
+    @DataScope(businessAlias = "tao")
     @Override
     public List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO) {
         String createByName = targetOutcomeDTO.getCreateByName();
-        Set<Long> createBys = new HashSet<>();
         List<TargetOutcomeDTO> targetOutcomeDTOS;
         if (StringUtils.isNull(createByName)) {
             TargetOutcome targetOutcome = new TargetOutcome();
@@ -313,25 +315,20 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                 targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeByCreateBys(targetOutcome);
             }
         }
-        if (StringUtils.isEmpty(targetOutcomeDTOS)) {
-            return targetOutcomeDTOS;
-        }
-        for (TargetOutcomeDTO outcomeDTO : targetOutcomeDTOS) {
-            createBys.add(outcomeDTO.getCreateBy());
-        }
-        // todo 根据createBys获取创建人名称  setCreateByName
-        List<UserDTO> userDTOS = getUserDTOS(createBys);
-        for (TargetOutcomeDTO outcomeDTO : targetOutcomeDTOS) {
-            if (StringUtils.isNotEmpty(userDTOS)) {
-                for (UserDTO userDTO : userDTOS) {
-                    if (userDTO.getUserId().equals(outcomeDTO.getCreateBy())) {
-                        outcomeDTO.setCreateByName(userDTO.getEmployeeName());
-                        break;
-                    }
-                }
-            }
-        }
+        this.handleResult(targetOutcomeDTOS);
         return targetOutcomeDTOS;
+    }
+
+    @Override
+    public void handleResult(List<TargetOutcomeDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(TargetOutcomeDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -418,7 +415,32 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     @Override
     @Transactional
     public int updateTargetOutcome(TargetOutcomeDTO targetOutcomeDTO) {
+        Integer targetYear = targetOutcomeDTO.getTargetYear();
+        if (targetYear > DateUtils.getYear() || (targetYear == DateUtils.getYear() && DateUtils.getMonth() == 1)) {
+            return 1;
+        }
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDTO.getTargetOutcomeDetailsDTOList();
+        setMonthValue(targetOutcomeDetailsDTOList);
+        TargetOutcome targetOutcome = new TargetOutcome();
+        BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
+        targetOutcome.setUpdateTime(DateUtils.getNowDate());
+        targetOutcome.setUpdateBy(SecurityUtils.getUserId());
+        //  更新 targetOutcomeDetail
+        if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList)) {
+            for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+                targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
+            }
+            targetOutcomeDetailsService.updateTargetOutcomeDetailss(targetOutcomeDetailsDTOList);
+        }
+        return targetOutcomeMapper.updateTargetOutcome(targetOutcome);
+    }
+
+    /**
+     * 未目标结果详情表月份赋值
+     *
+     * @param targetOutcomeDetailsDTOList 目标结果详情表
+     */
+    private static void setMonthValue(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList) {
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
             List<BigDecimal> monthValue = targetOutcomeDetailsDTO.getMonthValue();
             for (int i = 0; i < monthValue.size(); i++) {
@@ -462,18 +484,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                 }
             }
         }
-        TargetOutcome targetOutcome = new TargetOutcome();
-        BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
-        targetOutcome.setUpdateTime(DateUtils.getNowDate());
-        targetOutcome.setUpdateBy(SecurityUtils.getUserId());
-        // todo 更新 targetOutcomeDetail
-        if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList)) {
-            for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
-                targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
-            }
-            targetOutcomeDetailsService.updateTargetOutcomeDetailss(targetOutcomeDetailsDTOList);
-        }
-        return targetOutcomeMapper.updateTargetOutcome(targetOutcome);
     }
 
     /**
@@ -613,7 +623,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             throw new ServiceException("获取指标名称失败!");
         }
         if (indicatorDTOS.size() != dataList.size()) {
-            throw new ServiceException("指标有问题,请检查指标配置!");
+            throw new ServiceException("指标数据异常 请检查指标配置!");
         }
         List<BigDecimal> monthValue = new ArrayList<>();
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsAfter = new ArrayList<>();
@@ -631,26 +641,47 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             excelToDTO(size, data, targetOutcomeDetailsDTO);
             targetOutcomeDetailsAfter.add(targetOutcomeDetailsDTO);
         }
+        TargetOutcomeDTO targetOutcomeDTO = targetOutcomeMapper.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
+        Integer targetYear = targetOutcomeDTO.getTargetYear();
+        List<Long> indicatorIds = indicatorDTOS.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
+        List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingByIndicators(indicatorIds, targetYear);
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsBefore = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
+        if (targetOutcomeDetailsBefore.size() != targetOutcomeDetailsAfter.size()) {
+            throw new ServiceException("导入失败 模板错误");
+        }
+        Set<Long> indicatorBefore = targetOutcomeDetailsBefore.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toSet());
+        Set<Long> indicatorAfter = targetOutcomeDetailsAfter.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toSet());
+        if (indicatorBefore.containsAll(indicatorAfter)) {
+            throw new ServiceException("导入失败 模板错误");
+        }
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsBefore) {
             for (TargetOutcomeDetailsDTO outcomeDetailsDTO : targetOutcomeDetailsAfter) {
-                if (targetOutcomeDetailsDTO.getIndicatorId().equals(outcomeDetailsDTO.getIndicatorId())) {
+                Long indicatorId = outcomeDetailsDTO.getIndicatorId();
+                if (targetOutcomeDetailsDTO.getIndicatorId().equals(indicatorId)) {
                     outcomeDetailsDTO.setTargetOutcomeDetailsId(targetOutcomeDetailsDTO.getTargetOutcomeDetailsId());
+                    List<TargetSettingDTO> targetSettingDTOList = targetSettingDTOS.stream().filter(t -> t.getIndicatorId().equals(indicatorId)).collect(Collectors.toList());
+                    TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
+                    if (StringUtils.isNotEmpty(targetSettingDTOList)) {
+                        targetSettingDTO = targetSettingDTOList.get(0);
+                    }
+                    BigDecimal targetValue = Optional.ofNullable(targetSettingDTO.getTargetValue()).orElse(BigDecimal.ZERO);
+                    BigDecimal actualTotal = outcomeDetailsDTO.getActualTotal();
+                    outcomeDetailsDTO.setTargetValue(targetValue);
+                    //实际值合计/目标值
+                    outcomeDetailsDTO.setTargetCompletionRate(targetValue.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : actualTotal.divide(targetValue, 2, RoundingMode.HALF_UP));
                     break;
                 }
             }
         }
-        TargetOutcomeDTO targetOutcomeDTO = targetOutcomeMapper.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
-        Integer targetYear = targetOutcomeDTO.getTargetYear();
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS = new ArrayList<>();
         int year = DateUtils.getYear();
         int month = DateUtils.getMonth();
         if (targetYear < year) {
             setAllMonth(targetOutcomeDetailsAfter, monthValue, targetOutcomeDetailsDTOS);// 存放所有月份
         } else if (targetYear == year) {
-            setSomeMonth(targetOutcomeDetailsAfter, month, monthValue, targetOutcomeDetailsDTOS);//存放部分月份
+            setSomeMonth(targetOutcomeDetailsAfter, month, monthValue, targetOutcomeDetailsDTOS);// 存放部分月份
         } else {
-            setOtherValue(targetOutcomeDetailsAfter, targetOutcomeDetailsDTOS);//不存放月份
+            setOtherValue(targetOutcomeDetailsAfter, targetOutcomeDetailsDTOS);// 不存放月份
         }
         return targetOutcomeDetailsDTOS;
     }
@@ -665,52 +696,52 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     private static void excelToDTO(int size, Map<Integer, String> data, TargetOutcomeDetailsDTO targetOutcomeDetailsDTO) {
         BigDecimal sum = BigDecimal.ZERO;
         if (size > 3) {
-            targetOutcomeDetailsDTO.setActualJanuary(new BigDecimal(data.get(2)));
-            sum = sum.add(new BigDecimal(data.get(2)));
+            targetOutcomeDetailsDTO.setActualJanuary(new BigDecimal(Optional.ofNullable(data.get(2)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(2)).orElse("0")));
         }
         if (size > 4) {
-            targetOutcomeDetailsDTO.setActualFebruary(new BigDecimal(data.get(3)));
-            sum = sum.add(new BigDecimal(data.get(3)));
+            targetOutcomeDetailsDTO.setActualFebruary(new BigDecimal(Optional.ofNullable(data.get(3)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(3)).orElse("0")));
         }
         if (size > 5) {
-            targetOutcomeDetailsDTO.setActualMarch(new BigDecimal(data.get(4)));
-            sum = sum.add(new BigDecimal(data.get(4)));
+            targetOutcomeDetailsDTO.setActualMarch(new BigDecimal(Optional.ofNullable(data.get(4)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(4)).orElse("0")));
         }
         if (size > 6) {
-            targetOutcomeDetailsDTO.setActualApril(new BigDecimal(data.get(5)));
-            sum = sum.add(new BigDecimal(data.get(5)));
+            targetOutcomeDetailsDTO.setActualApril(new BigDecimal(Optional.ofNullable(data.get(5)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(5)).orElse("0")));
         }
         if (size > 7) {
-            targetOutcomeDetailsDTO.setActualMay(new BigDecimal(data.get(6)));
-            sum = sum.add(new BigDecimal(data.get(6)));
+            targetOutcomeDetailsDTO.setActualMay(new BigDecimal(Optional.ofNullable(data.get(6)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(6)).orElse("0")));
         }
         if (size > 8) {
-            targetOutcomeDetailsDTO.setActualJune(new BigDecimal(data.get(7)));
-            sum = sum.add(new BigDecimal(data.get(7)));
+            targetOutcomeDetailsDTO.setActualJune(new BigDecimal(Optional.ofNullable(data.get(7)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(7)).orElse("0")));
         }
         if (size > 9) {
-            targetOutcomeDetailsDTO.setActualJuly(new BigDecimal(data.get(8)));
-            sum = sum.add(new BigDecimal(data.get(8)));
+            targetOutcomeDetailsDTO.setActualJuly(new BigDecimal(Optional.ofNullable(data.get(8)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(8)).orElse("0")));
         }
         if (size > 10) {
-            targetOutcomeDetailsDTO.setActualAugust(new BigDecimal(data.get(9)));
-            sum = sum.add(new BigDecimal(data.get(9)));
+            targetOutcomeDetailsDTO.setActualAugust(new BigDecimal(Optional.ofNullable(data.get(9)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(9)).orElse("0")));
         }
         if (size > 11) {
-            targetOutcomeDetailsDTO.setActualSeptember(new BigDecimal(data.get(10)));
-            sum = sum.add(new BigDecimal(data.get(10)));
+            targetOutcomeDetailsDTO.setActualSeptember(new BigDecimal(Optional.ofNullable(data.get(10)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(10)).orElse("0")));
         }
         if (size > 12) {
-            targetOutcomeDetailsDTO.setActualOctober(new BigDecimal(data.get(11)));
-            sum = sum.add(new BigDecimal(data.get(11)));
+            targetOutcomeDetailsDTO.setActualOctober(new BigDecimal(Optional.ofNullable(data.get(11)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(11)).orElse("0")));
         }
         if (size > 13) {
-            targetOutcomeDetailsDTO.setActualNovember(new BigDecimal(data.get(12)));
-            sum = sum.add(new BigDecimal(data.get(12)));
+            targetOutcomeDetailsDTO.setActualNovember(new BigDecimal(Optional.ofNullable(data.get(12)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(12)).orElse("0")));
         }
         if (size > 14) {
-            targetOutcomeDetailsDTO.setActualDecember(new BigDecimal(data.get(13)));
-            sum = sum.add(new BigDecimal(data.get(13)));
+            targetOutcomeDetailsDTO.setActualDecember(new BigDecimal(Optional.ofNullable(data.get(13)).orElse("0")));
+            sum = sum.add(new BigDecimal(Optional.ofNullable(data.get(13)).orElse("0")));
         }
         targetOutcomeDetailsDTO.setActualTotal(sum);
     }
@@ -782,57 +813,69 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
 
     /**
      * 战略云获取指标实际值
-     * @param strategyIntentOperateVO
+     *
+     * @param strategyIntentOperateVOS
      * @return
      */
     @Override
-    public List<StrategyIntentOperateVO> getResultIndicator(StrategyIntentOperateVO  strategyIntentOperateVO) {
-        List<StrategyIntentOperateVO> strategyIntentOperateVOArrayList = new ArrayList<>();
-        List<Long> indicatorIds = strategyIntentOperateVO.getIndicatorIds();
-        List<String> targetYears = strategyIntentOperateVO.getTargetYears();
-        if (StringUtils.isEmpty(indicatorIds)|| StringUtils.isEmpty(targetYears)){
-            throw new ServiceException("年度或指标为空！");
-        }
-        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeMapper.getResultIndicator(strategyIntentOperateVO);
-        if (StringUtils.isEmpty(targetYears)){
-            return strategyIntentOperateVOArrayList;
-        }else {
-            List<Long> indicatorIdList = targetOutcomeDetailsDTOList.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toList());
-            R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByIds(indicatorIdList, SecurityConstants.INNER);
-            List<IndicatorDTO> indicatorDTOList = listR.getData();
-            if (StringUtils.isNotEmpty(indicatorDTOList)){
-                for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
-                    for (IndicatorDTO indicatorDTO : indicatorDTOList) {
-                        if (targetOutcomeDetailsDTO.getIndicatorId().equals(indicatorDTO.getIndicatorId())){
-                            targetOutcomeDetailsDTO.setIndicatorName(indicatorDTO.getIndicatorName());
+    public List<StrategyIntentOperateVO> getResultIndicator(List<StrategyIntentOperateVO> strategyIntentOperateVOS) {
+        StrategyIntentOperateVO strategyIntentOperateVO = new StrategyIntentOperateVO();
+        if (StringUtils.isNotEmpty(strategyIntentOperateVOS)) {
+            List<Long> indicatorIds = strategyIntentOperateVOS.get(0).getIndicatorIds();
+            List<String> targetYears = strategyIntentOperateVOS.get(0).getTargetYears();
+            if (StringUtils.isEmpty(indicatorIds) || StringUtils.isEmpty(targetYears)) {
+                throw new ServiceException("年度或指标为空！");
+            }
+            strategyIntentOperateVO.setIndicatorIds(indicatorIds);
+            strategyIntentOperateVO.setTargetYears(targetYears);
+            List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeMapper.getResultIndicator(strategyIntentOperateVO);
+            if (StringUtils.isEmpty(targetYears)) {
+                return strategyIntentOperateVOS;
+            } else {
+                List<Long> indicatorIdList = targetOutcomeDetailsDTOList.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toList());
+                R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByIds(indicatorIdList, SecurityConstants.INNER);
+                List<IndicatorDTO> indicatorDTOList = listR.getData();
+                if (StringUtils.isNotEmpty(indicatorDTOList)) {
+                    for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+                        for (IndicatorDTO indicatorDTO : indicatorDTOList) {
+                            if (targetOutcomeDetailsDTO.getIndicatorId().equals(indicatorDTO.getIndicatorId())) {
+                                targetOutcomeDetailsDTO.setIndicatorName(indicatorDTO.getIndicatorName());
+                            }
                         }
                     }
                 }
-            }
-            Map<Long, List<TargetOutcomeDetailsDTO>> indicatorIdDataMap = targetOutcomeDetailsDTOList.parallelStream().collect(Collectors.groupingBy(TargetOutcomeDetailsDTO::getIndicatorId));
-            if (StringUtils.isNotEmpty(indicatorIdDataMap)){
-                for (Long key : indicatorIdDataMap.keySet()) {
-                    StrategyIntentOperateVO strategyIntentOperateVO1 = new StrategyIntentOperateVO();
-                    List<StrategyIntentOperateMapVO> strategyIntentOperateMapVOList = new ArrayList<>();
-                    List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList1 = indicatorIdDataMap.get(key);
-                    if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList1)){
-                        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
-                            StrategyIntentOperateMapVO strategyIntentOperateMapVO = new StrategyIntentOperateMapVO();
-                            Map<Integer, BigDecimal> yearValues = new HashMap<>();
-                            yearValues.put(targetOutcomeDetailsDTO.getTargetYear(),targetOutcomeDetailsDTO.getTargetValue());
-                            strategyIntentOperateMapVO.setYearValues(yearValues);
-                            strategyIntentOperateVO1.setIndicatorId(targetOutcomeDetailsDTO.getIndicatorId());
-                            strategyIntentOperateVO1.setIndicatorName(targetOutcomeDetailsDTO.getIndicatorName());
-                            strategyIntentOperateMapVOList.add(strategyIntentOperateMapVO);
-                            strategyIntentOperateVO1.setStrategyIntentOperateMapDTOS(strategyIntentOperateMapVOList);
-                        }
-                    }
-                    strategyIntentOperateVOArrayList.add(strategyIntentOperateVO1);
-                }
-            }
+                Map<Long, List<TargetOutcomeDetailsDTO>> indicatorIdDataMap = targetOutcomeDetailsDTOList.parallelStream().collect(Collectors.groupingBy(TargetOutcomeDetailsDTO::getIndicatorId));
+                if (StringUtils.isNotEmpty(indicatorIdDataMap)) {
+                    for (StrategyIntentOperateVO intentOperateVO : strategyIntentOperateVOS) {
+                        List<StrategyIntentOperateMapVO> strategyIntentOperateMapDTOS = intentOperateVO.getStrategyIntentOperateMapDTOS();
+                        //数据库
+                        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList1 = indicatorIdDataMap.get(intentOperateVO.getIndicatorId());
+                        if (StringUtils.isNotEmpty(strategyIntentOperateMapDTOS)) {
+                            for (StrategyIntentOperateMapVO strategyIntentOperateMapDTO : strategyIntentOperateMapDTOS) {
+                                Map<Integer, BigDecimal> yearValues1 = strategyIntentOperateMapDTO.getYearValues();
+                                //经营年度
+                                Integer operateYear = null;
+                                for (Integer key : yearValues1.keySet()) {
+                                    operateYear = key;
 
+                                }
+                                if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList1)) {
+                                    for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
+                                        Integer targetYear = targetOutcomeDetailsDTO.getTargetYear();
+                                        if (null != operateYear && (targetYear.equals(operateYear))) {
+                                            yearValues1.put(targetYear, targetOutcomeDetailsDTO.getActualTotal());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
         }
-        return strategyIntentOperateVOArrayList;
+        return strategyIntentOperateVOS;
     }
 
 }

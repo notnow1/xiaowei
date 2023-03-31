@@ -144,8 +144,8 @@ public interface EmployeeBudgetMapper {
 
     /**
      * 远程 根据部门ID集合查询预算表
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
-    List<EmployeeBudgetDTO> selectByDepartmentId(@Param("departmentId") Long departmentId);
+    List<EmployeeBudgetDTO> selectByDepartmentIds(@Param("departmentIds") List<Long> departmentIds);
 }

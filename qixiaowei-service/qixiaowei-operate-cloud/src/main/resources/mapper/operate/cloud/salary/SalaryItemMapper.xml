@@ -15,46 +15,46 @@
     <!--    查询工资项列表-->
     <select id="selectSalaryItemList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
-        create_time, update_by, update_time
-        FROM salary_item
-        WHERE delete_flag=0
+        si.salary_item_id, si.first_level_item, si.second_level_item, si.third_level_item, si.scope, si.sort, si.delete_flag, si.create_by,
+        si.create_time, si.update_by, si.update_time
+        FROM salary_item si
+        WHERE si.delete_flag=0
         <if test="salaryItem.salaryItemId != null">
-            and salary_item_id=#{salaryItem.salaryItemId}
+            and si.salary_item_id=#{salaryItem.salaryItemId}
         </if>
         <if test="salaryItem.firstLevelItem != null">
-            and first_level_item=#{salaryItem.firstLevelItem}
+            and si.first_level_item=#{salaryItem.firstLevelItem}
         </if>
         <if test="salaryItem.secondLevelItem != null">
-            and second_level_item=#{salaryItem.secondLevelItem}
+            and si.second_level_item=#{salaryItem.secondLevelItem}
         </if>
         <if test="salaryItem.thirdLevelItem != null and salaryItem.thirdLevelItem != ''">
-            and third_level_item like concat('%', #{salaryItem.thirdLevelItem}, '%')
+            and si.third_level_item like concat('%', #{salaryItem.thirdLevelItem}, '%')
         </if>
         <if test="salaryItem.scope != null">
-            and scope=#{salaryItem.scope}
+            and si.scope=#{salaryItem.scope}
         </if>
         <if test="salaryItem.sort != null">
-            and sort=#{salaryItem.sort}
+            and si.sort=#{salaryItem.sort}
         </if>
         <if test="salaryItem.deleteFlag != null">
-            and delete_flag=#{salaryItem.deleteFlag}
+            and si.delete_flag=#{salaryItem.deleteFlag}
         </if>
         <if test="salaryItem.createBy != null">
-            and create_by=#{salaryItem.createBy}
+            and si.create_by=#{salaryItem.createBy}
         </if>
         <if test="salaryItem.createTime != null">
-            and create_time=#{salaryItem.createTime}
+            and si.create_time=#{salaryItem.createTime}
         </if>
         <if test="salaryItem.updateBy != null">
-            and update_by=#{salaryItem.updateBy}
+            and si.update_by=#{salaryItem.updateBy}
         </if>
         <if test="salaryItem.updateTime != null">
-            and update_time=#{salaryItem.updateTime}
+            and si.update_time=#{salaryItem.updateTime}
         </if>
         <!--    一级薪酬项目过滤-->
         <if test="salaryItem.params.firstLevelItemEqual != null and salaryItem.params.firstLevelItemEqual.size() > 0">
-            AND first_level_item IN
+            AND si.first_level_item IN
             <foreach item="item"
                      collection="salaryItem.params.firstLevelItemEqual"
                      index="index" open="(" separator="," close=")">
@@ -62,18 +62,18 @@
             </foreach>
         </if>
         <if test="salaryItem.params.firstLevelItemNotEqual != null and salaryItem.params.firstLevelItemNotEqual.size() > 0">
-            AND (first_level_item NOT IN
+            AND (si.first_level_item NOT IN
             <foreach item="item"
                      collection="salaryItem.params.firstLevelItemNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR first_level_item IS NULL
+            OR si.first_level_item IS NULL
             )
         </if>
         <!--    二级薪酬项目过滤-->
         <if test="salaryItem.params.secondLevelItemEqual != null and salaryItem.params.secondLevelItemEqual.size() > 0">
-            AND second_level_item IN
+            AND si.second_level_item IN
             <foreach item="item"
                      collection="salaryItem.params.secondLevelItemEqual"
                      index="index" open="(" separator="," close=")">
@@ -81,18 +81,18 @@
             </foreach>
         </if>
         <if test="salaryItem.params.secondLevelItemNotEqual != null and salaryItem.params.secondLevelItemNotEqual.size() > 0">
-            AND (first_level_item NOT IN
+            AND (si.first_level_item NOT IN
             <foreach item="item"
                      collection="salaryItem.params.secondLevelItemNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR first_level_item IS NULL
+            OR si.first_level_item IS NULL
             )
         </if>
         <!--    三级薪酬项目过滤-->
         <if test="salaryItem.params.thirdLevelItemEqual != null and salaryItem.params.thirdLevelItemEqual.size() > 0">
-            AND third_level_item IN
+            AND si.third_level_item IN
             <foreach item="item"
                      collection="salaryItem.params.thirdLevelItemEqual"
                      index="index" open="(" separator="," close=")">
@@ -100,21 +100,21 @@
             </foreach>
         </if>
         <if test="salaryItem.params.thirdLevelItemNotEqual != null and salaryItem.params.thirdLevelItemNotEqual.size() > 0">
-            AND (third_level_item NOT IN
+            AND (si.third_level_item NOT IN
             <foreach item="item"
                      collection="salaryItem.params.thirdLevelItemNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR third_level_item IS NULL
+            OR si.third_level_item IS NULL
             )
         </if>
         <if test="salaryItem.params.thirdLevelItemLike != null and salaryItem.params.thirdLevelItemLike.size() > 0">
             AND
             <foreach item="item"
                      collection="salaryItem.params.thirdLevelItemLike"
-                     index="index" open="(" separator="AND" close=")">
-                third_level_item LIKE concat('%', #{item}, '%')
+                     index="index" open="(" separator="OR" close=")">
+                si.third_level_item LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <if test="salaryItem.params.thirdLevelItemNotLike != null and salaryItem.params.thirdLevelItemNotLike.size() > 0">
@@ -122,12 +122,12 @@
             <foreach item="item"
                      collection="salaryItem.params.thirdLevelItemNotLike"
                      index="index" open="(" separator="AND" close=")">
-                third_level_item NOT LIKE concat('%', #{item}, '%')
+                si.third_level_item NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <!--    级别-->
         <if test="salaryItem.params.scopeEqual != null and salaryItem.params.scopeEqual.size() > 0">
-            AND scope IN
+            AND si.scope IN
             <foreach item="item"
                      collection="salaryItem.params.scopeEqual"
                      index="index" open="(" separator="," close=")">
@@ -135,15 +135,18 @@
             </foreach>
         </if>
         <if test="salaryItem.params.scopeNotEqual != null and salaryItem.params.scopeNotEqual.size() > 0">
-            AND (scope NOT IN
+            AND (si.scope NOT IN
             <foreach item="item"
                      collection="salaryItem.params.scopeNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR scope IS NULL
+            OR si.scope IS NULL
             )
         </if>
+        <!-- 数据范围过滤 -->
+        ${salaryItem.params.dataScope}
+        ORDER BY si.create_time DESC
     </select>
     <!--根据id集合获取数据-->
     <select id="getSalaryItemByIds" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">

@@ -54,7 +54,7 @@ public class IndicatorController extends BaseController {
     public AjaxResult treeList(IndicatorDTO indicatorDTO) {
         Integer indicatorType = indicatorDTO.getIndicatorType();
         indicatorDTO.setIndicatorType(null);
-        if (!CheckObjectIsNullUtils.isNull(indicatorDTO)) {
+        if (!CheckObjectIsNullUtils.isNull(indicatorDTO) || StringUtils.isNotEmpty(indicatorDTO.getParams())) {
             indicatorDTO.setIndicatorType(indicatorType);
             return AjaxResult.success(indicatorService.selectIndicatorList(indicatorDTO));
         }
@@ -89,7 +89,7 @@ public class IndicatorController extends BaseController {
     @RequiresPermissions(value = {"system:manage:indicator:add", "system:manage:indicator:edit"}, logical = Logical.OR)
     @GetMapping("/generate/indicatorCode")
     public AjaxResult generateIndicatorCode(@RequestParam(value = "indicatorType", required = false, defaultValue = "1") Integer indicatorType) {
-        return AjaxResult.success("操作成功",indicatorService.generateIndicatorCode(indicatorType));
+        return AjaxResult.success("操作成功", indicatorService.generateIndicatorCode(indicatorType));
     }
 
     /**
@@ -99,7 +99,7 @@ public class IndicatorController extends BaseController {
     @RequiresPermissions("system:manage:indicator:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody IndicatorDTO indicatorDTO) {
-        return AjaxResult.success(indicatorService.insertIndicator(indicatorDTO));
+        return AjaxResult.success("新增成功", indicatorService.insertIndicator(indicatorDTO));
     }
 
     /**

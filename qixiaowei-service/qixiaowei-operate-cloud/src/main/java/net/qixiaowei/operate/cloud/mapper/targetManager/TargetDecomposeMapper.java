@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.mapper.targetManager;
 
 import java.util.List;
 
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.dashboard.TargetAchieveAnalysisDTO;
 import net.qixiaowei.operate.cloud.api.dto.dashboard.TargetLeaderboardDTO;
@@ -127,10 +128,10 @@ public interface TargetDecomposeMapper {
     /**
      * 目标分解是否被引用
      *
-     * @param departmentId 部门ID
+     * @param departmentIds 部门ID
      * @return
      */
-    List<TargetDecompose> queryDeptDecompose(@Param("departmentId") Long departmentId);
+    List<TargetDecompose> queryDeptDecompose(@Param("departmentIds") List<Long> departmentIds);
 
     /**
      * 查询目标分解预制数据年份
@@ -184,4 +185,12 @@ public interface TargetDecomposeMapper {
      * @return List
      */
     List<TargetLeaderboardDTO> selectRecentDecompose2();
+
+    /**
+     * 引用校验
+     *
+     * @param targetDecomposeDimensionIds 分结维度ID集合
+     * @return 结果
+     */
+    List<TargetDecomposeDTO> selectListByTargetDecomposeDimensionIds(@Param("targetDecomposeDimensionIds") List<Long> targetDecomposeDimensionIds);
 }

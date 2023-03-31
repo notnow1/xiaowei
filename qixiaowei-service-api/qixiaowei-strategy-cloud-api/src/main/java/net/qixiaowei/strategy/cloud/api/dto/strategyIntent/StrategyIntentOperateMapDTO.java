@@ -2,6 +2,7 @@ package net.qixiaowei.strategy.cloud.api.dto.strategyIntent;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Map;
 */
 @Data
 @Accessors(chain = true)
-public class StrategyIntentOperateMapDTO {
+public class StrategyIntentOperateMapDTO extends BaseDTO {
 
     /**
      * ID

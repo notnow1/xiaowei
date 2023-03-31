@@ -7,6 +7,7 @@ import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteEmployeeAnnualBonusSer
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -22,13 +23,13 @@ public class RemoteEmployeeAnnualBonusFallbackFactory implements FallbackFactory
         log.error("个人年终奖服务调用失败:{}", throwable.getMessage());
         return new RemoteEmployeeAnnualBonusService() {
             @Override
-            public R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByEmployeeId(Long employeeId, String source) {
+            public R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByEmployeeIds(List<Long> employeeIds, String source) {
                 return R.fail("根据人员id查询个人年终奖失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByDepartmentId(Long departmentId, String source) {
-                return R.fail("根据部门id查询个人年终奖失败:" + throwable.getMessage());
+            public R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByDepartmentIds(List<Long> departmentIds, String source) {
+                return R.fail("根据部门id集合查询个人年终奖失败:" + throwable.getMessage());
             }
         };
     }

@@ -6,20 +6,23 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDimension;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
+import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeDimensionMapper;
+import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeDimensionService;
 import org.apache.ibatis.binding.BindingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -32,6 +35,10 @@ import java.util.Map;
 public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDimensionService {
     @Autowired
     private TargetDecomposeDimensionMapper targetDecomposeDimensionMapper;
+    @Autowired
+    private RemoteDecomposeService targetDecomposeService;
+    @Autowired
+    private TargetDecomposeMapper targetDecomposeMapper;
 
     /**
      * 查询目标分解维度配置
@@ -50,6 +57,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
      * @param targetDecomposeDimensionDTO 目标分解维度配置
      * @return 目标分解维度配置
      */
+    @DataScope(businessAlias = "tdd")
     @Override
     public List<TargetDecomposeDimensionDTO> selectTargetDecomposeDimensionList(TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
@@ -78,7 +86,20 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
                 decomposeDimensionDTO.setDecompositionDimensionName(substring);
             }
         }
+        this.handleResult(targetDecomposeDimensionDTOS);
         return targetDecomposeDimensionDTOS;
+    }
+
+    @Override
+    public void handleResult(List<TargetDecomposeDimensionDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(TargetDecomposeDimensionDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -96,7 +117,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
             throw new ServiceException("分解维度不能为空");
         }
         if (checkUnique(decompositionDimension)) {
-            throw new ServiceException("分解维度不能重复");
+            throw new ServiceException("分解维度已存在");
         }
         String[] targetDecomposeDimensions = decompositionDimension.split(",");
         for (String target : targetDecomposeDimensions) {
@@ -304,12 +325,13 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     /**
      * 分解维度引用校验
      *
-     * @param targetDecomposeDimensionIds
-     * @return
+     * @param targetDecomposeDimensionIds 分解维度ID集合
+     * @return boolean
      */
     private boolean isQuote(List<Long> targetDecomposeDimensionIds) {
-        //todo 引用校验
-        return false;
+        // 引用校验
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectListByTargetDecomposeDimensionIds(targetDecomposeDimensionIds);
+        return StringUtils.isNotEmpty(targetDecomposeDTOS);
     }
 }
 

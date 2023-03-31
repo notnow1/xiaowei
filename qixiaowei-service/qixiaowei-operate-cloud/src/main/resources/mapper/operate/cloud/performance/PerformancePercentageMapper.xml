@@ -64,6 +64,9 @@
         <if test="performancePercentageDTO.updateTime != null">
             and update_time=#{performancePercentageDTO.updateTime}
         </if>
+        <!-- 数据范围过滤 -->
+        ${performancePercentageDTO.params.dataScope}
+        ORDER BY t1.create_time DESC
     </select>
     <!--performancePercentageName唯一性校验-->
     <select id="isUnique" resultType="java.lang.Integer">

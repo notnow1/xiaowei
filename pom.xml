@@ -29,7 +29,6 @@
         <spring-cloud.version>2021.0.5</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
         <alibaba.nacos.version>2.1.2</alibaba.nacos.version>
-        <alibaba.seata.version>1.5.2</alibaba.seata.version>
         <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <spring-boot.mybatis>2.2.2</spring-boot.mybatis>
         <swagger.fox.version>3.0.0</swagger.fox.version>
@@ -79,13 +78,6 @@
                 <groupId>com.alibaba.nacos</groupId>
                 <artifactId>nacos-client</artifactId>
                 <version>${alibaba.nacos.version}</version>
-            </dependency>
-
-            <!-- Alibaba Seata 配置 -->
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-spring-boot-starter</artifactId>
-                <version>${alibaba.seata.version}</version>
             </dependency>
 
             <!-- SpringBoot 依赖配置 -->
@@ -225,6 +217,13 @@
             <dependency>
                 <groupId>net.qixiaowei</groupId>
                 <artifactId>qixiaowei-integration-redis</artifactId>
+                <version>${qixiaowei.version}</version>
+            </dependency>
+
+            <!-- 分布式事务服务 -->
+            <dependency>
+                <groupId>net.qixiaowei</groupId>
+                <artifactId>qixiaowei-integration-seata</artifactId>
                 <version>${qixiaowei.version}</version>
             </dependency>
 

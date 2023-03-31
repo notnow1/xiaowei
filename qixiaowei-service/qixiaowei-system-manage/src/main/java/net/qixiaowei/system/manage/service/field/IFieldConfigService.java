@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.field;
 
 import java.util.List;
 
+import net.qixiaowei.system.manage.api.domain.field.FieldConfig;
 import net.qixiaowei.system.manage.api.dto.field.FieldConfigDTO;
 
 
@@ -66,7 +67,7 @@ public interface IFieldConfigService {
      * @param fieldConfigDtos 字段配置表
      * @return 结果
      */
-    int insertFieldConfigs(List<FieldConfigDTO> fieldConfigDtos);
+    List<FieldConfig> insertFieldConfigs(List<FieldConfigDTO> fieldConfigDtos);
 
     /**
      * 逻辑批量删除字段配置表

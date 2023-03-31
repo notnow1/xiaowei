@@ -2,9 +2,11 @@ package net.qixiaowei.strategy.cloud.controller.field;
 
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.tenant.service.ITenantService;
 import net.qixiaowei.strategy.cloud.api.dto.field.FieldListConfigDTO;
 import net.qixiaowei.strategy.cloud.api.vo.field.FieldListConfigVO;
 import net.qixiaowei.strategy.cloud.api.vo.field.FieldListHeaderVO;
+import net.qixiaowei.strategy.cloud.logic.manager.FieldConfigManager;
 import net.qixiaowei.strategy.cloud.service.field.IFieldListConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +26,12 @@ public class FieldListConfigController extends BaseController {
 
     @Autowired
     private IFieldListConfigService fieldListConfigService;
+
+    @Autowired
+    private FieldConfigManager fieldConfigManager;
+
+    @Autowired
+    private ITenantService tenantService;
 
 
     /**
@@ -60,5 +68,12 @@ public class FieldListConfigController extends BaseController {
         return toAjax(fieldListConfigService.updateFieldListConfigs(fieldListConfigDtos));
     }
 
+    /**
+     * 表头信息修改
+     */
+    @PostMapping("/changeHead")
+    public AjaxResult changeHead(@RequestParam("businessType") Integer businessType) {
+        return toAjax(fieldListConfigService.changeHead(businessType));
+    }
 
 }

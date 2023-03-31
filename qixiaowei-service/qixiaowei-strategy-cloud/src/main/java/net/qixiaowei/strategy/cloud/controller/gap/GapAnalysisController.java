@@ -2,12 +2,8 @@ package net.qixiaowei.strategy.cloud.controller.gap;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.metadata.Head;
-import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
-import com.alibaba.excel.write.handler.CellWriteHandler;
-import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
-import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
@@ -19,10 +15,11 @@ import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
 import net.qixiaowei.strategy.cloud.service.gap.IGapAnalysisService;
 import org.apache.poi.ss.usermodel.Cell;
@@ -65,6 +62,7 @@ public class GapAnalysisController extends BaseController {
      * 分页查询差距分析表列表
      */
     @RequiresPermissions("strategy:cloud:gapAnalysis:pageList")
+    @DataScope(businessAlias = "ga")
     @GetMapping("/pageList")
     public TableDataInfo pageList(GapAnalysisDTO gapAnalysisDTO) {
         startPage();
@@ -75,7 +73,6 @@ public class GapAnalysisController extends BaseController {
     /**
      * 查询差距分析表列表
      */
-    @RequiresPermissions("strategy:cloud:gapAnalysis:list")
     @GetMapping("/list")
     public AjaxResult list(GapAnalysisDTO gapAnalysisDTO) {
         List<GapAnalysisDTO> list = gapAnalysisService.selectGapAnalysisList(gapAnalysisDTO);
@@ -87,7 +84,7 @@ public class GapAnalysisController extends BaseController {
      * 新增差距分析表
      */
     @RequiresPermissions("strategy:cloud:gapAnalysis:add")
-    @Log(title = "新增差距分析表", businessType = BusinessType.GAP_ANALYSIS, businessId = "gapAnalysisId", operationType = OperationType.INSERT)
+    @Log(title = "保存差距分析表", businessType = BusinessType.GAP_ANALYSIS, businessId = "gapAnalysisId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody GapAnalysisDTO gapAnalysisDTO) {
         return AjaxResult.success(gapAnalysisService.insertGapAnalysis(gapAnalysisDTO));
@@ -98,7 +95,7 @@ public class GapAnalysisController extends BaseController {
      * 修改差距分析表
      */
     @RequiresPermissions("strategy:cloud:gapAnalysis:edit")
-    @Log(title = "修改差距分析表", businessType = BusinessType.GAP_ANALYSIS, businessId = "gapAnalysisId", operationType = OperationType.UPDATE)
+    @Log(title = "保存差距分析表", businessType = BusinessType.GAP_ANALYSIS, businessId = "gapAnalysisId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody GapAnalysisDTO gapAnalysisDTO) {
         return toAjax(gapAnalysisService.updateGapAnalysis(gapAnalysisDTO));
@@ -116,7 +113,7 @@ public class GapAnalysisController extends BaseController {
     /**
      * 逻辑批量删除差距分析表
      */
-    @RequiresPermissions("strategy:cloud:gapAnalysis:removes")
+    @RequiresPermissions("strategy:cloud:gapAnalysis:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> gapAnalysisIds) {
         return toAjax(gapAnalysisService.logicDeleteGapAnalysisByGapAnalysisIds(gapAnalysisIds));
@@ -126,7 +123,7 @@ public class GapAnalysisController extends BaseController {
      * 下载模板表
      */
     @SneakyThrows
-    @RequiresPermissions("strategy:cloud:gapAnalysis:import")
+    @RequiresPermissions(value = {"strategy:cloud:gapAnalysis:edit", "strategy:cloud:gapAnalysis:add"}, logical = Logical.OR)
     @GetMapping("export-template")
     public void exportTemplate(@RequestParam("operateHistoryYear") Integer operateHistoryYear, @RequestParam("operateYear") Integer operateYear, HttpServletResponse response) {
         if (StringUtils.isNull(operateHistoryYear)) {
@@ -161,7 +158,7 @@ public class GapAnalysisController extends BaseController {
     /**
      * 解析Excel
      */
-    @RequiresPermissions("strategy:cloud:gapAnalysis:edit")
+    @RequiresPermissions(value = {"strategy:cloud:gapAnalysis:edit", "strategy:cloud:gapAnalysis:add"}, logical = Logical.OR)
     @PostMapping("/excelParseObject")
     public AjaxResult excelParseObject(@RequestParam("operateHistoryYear") Integer operateHistoryYear, @RequestParam("operateYear") Integer operateYear, MultipartFile file) {
         String filename = file.getOriginalFilename();

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -47,6 +48,8 @@ public class BusinessDesignParamServiceImpl implements IBusinessDesignParamServi
     public List<BusinessDesignParamDTO> selectBusinessDesignParamList(BusinessDesignParamDTO businessDesignParamDTO) {
         BusinessDesignParam businessDesignParam = new BusinessDesignParam();
         BeanUtils.copyProperties(businessDesignParamDTO, businessDesignParam);
+        Map<String, Object> params = businessDesignParamDTO.getParams();
+        businessDesignParam.setParams(params);
         return businessDesignParamMapper.selectBusinessDesignParamList(businessDesignParam);
     }
 

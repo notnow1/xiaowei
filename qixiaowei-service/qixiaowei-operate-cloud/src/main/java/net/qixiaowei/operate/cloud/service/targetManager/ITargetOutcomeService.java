@@ -35,6 +35,14 @@ public interface ITargetOutcomeService {
     List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO);
 
     /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<TargetOutcomeDTO> result);
+
+    /**
      * 新增目标结果表
      *
      * @param targetOutcomeDTO 目标结果表
@@ -159,9 +167,9 @@ public interface ITargetOutcomeService {
 
     /**
      * 战略云获取指标实际值
-     * @param strategyIntentOperateVO
+     *
+     * @param strategyIntentOperateVOS
      * @return
      */
-    List<StrategyIntentOperateVO> getResultIndicator(StrategyIntentOperateVO strategyIntentOperateVO);
-
+    List<StrategyIntentOperateVO> getResultIndicator(List<StrategyIntentOperateVO> strategyIntentOperateVOS);
 }

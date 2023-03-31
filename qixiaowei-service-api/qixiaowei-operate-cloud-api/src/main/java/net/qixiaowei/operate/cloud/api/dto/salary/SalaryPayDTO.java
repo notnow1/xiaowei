@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.api.dto.salary;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-public class SalaryPayDTO {
+public class SalaryPayDTO extends BaseDTO {
 
     //查询检验
     public interface QuerySalaryPayDTO extends Default {
@@ -177,24 +178,6 @@ public class SalaryPayDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
      * 工资发薪ID集合
      */
     private List<Long> salaryPayIds;
@@ -202,10 +185,6 @@ public class SalaryPayDTO {
      * 是否勾选（0-仅勾选数据,1-所有符合条件数据）
      */
     private Integer isSelect;
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
 
 }
 

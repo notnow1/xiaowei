@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyMetricsDetailMapper">
+    <!--    查询战略衡量指标详情表-->
+    <select id="selectStrategyMetricsDetailByStrategyMetricsDetailId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO">
+        SELECT
+        strategy_metrics_detail_id,strategy_metrics_id,strategy_index_dimension_id,serial_number,strategy_measure_name,indicator_id,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_metrics_detail
+        WHERE strategy_metrics_detail_id=#{strategyMetricsDetailId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询战略衡量指标详情表-->
+    <select id="selectStrategyMetricsDetailByStrategyMetricsDetailIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO">
+        SELECT
+        strategy_metrics_detail_id,strategy_metrics_id,strategy_index_dimension_id,serial_number,strategy_measure_name,indicator_id,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_metrics_detail
+        WHERE strategy_metrics_detail_id in
+        <foreach item="item"
+                 collection="strategyMetricsDetailIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询战略衡量指标详情表列表-->
+    <select id="selectStrategyMetricsDetailList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO">
+        SELECT
+        strategy_metrics_detail_id,strategy_metrics_id,strategy_index_dimension_id,serial_number,strategy_measure_name,indicator_id,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_metrics_detail
+        WHERE delete_flag=0
+        <if test="strategyMetricsDetail.strategyMetricsDetailId != null">
+            and strategy_metrics_detail_id=#{strategyMetricsDetail.strategyMetricsDetailId}
+        </if>
+        <if test="strategyMetricsDetail.strategyMetricsId != null">
+            and strategy_metrics_id=#{strategyMetricsDetail.strategyMetricsId}
+        </if>
+        <if test="strategyMetricsDetail.strategyIndexDimensionId != null">
+            and strategy_index_dimension_id=#{strategyMetricsDetail.strategyIndexDimensionId}
+        </if>
+        <if test="strategyMetricsDetail.serialNumber != null">
+            and serial_number=#{strategyMetricsDetail.serialNumber}
+        </if>
+        <if test="strategyMetricsDetail.strategyMeasureName != null and strategyMetricsDetail.strategyMeasureName != ''">
+            and strategy_measure_name=#{strategyMetricsDetail.strategyMeasureName}
+        </if>
+        <if test="strategyMetricsDetail.indicatorId != null">
+            and indicator_id=#{strategyMetricsDetail.indicatorId}
+        </if>
+        <if test="strategyMetricsDetail.sort != null">
+            and sort=#{strategyMetricsDetail.sort}
+        </if>
+        <if test="strategyMetricsDetail.deleteFlag != null">
+            and delete_flag=#{strategyMetricsDetail.deleteFlag}
+        </if>
+        <if test="strategyMetricsDetail.createBy != null">
+            and create_by=#{strategyMetricsDetail.createBy}
+        </if>
+        <if test="strategyMetricsDetail.createTime != null">
+            and create_time=#{strategyMetricsDetail.createTime}
+        </if>
+        <if test="strategyMetricsDetail.updateBy != null">
+            and update_by=#{strategyMetricsDetail.updateBy}
+        </if>
+        <if test="strategyMetricsDetail.updateTime != null">
+            and update_time=#{strategyMetricsDetail.updateTime}
+        </if>
+        <if test="strategyMetricsDetail.params.indicatorIds != null and strategyMetricsDetail.params.indicatorIds.size()>0">
+            AND indicator_id IN
+            <foreach item="item"
+                     collection="strategyMetricsDetail.params.indicatorIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <!--根据主表ID查询详情-->
+    <select id="selectStrategyMetricsDetailByStrategyMetricsId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO">
+        SELECT
+        smd.strategy_metrics_detail_id,
+        smd.strategy_metrics_id,
+        smd.strategy_index_dimension_id,
+        smd.serial_number,
+        smd.strategy_measure_name,
+        smd.indicator_id,
+        smd.sort,
+        smd.delete_flag,
+        sid.index_dimension_name,
+        IFNULL( sid.index_dimension_code, '' ) AS index_dimension_code,
+        CONCAT( sid.index_dimension_code, smd.serial_number ) AS serial_number_name,
+        smd.create_by,
+        smd.create_time,
+        smd.update_by,
+        smd.update_time
+        FROM strategy_metrics_detail smd
+        LEFT JOIN strategy_index_dimension sid ON sid.strategy_index_dimension_id = smd.strategy_index_dimension_id
+        AND sid.delete_flag = 0
+        WHERE smd.strategy_metrics_id = #{strategyMetricsId}
+        AND smd.delete_flag = 0
+        ORDER BY smd.sort,smd.serial_number
+    </select>
+    <!--根据主表ID查询详情-->
+    <select id="selectStrategyMetricsDetailByStrategyMetricsIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO">
+        SELECT
+        strategy_metrics_detail_id,
+        strategy_metrics_id,
+        strategy_index_dimension_id,
+        serial_number,
+        strategy_measure_name,
+        indicator_id,
+        sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM strategy_metrics_detail
+        WHERE delete_flag=0
+        AND strategy_metrics_id IN
+        <foreach collection="strategyMetricsIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <!--新增战略衡量指标详情表-->
+    <insert id="insertStrategyMetricsDetail" useGeneratedKeys="true" keyProperty="strategyMetricsDetailId">
+        INSERT INTO strategy_metrics_detail
+        (strategy_metrics_id,strategy_index_dimension_id,serial_number,strategy_measure_name,indicator_id,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{strategyMetricsDetail.strategyMetricsId},#{strategyMetricsDetail.strategyIndexDimensionId},#{strategyMetricsDetail.serialNumber},#{strategyMetricsDetail.strategyMeasureName},#{strategyMetricsDetail.indicatorId},#{strategyMetricsDetail.sort},#{strategyMetricsDetail.deleteFlag},#{strategyMetricsDetail.createBy},#{strategyMetricsDetail.createTime},#{strategyMetricsDetail.updateBy},#{strategyMetricsDetail.updateTime})
+    </insert>
+    <!--修改战略衡量指标详情表-->
+    <update id="updateStrategyMetricsDetail">
+        UPDATE strategy_metrics_detail
+        SET
+        <if test="strategyMetricsDetail.strategyMetricsId != null">
+            strategy_metrics_id=#{strategyMetricsDetail.strategyMetricsId},
+        </if>
+        <if test="strategyMetricsDetail.strategyIndexDimensionId != null">
+            strategy_index_dimension_id=#{strategyMetricsDetail.strategyIndexDimensionId},
+        </if>
+        <if test="strategyMetricsDetail.serialNumber != null">
+            serial_number=#{strategyMetricsDetail.serialNumber},
+        </if>
+        <if test="strategyMetricsDetail.strategyMeasureName != null and strategyMetricsDetail.strategyMeasureName != ''">
+            strategy_measure_name=#{strategyMetricsDetail.strategyMeasureName},
+        </if>
+        <if test="strategyMetricsDetail.indicatorId != null">
+            indicator_id=#{strategyMetricsDetail.indicatorId},
+        </if>
+        <if test="strategyMetricsDetail.sort != null">
+            sort=#{strategyMetricsDetail.sort},
+        </if>
+        <if test="strategyMetricsDetail.deleteFlag != null">
+            delete_flag=#{strategyMetricsDetail.deleteFlag},
+        </if>
+        <if test="strategyMetricsDetail.createBy != null">
+            create_by=#{strategyMetricsDetail.createBy},
+        </if>
+        <if test="strategyMetricsDetail.createTime != null">
+            create_time=#{strategyMetricsDetail.createTime},
+        </if>
+        <if test="strategyMetricsDetail.updateBy != null">
+            update_by=#{strategyMetricsDetail.updateBy},
+        </if>
+        <if test="strategyMetricsDetail.updateTime != null">
+            update_time=#{strategyMetricsDetail.updateTime}
+        </if>
+        WHERE
+        strategy_metrics_detail_id=#{strategyMetricsDetail.strategyMetricsDetailId}
+    </update>
+    <!--逻辑删除战略衡量指标详情表-->
+    <update id="logicDeleteStrategyMetricsDetailByStrategyMetricsDetailId">
+        UPDATE strategy_metrics_detail
+        SET delete_flag= 1,
+        update_by=#{strategyMetricsDetail.updateBy},
+        update_time=#{strategyMetricsDetail.updateTime}
+        WHERE
+        strategy_metrics_detail_id=#{strategyMetricsDetail.strategyMetricsDetailId}
+    </update>
+    <!--逻辑批量删除战略衡量指标详情表-->
+    <update id="logicDeleteStrategyMetricsDetailByStrategyMetricsDetailIds">
+        UPDATE strategy_metrics_detail
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        strategy_metrics_detail_id IN
+        <foreach item="item"
+                 collection="strategyMetricsDetailIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增战略衡量指标详情表-->
+    <insert id="batchStrategyMetricsDetail" useGeneratedKeys="true" keyProperty="strategyMetricsDetailId">
+        INSERT INTO strategy_metrics_detail
+        (strategy_metrics_id,strategy_index_dimension_id,serial_number,strategy_measure_name,indicator_id,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="strategyMetricsDetails"
+                 separator=",">
+            (#{item.strategyMetricsId},#{item.strategyIndexDimensionId},#{item.serialNumber},#{item.strategyMeasureName},#{item.indicatorId},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除战略衡量指标详情表-->
+    <delete id="deleteStrategyMetricsDetailByStrategyMetricsDetailId">
+        DELETE FROM strategy_metrics_detail
+        WHERE strategy_metrics_detail_id=#{strategyMetricsDetail}
+
+    </delete>
+    <!--物理批量删除战略衡量指标详情表-->
+    <delete id="deleteStrategyMetricsDetailByStrategyMetricsDetailIds">
+        DELETE FROM strategy_metrics_detail
+        WHERE strategy_metrics_detail_id IN
+        <foreach item="item"
+                 collection="strategyMetricsDetailIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改战略衡量指标详情表-->
+    <update id="updateStrategyMetricsDetails">
+        update strategy_metrics_detail
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="strategy_metrics_id=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.strategyMetricsId != null">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then #{item.strategyMetricsId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="strategy_index_dimension_id=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.strategyIndexDimensionId != null">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then
+                        #{item.strategyIndexDimensionId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="serial_number=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.serialNumber != null">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then #{item.serialNumber}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="strategy_measure_name=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.strategyMeasureName != null and item.strategyMeasureName != ''">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then #{item.strategyMeasureName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_id=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.indicatorId != null">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then #{item.indicatorId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.sort != null">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="strategyMetricsDetailList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when strategy_metrics_detail_id=#{item.strategyMetricsDetailId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="strategyMetricsDetailList" separator="or" item="item" index="index">
+            strategy_metrics_detail_id=#{item.strategyMetricsDetailId}
+        </foreach>
+    </update>
+</mapper>
+
+

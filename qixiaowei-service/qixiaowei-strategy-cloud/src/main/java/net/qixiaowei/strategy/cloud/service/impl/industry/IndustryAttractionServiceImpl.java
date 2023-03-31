@@ -10,8 +10,12 @@ import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttraction;
 import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttractionElement;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDTO;
+import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiIndustryAttractionDataDTO;
 import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionElementMapper;
 import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionMapper;
+import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiIndustryAttractionDataMapper;
+import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiIndustryAttractionMapper;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +39,11 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     private IndustryAttractionMapper industryAttractionMapper;
     @Autowired
     private IndustryAttractionElementMapper industryAttractionElementMapper;
+    @Autowired
+    private MiIndustryAttractionMapper miIndustryAttractionMapper;
+    @Autowired
+    private MiIndustryAttractionDataMapper miIndustryAttractionDataMapper;
+
     /**
      * 行业吸引力配置主表
      */
@@ -52,10 +61,10 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     private static final List<IndustryAttractionElement> INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE = new ArrayList<>(4);
 
     static {
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("高潜行业").assessStandardDescription("总产值三年复合增长率达到GDP年均增长率的四倍（约为25-30%）").displayColor("蓝色").sort(1).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("价值行业").assessStandardDescription("总产值三年复合增长率达到GDP年均增长率的两倍（约为13-15%）").displayColor("蓝色").sort(2).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("稳健行业").assessStandardDescription("总产值三年复合增长率大于等于GDP年均增长率小于两倍").displayColor("灰色").sort(3).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("谨慎行业").assessStandardDescription("总产值三年复合增长率小于GDP年均增长率").displayColor("红色").sort(4).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("高潜行业").assessStandardDescription("总产值三年复合增长率达到GDP年均增长率的四倍（约为25-30%）").displayColor("#DEEBFF").fontColor("#0052CC").sort(1).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("价值行业").assessStandardDescription("总产值三年复合增长率达到GDP年均增长率的两倍（约为13-15%）").displayColor("#DEEBFF").fontColor("#0052CC").sort(2).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("稳健行业").assessStandardDescription("总产值三年复合增长率大于等于GDP年均增长率小于两倍").displayColor("#DFE1E6").fontColor("#182B4E").sort(3).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_ONE.add(IndustryAttractionElement.builder().assessStandardName("谨慎行业").assessStandardDescription("总产值三年复合增长率小于GDP年均增长率").displayColor("#FFEBE6").fontColor("#BF2600").sort(4).status(1).build());
     }
 
     /**
@@ -64,10 +73,10 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     private static final List<IndustryAttractionElement> INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO = new ArrayList<>(4);
 
     static {
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("超高利润行业").assessStandardDescription("平均毛利率超过80%").displayColor("蓝色").sort(1).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("高利润行业").assessStandardDescription("平均毛利率50%-80%").displayColor("蓝色").sort(2).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("平均利润行业").assessStandardDescription("平均毛利率30%-50%").displayColor("灰色").sort(3).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("低利润行业").assessStandardDescription("平均毛利率低于30%").displayColor("红色").sort(4).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("超高利润行业").assessStandardDescription("平均毛利率超过80%").displayColor("#DEEBFF").fontColor("#0052CC").sort(1).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("高利润行业").assessStandardDescription("平均毛利率50%-80%").displayColor("#DEEBFF").fontColor("#0052CC").sort(2).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("平均利润行业").assessStandardDescription("平均毛利率30%-50%").displayColor("#DFE1E6").fontColor("#182B4E").sort(3).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO.add(IndustryAttractionElement.builder().assessStandardName("低利润行业").assessStandardDescription("平均毛利率低于30%").displayColor("#FFEBE6").fontColor("#BF2600").sort(4).status(1).build());
     }
 
     /**
@@ -76,10 +85,10 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     private static final List<IndustryAttractionElement> INIT_INDUSTRY_ATTRACTION_ELEMENT_Three = new ArrayList<>(4);
 
     static {
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("极高寡占型").assessStandardDescription("CR8 ≥ 70%").displayColor("红色").sort(1).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中寡占型").assessStandardDescription("40% ≤ CR8<70%").displayColor("蓝色").sort(2).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中竞争型").assessStandardDescription("20% ≤ CR8<40%").displayColor("蓝色").sort(3).status(1).build());
-        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("分散竞争型").assessStandardDescription("CR8<20%").displayColor("灰色").sort(4).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("极高寡占型").assessStandardDescription("CR8 ≥ 70%").displayColor("#FFEBE6").fontColor("#BF2600").sort(1).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中寡占型").assessStandardDescription("40% ≤ CR8 < 70%").displayColor("#DEEBFF").fontColor("#0052CC").sort(2).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("低集中竞争型").assessStandardDescription("20% ≤ CR8 < 40%").displayColor("#DEEBFF").fontColor("#0052CC").sort(3).status(1).build());
+        INIT_INDUSTRY_ATTRACTION_ELEMENT_Three.add(IndustryAttractionElement.builder().assessStandardName("分散竞争型").assessStandardDescription("CR8 < 20%").displayColor("#DFE1E6").fontColor("#182B4E").sort(4).status(1).build());
     }
 
     /**
@@ -108,7 +117,25 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     public List<IndustryAttractionDTO> selectIndustryAttractionList(IndustryAttractionDTO industryAttractionDTO) {
         IndustryAttraction industryAttraction = new IndustryAttraction();
         BeanUtils.copyProperties(industryAttractionDTO, industryAttraction);
-        return industryAttractionMapper.selectIndustryAttractionList(industryAttraction);
+        List<IndustryAttractionDTO> industryAttractionDTOS = industryAttractionMapper.selectIndustryAttractionList(industryAttraction);
+        if (StringUtils.isNotEmpty(industryAttractionDTOS)) {
+            List<Long> industryAttractionIds = industryAttractionDTOS.stream().map(IndustryAttractionDTO::getIndustryAttractionId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(industryAttractionIds)) {
+                List<IndustryAttractionElementDTO> industryAttractionElementDTOList = industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionIds(industryAttractionIds);
+                if (StringUtils.isNotEmpty(industryAttractionElementDTOList)) {
+                    for (IndustryAttractionDTO attractionDTO : industryAttractionDTOS) {
+                        List<IndustryAttractionElementDTO> industryAttractionElementDTOS = new ArrayList<>();
+                        for (IndustryAttractionElementDTO industryAttractionElementDTO : industryAttractionElementDTOList) {
+                            if (attractionDTO.getIndustryAttractionId().equals(industryAttractionElementDTO.getIndustryAttractionId())) {
+                                industryAttractionElementDTOS.add(industryAttractionElementDTO);
+                            }
+                        }
+                        attractionDTO.setIndustryAttractionElementDTOS(industryAttractionElementDTOS);
+                    }
+                }
+            }
+        }
+        return industryAttractionDTOS;
     }
 
     /**
@@ -173,6 +200,9 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     @Override
     @Transactional
     public int updateIndustryAttraction(IndustryAttractionDTO industryAttractionDTO) {
+        //行业吸引力要素名称
+        String attractionElementName = industryAttractionDTO.getAttractionElementName();
+
         int i = 0;
         //接收前端行业吸引力要素集合
         List<IndustryAttractionElementDTO> industryAttractionElementDTOS = industryAttractionDTO.getIndustryAttractionElementDTOS();
@@ -180,6 +210,25 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
         List<IndustryAttractionElementDTO> industryAttractionElementDTOList = industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionId(industryAttractionDTO.getIndustryAttractionId());
         IndustryAttraction industryAttraction = new IndustryAttraction();
         BeanUtils.copyProperties(industryAttractionDTO, industryAttraction);
+        IndustryAttractionDTO industryAttractionDTO1 = industryAttractionMapper.selectIndustryAttractionByIndustryAttractionId(industryAttractionDTO.getIndustryAttractionId());
+        if (StringUtils.isNull(industryAttractionDTO1)){
+            throw new ServiceException("数据不存在 请刷新页面重试！");
+        }
+        List<IndustryAttractionDTO> industryAttractionDTOS = industryAttractionMapper.selectIndustryAttractionList(new IndustryAttraction());
+        if (StringUtils.isNotEmpty(industryAttractionDTOS)){
+
+            List<IndustryAttractionDTO> IndustryAttractionList = industryAttractionDTOS.stream().filter(f -> !f.getAttractionElementName().equals(industryAttractionDTO1.getAttractionElementName())).collect(Collectors.toList());
+
+          if (StringUtils.isNotEmpty(IndustryAttractionList)){
+              List<String> collect = IndustryAttractionList.stream().map(IndustryAttractionDTO::getAttractionElementName).collect(Collectors.toList());
+              if (collect.contains(attractionElementName)){
+
+                  throw new ServiceException("行业吸引力要素名称重复 请重新修改！");
+              }
+
+          }
+        }
+
         industryAttraction.setUpdateTime(DateUtils.getNowDate());
         industryAttraction.setUpdateBy(SecurityUtils.getUserId());
         try {
@@ -191,7 +240,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
         List<Long> industryAttractionElementIds = new ArrayList<>();
         if (StringUtils.isNotEmpty(industryAttractionElementDTOList)) {
             if (StringUtils.isNotEmpty(industryAttractionElementDTOS)) {
-                //sterm流求差集
+                //stream流求差集
                 industryAttractionElementIds = industryAttractionElementDTOList.stream().filter(a ->
                         !industryAttractionElementDTOS.stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList()).contains(a.getIndustryAttractionElementId())
                 ).collect(Collectors.toList()).stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList());
@@ -297,6 +346,11 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
                 throw new ServiceException("逻辑批量删除行业吸引力要素失败");
             }
         }
+
+        List<MiIndustryAttractionDTO> miIndustryAttractionDTOS = miIndustryAttractionMapper.selectMiIndustryAttractionByIndustryAttractionIds(industryAttractionIds);
+        if (StringUtils.isNotEmpty(miIndustryAttractionDTOS)){
+            throw new ServiceException("数据被引用！");
+        }
         return i;
     }
 
@@ -318,10 +372,9 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      */
     @Override
     @Transactional
-    public Boolean initIndustryAttraction() {
+    public Boolean initIndustryAttraction(Long userId) {
         int i = 0;
         boolean initSuccess = false;
-        Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         //行业吸引力配置主表
         List<IndustryAttraction> industryAttractions = new ArrayList<>();
@@ -375,6 +428,21 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     }
 
     /**
+     * 逻辑删除行业吸引力要素
+     * @param industryAttractionElementDTO
+     * @return
+     */
+    @Override
+    public int logicDeleteIndustryAttractionElementByIndustryAttractionElementId(IndustryAttractionElementDTO industryAttractionElementDTO) {
+        int i = 0;
+        List<MiIndustryAttractionDataDTO> miIndustryAttractionDataDTOS = miIndustryAttractionDataMapper.selectMiIndustryAttractionDataByIndustryAttractionElementId(industryAttractionElementDTO.getIndustryAttractionElementId());
+        if (StringUtils.isNotEmpty(miIndustryAttractionDataDTOS)){
+            i =miIndustryAttractionDataDTOS.size();
+        }
+        return i;
+    }
+
+    /**
      * 逻辑删除行业吸引力表信息
      *
      * @param industryAttractionDTO 行业吸引力表
@@ -398,6 +466,10 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
             } catch (Exception e) {
                 throw new ServiceException("逻辑批量删除行业吸引力要素失败");
             }
+        }
+        List<MiIndustryAttractionDTO> miIndustryAttractionDTOS = miIndustryAttractionMapper.selectMiIndustryAttractionByIndustryAttractionId(industryAttractionDTO.getIndustryAttractionId());
+        if (StringUtils.isNotEmpty(miIndustryAttractionDTOS)){
+            throw new ServiceException("数据被引用！");
         }
         return i;
     }

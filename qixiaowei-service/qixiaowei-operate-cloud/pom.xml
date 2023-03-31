@@ -60,6 +60,12 @@
             <artifactId>qixiaowei-integration-datasource</artifactId>
         </dependency>
 
+        <!-- qixiaowei integration seata -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-integration-seata</artifactId>
+        </dependency>
+
         <!-- qixiaowei integration DataScope -->
         <dependency>
             <groupId>net.qixiaowei</groupId>
@@ -86,6 +92,10 @@
         <dependency>
             <groupId>net.qixiaowei</groupId>
             <artifactId>qixiaowei-message-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-strategy-cloud-api</artifactId>
         </dependency>
 
     </dependencies>

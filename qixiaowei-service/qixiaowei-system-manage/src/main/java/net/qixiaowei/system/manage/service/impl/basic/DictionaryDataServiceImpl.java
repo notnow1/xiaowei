@@ -4,23 +4,29 @@ package net.qixiaowei.system.manage.service.impl.basic;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.system.DictionaryTypeCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper;
 import net.qixiaowei.system.manage.service.basic.IDictionaryDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -48,6 +54,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     public DictionaryDataDTO selectDictionaryDataByDictionaryDataId(Long dictionaryDataId) {
         return dictionaryDataMapper.selectDictionaryDataByDictionaryDataId(dictionaryDataId);
     }
+
     /**
      * 根据字典id集合查询字典数据表
      *
@@ -57,6 +64,18 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     @Override
     public List<DictionaryDataDTO> selectDictionaryDataByDictionaryDataIds(List<Long> dictionaryDataIds) {
         return dictionaryDataMapper.selectDictionaryDataByDictionaryDataIds(dictionaryDataIds);
+    }
+
+    @Override
+    public void handleResult(List<DictionaryDataDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(DictionaryDataDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -69,7 +88,9 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     public List<DictionaryDataDTO> selectDictionaryDataList(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
-        return dictionaryDataMapper.selectDictionaryDataList(dictionaryData);
+        List<DictionaryDataDTO> dictionaryDataDTOS = dictionaryDataMapper.selectDictionaryDataList(dictionaryData);
+        this.handleResult(dictionaryDataDTOS);
+        return dictionaryDataDTOS;
     }
 
     /**
@@ -79,17 +100,18 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @return 结果
      */
     @Override
+    @Transactional
     public DictionaryDataDTO insertDictionaryData(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
-        if(StringUtils.isEmpty(dictionaryDataDTO.getDictionaryValue())){
+        if (StringUtils.isEmpty(dictionaryDataDTO.getDictionaryValue())) {
             //根据type Id查询数据做排序 自增
-          int i  = dictionaryDataMapper.selectDictionaryTypeId(dictionaryData.getDictionaryTypeId());
-          //如果为空赋值
-          if (dictionaryDataDTO.getSort() == null){
-              dictionaryData.setSort(i+1);
-          }
-            dictionaryData.setDictionaryValue(String.valueOf(i+1));
+            int i = dictionaryDataMapper.selectDictionaryTypeId(dictionaryData.getDictionaryTypeId());
+            //如果为空赋值
+            if (dictionaryDataDTO.getSort() == null) {
+                dictionaryData.setSort(i + 1);
+            }
+            dictionaryData.setDictionaryValue(String.valueOf(i + 1));
         }
         dictionaryData.setDefaultFlag(0);
         dictionaryData.setCreateBy(SecurityUtils.getUserId());
@@ -109,6 +131,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateDictionaryData(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
@@ -124,6 +147,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDictionaryDataByDictionaryDataIds(List<Long> dictionaryDataIds) {
         //查询code
         List<DictionaryDataDTO> dictionaryDataDTOS = dictionaryDataMapper.selectDictionaryDataByDictionaryDataIds(dictionaryDataIds);
@@ -147,15 +171,18 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
 
     /**
      * 根据枚举查询产品应用字典名称数据
+     *
+     * @param dictionaryType
      * @return
      */
     @Override
-    public DictionaryTypeDTO selectDictionaryTypeByProduct() {
-        return dictionaryDataMapper.selectDictionaryTypeByProduct("PRODUCT_CATEGORY");
+    public DictionaryTypeDTO selectDictionaryTypeByProduct(String dictionaryType) {
+        return dictionaryDataMapper.selectDictionaryTypeByProduct(dictionaryType);
     }
 
     /**
      * 根据typeId查询字典数据
+     *
      * @param dictionaryTypeId
      * @return
      */
@@ -166,14 +193,29 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
 
     /**
      * 根据实体类远程查询字典数据
+     *
      * @param dictionaryDataDTO
      * @return
      */
     @Override
     public List<DictionaryDataDTO> remoteDictionaryDataId(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
-        BeanUtils.copyProperties(dictionaryDataDTO,dictionaryData);
+        BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
         return dictionaryDataMapper.remoteDictionaryDataId(dictionaryData);
+    }
+
+    /**
+     * 查询字典数据表列表包括失效
+     * @param dictionaryDataDTO
+     * @return
+     */
+    @Override
+    public List<DictionaryDataDTO> selectDictionaryDataListAll(DictionaryDataDTO dictionaryDataDTO) {
+        DictionaryData dictionaryData = new DictionaryData();
+        BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
+        List<DictionaryDataDTO> dictionaryDataDTOS = dictionaryDataMapper.selectDictionaryDataListAll(dictionaryData);
+        this.handleResult(dictionaryDataDTOS);
+        return dictionaryDataDTOS;
     }
 
     /**
@@ -183,6 +225,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDictionaryDataByDictionaryDataId(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         dictionaryData.setDictionaryDataId(dictionaryDataDTO.getDictionaryDataId());
@@ -199,13 +242,15 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
 
     /**
      * 根据不同枚举类型查询不同表 查看是否被引用
+     *
      * @param dictionaryType
      * @param dictionaryDataDTO
      */
     private void quoteFlag(String dictionaryType, DictionaryDataDTO dictionaryDataDTO) {
         StringBuffer dictDataErreo = new StringBuffer();
-        switch (dictionaryType) {
-            case "PRODUCT_CATEGORY":
+        DictionaryTypeCode dictionaryTypeCode = DictionaryTypeCode.parseEnum(dictionaryType);
+        switch (dictionaryTypeCode) {
+            case PRODUCT_CATEGORY:
                 StringBuffer productErreo = new StringBuffer();
                 ProductDTO productDTO = new ProductDTO();
                 productDTO.setProductCategory(dictionaryDataDTO.getDictionaryDataId().toString());
@@ -214,18 +259,18 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
                 if (null != listR) {
                     List<ProductDTO> data = listR.getData();
                     if (!StringUtils.isEmpty(data)) {
-                        productErreo.append("枚举值"+dictionaryDataDTO.getDictionaryLabel()+(dictionaryType=="PRODUCT_CATEGORY"?"被产品类别":"被产品上下架")+data.stream().map(ProductDTO::getProductName).collect(Collectors.toList())+"引用 无法删除！");
+                        productErreo.append("枚举值" + dictionaryDataDTO.getDictionaryLabel() + (dictionaryType == "PRODUCT_CATEGORY" ? "被产品类别" : "被产品上下架") + data.stream().map(ProductDTO::getProductName).collect(Collectors.toList()) + "引用 无法删除！");
                     }
                 }
-                if (productErreo.length()>1){
+                if (productErreo.length() > 1) {
                     dictDataErreo.append(productErreo);
                 }
                 break;
             default:
                 break;
         }
-        if (dictDataErreo.length()>1){
-           throw new ServiceException(dictDataErreo.toString());
+        if (dictDataErreo.length() > 1) {
+            throw new ServiceException(dictDataErreo.toString());
         }
     }
 

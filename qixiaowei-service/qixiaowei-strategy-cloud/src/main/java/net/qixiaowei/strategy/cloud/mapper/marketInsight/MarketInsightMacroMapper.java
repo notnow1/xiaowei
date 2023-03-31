@@ -30,6 +30,14 @@ public interface MarketInsightMacroMapper{
     */
     List<MarketInsightMacroDTO> selectMarketInsightMacroByMarketInsightMacroIds(@Param("marketInsightMacroIds") List<Long> marketInsightMacroIds);
 
+
+    /**
+     * 根据规划业务单元id集合批量查询市场洞察宏观表
+     *
+     * @param planBusinessUnitIds 规划业务单元id集合
+     * @return 市场洞察宏观表
+     */
+    List<MarketInsightMacroDTO> selectMarketInsightMacroByPlanBusinessUnitIds(@Param("planBusinessUnitIds") List<Long> planBusinessUnitIds);
     /**
     * 查询市场洞察宏观表列表
     *
@@ -101,4 +109,11 @@ public interface MarketInsightMacroMapper{
     * @return 结果
     */
     int batchMarketInsightMacro(@Param("marketInsightMacros")List<MarketInsightMacro> marketInsightMacros);
+
+    /**
+     * 看宏观远程调用列表查询是否被引用
+     * @param marketInsightMacro
+     * @return
+     */
+    List<MarketInsightMacroDTO> remoteMarketInsightMacroList(@Param("marketInsightMacro")MarketInsightMacro marketInsightMacro);
 }

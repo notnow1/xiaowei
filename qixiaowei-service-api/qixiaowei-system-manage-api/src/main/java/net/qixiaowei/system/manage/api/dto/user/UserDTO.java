@@ -5,14 +5,13 @@ import java.util.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.Date;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.validation.groups.Default;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.xss.Xss;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
@@ -25,7 +24,7 @@ import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
  */
 @Data
 @Accessors(chain = true)
-public class UserDTO {
+public class UserDTO extends BaseDTO {
 
     //查询检验
     public interface QueryUserDTO extends Default {
@@ -105,7 +104,7 @@ public class UserDTO {
     /**
      * 密码
      */
-    @NotBlank(message = "密码不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.ResetPwdRUserDTO.class})
+    @NotBlank(message = "密码由6-20位字母、数字组成", groups = {UserDTO.AddUserDTO.class, UserDTO.ResetPwdRUserDTO.class})
     @Size(min = 6, max = 120, message = "密码长度最低6位，且不能超过120个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
     private String password;
     /**
@@ -117,14 +116,14 @@ public class UserDTO {
     /**
      * 手机号码
      */
-    @NotBlank(message = "手机号码不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
+    @NotBlank(message = "请输入正确的手机号码", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
     @Size(min = 0, max = 30, message = "手机号码长度不能超过30个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
     private String mobilePhone;
     /**
      * 邮箱
      */
     @NotBlank(message = "邮箱不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
-    @Email(message = "邮箱格式不正确")
+    @Email(message = "请输入正确的邮箱")
     @Size(min = 0, max = 60, message = "邮箱长度不能超过60个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
     private String email;
     /**
@@ -144,28 +143,14 @@ public class UserDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-
-    /**
      * 拥有的角色对象
      */
     private List<RoleDTO> roles;
+
+    /**
+     * 可以查看的用户ID集合
+     */
+    private Set<Long> userIds;
 
     /**
      * 要保存的角色组
@@ -185,10 +170,6 @@ public class UserDTO {
         return UserType.SYSTEM.getCode().equals(userType);
     }
 
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
     /**
      * 租户ID
      */

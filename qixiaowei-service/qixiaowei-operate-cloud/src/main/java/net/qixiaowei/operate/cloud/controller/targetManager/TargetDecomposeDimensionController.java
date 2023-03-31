@@ -40,7 +40,8 @@ public class TargetDecomposeDimensionController extends BaseController {
     @RequiresPermissions(value = {"operate:cloud:targetDecomposeDimension:list", "operate:cloud:targetDecomposeDimension:pageList"}, logical = Logical.OR)
     @GetMapping("/list")
     public AjaxResult list(TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
-        return AjaxResult.success(targetDecomposeDimensionService.selectTargetDecomposeDimensionList(targetDecomposeDimensionDTO));
+        List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTOS = targetDecomposeDimensionService.selectTargetDecomposeDimensionList(targetDecomposeDimensionDTO);
+        return AjaxResult.success(targetDecomposeDimensionDTOS);
     }
 
     /**

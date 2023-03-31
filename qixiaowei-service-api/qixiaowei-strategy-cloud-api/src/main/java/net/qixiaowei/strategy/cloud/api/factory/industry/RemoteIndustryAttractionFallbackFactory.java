@@ -17,10 +17,6 @@ public class RemoteIndustryAttractionFallbackFactory implements FallbackFactory<
         log.error("行业吸引力配置服务调用失败:{}", throwable.getMessage());
         return new RemoteIndustryAttractionService() {
 
-            @Override
-            public R<Boolean> initIndustryAttraction(String source) {
-                return R.fail("初始化行业吸引力配置失败:" + throwable.getMessage());
-            }
         };
     }
 }

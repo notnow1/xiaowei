@@ -1265,10 +1265,10 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         List<Object> list8 = new ArrayList<>();
         list1.add("目标年度：" + targetDecomposeDTO.getTargetYear());
         list2.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-        list3.add("挑战值：" + targetDecomposeDTO.getChallengeValue());
-        list4.add("目标值：" + targetDecomposeDTO.getTargetValue());
-        list5.add("保底值：" + targetDecomposeDTO.getGuaranteedValue());
-        list6.add("分解目标：" + targetDecomposeDTO.getDecomposeTarget());
+        list3.add("挑战值：" + (targetDecomposeDTO.getChallengeValue()==null?0:targetDecomposeDTO.getChallengeValue()));
+        list4.add("目标值：" + (targetDecomposeDTO.getTargetValue()==null?0:targetDecomposeDTO.getTargetValue()));
+        list5.add("保底值：" + (targetDecomposeDTO.getGuaranteedValue()==null?0:targetDecomposeDTO.getGuaranteedValue()));
+        list6.add("分解目标：" + (targetDecomposeDTO.getDecomposeTarget()==null?0:targetDecomposeDTO.getDecomposeTarget()));
         list7.add("");
         list8.add("注：省份维度录入汉字，部门/销售员/产品/区域/行业维度录入编码");
         list.add(list1);

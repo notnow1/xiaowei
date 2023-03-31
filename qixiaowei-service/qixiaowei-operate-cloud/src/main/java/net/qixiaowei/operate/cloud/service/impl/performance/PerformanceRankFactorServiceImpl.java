@@ -233,10 +233,10 @@ public class PerformanceRankFactorServiceImpl implements IPerformanceRankFactorS
         for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorAfter) {
             String performanceRankName = performanceRankFactorDTO.getPerformanceRankName();
             if (StringUtils.isEmpty(performanceRankName)) {
-                throw new ServiceException("绩效等级系数名称不能为空");
+                throw new ServiceException("等级系数信息不能为空");
             }
             if (performanceRankFactorNames.contains(performanceRankName)) {
-                throw new ServiceException("绩效等级系数名称不能重复");
+                throw new ServiceException("等级系数信息不能重复");
             }
             BigDecimal bonusFactor = performanceRankFactorDTO.getBonusFactor();
             if (StringUtils.isNull(bonusFactor)) {

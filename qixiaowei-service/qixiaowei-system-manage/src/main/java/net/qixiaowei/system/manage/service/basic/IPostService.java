@@ -2,6 +2,8 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.text.ParseException;
 import java.util.List;
+
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.excel.post.PostExcel;
 import org.apache.ibatis.annotations.Param;
@@ -28,6 +30,14 @@ public interface IPostService{
     * @return 岗位表集合
     */
     List<PostDTO> selectPostList(PostDTO postDTO);
+
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<PostDTO> result);
 
     /**
      * 生成岗位编码

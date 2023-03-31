@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -47,6 +48,8 @@ public class GapAnalysisOpportunityServiceImpl implements IGapAnalysisOpportunit
     public List<GapAnalysisOpportunityDTO> selectGapAnalysisOpportunityList(GapAnalysisOpportunityDTO gapAnalysisOpportunityDTO) {
         GapAnalysisOpportunity gapAnalysisOpportunity = new GapAnalysisOpportunity();
         BeanUtils.copyProperties(gapAnalysisOpportunityDTO, gapAnalysisOpportunity);
+        Map<String, Object> params = gapAnalysisOpportunityDTO.getParams();
+        gapAnalysisOpportunity.setParams(params);
         return gapAnalysisOpportunityMapper.selectGapAnalysisOpportunityList(gapAnalysisOpportunity);
     }
 

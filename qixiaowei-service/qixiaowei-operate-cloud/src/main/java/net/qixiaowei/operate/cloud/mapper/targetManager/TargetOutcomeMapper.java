@@ -159,8 +159,9 @@ public interface TargetOutcomeMapper {
 
     /**
      * 战略云获取指标实际值
+     *
      * @param strategyIntentOperateVO
      * @return
      */
-    List<TargetOutcomeDetailsDTO> getResultIndicator(@Param("strategyIntentOperateVO")StrategyIntentOperateVO strategyIntentOperateVO);
+    List<TargetOutcomeDetailsDTO> getResultIndicator(@Param("strategyIntentOperateVO") StrategyIntentOperateVO strategyIntentOperateVO);
 }

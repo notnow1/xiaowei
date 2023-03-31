@@ -111,6 +111,7 @@
         FROM mi_macro_detail
         WHERE market_insight_macro_id = #{marketInsightMacroId}
           and delete_flag = 0
+            order by sort
     </select>
 <!--    根据宏观主表id集合批量查询市场洞察宏观详情表-->
     <select id="selectMiMacroDetailByMarketInsightMacroIds"
@@ -125,6 +126,22 @@
             #{item}
         </foreach>
         and delete_flag=0
+    </select>
+<!--    看宏观远程调用列表查询是否被引用-->
+    <select id="remoteMiMacroDetailList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO">
+        SELECT
+        mi_macro_detail_id,market_insight_macro_id,visual_angle,company_related_factor,change_trend,influence_description,recommended_practice,plan_period,estimate_opportunity_amount,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_macro_detail
+        WHERE delete_flag=0
+        <if test="miMacroDetail.params.employeeIds != null and miMacroDetail.params.employeeIds.size()>0">
+            AND propose_employee_id IN
+            <foreach item="item"
+                     collection="miMacroDetail.params.employeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
     <!--新增市场洞察宏观详情表-->
     <insert id="insertMiMacroDetail" useGeneratedKeys="true" keyProperty="miMacroDetailId">

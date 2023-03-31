@@ -6,6 +6,7 @@ import java.util.Map;
 
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
@@ -42,6 +43,14 @@ public interface IEmployeeService {
      * @return 员工表集合
      */
     List<EmployeeDTO> selectEmployeeList(EmployeeDTO employeeDTO);
+
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<EmployeeDTO> result);
 
     /**
      * 查询员工表列表(下拉框)

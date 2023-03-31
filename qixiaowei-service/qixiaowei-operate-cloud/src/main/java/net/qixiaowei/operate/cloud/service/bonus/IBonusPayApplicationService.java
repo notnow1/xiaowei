@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.bonus;
 
 import java.util.List;
+
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayStandingDTO;
@@ -27,7 +28,13 @@ public interface IBonusPayApplicationService{
     * @return 奖金发放申请表集合
     */
     List<BonusPayApplicationDTO> selectBonusPayApplicationList(BonusPayApplicationDTO bonusPayApplicationDTO);
-
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<BonusPayApplicationDTO> result);
     /**
      * 生成奖项编码
      *
@@ -116,15 +123,15 @@ public interface IBonusPayApplicationService{
 
     /**
      * 根据人员id查询个人年终奖 奖金发放对象ID(员工id)
-     * @param employeeId
+     * @param employeeIds
      * @return
      */
-    List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeId(Long employeeId);
+    List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeIds(List<Long> employeeIds);
 
     /**
      * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
-    List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentId(Long departmentId);
+    List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentIds(List<Long> departmentIds);
 }

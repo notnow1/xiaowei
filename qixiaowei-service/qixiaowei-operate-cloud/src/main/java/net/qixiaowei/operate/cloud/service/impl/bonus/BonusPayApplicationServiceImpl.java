@@ -8,7 +8,9 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayApplication;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayBudgetDept;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayObjects;
@@ -21,12 +23,12 @@ import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusPayApplicationService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -229,6 +231,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @param bonusPayApplicationDTO 奖金发放申请表
      * @return 奖金发放申请表
      */
+    @DataScope(businessAlias = "bpa")
     @Override
     public List<BonusPayApplicationDTO> selectBonusPayApplicationList(BonusPayApplicationDTO bonusPayApplicationDTO) {
         BonusPayApplication bonusPayApplication = new BonusPayApplication();
@@ -238,9 +241,6 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
         if (StringUtils.isNotEmpty(bonusPayApplicationDTOS)) {
             //申请部门ID集合
             List<Long> collect = bonusPayApplicationDTOS.stream().map(BonusPayApplicationDTO::getApplyDepartmentId).collect(Collectors.toList());
-            //创建人id
-            Set<Long> collect3 = bonusPayApplicationDTOS.stream().map(BonusPayApplicationDTO::getCreateBy).collect(Collectors.toSet());
-
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                 List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS = bonusPayBudgetDeptMapper.selectBonusPayBudgetDeptByBonusPayApplicationId(payApplicationDTO.getBonusPayApplicationId());
                 if (StringUtils.isNotEmpty(bonusPayBudgetDeptDTOS)) {
@@ -282,19 +282,6 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     }
                 }
             }
-            //远程人员名称赋值
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(collect3, SecurityConstants.INNER);
-            List<UserDTO> data1 = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(data1)) {
-                for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
-                    for (UserDTO userDTO : data1) {
-                        if (payApplicationDTO.getCreateBy().equals(userDTO.getUserId())) {
-                            //创建人名称
-                            payApplicationDTO.setCreateByName(userDTO.getEmployeeName());
-                        }
-                    }
-                }
-            }
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                 if (payApplicationDTO.getAwardMonth() >= 10) {
                     payApplicationDTO.setAwardYearMonth(payApplicationDTO.getAwardYear() + "/" + payApplicationDTO.getAwardMonth());
@@ -304,6 +291,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
 
             }
         }
+        this.handleResult(bonusPayApplicationDTOS);
         return this.packQueryBonusBudget(bonusPayApplicationDTO, bonusPayApplicationDTOS);
     }
     /**
@@ -469,6 +457,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @return 结果
      */
     @Override
+    @Transactional
     public BonusPayApplicationDTO insertBonusPayApplication(BonusPayApplicationDTO bonusPayApplicationDTO) {
         BonusPayApplicationDTO bonusPayApplicationDTO1 = bonusPayApplicationMapper.selectBonusPayApplicationByAwardCode(bonusPayApplicationDTO.getAwardCode());
         if (StringUtils.isNotNull(bonusPayApplicationDTO1)) {
@@ -594,6 +583,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateBonusPayApplication(BonusPayApplicationDTO bonusPayApplicationDTO) {
         int i = 0;
         //奖金发放预算部门比例集合
@@ -784,6 +774,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteBonusPayApplicationByBonusPayApplicationIds(List<Long> bonusPayApplicationIds) {
         int i = 0;
         List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.selectBonusPayApplicationByBonusPayApplicationIds(bonusPayApplicationIds);
@@ -864,23 +855,23 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
     /**
      * 根据人员id查询个人年终奖 奖金发放对象ID(员工id)
      *
-     * @param employeeId
+     * @param employeeIds
      * @return
      */
     @Override
-    public List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeId(Long employeeId) {
-        return bonusPayObjectsMapper.selectBonusPayApplicationByEmployeeId(employeeId);
+    public List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeIds(List<Long> employeeIds) {
+        return bonusPayObjectsMapper.selectBonusPayApplicationByEmployeeIds(employeeIds);
     }
 
     /**
      * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)
      *
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
     @Override
-    public List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentId(Long departmentId) {
-        return bonusPayObjectsMapper.selectBonusPayApplicationByDepartmentId(departmentId);
+    public List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentIds(List<Long> departmentIds) {
+        return bonusPayObjectsMapper.selectBonusPayApplicationByDepartmentIds(departmentIds);
     }
 
     /**
@@ -1263,6 +1254,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteBonusPayApplicationByBonusPayApplicationId(BonusPayApplicationDTO bonusPayApplicationDTO) {
         int i = 0;
         BonusPayApplicationDTO bonusPayApplicationDTO1 = bonusPayApplicationMapper.selectBonusPayApplicationByBonusPayApplicationId(bonusPayApplicationDTO.getBonusPayApplicationId());
@@ -1379,6 +1371,18 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             bonusPayApplicationList.add(bonusPayApplication);
         }
         return bonusPayApplicationMapper.updateBonusPayApplications(bonusPayApplicationList);
+    }
+
+    @Override
+    public void handleResult(List<BonusPayApplicationDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(BonusPayApplicationDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
 }

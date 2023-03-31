@@ -9,6 +9,8 @@ import net.qixiaowei.integration.common.enums.system.RoleType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.domain.user.User;
@@ -16,7 +18,6 @@ import net.qixiaowei.system.manage.api.dto.system.RoleAuthUsersDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleMenuDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
-import net.qixiaowei.system.manage.mapper.system.MenuMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
@@ -89,10 +90,23 @@ public class RoleServiceImpl implements IRoleService {
      * @return 角色表
      */
     @Override
+    @DataScope(userAlias = "u")
     public List<RoleDTO> selectRoleList(RoleDTO roleDTO) {
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
         return roleMapper.selectRoleList(role);
+    }
+
+    @Override
+    public void handleResult(List<RoleDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(RoleDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 
     /**
@@ -143,7 +157,7 @@ public class RoleServiceImpl implements IRoleService {
         Set<Long> menuIds = roleDTO.getMenuIds();
         RoleDTO roleByCode = roleMapper.selectRoleByRoleCode(roleCode);
         if (StringUtils.isNotNull(roleByCode)) {
-            throw new ServiceException("新增角色" + roleDTO.getRoleName() + "失败，角色编码已存在");
+            throw new ServiceException("角色编码已存在");
         }
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
@@ -175,11 +189,11 @@ public class RoleServiceImpl implements IRoleService {
         String roleCode = roleDTO.getRoleCode();
         RoleDTO roleByCode = roleMapper.selectRoleByRoleCode(roleCode);
         if (StringUtils.isNotNull(roleByCode) && !roleByCode.getRoleId().equals(roleId)) {
-            throw new ServiceException("修改角色" + roleDTO.getRoleName() + "失败，角色编码已存在");
+            throw new ServiceException("角色编码已存在");
         }
         RoleDTO roleByRoleId = roleMapper.selectRoleByRoleId(roleId);
         if (StringUtils.isNull(roleByRoleId)) {
-            throw new ServiceException("修改角色失败，角色不存在");
+            throw new ServiceException("角色不存在");
         }
         if (roleByRoleId.isAdmin()) {
             throw new ServiceException("系统管理员角色不可操作。");

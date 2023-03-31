@@ -44,6 +44,7 @@ public class RoleController extends BaseController {
     public TableDataInfo pageList(RoleDTO roleDTO) {
         startPage();
         List<RoleDTO> list = roleService.selectRoleList(roleDTO);
+        roleService.handleResult(list);
         return getDataTable(list);
     }
 

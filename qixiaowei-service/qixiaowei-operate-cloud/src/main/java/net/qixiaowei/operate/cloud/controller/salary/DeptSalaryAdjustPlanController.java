@@ -119,7 +119,7 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:add")
     @GetMapping("/getRaiseSalary")
     public AjaxResult getRaiseSalary(@RequestParam("planYear") Integer planYear) {
-        return AjaxResult.success(deptSalaryAdjustPlanService.getRaiseSalary(planYear));
+        return AjaxResult.success("nihao", deptSalaryAdjustPlanService.getRaiseSalary(planYear));
     }
 
     /**
@@ -129,6 +129,14 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     @GetMapping("/getMaxYear")
     public AjaxResult getMaxYear() {
         return AjaxResult.success(deptSalaryAdjustPlanService.getMaxYear());
+    }
+
+    /**
+     * 获取已存在的年份
+     */
+    @GetMapping("/getExistYear")
+    public AjaxResult getExistYear() {
+        return AjaxResult.success(deptSalaryAdjustPlanService.getExistYear());
     }
 
 

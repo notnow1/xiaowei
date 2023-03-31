@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MiCustomerInvestDetailMapper">
+    <!--    查询市场洞察客户投资详情表-->
+    <select id="selectMiCustomerInvestDetailByMiCustomerInvestDetailId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO">
+        SELECT
+        mi_customer_invest_detail_id,market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_invest_detail
+        WHERE  mi_customer_invest_detail_id=#{miCustomerInvestDetailId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察客户投资详情表-->
+    <select id="selectMiCustomerInvestDetailByMiCustomerInvestDetailIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO">
+        SELECT
+        mi_customer_invest_detail_id,market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_invest_detail
+        WHERE  mi_customer_invest_detail_id in
+            <foreach item="item"
+                     collection="miCustomerInvestDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察客户投资详情表列表-->
+    <select id="selectMiCustomerInvestDetailList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO">
+        SELECT
+        mi_customer_invest_detail_id,market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_invest_detail
+        WHERE delete_flag=0
+                        <if test="miCustomerInvestDetail.miCustomerInvestDetailId != null">
+                            and mi_customer_invest_detail_id=#{miCustomerInvestDetail.miCustomerInvestDetailId}
+                        </if>
+                        <if test="miCustomerInvestDetail.marketInsightCustomerId != null">
+                            and market_insight_customer_id=#{miCustomerInvestDetail.marketInsightCustomerId}
+                        </if>
+                        <if test="miCustomerInvestDetail.miCustomerInvestPlanId != null">
+                            and mi_customer_invest_plan_id=#{miCustomerInvestDetail.miCustomerInvestPlanId}
+                        </if>
+                        <if test="miCustomerInvestDetail.planYear != null">
+                            and plan_year=#{miCustomerInvestDetail.planYear}
+                        </if>
+                        <if test="miCustomerInvestDetail.productId != null">
+                            and product_id=#{miCustomerInvestDetail.productId}
+                        </if>
+                        <if test="miCustomerInvestDetail.totalAnnualDemand != null and miCustomerInvestDetail.totalAnnualDemand != ''">
+                            and total_annual_demand=#{miCustomerInvestDetail.totalAnnualDemand}
+                        </if>
+                        <if test="miCustomerInvestDetail.customerInvestPlanAmount != null">
+                            and customer_invest_plan_amount=#{miCustomerInvestDetail.customerInvestPlanAmount}
+                        </if>
+                        <if test="miCustomerInvestDetail.estimateMarketShare != null">
+                            and estimate_market_share=#{miCustomerInvestDetail.estimateMarketShare}
+                        </if>
+                        <if test="miCustomerInvestDetail.sort != null">
+                            and sort=#{miCustomerInvestDetail.sort}
+                        </if>
+                        <if test="miCustomerInvestDetail.deleteFlag != null">
+                            and delete_flag=#{miCustomerInvestDetail.deleteFlag}
+                        </if>
+                        <if test="miCustomerInvestDetail.createBy != null">
+                            and create_by=#{miCustomerInvestDetail.createBy}
+                        </if>
+                        <if test="miCustomerInvestDetail.createTime != null">
+                            and create_time=#{miCustomerInvestDetail.createTime}
+                        </if>
+                        <if test="miCustomerInvestDetail.updateBy != null">
+                            and update_by=#{miCustomerInvestDetail.updateBy}
+                        </if>
+                        <if test="miCustomerInvestDetail.updateTime != null">
+                            and update_time=#{miCustomerInvestDetail.updateTime}
+                        </if>
+    </select>
+<!--    根据市场洞察客户投资表主键查询市场洞察客户投资详情表-->
+    <select id="selectMiCustomerInvestDetailByMiCustomerInvestPlanId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO">
+        SELECT
+            mi_customer_invest_detail_id,market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_invest_detail
+        WHERE  mi_customer_invest_plan_id=#{miCustomerInvestPlanId}
+          and delete_flag=0
+    </select>
+<!--    根据市场洞察客户投资表主键集合批量查询市场洞察客户投资详情表-->
+    <select id="selectMiCustomerInvestDetailByMiCustomerInvestPlanIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO">
+        SELECT
+        mi_customer_invest_detail_id,market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_invest_detail
+        WHERE  mi_customer_invest_plan_id in
+        <foreach item="item"
+                 collection="miCustomerInvestPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+     order by sort
+    </select>
+<!--    远程查询看客户投资计划详情是否被引用-->
+    <select id="remoteMiCustomerInvestDetailList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiCustomerInvestDetailDTO">
+        SELECT
+        mi_customer_invest_detail_id,market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_customer_invest_detail
+        WHERE delete_flag=0
+        <if test="miCustomerInvestDetail.params.productIds != null and miCustomerInvestDetail.params.productIds.size()>0">
+            AND product_id IN
+            <foreach item="item"
+                     collection="miCustomerInvestDetail.params.productIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by create_time desc
+    </select>
+    <!--新增市场洞察客户投资详情表-->
+    <insert id="insertMiCustomerInvestDetail" useGeneratedKeys="true" keyProperty="miCustomerInvestDetailId">
+        INSERT INTO mi_customer_invest_detail (market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{miCustomerInvestDetail.marketInsightCustomerId},#{miCustomerInvestDetail.miCustomerInvestPlanId},#{miCustomerInvestDetail.planYear},#{miCustomerInvestDetail.productId},#{miCustomerInvestDetail.totalAnnualDemand},#{miCustomerInvestDetail.customerInvestPlanAmount},#{miCustomerInvestDetail.estimateMarketShare},#{miCustomerInvestDetail.sort},#{miCustomerInvestDetail.deleteFlag},#{miCustomerInvestDetail.createBy},#{miCustomerInvestDetail.createTime},#{miCustomerInvestDetail.updateBy},#{miCustomerInvestDetail.updateTime})
+    </insert>
+    <!--修改市场洞察客户投资详情表-->
+    <update id="updateMiCustomerInvestDetail">
+        UPDATE mi_customer_invest_detail
+        SET
+                    <if test="miCustomerInvestDetail.marketInsightCustomerId != null">
+                        market_insight_customer_id=#{miCustomerInvestDetail.marketInsightCustomerId},
+                    </if>
+                    <if test="miCustomerInvestDetail.miCustomerInvestPlanId != null">
+                        mi_customer_invest_plan_id=#{miCustomerInvestDetail.miCustomerInvestPlanId},
+                    </if>
+                    <if test="miCustomerInvestDetail.planYear != null">
+                        plan_year=#{miCustomerInvestDetail.planYear},
+                    </if>
+                    <if test="miCustomerInvestDetail.productId != null">
+                        product_id=#{miCustomerInvestDetail.productId},
+                    </if>
+                    <if test="miCustomerInvestDetail.totalAnnualDemand != null and miCustomerInvestDetail.totalAnnualDemand != ''">
+                        total_annual_demand=#{miCustomerInvestDetail.totalAnnualDemand},
+                    </if>
+                    <if test="miCustomerInvestDetail.customerInvestPlanAmount != null">
+                        customer_invest_plan_amount=#{miCustomerInvestDetail.customerInvestPlanAmount},
+                    </if>
+                    <if test="miCustomerInvestDetail.estimateMarketShare != null">
+                        estimate_market_share=#{miCustomerInvestDetail.estimateMarketShare},
+                    </if>
+                    <if test="miCustomerInvestDetail.sort != null">
+                        sort=#{miCustomerInvestDetail.sort},
+                    </if>
+                    <if test="miCustomerInvestDetail.deleteFlag != null">
+                        delete_flag=#{miCustomerInvestDetail.deleteFlag},
+                    </if>
+                    <if test="miCustomerInvestDetail.createBy != null">
+                        create_by=#{miCustomerInvestDetail.createBy},
+                    </if>
+                    <if test="miCustomerInvestDetail.createTime != null">
+                        create_time=#{miCustomerInvestDetail.createTime},
+                    </if>
+                    <if test="miCustomerInvestDetail.updateBy != null">
+                        update_by=#{miCustomerInvestDetail.updateBy},
+                    </if>
+                    <if test="miCustomerInvestDetail.updateTime != null">
+                        update_time=#{miCustomerInvestDetail.updateTime}
+                    </if>
+        WHERE
+                 mi_customer_invest_detail_id=#{miCustomerInvestDetail.miCustomerInvestDetailId}
+    </update>
+    <!--逻辑删除市场洞察客户投资详情表-->
+    <update id="logicDeleteMiCustomerInvestDetailByMiCustomerInvestDetailId">
+        UPDATE mi_customer_invest_detail
+        SET     delete_flag= 1,
+                update_by=#{miCustomerInvestDetail.updateBy},
+                update_time=#{miCustomerInvestDetail.updateTime}
+        WHERE
+                mi_customer_invest_detail_id=#{miCustomerInvestDetail.miCustomerInvestDetailId}
+    </update>
+    <!--逻辑批量删除市场洞察客户投资详情表-->
+    <update id="logicDeleteMiCustomerInvestDetailByMiCustomerInvestDetailIds">
+        UPDATE mi_customer_invest_detail
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         mi_customer_invest_detail_id IN
+            <foreach item="item"
+                     collection="miCustomerInvestDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察客户投资详情表-->
+    <insert id="batchMiCustomerInvestDetail">
+        INSERT INTO mi_customer_invest_detail (market_insight_customer_id,mi_customer_invest_plan_id,plan_year,product_id,total_annual_demand,customer_invest_plan_amount,estimate_market_share,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="miCustomerInvestDetails"
+                 separator=",">
+            (#{item.marketInsightCustomerId},#{item.miCustomerInvestPlanId},#{item.planYear},#{item.productId},#{item.totalAnnualDemand},#{item.customerInvestPlanAmount},#{item.estimateMarketShare},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察客户投资详情表-->
+    <delete id="deleteMiCustomerInvestDetailByMiCustomerInvestDetailId">
+        DELETE FROM mi_customer_invest_detail
+        WHERE  mi_customer_invest_detail_id=#{miCustomerInvestDetail}
+
+    </delete>
+    <!--物理批量删除市场洞察客户投资详情表-->
+    <delete id="deleteMiCustomerInvestDetailByMiCustomerInvestDetailIds">
+        DELETE FROM mi_customer_invest_detail
+        WHERE  mi_customer_invest_detail_id IN
+            <foreach item="item"
+                     collection="miCustomerInvestDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察客户投资详情表-->
+    <update id="updateMiCustomerInvestDetails">
+        update mi_customer_invest_detail
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="market_insight_customer_id=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.marketInsightCustomerId != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.marketInsightCustomerId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="mi_customer_invest_plan_id=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.miCustomerInvestPlanId != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.miCustomerInvestPlanId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="plan_year=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.planYear != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.planYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_id=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.productId != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.productId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="total_annual_demand=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.totalAnnualDemand != null and item.totalAnnualDemand != ''">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.totalAnnualDemand}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="customer_invest_plan_amount=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.customerInvestPlanAmount != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.customerInvestPlanAmount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="estimate_market_share=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.estimateMarketShare != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.estimateMarketShare}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="miCustomerInvestDetailList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="miCustomerInvestDetailList" separator="or" item="item" index="index">
+                    mi_customer_invest_detail_id=#{item.miCustomerInvestDetailId}
+        </foreach>
+    </update>
+</mapper>
+
+

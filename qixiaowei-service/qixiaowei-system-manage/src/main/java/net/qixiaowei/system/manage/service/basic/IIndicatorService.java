@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.basic;
 
 import cn.hutool.core.lang.tree.Tree;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 
 import java.util.List;
@@ -14,6 +15,12 @@ import java.util.Map;
  * @since 2022-09-28
  */
 public interface IIndicatorService {
+    /**
+     * 初始化数据
+     *
+     * @return 是否成功
+     */
+    Boolean initData(Long userId);
     /**
      * 查询指标表
      *
@@ -29,6 +36,14 @@ public interface IIndicatorService {
      * @return 指标表集合
      */
     List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO);
+
+    /**
+     * 处理返回
+     *
+     * @param result 返回集合
+     * @return 返回集合
+     */
+    void handleResult(List<IndicatorDTO> result);
 
     /**
      * 关键经营结果获取Indicator

@@ -84,14 +84,14 @@ public class RemoteDecompose implements RemoteDecomposeService {
     /**
      * 目标分解是否被引用
      *
-     * @param departmentId
+     * @param departmentIds
      * @return
      */
     @Override
     @InnerAuth
-    @GetMapping("/decomposeDetails/queryDeptDecompose")
-    public R<List<TargetDecompose>> queryDeptDecompose(Long departmentId) {
-        return R.ok(targetDecomposeService.queryDeptDecompose(departmentId));
+    @PostMapping("/decomposeDetails/queryDeptDecompose")
+    public R<List<TargetDecompose>> queryDeptDecompose(@RequestBody List<Long> departmentIds,String source) {
+        return R.ok(targetDecomposeService.queryDeptDecompose(departmentIds));
     }
 
     /**

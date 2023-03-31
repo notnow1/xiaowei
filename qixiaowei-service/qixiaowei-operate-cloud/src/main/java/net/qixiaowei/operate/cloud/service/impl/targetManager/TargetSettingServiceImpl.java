@@ -248,7 +248,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     @Override
     public List<Tree<Long>> selectTargetSettingTreeList(TargetSettingDTO targetSettingDTO) {
         Integer targetYear = targetSettingDTO.getTargetYear();
-        BigDecimal zero = new BigDecimal(0);
+        BigDecimal zero = BigDecimal.ZERO;
         if (StringUtils.isNull(targetYear)) {
             throw new ServiceException("请输入目标年度");
         }
@@ -378,10 +378,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * 创建目标制定对象
      *
-     * @param indicatorCode
-     * @param zero
-     * @param indicatorByCode
-     * @return
+     * @param indicatorCode   指标编码
+     * @param zero            0
+     * @param indicatorByCode 指标编码
+     * @return 结果
      */
     private TargetSettingDTO setTargetSettingZero(String indicatorCode, BigDecimal zero, List<IndicatorDTO> indicatorByCode) {
         TargetSettingDTO dto = new TargetSettingDTO();
@@ -479,7 +479,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         //删除操作
         List<TargetSettingDTO> delTargetSetting = delOperate(targetSettingDTOAfter, noDelete, targetSettingDTOBefore);
         //新增操作
-        List<TargetSettingDTO> addTargetSetting = addOperate(targetYear, noEdit, targetSettingDTOAfter, targetSettingDTOBefore, indicator);
+        List<TargetSettingDTO> addTargetSetting = addOperate(targetYear, noEdit, targetSettingDTOAfter, targetSettingDTOBefore);
         //存值
         storageValue(targetYear, noEdit, updateTargetSetting, delTargetSetting, addTargetSetting);
         TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
@@ -491,7 +491,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * 指标ID集合获取
      *
      * @param indicatorIds 指标ID结合
-     * @return
+     * @return 结果
      */
     @Override
     public List<TargetSettingDTO> selectByIndicatorIds(List<Long> indicatorIds) {
@@ -502,8 +502,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * 查询经营分析报表指标列表
      *
-     * @param targetSettingDTO
-     * @return
+     * @param targetSettingDTO 目标制定
+     * @return 结果
      */
     @Override
     public List<TargetSettingDTO> analyseIndicator(TargetSettingDTO targetSettingDTO) {
@@ -511,7 +511,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSetting.setTargetYear(targetSettingDTO.getTargetYear());
         targetSetting.setTenantId(SecurityUtils.getTenantId());
         //指标集合
-        List<Long> indicatorIds = new ArrayList<>();
+        List<Long> indicatorIds;
         //指标code集合
         List<String> list = new ArrayList<>();
         //订单（不含税）
@@ -532,7 +532,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             indicatorIds = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
             targetSetting.setIndicatorIds(indicatorIds);
         }
-        List<TargetSettingDTO> targetSettingDTOS  = new ArrayList<>();
+        List<TargetSettingDTO> targetSettingDTOS = new ArrayList<>();
         if (StringUtils.isNotEmpty(indicatorIds)) {
             for (Long indicatorId : indicatorIds) {
                 TargetSettingDTO targetSettingDTO1 = new TargetSettingDTO();
@@ -540,7 +540,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingDTOS.add(targetSettingDTO1);
             }
         }
-         targetSettingDTOS = targetSettingMapper.selectanalyseIndicator(targetSetting);
+        targetSettingDTOS = targetSettingMapper.selectanalyseIndicator(targetSetting);
 
         if (StringUtils.isNotEmpty(targetSettingDTOS)) {
             List<Long> collect = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
@@ -560,11 +560,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             }
         }
         //根据属性去重
-        ArrayList<TargetSettingDTO> collect = targetSettingDTOS.stream().collect(Collectors.collectingAndThen(
+        return targetSettingDTOS.stream().collect(Collectors.collectingAndThen(
                 Collectors.toCollection(() -> new TreeSet<>(
                         Comparator.comparing(
                                 TargetSettingDTO::getIndicatorId))), ArrayList::new));
-        return collect;
     }
 
     /**
@@ -619,10 +618,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * 删除操作
      *
-     * @param targetSettingDTOAfter
-     * @param noDelete
-     * @param targetSettingDTOBefore
-     * @return
+     * @param targetSettingDTOAfter  后
+     * @param noDelete               不删的
+     * @param targetSettingDTOBefore 前
+     * @return 结果
      */
     private static List<TargetSettingDTO> delOperate(List<TargetSettingDTO> targetSettingDTOAfter, List<Long> noDelete, List<TargetSettingDTO> targetSettingDTOBefore) {
         // After里Before的交集
@@ -655,10 +654,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @param noEdit                 不能编辑
      * @param targetSettingDTOAfter  后来
      * @param targetSettingDTOBefore 之前
-     * @param indicator              指标
-     * @return
+     * @return 结果
      */
-    private List<TargetSettingDTO> addOperate(Integer targetYear, List<Long> noEdit, List<TargetSettingDTO> targetSettingDTOAfter, List<TargetSettingDTO> targetSettingDTOBefore, List<IndicatorDTO> indicator) {
+    private List<TargetSettingDTO> addOperate(Integer targetYear, List<Long> noEdit, List<TargetSettingDTO> targetSettingDTOAfter, List<TargetSettingDTO> targetSettingDTOBefore) {
         // 差集 After中Before的补集
         List<TargetSettingDTO> addTargetSetting =
                 targetSettingDTOAfter.stream().filter(targetSettingDTO ->
@@ -741,12 +739,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * Tree → List
      *
-     * @param targetSettingDTOList
-     * @param targetSettingRespList
-     * @param targetYear
-     * @param indicators
-     * @param sort
-     * @return
+     * @param targetSettingDTOList  目标制定列表
+     * @param targetSettingRespList 目标制定
+     * @param targetYear            年
+     * @param indicators            指标
+     * @param sort                  分类
+     * @return 结果
      */
     public List<TargetSettingDTO> treeToList(List<TargetSettingDTO> targetSettingDTOList, List<TargetSettingDTO> targetSettingRespList, Integer targetYear, List<Long> indicators, int sort) {
         for (TargetSettingDTO targetSettingDTO : targetSettingDTOList) {
@@ -817,7 +815,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * 查询经营分析报表列表
      *
      * @param targetSettingDTO 目标制定
-     * @return
+     * @return 结果
      */
     @Override
     public List<TargetSettingDTO> analyseList(TargetSettingDTO targetSettingDTO) {
@@ -864,14 +862,14 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 boolean isActualZero = actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0;
                 if (isActualZero) {
                     if (targetValue != null && targetValue.compareTo(new BigDecimal("0")) != 0) {
-                        targetPercentageComplete = actualTotal.divide(targetValue, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        targetPercentageComplete = actualTotal.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                 }
                 settingDTO.setTargetPercentageComplete(targetPercentageComplete);
                 //同比 公式=（目标年度年度实际/上年年度实际）-1
                 if (lastActualTotal != null && lastActualTotal.compareTo(new BigDecimal("0")) != 0) {
                     if (isActualZero) {
-                        onBasis = actualTotal.divide(lastActualTotal, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
+                        onBasis = actualTotal.divide(lastActualTotal, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
                     }
                 }
                 settingDTO.setOnBasis(onBasis);
@@ -1128,12 +1126,15 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * 保存销售订单目标制定
      *
      * @param targetSettingDTO 目标制定
-     * @return
+     * @return 结果
      */
     @Override
     @Transactional
     public TargetSettingDTO saveOrderTargetSetting(TargetSettingDTO targetSettingDTO) {
         Integer targetYear = targetSettingDTO.getTargetYear();
+        if (StringUtils.isNull(targetYear)) {
+            throw new ServiceException("请选择考核年度");
+        }
         List<TargetSettingOrderDTO> targetSettingOrderAfter = targetSettingDTO.getTargetSettingOrderDTOS();
         TargetSettingDTO targetSetting = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 1);
         IndicatorDTO indicatorDTO = getIndicator(IndicatorCode.ORDER.getCode());
@@ -1221,7 +1222,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             historyNumS = getHistoryYearList(targetYear, historyNum);
         }
         if (StringUtils.isEmpty(targetSettingDTOS)) {
-            BigDecimal zero = new BigDecimal(0);
+            BigDecimal zero = BigDecimal.ZERO;
             targetSettingDTO.setTargetValue(zero);
             targetSettingDTO.setChallengeValue(zero);
             targetSettingDTO.setGuaranteedValue(zero);
@@ -1432,7 +1433,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @param targetSettingOrderDTOS 目标订单列表
      */
     private static void insertOrderRow(List<Integer> historyNumS, List<TargetSettingOrderDTO> targetSettingOrderDTOS) {
-        BigDecimal zero = new BigDecimal(0);
+        BigDecimal zero = BigDecimal.ZERO;
         for (Integer history : historyNumS) {
             TargetSettingOrderDTO targetSettingOrderDTO = new TargetSettingOrderDTO();
             targetSettingOrderDTO.setHistoryYear(history);
@@ -1688,7 +1689,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     @Override
     public List<TargetSettingIncomeExcel> exportIncomeTargetSetting(TargetSettingDTO targetSettingDTO) {
         List<Integer> historyYears = getHistoryYears(targetSettingDTO);
-        BigDecimal zero = new BigDecimal(0);
+        BigDecimal zero = BigDecimal.ZERO;
         TargetSettingDTO settingDTO = new TargetSettingDTO();
         settingDTO.setTargetSettingType(2);
         List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingByYears(settingDTO, historyYears);
@@ -2163,7 +2164,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             BigDecimal salesRevenueChallenge = BigDecimal.ZERO;
             BigDecimal salesRevenueGuaranteed = BigDecimal.ZERO;
             for (TargetSettingDTO dto : targetSettingIncomeList) {
-                if (dto.getIndicatorId().equals(targetSetting.getIndicatorId())) {
+                if (Objects.equals(dto.getTargetYear(), targetSetting.getTargetYear())) {
                     salesRevenueTarget = dto.getTargetValue();
                     salesRevenueChallenge = dto.getChallengeValue();
                     salesRevenueGuaranteed = dto.getGuaranteedValue();
@@ -2183,9 +2184,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     ((salesRevenueGuaranteed.multiply(BigDecimal.valueOf(DSO))).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP)).subtract(balanceReceivables);
             // 【回款总目标】：公式=上年年末应收账款余额+销售收入目标*（1+平均增值税率）-期末应收账款余额。
             BigDecimal rate = (percentage.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)).add(BigDecimal.ONE);
-            BigDecimal totalTarget = balanceReceivables.add(salesRevenueTarget.multiply(rate)).add(endingBalanceTarget);
-            BigDecimal totalChallenge = balanceReceivables.add(salesRevenueChallenge.multiply(rate)).add(endingBalanceChallenge);
-            BigDecimal totalGuaranteed = balanceReceivables.add(salesRevenueGuaranteed.multiply(rate)).add(endingBalanceGuaranteed);
+            BigDecimal totalTarget = balanceReceivables.add(salesRevenueTarget.multiply(rate)).subtract(endingBalanceTarget);
+            BigDecimal totalChallenge = balanceReceivables.add(salesRevenueChallenge.multiply(rate)).subtract(endingBalanceChallenge);
+            BigDecimal totalGuaranteed = balanceReceivables.add(salesRevenueGuaranteed.multiply(rate)).subtract(endingBalanceGuaranteed);
             Map<String, BigDecimal> challengeMap = new HashMap<>();
             Map<String, BigDecimal> targetMap = new HashMap<>();
             Map<String, BigDecimal> guaranteedMap = new HashMap<>();
@@ -2196,20 +2197,23 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                             challengeMap.put("1.应回尽回", targetSettingRecoveriesDTO.getChallengeValue());
                             targetMap.put("1.应回尽回", targetSettingRecoveriesDTO.getTargetValue());
                             guaranteedMap.put("1.应回尽回", targetSettingRecoveriesDTO.getGuaranteedValue());
+                            break;
                         case 2:
                             challengeMap.put("2.逾期清理", targetSettingRecoveriesDTO.getChallengeValue());
                             targetMap.put("2.逾期清理", targetSettingRecoveriesDTO.getTargetValue());
                             guaranteedMap.put("2.逾期清理", targetSettingRecoveriesDTO.getGuaranteedValue());
+                            break;
                         case 3:
                             challengeMap.put("3.提前回款", targetSettingRecoveriesDTO.getChallengeValue());
                             targetMap.put("3.提前回款", targetSettingRecoveriesDTO.getTargetValue());
                             guaranteedMap.put("3.提前回款", targetSettingRecoveriesDTO.getGuaranteedValue());
+                            break;
                     }
                 }
             }
-            challengeMap.put("期末应收账款余额", salesRevenueChallenge);
-            targetMap.put("期末应收账款余额", salesRevenueTarget);
-            guaranteedMap.put("期末应收账款余额", salesRevenueGuaranteed);
+            challengeMap.put("期末应收账款余额", endingBalanceChallenge);
+            targetMap.put("期末应收账款余额", endingBalanceTarget);
+            guaranteedMap.put("期末应收账款余额", endingBalanceGuaranteed);
             challengeMap.put("回款总目标", totalChallenge);
             targetMap.put("回款总目标", totalTarget);
             guaranteedMap.put("回款总目标", totalGuaranteed);

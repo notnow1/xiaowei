@@ -1,1 +1,12 @@
 net.qixiaowei.strategy.cloud.api.factory.industry.RemoteIndustryAttractionFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.RemoteStrategyCloudInitDataFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.businessDesign.RemoteBusinessDesignFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.gap.RemoteGapAnalysisFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.strategyDecode.RemoteAnnualKeyWorkFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.strategyDecode.RemoteStrategyMeasureFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.strategyDecode.RemoteStrategyMetricsFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.marketInsight.RemoteMarketInsightCustomerFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.marketInsight.RemoteMarketInsightIndustryFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.marketInsight.RemoteMarketInsightMacroFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.marketInsight.RemoteMarketInsightOpponentFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.marketInsight.RemoteMarketInsightSelfFallbackFactory

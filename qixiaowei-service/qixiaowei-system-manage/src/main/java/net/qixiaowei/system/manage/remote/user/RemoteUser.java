@@ -2,11 +2,13 @@ package net.qixiaowei.system.manage.remote.user;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
+import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
+import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
 import net.qixiaowei.system.manage.service.tenant.ITenantService;
 import net.qixiaowei.system.manage.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,13 @@ public class RemoteUser implements RemoteUserService {
         return R.ok(userService.selectUserByUserId(UserId));
     }
 
+    @InnerAuth
+    @Override
+    @GetMapping("/initUserCache")
+    public R<UserProfileVO> initUserCache(Long userId, String source) {
+        return R.ok(userService.initUserCache(userId));
+    }
+
     @Override
     @InnerAuth
     @PostMapping("/usersByUserIds")
@@ -52,6 +61,7 @@ public class RemoteUser implements RemoteUserService {
 
     @Override
     @InnerAuth
+    @IgnoreTenant
     @PostMapping("/resetPwdOfUserId")
     public R<?> resetPwdOfUserId(Long userId, String password, String source) {
         UserDTO userDTO = new UserDTO();
@@ -96,6 +106,7 @@ public class RemoteUser implements RemoteUserService {
 
     /**
      * 远程查询用户信息 支持模糊查询等等
+     *
      * @param userDTO
      * @param source
      * @return

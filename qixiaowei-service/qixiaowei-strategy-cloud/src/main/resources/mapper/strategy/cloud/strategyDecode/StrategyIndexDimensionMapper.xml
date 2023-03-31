@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.strategyDecode.StrategyIndexDimensionMapper">
+    <!--    查询战略指标维度表-->
+    <select id="selectStrategyIndexDimensionByStrategyIndexDimensionId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,parent_index_dimension_id,ancestors,index_dimension_code,index_dimension_name,sort,LEVEL,STATUS,remark,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_index_dimension
+        WHERE strategy_index_dimension_id=#{strategyIndexDimensionId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询战略指标维度表-->
+    <select id="selectStrategyIndexDimensionByStrategyIndexDimensionIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,parent_index_dimension_id,ancestors,index_dimension_code,index_dimension_name,sort,LEVEL,STATUS,remark,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_index_dimension
+        WHERE strategy_index_dimension_id in
+        <foreach item="item"
+                 collection="strategyIndexDimensionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询战略指标维度表列表-->
+    <select id="selectStrategyIndexDimensionList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        sid.strategy_index_dimension_id,
+        sid.parent_index_dimension_id,
+        psi.index_dimension_name AS parent_index_dimension_name,
+        sid.ancestors,
+        sid.index_dimension_code,
+        sid.index_dimension_name,
+        sid.sort,
+        sid.LEVEL,
+        sid.STATUS,
+        sid.remark,
+        sid.delete_flag,
+        sid.create_by,
+        sid.create_time,
+        sid.update_by,
+        sid.update_time
+        FROM strategy_index_dimension sid
+        LEFT JOIN strategy_index_dimension psi
+        ON sid.parent_index_dimension_id = psi.strategy_index_dimension_id
+        AND psi.delete_flag=0
+        WHERE sid.delete_flag=0
+        <if test="strategyIndexDimension.strategyIndexDimensionId != null">
+            and sid.strategy_index_dimension_id=#{strategyIndexDimension.strategyIndexDimensionId}
+        </if>
+        <if test="strategyIndexDimension.parentIndexDimensionId != null">
+            and sid.parent_index_dimension_id=#{strategyIndexDimension.parentIndexDimensionId}
+        </if>
+        <if test="strategyIndexDimension.ancestors != null and strategyIndexDimension.ancestors != ''">
+            and sid.ancestors=#{strategyIndexDimension.ancestors}
+        </if>
+        <if test="strategyIndexDimension.indexDimensionCode != null and strategyIndexDimension.indexDimensionCode != ''">
+            and sid.index_dimension_code=#{strategyIndexDimension.indexDimensionCode}
+        </if>
+        <if test="strategyIndexDimension.indexDimensionName != null and strategyIndexDimension.indexDimensionName != ''">
+            and sid.index_dimension_name like concat('%', #{strategyIndexDimension.indexDimensionName}, '%')
+        </if>
+        <if test="strategyIndexDimension.sort != null">
+            and sid.sort=#{strategyIndexDimension.sort}
+        </if>
+        <if test="strategyIndexDimension.level != null">
+            and sid.LEVEL=#{strategyIndexDimension.level}
+        </if>
+        <if test="strategyIndexDimension.status != null">
+            and sid.STATUS=#{strategyIndexDimension.status}
+        </if>
+        <if test="strategyIndexDimension.remark != null and strategyIndexDimension.remark != ''">
+            and sid.remark=#{strategyIndexDimension.remark}
+        </if>
+        <if test="strategyIndexDimension.deleteFlag != null">
+            and sid.delete_flag=#{strategyIndexDimension.deleteFlag}
+        </if>
+        <if test="strategyIndexDimension.createBy != null">
+            and sid.create_by=#{strategyIndexDimension.createBy}
+        </if>
+        <if test="strategyIndexDimension.createTime != null">
+            and sid.create_time=#{strategyIndexDimension.createTime}
+        </if>
+        <if test="strategyIndexDimension.updateBy != null">
+            and sid.update_by=#{strategyIndexDimension.updateBy}
+        </if>
+        <if test="strategyIndexDimension.updateTime != null">
+            and sid.update_time=#{strategyIndexDimension.updateTime}
+        </if>
+        ORDER BY sid.sort ASC
+    </select>
+    <select id="selectStrategyIndexDimensionOtherList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE
+        delete_flag = 0
+        AND ( NOT FIND_IN_SET( #{strategyIndexDimensionId}, ancestors ) OR ancestors IS NULL )
+        AND strategy_index_dimension_id != #{strategyIndexDimensionId}
+    </select>
+    <!--根据父级id查找子级-->
+    <select id="selectSon" resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE FIND_IN_SET(#{strategyIndexDimensionId},ancestors)
+        AND delete_flag = 0
+    </select>
+    <!--检查唯一校验-->
+    <select id="checkUnique"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE BINARY index_dimension_code=#{strategyIndexDimensionCode}
+        and delete_flag=0
+    </select>
+    <!--根据id查询所有子级数据-->
+    <select id="selectAncestors"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        (
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE
+        delete_flag = 0
+        <if test="strategyIndexDimensionId != null">
+            AND strategy_index_dimension_id = #{strategyIndexDimensionId}
+        </if>
+        UNION
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE
+        delete_flag = 0
+        <if test="strategyIndexDimensionId != null">
+            AND FIND_IN_SET( #{strategyIndexDimensionId}, ancestors )
+        </if>
+        ) AS ancestors
+    </select>
+    <!--获取层级列表-->
+    <select id="selectStrategyIndexDimensionLevelList" resultType="java.lang.Integer">
+        SELECT
+        `LEVEL`
+        FROM
+        strategy_index_dimension
+        WHERE delete_flag=0
+        GROUP BY `LEVEL`
+        ORDER BY `LEVEL`
+    </select>
+    <!--获取最大排序-->
+    <select id="selectMaxSort" resultType="java.lang.Integer">
+        SELECT
+        IFNULL(sort,0) + 1 as sort
+        FROM
+        strategy_index_dimension
+        WHERE
+        delete_flag = 0
+        <if test="level != null">
+            AND level = #{level}
+        </if>
+        <if test="parentStrategyIndexDimensionId != null">
+            AND parent_index_dimension_id = #{parentStrategyIndexDimensionId}
+        </if>
+        ORDER BY sort DESC
+        limit 1
+    </select>
+    <!--查找子级-->
+    <select id="selectSons"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyIndexDimensionDTO">
+        SELECT
+        strategy_index_dimension_id,
+        parent_index_dimension_id,
+        ancestors,
+        index_dimension_code,
+        index_dimension_name,
+        sort,
+        LEVEL,
+        STATUS,
+        remark,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        strategy_index_dimension
+        WHERE
+        <foreach collection="strategyIndexDimensionIds" item="item" index="index" open="(" close=")" separator="OR">
+            FIND_IN_SET(#{item},ancestors)
+        </foreach>
+        AND delete_flag = 0
+    </select>
+    <!--新增战略指标维度表-->
+    <insert id="insertStrategyIndexDimension" useGeneratedKeys="true" keyProperty="strategyIndexDimensionId">
+        INSERT INTO strategy_index_dimension
+        (parent_index_dimension_id,ancestors,index_dimension_code,index_dimension_name,sort,LEVEL,STATUS,remark,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{strategyIndexDimension.parentIndexDimensionId},#{strategyIndexDimension.ancestors},#{strategyIndexDimension.indexDimensionCode},#{strategyIndexDimension.indexDimensionName},#{strategyIndexDimension.sort},#{strategyIndexDimension.level},#{strategyIndexDimension.status},#{strategyIndexDimension.remark},#{strategyIndexDimension.deleteFlag},#{strategyIndexDimension.createBy},#{strategyIndexDimension.createTime},#{strategyIndexDimension.updateBy},#{strategyIndexDimension.updateTime})
+    </insert>
+    <!--修改战略指标维度表-->
+    <update id="updateStrategyIndexDimension">
+        UPDATE strategy_index_dimension
+        SET
+        <if test="strategyIndexDimension.parentIndexDimensionId != null">
+            parent_index_dimension_id=#{strategyIndexDimension.parentIndexDimensionId},
+        </if>
+        <if test="strategyIndexDimension.ancestors != null and strategyIndexDimension.ancestors != ''">
+            ancestors=#{strategyIndexDimension.ancestors},
+        </if>
+        <if test="strategyIndexDimension.indexDimensionCode != null and strategyIndexDimension.indexDimensionCode != ''">
+            index_dimension_code=#{strategyIndexDimension.indexDimensionCode},
+        </if>
+        <if test="strategyIndexDimension.indexDimensionName != null and strategyIndexDimension.indexDimensionName != ''">
+            index_dimension_name=#{strategyIndexDimension.indexDimensionName},
+        </if>
+        <if test="strategyIndexDimension.sort != null">
+            sort=#{strategyIndexDimension.sort},
+        </if>
+        <if test="strategyIndexDimension.level != null">
+            LEVEL=#{strategyIndexDimension.level},
+        </if>
+        <if test="strategyIndexDimension.status != null">
+            STATUS=#{strategyIndexDimension.status},
+        </if>
+        <if test="strategyIndexDimension.remark != null and strategyIndexDimension.remark != ''">
+            remark=#{strategyIndexDimension.remark},
+        </if>
+        <if test="strategyIndexDimension.deleteFlag != null">
+            delete_flag=#{strategyIndexDimension.deleteFlag},
+        </if>
+        <if test="strategyIndexDimension.createBy != null">
+            create_by=#{strategyIndexDimension.createBy},
+        </if>
+        <if test="strategyIndexDimension.createTime != null">
+            create_time=#{strategyIndexDimension.createTime},
+        </if>
+        <if test="strategyIndexDimension.updateBy != null">
+            update_by=#{strategyIndexDimension.updateBy},
+        </if>
+        <if test="strategyIndexDimension.updateTime != null">
+            update_time=#{strategyIndexDimension.updateTime}
+        </if>
+        WHERE
+        strategy_index_dimension_id=#{strategyIndexDimension.strategyIndexDimensionId}
+    </update>
+    <!--逻辑删除战略指标维度表-->
+    <update id="logicDeleteStrategyIndexDimensionByStrategyIndexDimensionId">
+        UPDATE strategy_index_dimension
+        SET delete_flag= 1,
+        update_by=#{strategyIndexDimension.updateBy},
+        update_time=#{strategyIndexDimension.updateTime}
+        WHERE
+        strategy_index_dimension_id=#{strategyIndexDimension.strategyIndexDimensionId}
+    </update>
+    <!--逻辑批量删除战略指标维度表-->
+    <update id="logicDeleteStrategyIndexDimensionByStrategyIndexDimensionIds">
+        UPDATE strategy_index_dimension
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        strategy_index_dimension_id IN
+        <foreach item="item"
+                 collection="strategyIndexDimensionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增战略指标维度表-->
+    <insert id="batchStrategyIndexDimension" useGeneratedKeys="true" keyProperty="strategyIndexDimensionId">
+        INSERT INTO strategy_index_dimension
+        (parent_index_dimension_id,ancestors,index_dimension_code,index_dimension_name,sort,LEVEL,STATUS,remark,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="strategyIndexDimensions"
+                 separator=",">
+            <if test="item.strategyIndexDimensionId == null">
+                (#{item.parentIndexDimensionId},#{item.ancestors},#{item.indexDimensionCode},#{item.indexDimensionName},#{item.sort},#{item.level},#{item.status},#{item.remark},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            </if>
+        </foreach>
+    </insert>
+
+    <!--物理删除战略指标维度表-->
+    <delete id="deleteStrategyIndexDimensionByStrategyIndexDimensionId">
+        DELETE FROM strategy_index_dimension
+        WHERE strategy_index_dimension_id=#{strategyIndexDimension}
+
+    </delete>
+    <!--物理批量删除战略指标维度表-->
+    <delete id="deleteStrategyIndexDimensionByStrategyIndexDimensionIds">
+        DELETE FROM strategy_index_dimension
+        WHERE strategy_index_dimension_id IN
+        <foreach item="item"
+                 collection="strategyIndexDimensionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改战略指标维度表-->
+    <update id="updateStrategyIndexDimensions">
+        update strategy_index_dimension
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="parent_index_dimension_id=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.parentIndexDimensionId != null">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then
+                        #{item.parentIndexDimensionId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="ancestors=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.ancestors != null and item.ancestors != ''">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then #{item.ancestors}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="index_dimension_code=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.indexDimensionCode != null and item.indexDimensionCode != ''">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then
+                        #{item.indexDimensionCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="index_dimension_name=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.indexDimensionName != null and item.indexDimensionName != ''">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then
+                        #{item.indexDimensionName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.sort != null">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="LEVEL=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.level != null">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then #{item.level}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="STATUS=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.status != null">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.remark != null and item.remark != ''">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then #{item.remark}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="strategyIndexDimensionList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when strategy_index_dimension_id=#{item.strategyIndexDimensionId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="strategyIndexDimensionList" separator="or" item="item" index="index">
+            strategy_index_dimension_id=#{item.strategyIndexDimensionId}
+        </foreach>
+    </update>
+</mapper>
+
+

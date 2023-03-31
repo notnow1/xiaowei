@@ -130,6 +130,9 @@
         <if test="targetDecompose.updateTime != null">
             and td.update_time=#{targetDecompose.updateTime}
         </if>
+        <!-- 数据范围过滤 -->
+        ${targetDecompose.params.dataScope}
+        ORDER BY td.create_time DESC
     </select>
     <!--    联合主键查询目标分解表-->
     <select id="selectTargetDecomposeUniteId"
@@ -184,12 +187,6 @@
         and td.indicator_id = ts.indicator_id
         and ts.delete_flag= 0
         WHERE td.delete_flag = 0
-        and td.indicator_id in
-        <foreach item="item"
-                 collection="targetDecompose.indicatorIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
         <!-- 目标年度过滤  -->
         <if test="targetDecompose.params.targetYearEqual != null and targetDecompose.params.targetYearEqual.size() > 0">
             AND td.target_year IN
@@ -295,12 +292,12 @@
 
         <!-- 普通指标名称过滤  -->
         <if test="targetDecompose.remoteIndicatorIds != null and targetDecompose.remoteIndicatorIds.size() > 0">
-                AND td.indicator_id IN
-                <foreach item="item"
-                         collection="targetDecompose.remoteIndicatorIds"
-                         index="index" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
+            AND td.indicator_id IN
+            <foreach item="item"
+                     collection="targetDecompose.remoteIndicatorIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
 
         <if test="targetDecompose.targetDecomposeId != null">
@@ -348,6 +345,9 @@
         <if test="targetDecompose.updateTime != null">
             and td.update_time=#{targetDecompose.updateTime}
         </if>
+        <!-- 数据范围过滤 -->
+        ${targetDecompose.params.dataScope}
+        ORDER BY td.create_time DESC
     </select>
     <!--    根据时间维度查询目标分解所有数据-->
     <select id="selectCronCreateHistoryList"
@@ -381,6 +381,7 @@
         td.target_year,
         td.decomposition_dimension,
         td.time_dimension,
+        td.create_time,
         IFNULL(ts.target_value,0) as target_value,
         IFNULL((select sum(cycle_target) from target_decompose_details tdd left join decompose_detail_cycles ddc on
         ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 and ddc.tenant_id
@@ -404,20 +405,17 @@
         and td.indicator_id = ts.indicator_id
         and ts.delete_flag= 0
         WHERE td.delete_flag = 0
-        and td.indicator_id in
-        <foreach item="item"
-                 collection="targetDecompose.indicatorIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
         <if test="targetDecompose.targetDecomposeId != null">
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
+        </if>
+        <if test="targetDecompose.indicatorId != null">
+            and td.indicator_id=#{targetDecompose.indicatorId}
         </if>
         <if test="targetDecompose.targetDecomposeType != null">
             and td.target_decompose_type=#{targetDecompose.targetDecomposeType}
         </if>
         <if test="targetDecompose.targetYear != null">
-            and td.target_year like '%${targetDecompose.targetYear}%'
+            and td.target_year =#{targetDecompose.targetYear}
         </if>
         <if test="targetDecompose.targetDecomposeDimensionId != null">
             and td.target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId}
@@ -426,7 +424,7 @@
             and td.decomposition_dimension like '%$#{targetDecompose.decompositionDimension}%'
         </if>
         <if test="targetDecompose.timeDimension != null">
-            and td.time_dimension like '%${targetDecompose.timeDimension}%'
+            and td.time_dimension = #{targetDecompose.timeDimension}
         </if>
         <if test="targetDecompose.decomposeTarget != null">
             and td.decompose_target=#{targetDecompose.decomposeTarget}
@@ -455,6 +453,7 @@
         <if test="targetDecompose.updateTime != null">
             and td.update_time=#{targetDecompose.updateTime}
         </if>
+        order by td.create_time desc
     </select>
     <!--    目标分解是否被引用-->
     <select id="queryDeptDecompose"
@@ -479,7 +478,10 @@
         left join target_decompose td
         on td.target_decompose_id = tdd.target_decompose_id
         and td.delete_flag = 0
-        where tdd.department_id = #{departmentId}
+        where tdd.department_id in
+        <foreach collection="departmentIds" separator="," open="(" close=")" item="item" index="index">
+            #{item}
+        </foreach>
         and tdd.delete_flag = 0
     </select>
     <!--    查询目标分解预制数据年份-->
@@ -809,6 +811,22 @@
         AND a.delete_flag =0
         LEFT JOIN product p ON p.product_id = tdd.product_id
         AND p.delete_flag =0
+    </select>
+    <!--引用校验-->
+    <select id="selectListByTargetDecomposeDimensionIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
+        SELECT
+        target_decompose_id, target_decompose_type, indicator_id, target_year, target_decompose_dimension_id,
+        decomposition_dimension, time_dimension, decompose_target, forecast_year, actual_total, status, delete_flag,
+        create_by, create_time, update_by, update_time
+        FROM target_decompose
+        WHERE target_decompose_dimension_id in
+        <foreach item="item"
+                 collection="targetDecomposeDimensionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
     </select>
     <!--新增销售订单目标分解表-->
     <insert id="insertTargetDecompose" useGeneratedKeys="true" keyProperty="targetDecomposeId">

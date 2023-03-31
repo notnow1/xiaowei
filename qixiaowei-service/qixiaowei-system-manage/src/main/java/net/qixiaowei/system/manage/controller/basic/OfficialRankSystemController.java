@@ -46,7 +46,7 @@ public class OfficialRankSystemController extends BaseController {
     @RequiresPermissions("system:manage:officialRankSystem:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody OfficialRankSystemDTO officialRankSystemDTO) {
-        return AjaxResult.success(officialRankSystemService.insertOfficialRankSystem(officialRankSystemDTO));
+        return AjaxResult.success("职级配置新增成功", officialRankSystemService.insertOfficialRankSystem(officialRankSystemDTO));
     }
 
     /**
@@ -146,7 +146,6 @@ public class OfficialRankSystemController extends BaseController {
         List<OfficialRankSystemDTO> list = officialRankSystemService.selectOfficialRankSystemList(officialRankSystemDTO);
         return AjaxResult.success(list);
     }
-
 
 
 }

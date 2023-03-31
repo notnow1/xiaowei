@@ -25,10 +25,13 @@
         i.create_by,
         i.create_time,
         i.update_by,
-        i.update_time
+        i.update_time,
+        i2.indicator_name AS parent_indicator_name
         FROM indicator i
         LEFT JOIN indicator_category ic ON i.indicator_category_id = ic.indicator_category_id
         AND ic.delete_flag = 0
+        LEFT JOIN indicator i2 ON i.parent_indicator_id = i2.indicator_id
+        AND i2.delete_flag = 0
         WHERE i.indicator_id = #{indicatorId}
         and i.delete_flag = 0
     </select>
@@ -155,7 +158,7 @@
             AND
             <foreach item="item"
                      collection="indicator.params.indicatorCodeLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 t1.indicator_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -190,7 +193,7 @@
             AND
             <foreach item="item"
                      collection="indicator.params.indicatorNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 t1.indicator_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -398,6 +401,9 @@
             OR t1.driving_factor_flag IS NULL
             )
         </if>
+        <!-- 数据范围过滤 -->
+        ${indicator.params.dataScope}
+        ORDER BY t1.create_time DESC
     </select>
     <!--    级联查询父菜单-->
     <select id="selectIndicatorTree" resultMap="treeVoMap">
@@ -496,9 +502,6 @@
         <if test="indicator.parentIndicatorId != null">
             parent_indicator_id=#{indicator.parentIndicatorId},
         </if>
-        <if test="indicator.ancestors != null and indicator.ancestors != ''">
-            ancestors=#{indicator.ancestors},
-        </if>
         <if test="indicator.indicatorType != null">
             indicator_type=#{indicator.indicatorType},
         </if>
@@ -551,8 +554,9 @@
             update_by=#{indicator.updateBy},
         </if>
         <if test="indicator.updateTime != null">
-            update_time=#{indicator.updateTime}
+            update_time=#{indicator.updateTime},
         </if>
+        ancestors=#{indicator.ancestors}
         WHERE
         indicator_id=#{indicator.indicatorId}
         AND delete_flag = 0

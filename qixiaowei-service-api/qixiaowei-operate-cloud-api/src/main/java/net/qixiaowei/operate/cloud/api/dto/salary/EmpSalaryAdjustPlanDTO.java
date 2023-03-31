@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.api.dto.salary;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
@@ -19,7 +20,7 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-public class EmpSalaryAdjustPlanDTO {
+public class EmpSalaryAdjustPlanDTO extends BaseDTO {
 
     //查询检验
     public interface QueryEmpSalaryAdjustPlanDTO extends Default {
@@ -216,24 +217,6 @@ public class EmpSalaryAdjustPlanDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
      * 租户ID
      */
     private Long tenantId;
@@ -282,8 +265,6 @@ public class EmpSalaryAdjustPlanDTO {
      * 当前职级名称
      */
     private String employeeOfficialRankName;
-
-    private Map<String, Object> params;
 
 
 }

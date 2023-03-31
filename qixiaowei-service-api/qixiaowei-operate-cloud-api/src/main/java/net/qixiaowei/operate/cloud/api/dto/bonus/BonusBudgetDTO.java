@@ -6,9 +6,12 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 
 /**
@@ -18,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 */
 @Data
 @Accessors(chain = true)
-public class BonusBudgetDTO {
+public class BonusBudgetDTO extends BaseDTO {
 
     //查询检验
     public interface QueryBonusBudgetDTO extends Default{
@@ -49,6 +52,8 @@ public class BonusBudgetDTO {
     /**
      * 总奖金包预算参数集合
      */
+    @NotEmpty(message = "奖金驱动因素不能为空", groups = {BonusBudgetDTO.AddBonusBudgetDTO.class, BonusBudgetDTO.UpdateBonusBudgetDTO.class})
+    @Valid
     private List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS;
     /**
      * 总薪酬包预算
@@ -61,9 +66,13 @@ public class BonusBudgetDTO {
     private BigDecimal elasticityBonusBudget;
 
     /**
-     * 总工资包预算
+     * 总工资包预算自己定义的(因这个字段是不会保存数据库的 后面修改需求后 字段名没对上 取的别名返回的)
      */
     private BigDecimal basicWageBonusBudget;
+    /**
+     * 总工资包预算数据库
+     */
+    private BigDecimal amountWageBudget;
     /**
      * 涨薪包预算
      */
@@ -131,28 +140,6 @@ public class BonusBudgetDTO {
     * 删除标记:0未删除;1已删除
     */
     private  Integer deleteFlag;
-    /**
-    * 创建人
-    */
-    private  Long createBy;
-    /**
-     * 创建人名称
-     */
-    private  String createByName;
-    /**
-    * 创建时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private  Date  createTime;
-    /**
-    * 更新人
-    */
-    private  Long updateBy;
-    /**
-    * 更新时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private  Date  updateTime;
     /**
      * 指标ID
      */

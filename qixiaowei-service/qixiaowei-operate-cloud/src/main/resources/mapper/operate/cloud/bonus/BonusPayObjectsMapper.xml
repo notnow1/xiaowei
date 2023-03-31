@@ -107,17 +107,22 @@
         and delete_flag=0
     </select>
 <!--    根据人员id查询个人年终奖 奖金发放对象ID(员工id)-->
-    <select id="selectBonusPayApplicationByEmployeeId"
+    <select id="selectBonusPayApplicationByEmployeeIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO">
         SELECT
             bonus_pay_objects_id,bonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time
         FROM bonus_pay_objects
         WHERE  bonus_pay_object=2
-           and  bonus_pay_object_id=#{employeeId}
+           and  bonus_pay_object_id in
+        <foreach item="item"
+                 collection="employeeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
           and delete_flag=0
     </select>
 <!--    根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)-->
-    <select id="selectBonusPayApplicationByDepartmentId"
+    <select id="selectBonusPayApplicationByDepartmentIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
         SELECT
         DISTINCT
@@ -152,8 +157,18 @@
                                and bpbd.delete_flag =0
         WHERE bpa.apply_department_id=#{departmentId}
             and bpa.delete_flag = 0
-           or  bpo.bonus_pay_object_id=#{departmentId}
-           or  bpbd.department_id =#{departmentId}
+           or  bpo.bonus_pay_object_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+           or  bpbd.department_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
     <!--新增奖金发放对象表-->
     <insert id="insertBonusPayObjects" useGeneratedKeys="true" keyProperty="bonusPayObjectsId">

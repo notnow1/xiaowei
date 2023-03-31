@@ -23,6 +23,7 @@
         <module>qixiaowei-integration-datasource</module>
         <module>qixiaowei-integration-job</module>
         <module>qixiaowei-integration-tenant</module>
+        <module>qixiaowei-integration-seata</module>
     </modules>
 
 </project>

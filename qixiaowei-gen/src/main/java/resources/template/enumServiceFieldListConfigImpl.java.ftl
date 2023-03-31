@@ -16,10 +16,10 @@ import java.util.Map;
 
 
 /**
-* @description 总奖金包预算-字段列表配置实现类
-* @Author hzk
-* @Date 2023-02-09 19:55
-**/
+* ${table.comment!}-字段列表配置实现类
+* @author ${author}
+* @since ${date}
+*/
 @Service
 @Slf4j
 public class ${entity}FieldListConfigImpl implements IFieldListConfigStrategy {

@@ -198,17 +198,17 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
             Map<String, BigDecimal> challengeMap = targetSettingRecoveriesExcel.getChallengeMap();
             Map<String, BigDecimal> guaranteedMap = targetSettingRecoveriesExcel.getGuaranteedMap();
 
-            data.add(targetMap.get("期末应收账款余额"));
-            data.add(targetMap.get("回款总目标"));
-            data.add(targetMap.get("1.应回尽回"));
-            data.add(targetMap.get("2.逾期清理"));
-            data.add(targetMap.get("3.提前回款"));
-
             data.add(challengeMap.get("期末应收账款余额"));
             data.add(challengeMap.get("回款总目标"));
             data.add(challengeMap.get("1.应回尽回"));
             data.add(challengeMap.get("2.逾期清理"));
             data.add(challengeMap.get("3.提前回款"));
+
+            data.add(targetMap.get("期末应收账款余额"));
+            data.add(targetMap.get("回款总目标"));
+            data.add(targetMap.get("1.应回尽回"));
+            data.add(targetMap.get("2.逾期清理"));
+            data.add(targetMap.get("3.提前回款"));
 
             data.add(guaranteedMap.get("期末应收账款余额"));
             data.add(guaranteedMap.get("回款总目标"));

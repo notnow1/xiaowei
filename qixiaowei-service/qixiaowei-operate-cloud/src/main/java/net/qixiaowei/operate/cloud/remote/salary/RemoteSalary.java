@@ -28,13 +28,6 @@ public class RemoteSalary implements RemoteSalaryItemService {
     private ISalaryPayService salaryPayService;
 
 
-    @Override
-    @InnerAuth
-    @PostMapping("/initSalaryItem")
-    public R<Boolean> initSalaryItem(String source) {
-        return R.ok(salaryItemService.initSalaryItem());
-    }
-
     /**
      * 根据员工ID查询工资条
      *

@@ -50,10 +50,10 @@ public interface IGapAnalysisService {
     /**
      * 批量修改差距分析表
      *
-     * @param gapAnalysisDtos 差距分析表
+     * @param gapAnalysisDtoS 差距分析表
      * @return 结果
      */
-    int updateGapAnalysiss(List<GapAnalysisDTO> gapAnalysisDtos);
+    int insertGapAnalysisS(List<GapAnalysisDTO> gapAnalysisDtoS);
 
     /**
      * 批量新增差距分析表
@@ -121,4 +121,20 @@ public interface IGapAnalysisService {
      * @param file               excel文件
      */
     List<GapAnalysisOperateDTO> excelParseObject(Integer operateHistoryYear, Integer operateYear, MultipartFile file);
+
+    /**
+     * 远程获取列表
+     *
+     * @param gapAnalysisDTO 差距分析DTO
+     * @return 结果
+     */
+    List<GapAnalysisDTO> remoteGapAnalysis(GapAnalysisDTO gapAnalysisDTO);
+
+    /**
+     * 差距分析远程指标引用
+     *
+     * @param gapAnalysisDTO 差距分析
+     * @return 结果
+     */
+    List<GapAnalysisOperateDTO> remoteOperateList(GapAnalysisDTO gapAnalysisDTO);
 }

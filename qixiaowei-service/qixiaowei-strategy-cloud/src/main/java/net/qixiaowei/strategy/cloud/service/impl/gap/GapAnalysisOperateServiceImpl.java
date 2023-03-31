@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.service.impl.gap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysisOperate;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -49,6 +51,8 @@ public class GapAnalysisOperateServiceImpl implements IGapAnalysisOperateService
     public List<GapAnalysisOperateDTO> selectGapAnalysisOperateList(GapAnalysisOperateDTO gapAnalysisOperateDTO) {
         GapAnalysisOperate gapAnalysisOperate = new GapAnalysisOperate();
         BeanUtils.copyProperties(gapAnalysisOperateDTO, gapAnalysisOperate);
+        Map<String, Object> params = gapAnalysisOperateDTO.getParams();
+        gapAnalysisOperate.setParams(params);
         return gapAnalysisOperateMapper.selectGapAnalysisOperateList(gapAnalysisOperate);
     }
 
@@ -147,7 +151,7 @@ public class GapAnalysisOperateServiceImpl implements IGapAnalysisOperateService
 
     @Override
     public int deleteGapAnalysisOperateByGapAnalysisOperateIds(List<GapAnalysisOperateDTO> gapAnalysisOperateDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (GapAnalysisOperateDTO gapAnalysisOperateDTO : gapAnalysisOperateDtos) {
             stringList.add(gapAnalysisOperateDTO.getGapAnalysisOperateId());
         }
@@ -161,7 +165,7 @@ public class GapAnalysisOperateServiceImpl implements IGapAnalysisOperateService
      */
 
     public int insertGapAnalysisOperates(List<GapAnalysisOperateDTO> gapAnalysisOperateDtos) {
-        List<GapAnalysisOperate> gapAnalysisOperateList = new ArrayList();
+        List<GapAnalysisOperate> gapAnalysisOperateList = new ArrayList<>();
 
         for (GapAnalysisOperateDTO gapAnalysisOperateDTO : gapAnalysisOperateDtos) {
             GapAnalysisOperate gapAnalysisOperate = new GapAnalysisOperate();
@@ -173,7 +177,10 @@ public class GapAnalysisOperateServiceImpl implements IGapAnalysisOperateService
             gapAnalysisOperate.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             gapAnalysisOperateList.add(gapAnalysisOperate);
         }
-        return gapAnalysisOperateMapper.batchGapAnalysisOperate(gapAnalysisOperateList);
+        if (StringUtils.isNotEmpty(gapAnalysisOperateList)) {
+            gapAnalysisOperateMapper.batchGapAnalysisOperate(gapAnalysisOperateList);
+        }
+        return 1;
     }
 
     /**
@@ -183,7 +190,7 @@ public class GapAnalysisOperateServiceImpl implements IGapAnalysisOperateService
      */
 
     public int updateGapAnalysisOperates(List<GapAnalysisOperateDTO> gapAnalysisOperateDtos) {
-        List<GapAnalysisOperate> gapAnalysisOperateList = new ArrayList();
+        List<GapAnalysisOperate> gapAnalysisOperateList = new ArrayList<>();
 
         for (GapAnalysisOperateDTO gapAnalysisOperateDTO : gapAnalysisOperateDtos) {
             GapAnalysisOperate gapAnalysisOperate = new GapAnalysisOperate();

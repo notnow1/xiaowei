@@ -5,8 +5,10 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +20,7 @@ import java.util.Map;
 */
 @Data
 @Accessors(chain = true)
-public class MarketInsightMacroDTO {
+public class MarketInsightMacroDTO extends BaseDTO {
 
     //查询检验
     public interface QueryMarketInsightMacroDTO extends Default{
@@ -40,14 +42,21 @@ public class MarketInsightMacroDTO {
     /**
     * ID
     */
+    @NotNull(message = "id不能为空", groups = {MarketInsightMacroDTO.UpdateMarketInsightMacroDTO.class, MarketInsightMacroDTO.DeleteMarketInsightMacroDTO.class})
     private  Long marketInsightMacroId;
+    /**
+     * ID集合
+     */
+    private  List<Long> marketInsightMacroIds;
     /**
     * 规划年度
     */
+    @NotNull(message = "规划年度不能为空", groups = {MarketInsightMacroDTO.AddMarketInsightMacroDTO.class, MarketInsightMacroDTO.UpdateMarketInsightMacroDTO.class})
     private  Integer planYear;
     /**
     * 规划业务单元ID
     */
+
     private  Long planBusinessUnitId;
     /**
      * 规划业务单元名称
@@ -62,17 +71,34 @@ public class MarketInsightMacroDTO {
     */
     private  Long areaId;
     /**
+     * 区域名称
+     */
+    private  String areaName;
+    /**
     * 部门ID
     */
     private  Long departmentId;
     /**
+     * 部门名称
+     */
+    private  String departmentName;
+    /**
     * 产品ID
     */
     private  Long productId;
+
+    /**
+     * 产品名称
+     */
+    private  String productName;
     /**
     * 行业ID
     */
     private  Long industryId;
+    /**
+     * 行业名称
+     */
+    private  String industryName;
     /**
      * 市场洞察宏观详情表集合
      */
@@ -82,35 +108,12 @@ public class MarketInsightMacroDTO {
     */
     private  Integer deleteFlag;
     /**
-    * 创建人
-    */
-    private  Long createBy;
-    /**
-     * 创建人名称
-     */
-    private  String createByName;
-    /**
-    * 创建时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
-    private  Date  createTime;
-    /**
-    * 更新人
-    */
-    private  Long updateBy;
-    /**
-    * 更新时间
-    */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
-    private  Date  updateTime;
-    /**
     * 租户ID
     */
     private  Long tenantId;
-
     /**
-    * 请求参数
-    */
-    private Map<String, Object> params;
+     * 规划业务单元维度列表
+     */
+    List<Map<String, Object>> businessUnitDecomposes;
 }
 

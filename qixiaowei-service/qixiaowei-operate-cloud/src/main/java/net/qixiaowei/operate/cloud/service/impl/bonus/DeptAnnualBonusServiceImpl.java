@@ -7,7 +7,9 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptAnnualBonus;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptAnnualBonusFactor;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptAnnualBonusOperate;
@@ -186,6 +188,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      * @param deptAnnualBonusDTO 部门年终奖表
      * @return 部门年终奖表
      */
+    @DataScope(businessAlias = "dab")
     @Override
     public List<DeptAnnualBonusDTO> selectDeptAnnualBonusList(DeptAnnualBonusDTO deptAnnualBonusDTO) {
         DeptAnnualBonus deptAnnualBonus = new DeptAnnualBonus();
@@ -199,7 +202,9 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
 
         }
         BeanUtils.copyProperties(deptAnnualBonusDTO, deptAnnualBonus);
-        return deptAnnualBonusMapper.selectDeptAnnualBonusList(deptAnnualBonus);
+        List<DeptAnnualBonusDTO> deptAnnualBonusDTOS = deptAnnualBonusMapper.selectDeptAnnualBonusList(deptAnnualBonus);
+        this.handleResult(deptAnnualBonusDTOS);
+        return deptAnnualBonusDTOS;
     }
 
     /**
@@ -213,7 +218,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
     public DeptAnnualBonusDTO insertDeptAnnualBonus(DeptAnnualBonusDTO deptAnnualBonusDTO) {
         DeptAnnualBonusDTO deptAnnualBonusDTO1 = deptAnnualBonusMapper.selectDeptAnnualBonusByAnnualBonusYearAdd(deptAnnualBonusDTO.getAnnualBonusYear());
         if (StringUtils.isNotNull(deptAnnualBonusDTO1)) {
-            throw new ServiceException(deptAnnualBonusDTO.getAnnualBonusYear() + "年 数据已存在 无需重复添加！");
+            throw new ServiceException(deptAnnualBonusDTO.getAnnualBonusYear() + "年部门年终奖已生成");
         }
         //部门年终奖系数表集合
         List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs = deptAnnualBonusDTO.getDeptAnnualBonusFactorDTOs();
@@ -612,7 +617,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 //可发经营奖总包-金额
                 BigDecimal beYearCanGrantManageAmount = deptAnnualBonusCanGrantDTOs.get(i).getBeYearCanGrantManageAmount().divide(new BigDecimal("10000"));
 
-                    distributeBonus = beYearCanGrantManageAmount.subtract(bonusAmountSum);
+                distributeBonus = beYearCanGrantManageAmount.subtract(bonusAmountSum);
 
                 if (null == deptAnnualBonusFactorDTOs.get(i).getDistributeBonus()) {
                     deptAnnualBonusCanGrantDTOs.get(i).setDistributeBonus(distributeBonus);
@@ -877,7 +882,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         if (StringUtils.isNotEmpty(data2)) {
             for (EmployeeDTO employeeDTO : data2) {
                 //部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）
-                List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptAnnualBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear,SecurityUtils.getTenantId());
+                List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptAnnualBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear, SecurityUtils.getTenantId());
                 if (StringUtils.isNotEmpty(salaryPayDTOS)) {
                     //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
                     BigDecimal paymentBonus = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -911,7 +916,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                             if (StringUtils.isNotEmpty(data1)) {
                                 for (EmployeeDTO employeeDTO : data1) {
                                     //部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）
-                                    List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptAnnualBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear,SecurityUtils.getTenantId());
+                                    List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptAnnualBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear, SecurityUtils.getTenantId());
                                     if (StringUtils.isNotEmpty(salaryPayDTOS)) {
                                         //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
                                         BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -1041,7 +1046,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             //绩效奖金系数
             deptAnnualBonusFactorDTO.setPerformanceBonusFactor(performanceRankFactorDTO.getBonusFactor());
             //最近绩效结果
-            deptAnnualBonusFactorDTO.setLastPerformanceResulted(StringUtils.join(performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).filter(StringUtils::isNotBlank).collect(Collectors.toList()),","));
+            deptAnnualBonusFactorDTO.setLastPerformanceResulted(StringUtils.join(performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).filter(StringUtils::isNotBlank).collect(Collectors.toList()), ","));
         }
     }
 
@@ -1084,8 +1089,8 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         }
 
         BigDecimal strategyDeveAward = bonusPayApplicationMapper.selectBonusPayApplicationAddDeptAnnual(annualBonusYear, salaryItemDTO.getSalaryItemId());
-        if (strategyDeveAward.compareTo(new BigDecimal("0")) !=0 ){
-            strategyDeveAward=strategyDeveAward.divide(new BigDecimal("10000")).setScale(10, BigDecimal.ROUND_HALF_UP);
+        if (strategyDeveAward.compareTo(new BigDecimal("0")) != 0) {
+            strategyDeveAward = strategyDeveAward.divide(new BigDecimal("10000")).setScale(10, BigDecimal.ROUND_HALF_UP);
 
         }
         //战略奖实发 公式 取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计
@@ -1093,7 +1098,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         if (null != strategyDeveAward) {
             if (null == deptAnnualBonusDTO.getCompanyAnnualBonus()) {
                 departmentAnnualBonus = endYearSalaryAmountBonus.subtract(strategyDeveAward);
-            }else {
+            } else {
                 departmentAnnualBonus = deptAnnualBonusDTO.getCompanyAnnualBonus().subtract(strategyDeveAward);
             }
 
@@ -1294,6 +1299,18 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             deptAnnualBonusList.add(deptAnnualBonus);
         }
         return deptAnnualBonusMapper.updateDeptAnnualBonuss(deptAnnualBonusList);
+    }
+
+    @Override
+    public void handleResult(List<DeptAnnualBonusDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(DeptAnnualBonusDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+            });
+        }
     }
 }
 

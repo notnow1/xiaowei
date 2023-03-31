@@ -27,6 +27,6 @@ public interface RemoteEmployeeBudgetService {
     /**
      * 根据部门ID集合查询预算表
      */
-    @GetMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryDepartmentId")
-    R<List<EmployeeBudgetDTO>> selectByDepartmentId(@RequestParam("departmentId") Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @PostMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryDepartmentIds")
+    R<List<EmployeeBudgetDTO>> selectByDepartmentIds(@RequestBody List<Long> departmentIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

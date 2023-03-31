@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
@@ -12,7 +13,9 @@ import net.qixiaowei.strategy.cloud.service.businessDesign.IBusinessDesignServic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -43,6 +46,7 @@ public class BusinessDesignController extends BaseController {
      */
     @RequiresPermissions("strategy:cloud:businessDesign:pageList")
     @GetMapping("/pageList")
+    @DataScope(businessAlias = "bd")
     public TableDataInfo pageList(BusinessDesignDTO businessDesignDTO) {
         startPage();
         List<BusinessDesignDTO> list = businessDesignService.selectBusinessDesignList(businessDesignDTO);
@@ -52,11 +56,19 @@ public class BusinessDesignController extends BaseController {
     /**
      * 查询业务设计表列表
      */
-    @RequiresPermissions("strategy:cloud:businessDesign:list")
     @GetMapping("/list")
     public AjaxResult list(BusinessDesignDTO businessDesignDTO) {
         List<BusinessDesignDTO> list = businessDesignService.selectBusinessDesignList(businessDesignDTO);
-        return AjaxResult.success(list);
+        List<BusinessDesignDTO> businessDesignDTOS = new ArrayList<>();
+        List<Long> businessDesignIds = new ArrayList<>();
+        for (BusinessDesignDTO designDTO : list) {
+            Long planBusinessUnitId = designDTO.getPlanBusinessUnitId();
+            if (!businessDesignIds.contains(planBusinessUnitId)) {
+                businessDesignIds.add(planBusinessUnitId);
+                businessDesignDTOS.add(designDTO);
+            }
+        }
+        return AjaxResult.success(businessDesignDTOS);
     }
 
 
@@ -64,7 +76,7 @@ public class BusinessDesignController extends BaseController {
      * 新增业务设计表
      */
     @RequiresPermissions("strategy:cloud:businessDesign:add")
-    @Log(title = "新增业务设计表", businessType = BusinessType.BUSINESS_DESIGN, businessId = "businessDesignId", operationType = OperationType.INSERT)
+    @Log(title = "保存业务设计表", businessType = BusinessType.BUSINESS_DESIGN, businessId = "businessDesignId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody BusinessDesignDTO businessDesignDTO) {
         return AjaxResult.success(businessDesignService.insertBusinessDesign(businessDesignDTO));
@@ -75,7 +87,7 @@ public class BusinessDesignController extends BaseController {
      * 修改业务设计表
      */
     @RequiresPermissions("strategy:cloud:businessDesign:edit")
-    @Log(title = "修改业务设计表", businessType = BusinessType.BUSINESS_DESIGN, businessId = "businessDesignId", operationType = OperationType.UPDATE)
+    @Log(title = "保存业务设计表", businessType = BusinessType.BUSINESS_DESIGN, businessId = "businessDesignId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody BusinessDesignDTO businessDesignDTO) {
         return toAjax(businessDesignService.updateBusinessDesign(businessDesignDTO));
@@ -93,7 +105,7 @@ public class BusinessDesignController extends BaseController {
     /**
      * 逻辑批量删除业务设计表
      */
-    @RequiresPermissions("strategy:cloud:businessDesign:removes")
+    @RequiresPermissions("strategy:cloud:businessDesign:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> businessDesignIds) {
         return toAjax(businessDesignService.logicDeleteBusinessDesignByBusinessDesignIds(businessDesignIds));

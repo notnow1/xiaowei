@@ -8,11 +8,12 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryItem;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayApplicationMapper;
@@ -77,6 +78,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @param salaryItemDTO 工资项
      * @return 工资项
      */
+    @DataScope(businessAlias = "si")
     @Override
     public List<SalaryItemDTO> selectSalaryItemList(SalaryItemDTO salaryItemDTO) {
         SalaryItem salaryItem = new SalaryItem();
@@ -84,9 +86,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         salaryItem.setParams(params);
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);
         List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemList(salaryItem);
-        for (SalaryItemDTO itemDTO : salaryItemDTOS) {
-            salarySetName(itemDTO);
-        }
+        this.handleResult(salaryItemDTOS);
         return salaryItemDTOS;
     }
 
@@ -170,9 +170,8 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @return 结果
      */
     @Override
-    public Boolean initSalaryItem() {
+    public Boolean initSalaryItem(Long userId) {
         boolean initSuccess = false;
-        Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         List<SalaryItem> salaryItems = new ArrayList<>();
         for (SalaryItem salaryItem : INIT_SALARY_ITEM) {
@@ -524,6 +523,19 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
             salaryItemList.add(salaryItem);
         }
         return salaryItemMapper.updateSalaryItems(salaryItemList);
+    }
+
+    @Override
+    public void handleResult(List<SalaryItemDTO> result) {
+        if (StringUtils.isNotEmpty(result)) {
+            Set<Long> userIds = result.stream().map(SalaryItemDTO::getCreateBy).collect(Collectors.toSet());
+            Map<Long, String> employeeNameMap = UserUtils.getEmployeeNameMap(userIds);
+            result.forEach(entity -> {
+                Long userId = entity.getCreateBy();
+                entity.setCreateByName(employeeNameMap.get(userId));
+                salarySetName(entity);
+            });
+        }
     }
 }
 

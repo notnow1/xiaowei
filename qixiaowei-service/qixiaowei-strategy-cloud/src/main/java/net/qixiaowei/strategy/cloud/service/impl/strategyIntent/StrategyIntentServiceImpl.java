@@ -7,7 +7,10 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.integration.security.utils.UserUtils;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
 import net.qixiaowei.strategy.cloud.api.domain.strategyIntent.StrategyIntent;
 import net.qixiaowei.strategy.cloud.api.domain.strategyIntent.StrategyIntentOperate;
 import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
@@ -17,8 +20,10 @@ import net.qixiaowei.strategy.cloud.mapper.strategyIntent.StrategyIntentMapper;
 import net.qixiaowei.strategy.cloud.mapper.strategyIntent.StrategyIntentOperateMapper;
 import net.qixiaowei.strategy.cloud.service.strategyIntent.IStrategyIntentService;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +50,8 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
     private RemoteUserService remoteUserService;
     @Autowired
     private RemoteEmployeeService remoteEmployeeService;
+    @Autowired
+    private RemoteIndicatorService remoteIndicatorService;
 
     /**
      * 查询战略意图表
@@ -63,7 +70,23 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
         //数据库存在数据
         List<StrategyIntentOperateDTO> strategyIntentOperateDTOS = strategyIntentOperateMapperr.selectStrategyIntentOperateByStrategyIntentId(strategyIntentId);
         if (StringUtils.isNotEmpty(strategyIntentOperateDTOS)) {
-            Map<Long, List<StrategyIntentOperateDTO>> indicatorMap = strategyIntentOperateDTOS.parallelStream().filter(f -> f.getIndicatorId() != null).collect(Collectors.groupingBy(StrategyIntentOperateDTO::getIndicatorId));
+            List<Long> indicatorIds = strategyIntentOperateDTOS.stream().filter(f -> null != f.getIndicatorId()).map(StrategyIntentOperateDTO::getIndicatorId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(indicatorIds)){
+                R<List<IndicatorDTO>> IndicatorDTOList = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+                List<IndicatorDTO> data = IndicatorDTOList.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (StrategyIntentOperateDTO strategyIntentOperateDTO : strategyIntentOperateDTOS) {
+                        for (IndicatorDTO datum : data) {
+                            if (strategyIntentOperateDTO.getIndicatorId().equals(datum.getIndicatorId())){
+                                strategyIntentOperateDTO.setIndicatorName(datum.getIndicatorName());
+                                strategyIntentOperateDTO.setIndicatorValueType(datum.getIndicatorValueType());
+                            }
+                        }
+                    }
+                }
+            }
+
+            Map<Long, List<StrategyIntentOperateDTO>> indicatorMap = strategyIntentOperateDTOS.parallelStream().filter(f -> f.getIndicatorId() != null).collect(Collectors.groupingBy(StrategyIntentOperateDTO::getIndicatorId,LinkedHashMap::new, Collectors.toList()));
             for (Long key : indicatorMap.keySet()) {
                 StrategyIntentOperateDTO strategyIntentOperateDTOData = new StrategyIntentOperateDTO();
                 //年度指标对应值集合
@@ -103,28 +126,32 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
      * @return 战略意图表
      */
     @Override
+    @DataScope(businessAlias = "si")
     public List<StrategyIntentDTO> selectStrategyIntentList(StrategyIntentDTO strategyIntentDTO) {
-
+        List<String> createByList = new ArrayList<>();
         StrategyIntent strategyIntent = new StrategyIntent();
         BeanUtils.copyProperties(strategyIntentDTO, strategyIntent);
         //高级搜索请求参数
         Map<String, Object> params = strategyIntentDTO.getParams();
         this.queryemployeeName(params);
-        List<StrategyIntentDTO> strategyIntentDTOS = strategyIntentMapper.selectStrategyIntentList(strategyIntent);
-        if (StringUtils.isNotEmpty(strategyIntentDTOS)) {
-            Set<Long> createBys = strategyIntentDTOS.stream().map(StrategyIntentDTO::getCreateBy).collect(Collectors.toSet());
-            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(createBys, SecurityConstants.INNER);
-            List<UserDTO> userDTOList = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(userDTOList)) {
-                for (StrategyIntentDTO intentDTO : strategyIntentDTOS) {
-                    for (UserDTO userDTO : userDTOList) {
-                        if (intentDTO.getCreateBy().equals(userDTO.getUserId())) {
-                            intentDTO.setCreateByName(userDTO.getEmployeeName());
-                        }
-                    }
-                }
+        strategyIntent.setParams(params);
+        if (StringUtils.isNotNull(strategyIntentDTO.getCreateByName())) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmployeeName(strategyIntentDTO.getCreateByName());
+            R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
+            List<UserDTO> userListData = userList.getData();
+            List<Long> userIds = userListData.stream().map(UserDTO::getUserId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(userIds)) {
+                userIds.forEach(e -> {
+                    createByList.add(String.valueOf(e));
+                });
+            } else {
+                createByList.add("");
             }
         }
+        strategyIntent.setCreateBys(createByList);
+
+        List<StrategyIntentDTO> strategyIntentDTOS = strategyIntentMapper.selectStrategyIntentList(strategyIntent);
         return strategyIntentDTOS;
     }
 
@@ -160,9 +187,13 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                 R<List<EmployeeDTO>> listR = remoteEmployeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
                 List<EmployeeDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
-                    List<Long> employeeIds = data.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+                    List<Long> employeeIds = data.stream().filter(f -> f.getEmployeeId() != null).map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(employeeIds)) {
-                        params.put("createBys", employeeIds);
+                        R<List<UserDTO>> usersByUserIds = remoteUserService.selectByemployeeIds(employeeIds, SecurityConstants.INNER);
+                        List<UserDTO> data1 = usersByUserIds.getData();
+                        if (StringUtils.isNotEmpty(data1)){
+                            params.put("createBys", data1.stream().map(UserDTO::getUserId).collect(Collectors.toList()));
+                        }
                     }
                 }
             }
@@ -196,11 +227,11 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
         strategyIntentMapper.insertStrategyIntent(strategyIntent);
 
         if (StringUtils.isNotEmpty(strategyIntentOperateDTOS)) {
+            int i = 1;
             for (StrategyIntentOperateDTO strategyIntentOperateDTO : strategyIntentOperateDTOS) {
                 //年度指标对应值集合
                 List<StrategyIntentOperateMapDTO> strategyIntentOperateMapDTOS = strategyIntentOperateDTO.getStrategyIntentOperateMapDTOS();
                 if (StringUtils.isNotEmpty(strategyIntentOperateMapDTOS)) {
-                    int i = 1;
                     for (StrategyIntentOperateMapDTO strategyIntentOperateMapDTO : strategyIntentOperateMapDTOS) {
                         Map<Integer, BigDecimal> yearValue = strategyIntentOperateMapDTO.getYearValues();
                         //经营年度
@@ -217,8 +248,6 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                         strategyIntentOperate.setSort(i);
                         //指标id
                         strategyIntentOperate.setIndicatorId(strategyIntentOperateDTO.getIndicatorId());
-                        //指标名称
-                        strategyIntentOperate.setIndicatorName(strategyIntentOperateDTO.getIndicatorName());
                         //经营年度
                         strategyIntentOperate.setOperateYear(operateYear);
                         //经营值
@@ -228,11 +257,11 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                         strategyIntentOperate.setUpdateTime(DateUtils.getNowDate());
                         strategyIntentOperate.setUpdateBy(SecurityUtils.getUserId());
                         strategyIntentOperate.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                        i++;
+
                         strategyIntentOperateList.add(strategyIntentOperate);
 
                     }
-
+                    i++;
                 }
             }
             if (StringUtils.isNotEmpty(strategyIntentOperateList)) {

@@ -85,7 +85,7 @@
             AND
             <foreach item="item"
                      collection="industryDefault.params.industryCodeLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 i1.industry_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -120,7 +120,7 @@
             AND
             <foreach item="item"
                      collection="industryDefault.params.industryNameLike"
-                     index="index" open="(" separator="AND" close=")">
+                     index="index" open="(" separator="OR" close=")">
                 i1.industry_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -152,10 +152,10 @@
             )
         </if>
         <if test="industryDefault.params.parentIndustryNameNull != null">
-            and i2.industry_name IS NULL OR i2.industry_name OR  =''
+            and i2.industry_name IS NULL OR i2.industry_name OR =''
         </if>
         <if test="industryDefault.params.parentIndustryNameNotNull != null">
-            and i2.industry_name IS NOT NULL OR i2.industry_name OR  !=''
+            and i2.industry_name IS NOT NULL OR i2.industry_name OR !=''
         </if>
         <!--    行业层级过滤-->
         <if test="industryDefault.params.levelEqual != null and industryDefault.params.levelEqual.size() > 0">
@@ -324,7 +324,15 @@
     <!--根据编码查询默认行业列表-->
     <select id="selectDefaultByCodes"
             resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO">
-
+        SELECT
+        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
+        create_time, update_by, update_time
+        FROM industry_default
+        WHERE delete_flag = 0
+        AND industry_code IN
+        <foreach collection="industryCodes" open="(" close=")" separator="," index="index" item="item">
+            #{item}
+        </foreach>
     </select>
     <!--返回类型-->
     <resultMap id="treeVoMap" type="net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO">

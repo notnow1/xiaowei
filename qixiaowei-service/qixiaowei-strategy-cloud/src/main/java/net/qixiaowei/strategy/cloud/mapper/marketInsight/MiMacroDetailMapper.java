@@ -115,4 +115,11 @@ public interface MiMacroDetailMapper{
     * @return 结果
     */
     int batchMiMacroDetail(@Param("miMacroDetails")List<MiMacroDetail> miMacroDetails);
+
+    /**
+     * 看宏观远程调用列表查询是否被引用
+     * @param miMacroDetail
+     * @return
+     */
+    List<MiMacroDetailDTO> remoteMiMacroDetailList(@Param("miMacroDetail")MiMacroDetail miMacroDetail);
 }
