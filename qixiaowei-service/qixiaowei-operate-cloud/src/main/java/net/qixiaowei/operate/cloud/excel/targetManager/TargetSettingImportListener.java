@@ -90,70 +90,88 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<List<String>> list = new ArrayList<List<String>>();
         // 目标年度
         List<String> head0 = new ArrayList<String>();
+        head0.add("币种：人民币     单位：万元");
         head0.add("目标年度");
         // ArrayList<>()（应收账款周转天数）
         List<String> head1 = new ArrayList<String>();
-        head1.add("DSO（应收账款周转天数）");
+        head1.add("币种：人民币     单位：万元");
+        head1.add("DSO\n（应收账款周转天数）");
+        head1.add("DSO\n（应收账款周转天数）");
         // 期末应收账款余额
         List<String> head2 = new ArrayList<String>();
-        head2.add("挑战值");
+        head2.add("币种：人民币     单位：万元");
         head2.add("期末应收账款余额");
+        head2.add("挑战值");
         // 回款总目标
         List<String> head3 = new ArrayList<String>();
-        head3.add("挑战值");
-        head3.add("回款总目标");
+        head3.add("币种：人民币     单位：万元");
+        head3.add("期末应收账款余额");
+        head3.add("目标值");
         // 应回尽回
         List<String> head4 = new ArrayList<String>();
-        head4.add("挑战值");
-        head4.add("1.应回尽回");
+        head4.add("币种：人民币     单位：万元");
+        head4.add("期末应收账款余额");
+        head4.add("实际值");
         // 逾期清理
         List<String> head5 = new ArrayList<String>();
+        head5.add("币种：人民币     单位：万元");
+        head5.add("回款总目标");
         head5.add("挑战值");
-        head5.add("2.逾期清理");
         // 提前回款
         List<String> head6 = new ArrayList<String>();
-        head6.add("挑战值");
-        head6.add("3.提前回款");
+        head6.add("币种：人民币     单位：万元");
+        head6.add("回款总目标");
+        head6.add("目标值");
         // 第二列
         List<String> head7 = new ArrayList<String>();
-        head7.add("目标值");
-        head7.add("期末应收账款余额");
+        head7.add("币种：人民币     单位：万元");
+        head7.add("回款总目标");
+        head7.add("实际值");
         // 第三列
         List<String> head8 = new ArrayList<String>();
-        head8.add("目标值");
-        head8.add("回款总目标");
+        head8.add("币种：人民币     单位：万元");
+        head8.add("1.应回尽回");
+        head8.add("挑战值");
         // 第四列
         List<String> head9 = new ArrayList<String>();
-        head9.add("目标值");
+        head9.add("币种：人民币     单位：万元");
         head9.add("1.应回尽回");
+        head9.add("目标值");
         // 第五列
         List<String> head10 = new ArrayList<String>();
-        head10.add("目标值");
-        head10.add("2.逾期清理");
+        head10.add("币种：人民币     单位：万元");
+        head10.add("1.应回尽回");
+        head10.add("实际值");
         // 第六列
         List<String> head11 = new ArrayList<String>();
-        head11.add("目标值");
-        head11.add("3.提前回款");
+        head11.add("币种：人民币     单位：万元");
+        head11.add("2.逾期清理");
+        head11.add("挑战值");
         // 第七列
         List<String> head12 = new ArrayList<String>();
-        head12.add("保底值");
-        head12.add("期末应收账款余额");
+        head12.add("币种：人民币     单位：万元");
+        head12.add("2.逾期清理");
+        head12.add("目标值");
         // 第七列
         List<String> head13 = new ArrayList<String>();
-        head13.add("保底值");
-        head13.add("回款总目标");
+        head13.add("币种：人民币     单位：万元");
+        head13.add("2.逾期清理");
+        head13.add("实际值");
         // 第七列
         List<String> head14 = new ArrayList<String>();
-        head14.add("保底值");
-        head14.add("1.应回尽回");
+        head14.add("币种：人民币     单位：万元");
+        head14.add("3.提前回款");
+        head14.add("挑战值");
         // 第七列
         List<String> head15 = new ArrayList<String>();
-        head15.add("保底值");
-        head15.add("2.逾期清理");
+        head15.add("币种：人民币     单位：万元");
+        head15.add("3.提前回款");
+        head15.add("目标值");
         // 第七列
         List<String> head16 = new ArrayList<String>();
-        head16.add("保底值");
+        head16.add("币种：人民币     单位：万元");
         head16.add("3.提前回款");
+        head16.add("实际值");
         list.add(head0);
         list.add(head1);
         list.add(head2);
@@ -177,8 +195,8 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
     /**
      * excel数据
      *
-     * @param targetSettingRecoveriesExcels
-     * @return
+     * @param targetSettingRecoveriesExcels excel
+     * @return 结果
      */
     public static List<List<Object>> dataList(List<TargetSettingRecoveriesExcel> targetSettingRecoveriesExcels) {
         List<List<Object>> list = new ArrayList<>();
@@ -198,22 +216,24 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
             Map<String, BigDecimal> challengeMap = targetSettingRecoveriesExcel.getChallengeMap();
             Map<String, BigDecimal> guaranteedMap = targetSettingRecoveriesExcel.getGuaranteedMap();
 
-            data.add(targetMap.get("期末应收账款余额"));
-            data.add(targetMap.get("回款总目标"));
-            data.add(targetMap.get("1.应回尽回"));
-            data.add(targetMap.get("2.逾期清理"));
-            data.add(targetMap.get("3.提前回款"));
-
             data.add(challengeMap.get("期末应收账款余额"));
-            data.add(challengeMap.get("回款总目标"));
-            data.add(challengeMap.get("1.应回尽回"));
-            data.add(challengeMap.get("2.逾期清理"));
-            data.add(challengeMap.get("3.提前回款"));
-
+            data.add(targetMap.get("期末应收账款余额"));
             data.add(guaranteedMap.get("期末应收账款余额"));
+
+            data.add(challengeMap.get("回款总目标"));
+            data.add(targetMap.get("回款总目标"));
             data.add(guaranteedMap.get("回款总目标"));
+
+            data.add(challengeMap.get("1.应回尽回"));
+            data.add(targetMap.get("1.应回尽回"));
             data.add(guaranteedMap.get("1.应回尽回"));
+
+            data.add(challengeMap.get("2.逾期清理"));
+            data.add(targetMap.get("2.逾期清理"));
             data.add(guaranteedMap.get("2.逾期清理"));
+
+            data.add(challengeMap.get("3.提前回款"));
+            data.add(targetMap.get("3.提前回款"));
             data.add(guaranteedMap.get("3.提前回款"));
 
             list.add(data);

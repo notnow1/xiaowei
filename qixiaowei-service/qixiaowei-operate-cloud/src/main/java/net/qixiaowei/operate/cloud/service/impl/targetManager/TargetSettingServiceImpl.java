@@ -862,14 +862,14 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 boolean isActualZero = actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0;
                 if (isActualZero) {
                     if (targetValue != null && targetValue.compareTo(new BigDecimal("0")) != 0) {
-                        targetPercentageComplete = actualTotal.divide(targetValue, 10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        targetPercentageComplete = actualTotal.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                 }
                 settingDTO.setTargetPercentageComplete(targetPercentageComplete);
                 //同比 公式=（目标年度年度实际/上年年度实际）-1
                 if (lastActualTotal != null && lastActualTotal.compareTo(new BigDecimal("0")) != 0) {
                     if (isActualZero) {
-                        onBasis = actualTotal.divide(lastActualTotal,10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
+                        onBasis = actualTotal.divide(lastActualTotal, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
                     }
                 }
                 settingDTO.setOnBasis(onBasis);
@@ -1824,7 +1824,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSettingRecoveriesDTO.setGuaranteedValue(guaranteedSum);
             targetSettingRecoveriesDTO.setActualLastYear(actualLastSum);
             targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
-//                DSO
+//                应收账款周转天数（DSO）
             targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
             targetSettingRecoveriesDTO.setPrefixType("应收账款周转天数（DSO）");
             targetSettingRecoveriesDTO.setChallengeValue(DSOValue);
@@ -1875,18 +1875,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSettingByIndicator.setTargetSettingTypeDTOS(targetSettingTypeDTOS);
         targetSettingByIndicator.setTargetSettingIndicatorDTOS(targetSettingIndicatorDTOS);
         return targetSettingByIndicator;
-    }
-
-    /**
-     * 为回款赋值
-     *
-     * @param recoveryDTO
-     */
-    private void setRecoveryZero(TargetSettingRecoveryDTO recoveryDTO) {
-        recoveryDTO.setBalanceReceivables(BigDecimal.ZERO);
-        recoveryDTO.setBaselineValue(0);
-        recoveryDTO.setImproveDays(0);
-        recoveryDTO.setAddRate(BigDecimal.ZERO);
     }
 
     /**
@@ -2129,8 +2117,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * 导出销售回款目标制定
      *
-     * @param targetSettingDTO
-     * @return
+     * @param targetSettingDTO 目标制定
+     * @return 结果
      */
     @Override
     public List<TargetSettingRecoveriesExcel> exportRecoveryTargetSetting(TargetSettingDTO targetSettingDTO) {
@@ -2164,16 +2152,16 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             BigDecimal salesRevenueChallenge = BigDecimal.ZERO;
             BigDecimal salesRevenueGuaranteed = BigDecimal.ZERO;
             for (TargetSettingDTO dto : targetSettingIncomeList) {
-                if (dto.getIndicatorId().equals(targetSetting.getIndicatorId())) {
+                if (Objects.equals(dto.getTargetYear(), targetSetting.getTargetYear())) {
                     salesRevenueTarget = dto.getTargetValue();
                     salesRevenueChallenge = dto.getChallengeValue();
                     salesRevenueGuaranteed = dto.getGuaranteedValue();
                     break;
                 }
             }
-            // 上年年末应收账款余额
+            //上年平均应收账款余额=（上年期初应收账款余额+上年期末应收账款余额）/2。
             BigDecimal balanceReceivables = targetSettingRecoveryDTO.getBalanceReceivables();
-            // DSO
+            // 【DSO（应收账款周转天数）】：公式=DSO基线-DSO改进天数
             int DSO = targetSettingRecoveryDTO.getBaselineValue() - targetSettingRecoveryDTO.getImproveDays();
             // 【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额。
             BigDecimal endingBalanceTarget =
@@ -2197,14 +2185,17 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                             challengeMap.put("1.应回尽回", targetSettingRecoveriesDTO.getChallengeValue());
                             targetMap.put("1.应回尽回", targetSettingRecoveriesDTO.getTargetValue());
                             guaranteedMap.put("1.应回尽回", targetSettingRecoveriesDTO.getGuaranteedValue());
+                            break;
                         case 2:
                             challengeMap.put("2.逾期清理", targetSettingRecoveriesDTO.getChallengeValue());
                             targetMap.put("2.逾期清理", targetSettingRecoveriesDTO.getTargetValue());
                             guaranteedMap.put("2.逾期清理", targetSettingRecoveriesDTO.getGuaranteedValue());
+                            break;
                         case 3:
                             challengeMap.put("3.提前回款", targetSettingRecoveriesDTO.getChallengeValue());
                             targetMap.put("3.提前回款", targetSettingRecoveriesDTO.getTargetValue());
                             guaranteedMap.put("3.提前回款", targetSettingRecoveriesDTO.getGuaranteedValue());
+                            break;
                     }
                 }
             }
