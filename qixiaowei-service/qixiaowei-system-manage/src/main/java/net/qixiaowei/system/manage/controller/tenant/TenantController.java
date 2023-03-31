@@ -5,8 +5,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.metadata.Head;
+import com.alibaba.excel.metadata.data.DataFormatData;
+import com.alibaba.excel.metadata.data.WriteCellData;
+import com.alibaba.excel.write.handler.AbstractRowWriteHandler;
+import com.alibaba.excel.write.handler.CellWriteHandler;
+import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
+import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
+import com.alibaba.excel.write.metadata.holder.WriteTableHolder;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
+import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.text.CharsetKit;
@@ -15,6 +27,12 @@ import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
+import org.apache.poi.hssf.usermodel.HSSFPalette;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,7 +84,7 @@ public class TenantController extends BaseController {
     @RequiresPermissions(value = {"system:manage:tenant:add", "system:manage:tenant:edit"}, logical = Logical.OR)
     @GetMapping("/generate/tenantCode")
     public AjaxResult generateTenantCode() {
-        return AjaxResult.success("操作成功",tenantService.generateTenantCode());
+        return AjaxResult.success("操作成功", tenantService.generateTenantCode());
     }
 
     /**
@@ -111,7 +129,80 @@ public class TenantController extends BaseController {
         String fileName = URLEncoder.encode("租户列表" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TenantExcel.class).sheet("租户列表").doWrite(tenantExcelList);
+        EasyExcel.write(response.getOutputStream(), TenantExcel.class)
+                .inMemory(true)
+                .useDefaultStyle(false)
+                .sheet("租户列表")
+                //设置文本
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+
+                        //设置文本
+                        DataFormatData dataFormatData = new DataFormatData();
+                        // 设置字体
+                        WriteFont headWriteFont = new WriteFont();
+                        if (context.getRowIndex() == 0) {
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            //加粗
+                            headWriteFont.setBold(true);
+                            headWriteFont.setFontName("微软雅黑");
+                            writeCellStyle.setWriteFont(headWriteFont);
+                            //靠左
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            //设置边框
+                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                            writeCellStyle.setBorderTop(BorderStyle.THIN);
+                            writeCellStyle.setBorderRight(BorderStyle.THIN);
+                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                            // 拿到poi的workbook
+                            Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                            // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                            // 不同单元格尽量传同一个 cellStyle
+                            //设置rgb颜色
+                            byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                            CellStyle cellStyle = workbook.createCellStyle();
+                            XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                            xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                            // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                            // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                            // cell里面去 会导致自己设置的不一样（很关键）
+                            cellData.setWriteCellStyle(writeCellStyle);
+
+                            cellData.setOriginCellStyle(xssfCellColorStyle);
+                            cell.setCellStyle(cellStyle);
+                        } else {
+                            //居中
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            headWriteFont.setFontName("微软雅黑");
+                            writeCellStyle.setWriteFont(headWriteFont);
+                        }
+                        writeCellStyle.setDataFormatData(dataFormatData);
+                    }
+                })
+                //列宽
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                        // 使用sheet对象 简单设置 index所对应的列的列宽
+                        Sheet sheet = writeSheetHolder.getSheet();
+                        sheet.setColumnWidth(cell.getColumnIndex(), 5300);
+                    }
+                })
+                .doWrite(tenantExcelList);
     }
 
     /**
