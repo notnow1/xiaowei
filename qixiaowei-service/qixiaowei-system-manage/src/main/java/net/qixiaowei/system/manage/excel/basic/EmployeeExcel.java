@@ -99,6 +99,11 @@ public class EmployeeExcel {
     @ExcelIgnore
     private  String employmentDate;
     /**
+     * 离职日期
+     */
+    @ExcelIgnore
+    private  String departureDate;
+    /**
      * 部门
      */
     @ExcelIgnore

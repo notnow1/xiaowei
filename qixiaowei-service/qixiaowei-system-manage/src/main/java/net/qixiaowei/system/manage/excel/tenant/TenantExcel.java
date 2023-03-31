@@ -14,9 +14,9 @@ import javax.validation.constraints.NotNull;
  * 租户表
  */
 @Data
-@ColumnWidth(25)
-@HeadRowHeight(20)
-@ContentRowHeight(18)
+@ColumnWidth(16)
+@HeadRowHeight(16)
+@ContentRowHeight(16)
 public class TenantExcel {
     private static final long serialVersionUID = 1L;
 
