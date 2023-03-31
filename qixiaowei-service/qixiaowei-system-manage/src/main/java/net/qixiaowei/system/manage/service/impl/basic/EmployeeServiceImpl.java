@@ -151,7 +151,20 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     case "topLevelDepartmentIdEqual":
                         String topLevelDepartmentIdEqual = params.get("topLevelDepartmentIdEqual").toString();
                         if (StringUtils.isNotBlank(topLevelDepartmentIdEqual)) {
-                            List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(Long.valueOf(topLevelDepartmentIdEqual.replace("[", "").replace("]", "")));
+                            List<DepartmentDTO> departmentDTOList = new ArrayList<>();
+                            List<Long> departmentIdList = new ArrayList<>();
+                            String departmentIdsString = topLevelDepartmentIdEqual.replace("[", "").replace("]", "").replaceAll(" ","");
+                            List<String> list = Arrays.asList(departmentIdsString.split(","));
+                            if (StringUtils.isNotEmpty(list)) {
+                                for (String s : list) {
+                                    departmentIdList.add(Long.valueOf(s));
+                                }
+                            }
+                            if (StringUtils.isNotEmpty(departmentIdList)) {
+                                for (Long departmentId : departmentIdList) {
+                                    departmentDTOList.addAll(departmentMapper.selectParentDepartment(departmentId));
+                                }
+                            }
                             if (StringUtils.isNotEmpty(departmentDTOList)) {
                                 List<Long> departmentIds = departmentDTOList.stream().filter(f -> null != f.getDepartmentId()).map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
                                 params.put("topLevelDepartmentIdsEqual", departmentIds);
@@ -162,7 +175,20 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     case "topLevelDepartmentIdNotEqual":
                         String topLevelDepartmentIdNotEqual = params.get("topLevelDepartmentIdNotEqual").toString();
                         if (StringUtils.isNotBlank(topLevelDepartmentIdNotEqual)) {
-                            List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(Long.valueOf(topLevelDepartmentIdNotEqual.replace("[", "").replace("]", "")));
+                            List<DepartmentDTO> departmentDTOList = new ArrayList<>();
+                            List<Long> departmentIdList = new ArrayList<>();
+                            String departmentIdsString = topLevelDepartmentIdNotEqual.replace("[", "").replace("]", "").replaceAll(" ","");
+                            List<String> list = Arrays.asList(departmentIdsString.split(","));
+                            if (StringUtils.isNotEmpty(list)) {
+                                for (String s : list) {
+                                    departmentIdList.add(Long.valueOf(s));
+                                }
+                            }
+                            if (StringUtils.isNotEmpty(departmentIdList)) {
+                                for (Long departmentId : departmentIdList) {
+                                    departmentDTOList.addAll(departmentMapper.selectParentDepartment(departmentId));
+                                }
+                            }
                             if (StringUtils.isNotEmpty(departmentDTOList)) {
                                 List<Long> departmentIds = departmentDTOList.stream().filter(f -> null != f.getDepartmentId()).map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
                                 params.put("topLevelDepartmentIdsNotEqual", departmentIds);
@@ -177,27 +203,27 @@ public class EmployeeServiceImpl implements IEmployeeService {
         employee.setParams(params);
         List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeeList(employee);
         //根据一级部门分组不同的树
-        Map<Long,List<DepartmentDTO>> departmentDTOListMap =new HashMap<>();
+        Map<Long, List<DepartmentDTO>> departmentDTOListMap = new HashMap<>();
         //查询所有一级部门
         List<DepartmentDTO> parentDepartmentAllData = departmentMapper.getParentAll();
-        if (StringUtils.isNotEmpty(parentDepartmentAllData)){
+        if (StringUtils.isNotEmpty(parentDepartmentAllData)) {
             for (DepartmentDTO departmentDTO : parentDepartmentAllData) {
                 //查询一级部门及子级部门
                 List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(departmentDTO.getDepartmentId());
-                if (StringUtils.isNotEmpty(departmentDTOList)){
-                    departmentDTOListMap.put(departmentDTO.getDepartmentId(),departmentDTOList);
+                if (StringUtils.isNotEmpty(departmentDTOList)) {
+                    departmentDTOListMap.put(departmentDTO.getDepartmentId(), departmentDTOList);
                 }
             }
         }
         //遍历一级部门分组不同的树
-        if (StringUtils.isNotEmpty(departmentDTOListMap)){
+        if (StringUtils.isNotEmpty(departmentDTOListMap)) {
             for (EmployeeDTO dto : employeeDTOS) {
-                if (StringUtils.isNotNull(dto.getEmployeeDepartmentId())){
+                if (StringUtils.isNotNull(dto.getEmployeeDepartmentId())) {
                     for (Long key : departmentDTOListMap.keySet()) {
                         List<DepartmentDTO> departmentDTOList = departmentDTOListMap.get(key);
-                        if (StringUtils.isNotEmpty(departmentDTOList)){
+                        if (StringUtils.isNotEmpty(departmentDTOList)) {
                             //包含部门即为一级部门
-                            if (departmentDTOList.stream().filter(f -> f.getDepartmentId() != null).map(DepartmentDTO::getDepartmentId).collect(Collectors.toList()).contains(dto.getEmployeeDepartmentId())){
+                            if (departmentDTOList.stream().filter(f -> f.getDepartmentId() != null).map(DepartmentDTO::getDepartmentId).collect(Collectors.toList()).contains(dto.getEmployeeDepartmentId())) {
                                 dto.setTopLevelDepartmentName(departmentDTOList.get(0).getDepartmentName());
                                 dto.setTopLevelDepartmentId(departmentDTOList.get(0).getDepartmentId());
                             }
@@ -209,6 +235,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         this.handleResult(employeeDTOS);
         return employeeDTOS;
     }
+
     @Override
     public void handleResult(List<EmployeeDTO> result) {
         if (StringUtils.isNotEmpty(result)) {
@@ -1069,7 +1096,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 //基本工资
                 if (null != dto.getEmployeeBasicWage()) {
                     employeeExcel.setEmployeeBasicWage(String.valueOf(dto.getEmployeeBasicWage()));
-                }else {
+                } else {
                     employeeExcel.setEmployeeBasicWage("0");
                 }
                 //通信地址
