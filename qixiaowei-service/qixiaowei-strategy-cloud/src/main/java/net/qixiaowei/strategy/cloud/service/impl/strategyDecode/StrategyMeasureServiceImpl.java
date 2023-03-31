@@ -16,6 +16,7 @@ import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasure;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasureDetail;
 import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMeasureTask;
+import net.qixiaowei.strategy.cloud.api.domain.strategyDecode.StrategyMetricsDetail;
 import net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.*;
 import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
@@ -432,6 +433,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
     @Transactional
     public StrategyMeasureDTO insertStrategyMeasure(StrategyMeasureDTO strategyMeasureDTO) {
         Long planBusinessUnitId = strategyMeasureDTO.getPlanBusinessUnitId();
+        Integer planYear = strategyMeasureDTO.getPlanYear();
         if (StringUtils.isNull(planBusinessUnitId))
             throw new ServiceException("规划业务单元ID不能为空");
         PlanBusinessUnitDTO planBusinessUnitDTO = planBusinessUnitMapper.selectPlanBusinessUnitByPlanBusinessUnitId(planBusinessUnitId);
@@ -463,7 +465,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             if (StringUtils.isNotEmpty(strategyMeasureDetailDTOS))
                 strategyMeasureDetails = strategyMeasureDetailService.insertStrategyMeasureDetails(strategyMeasureDetailDTOS);
             // 新增战略衡量指标详情
-            this.addMetricsDetail(strategyMetricsId, strategyMeasureDetails);
+            this.addMetricsDetail(strategyMetricsId, strategyMeasureDetails, planYear);
             // 新增战略清单详情任务表
             this.addMeasureTask(strategyMeasureId, groupDetailMapS, strategyMeasureDetails);
         }
@@ -512,8 +514,9 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
      *
      * @param strategyMetricsId      战略衡量指标ID
      * @param strategyMeasureDetails 战略衡量指标详情
+     * @param planYear               规划年份
      */
-    private void addMetricsDetail(Long strategyMetricsId, List<StrategyMeasureDetail> strategyMeasureDetails) {
+    private void addMetricsDetail(Long strategyMetricsId, List<StrategyMeasureDetail> strategyMeasureDetails, Integer planYear) {
         List<StrategyMetricsDetailDTO> strategyMetricsDetailDTOS = new ArrayList<>();
         for (StrategyMeasureDetail strategyMeasureDetail : strategyMeasureDetails) {
             StrategyMetricsDetailDTO strategyMetricsDetailDTO = new StrategyMetricsDetailDTO();
@@ -521,8 +524,18 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
             strategyMetricsDetailDTO.setStrategyMetricsId(strategyMetricsId);
             strategyMetricsDetailDTOS.add(strategyMetricsDetailDTO);
         }
-        if (StringUtils.isNotEmpty(strategyMetricsDetailDTOS))
-            strategyMetricsDetailService.insertStrategyMetricsDetails(strategyMetricsDetailDTOS);
+        if (StringUtils.isNotEmpty(strategyMetricsDetailDTOS)) {
+            List<StrategyMetricsDetail> strategyMetricsDetails = strategyMetricsDetailService.insertStrategyMetricsDetails(strategyMetricsDetailDTOS);
+            List<StrategyMetricsPlanDTO> strategyMetricsPlanDTOS = new ArrayList<>();
+            for (StrategyMetricsDetail strategyMetricsDetail : strategyMetricsDetails) {
+                StrategyMetricsPlanDTO strategyMetricsPlanDTO = new StrategyMetricsPlanDTO();
+                strategyMetricsPlanDTO.setPlanYear(planYear);
+                strategyMetricsPlanDTOS.add(strategyMetricsPlanDTO);
+                strategyMetricsPlanDTO.setStrategyMetricsId(strategyMetricsId);
+                strategyMetricsPlanDTO.setStrategyMetricsDetailId(strategyMetricsDetail.getStrategyMetricsDetailId());
+            }
+            strategyMetricsPlanService.insertStrategyMetricsPlans(strategyMetricsPlanDTOS);
+        }
     }
 
     /**
