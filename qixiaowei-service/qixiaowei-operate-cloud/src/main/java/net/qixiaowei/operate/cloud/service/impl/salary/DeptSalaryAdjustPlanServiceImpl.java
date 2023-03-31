@@ -320,9 +320,6 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         }
         this.updateDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO);
         List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOSAfter = deptSalaryAdjustPlanDTO.getDeptSalaryAdjustItemDTOS();
-        if (StringUtils.isEmpty(deptSalaryAdjustItemDTOSAfter)) {
-            return 1;
-        }
         List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOSBefore = deptSalaryAdjustItemService.selectDeptSalaryAdjustItemByPlanId(deptSalaryAdjustPlanId);
         for (DeptSalaryAdjustItemDTO deptSalaryAdjustItemDTO : deptSalaryAdjustItemDTOSAfter) {
             if (StringUtils.isNull(deptSalaryAdjustItemDTO.getDepartmentId())) {

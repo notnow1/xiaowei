@@ -52,7 +52,7 @@ public class BonusBudgetDTO extends BaseDTO {
     /**
      * 总奖金包预算参数集合
      */
-    @NotEmpty(message = "奖金驱动因素不能为空", groups = {BonusBudgetDTO.DeleteBonusBudgetDTO.class, BonusBudgetDTO.UpdateBonusBudgetDTO.class})
+    @NotEmpty(message = "奖金驱动因素不能为空", groups = {BonusBudgetDTO.AddBonusBudgetDTO.class, BonusBudgetDTO.UpdateBonusBudgetDTO.class})
     @Valid
     private List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS;
     /**

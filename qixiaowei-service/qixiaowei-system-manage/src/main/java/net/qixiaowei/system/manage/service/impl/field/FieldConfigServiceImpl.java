@@ -180,22 +180,21 @@ public class FieldConfigServiceImpl implements IFieldConfigService {
      *
      * @param fieldConfigDtos 字段配置表对象
      */
-
     @Override
-    public int insertFieldConfigs(List<FieldConfigDTO> fieldConfigDtos) {
+    public List<FieldConfig> insertFieldConfigs(List<FieldConfigDTO> fieldConfigDtos) {
         List<FieldConfig> fieldConfigList = new ArrayList();
 
         for (FieldConfigDTO fieldConfigDTO : fieldConfigDtos) {
             FieldConfig fieldConfig = new FieldConfig();
             BeanUtils.copyProperties(fieldConfigDTO, fieldConfig);
-            fieldConfig.setCreateBy(SecurityUtils.getUserId());
-            fieldConfig.setCreateTime(DateUtils.getNowDate());
+            fieldConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             fieldConfig.setUpdateTime(DateUtils.getNowDate());
             fieldConfig.setUpdateBy(SecurityUtils.getUserId());
             fieldConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             fieldConfigList.add(fieldConfig);
         }
-        return fieldConfigMapper.batchFieldConfig(fieldConfigList);
+        fieldConfigMapper.batchFieldConfig(fieldConfigList);
+        return fieldConfigList;
     }
 
     /**

@@ -16,10 +16,7 @@ import net.qixiaowei.operate.cloud.api.domain.bonus.BonusBudget;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusBudgetParameters;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
-import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetLaddertersDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.FutureBonusBudgetLaddertersDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.*;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.*;
@@ -314,7 +311,9 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
     public int updateBonusBudget(BonusBudgetDTO bonusBudgetDTO) {
         int i = 0;
         //修改总奖金包预算参数集合
-        List<BonusBudgetParameters> bonusBudgetParametersList = new ArrayList<>();
+        List<BonusBudgetParameters> bonusBudgetParametersUpdateList = new ArrayList<>();
+        //新增总奖金包预算参数集合
+        List<BonusBudgetParameters> bonusBudgetParametersAddList = new ArrayList<>();
         BonusBudget bonusBudget = new BonusBudget();
         BeanUtils.copyProperties(bonusBudgetDTO, bonusBudget);
         //总奖金包预算参数集合
@@ -332,31 +331,67 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             throw new ServiceException("新增总奖金预算失败");
         }
         //修改总奖金预算参数表
-        updateParametersDTOS(bonusBudgetParametersList, bonusBudgetParametersDTOS);
+        updateParametersDTOS(bonusBudgetParametersUpdateList,bonusBudgetParametersAddList, bonusBudgetParametersDTOS,bonusBudgetDTO);
         return i;
     }
 
     /**
      * 修改总奖金预算参数表
-     *
-     * @param bonusBudgetParametersList
+     * @param bonusBudgetParametersUpdateList
+     * @param bonusBudgetParametersAddList
      * @param bonusBudgetParametersDTOS
+     * @param bonusBudgetDTO
      */
-    private void updateParametersDTOS(List<BonusBudgetParameters> bonusBudgetParametersList, List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS) {
+    private void updateParametersDTOS(List<BonusBudgetParameters> bonusBudgetParametersUpdateList, List<BonusBudgetParameters> bonusBudgetParametersAddList, List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS, BonusBudgetDTO bonusBudgetDTO) {
         if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)) {
+            List<BonusBudgetParametersDTO> bonusBudgetParametersListData = bonusBudgetParametersMapper.selectBonusBudgetParametersByBonusBudgetId(bonusBudgetDTO.getBonusBudgetId());
+            //sterm流求差集
+            List<Long> bonusBudgetParametersIds = bonusBudgetParametersListData.stream().filter(a ->
+                    !bonusBudgetParametersDTOS.stream().map(BonusBudgetParametersDTO::getBonusBudgetParametersId).collect(Collectors.toList()).contains(a.getBonusBudgetParametersId())
+            ).collect(Collectors.toList()).stream().map(BonusBudgetParametersDTO::getBonusBudgetParametersId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(bonusBudgetParametersIds)){
+                try {
+                    bonusBudgetParametersMapper.logicDeleteBonusBudgetParametersByBonusBudgetParametersIds(bonusBudgetParametersIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("逻辑批量删除奖金预算参数不变");
+                }
+            }
+
             for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
-                BonusBudgetParameters bonusBudgetParameters = new BonusBudgetParameters();
-                BeanUtils.copyProperties(bonusBudgetParametersDTO, bonusBudgetParameters);
-                bonusBudgetParameters.setUpdateTime(DateUtils.getNowDate());
-                bonusBudgetParameters.setUpdateBy(SecurityUtils.getUserId());
-                bonusBudgetParametersList.add(bonusBudgetParameters);
+                Long bonusBudgetParametersId = bonusBudgetParametersDTO.getBonusBudgetParametersId();
+                if (null == bonusBudgetParametersId){
+                    BonusBudgetParameters bonusBudgetParameters = new BonusBudgetParameters();
+                    BeanUtils.copyProperties(bonusBudgetParametersDTO, bonusBudgetParameters);
+                    //奖金预算ID
+                    bonusBudgetParameters.setBonusBudgetId(bonusBudgetDTO.getBonusBudgetId());
+                    bonusBudgetParameters.setCreateBy(SecurityUtils.getUserId());
+                    bonusBudgetParameters.setCreateTime(DateUtils.getNowDate());
+                    bonusBudgetParameters.setUpdateTime(DateUtils.getNowDate());
+                    bonusBudgetParameters.setUpdateBy(SecurityUtils.getUserId());
+                    bonusBudgetParameters.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    bonusBudgetParametersAddList.add(bonusBudgetParameters);
+                }else {
+                    BonusBudgetParameters bonusBudgetParameters = new BonusBudgetParameters();
+                    BeanUtils.copyProperties(bonusBudgetParametersDTO, bonusBudgetParameters);
+                    bonusBudgetParameters.setUpdateTime(DateUtils.getNowDate());
+                    bonusBudgetParameters.setUpdateBy(SecurityUtils.getUserId());
+                    bonusBudgetParametersUpdateList.add(bonusBudgetParameters);
+                }
+
             }
         }
-        if (StringUtils.isNotEmpty(bonusBudgetParametersList)) {
+        if (StringUtils.isNotEmpty(bonusBudgetParametersUpdateList)) {
             try {
-                bonusBudgetParametersMapper.updateBonusBudgetParameterss(bonusBudgetParametersList);
+                bonusBudgetParametersMapper.updateBonusBudgetParameterss(bonusBudgetParametersUpdateList);
             } catch (Exception e) {
                 throw new ServiceException("修改总奖金包预算参数失败");
+            }
+        }
+        if (StringUtils.isNotEmpty(bonusBudgetParametersAddList)) {
+            try {
+                bonusBudgetParametersMapper.batchBonusBudgetParameters(bonusBudgetParametersAddList);
+            } catch (Exception e) {
+                throw new ServiceException("新增总奖金包预算参数失败");
             }
         }
     }
@@ -1551,6 +1586,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             List<EmployeeDTO> data = listR.getData();
             if (StringUtils.isNotEmpty(data) && StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
                 for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                    OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(employeeBudgetDetailsDTO.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
                     //人员id集合
                     List<Long> employeeIds = new ArrayList<>();
                     for (EmployeeDTO datum : data) {
@@ -1562,7 +1598,6 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
                         }//取职级确定薪酬中位数
                         else {
-                            OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(employeeBudgetDetailsDTO.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
                             if (StringUtils.isNotNull(officialRankEmolumentDTO)) {
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(10, BigDecimal.ROUND_HALF_UP));
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);

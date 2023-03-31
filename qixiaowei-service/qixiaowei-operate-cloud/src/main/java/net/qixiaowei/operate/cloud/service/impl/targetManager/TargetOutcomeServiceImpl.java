@@ -415,6 +415,10 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     @Override
     @Transactional
     public int updateTargetOutcome(TargetOutcomeDTO targetOutcomeDTO) {
+        Integer targetYear = targetOutcomeDTO.getTargetYear();
+        if (targetYear > DateUtils.getYear() || (targetYear == DateUtils.getYear() && DateUtils.getMonth() == 1)) {
+            return 1;
+        }
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDTO.getTargetOutcomeDetailsDTOList();
         setMonthValue(targetOutcomeDetailsDTOList);
         TargetOutcome targetOutcome = new TargetOutcome();
@@ -642,12 +646,24 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         List<Long> indicatorIds = indicatorDTOS.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingByIndicators(indicatorIds, targetYear);
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsBefore = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
+        if (targetOutcomeDetailsBefore.size() != targetOutcomeDetailsAfter.size()) {
+            throw new ServiceException("导入失败 模板错误");
+        }
+        Set<Long> indicatorBefore = targetOutcomeDetailsBefore.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toSet());
+        Set<Long> indicatorAfter = targetOutcomeDetailsAfter.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toSet());
+        if (indicatorBefore.containsAll(indicatorAfter)) {
+            throw new ServiceException("导入失败 模板错误");
+        }
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsBefore) {
             for (TargetOutcomeDetailsDTO outcomeDetailsDTO : targetOutcomeDetailsAfter) {
                 Long indicatorId = outcomeDetailsDTO.getIndicatorId();
                 if (targetOutcomeDetailsDTO.getIndicatorId().equals(indicatorId)) {
                     outcomeDetailsDTO.setTargetOutcomeDetailsId(targetOutcomeDetailsDTO.getTargetOutcomeDetailsId());
-                    TargetSettingDTO targetSettingDTO = targetSettingDTOS.stream().filter(t -> t.getIndicatorId().equals(indicatorId)).collect(Collectors.toList()).get(0);
+                    List<TargetSettingDTO> targetSettingDTOList = targetSettingDTOS.stream().filter(t -> t.getIndicatorId().equals(indicatorId)).collect(Collectors.toList());
+                    TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
+                    if (StringUtils.isNotEmpty(targetSettingDTOList)) {
+                        targetSettingDTO = targetSettingDTOList.get(0);
+                    }
                     BigDecimal targetValue = Optional.ofNullable(targetSettingDTO.getTargetValue()).orElse(BigDecimal.ZERO);
                     BigDecimal actualTotal = outcomeDetailsDTO.getActualTotal();
                     outcomeDetailsDTO.setTargetValue(targetValue);

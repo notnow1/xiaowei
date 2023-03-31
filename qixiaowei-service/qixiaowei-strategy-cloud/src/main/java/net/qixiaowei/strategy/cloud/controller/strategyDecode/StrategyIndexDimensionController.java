@@ -2,6 +2,7 @@ package net.qixiaowei.strategy.cloud.controller.strategyDecode;
 
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -46,7 +47,7 @@ public class StrategyIndexDimensionController extends BaseController {
     @RequiresPermissions("strategy:cloud:strategyIndexDimension:pageList")
     @GetMapping("/treeList")
     public AjaxResult treeList(StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
-        if (!CheckObjectIsNullUtils.isNull(strategyIndexDimensionDTO)) {
+        if (!CheckObjectIsNullUtils.isNull(strategyIndexDimensionDTO) || StringUtils.isNotEmpty(strategyIndexDimensionDTO.getParams())) {
             return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionList(strategyIndexDimensionDTO));
         }
         return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionTreeList(strategyIndexDimensionDTO));

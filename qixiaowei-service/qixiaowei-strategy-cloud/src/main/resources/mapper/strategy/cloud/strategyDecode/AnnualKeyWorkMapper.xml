@@ -447,6 +447,7 @@
         <if test="annualKeyWork.params.createTimeEnd != null and annualKeyWork.params.createTimeEnd != ''"><!-- 结束时间检索 -->
             AND date_format(akw.create_time,'%Y/%m/%d') &lt;= #{annualKeyWork.params.createTimeEnd}
         </if>
+        ${annualKeyWork.params.dataScope}
         ORDER BY akw.create_time DESC
     </select>
     <!--年度重点工作获取部门是否引用-->

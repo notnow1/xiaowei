@@ -64,4 +64,13 @@ public class FieldListConfigController extends BaseController {
         return toAjax(fieldListConfigService.updateFieldListConfigs(fieldListConfigDtos));
     }
 
+
+    /**
+     * 表头信息修改
+     */
+    @PostMapping("/changeHead")
+    public AjaxResult changeHead(@RequestParam("businessType") Integer businessType) {
+        return toAjax(fieldListConfigService.changeHead(businessType));
+    }
+
 }

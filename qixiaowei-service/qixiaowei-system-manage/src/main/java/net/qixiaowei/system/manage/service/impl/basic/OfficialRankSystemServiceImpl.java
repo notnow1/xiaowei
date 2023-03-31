@@ -196,7 +196,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 }
                 break;
         }
-        throw new ServiceException("该维度暂未配置，请先配置该维度信息");
+        throw new ServiceException("请先配置分解维度");
     }
 
     /**
@@ -517,13 +517,18 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 throw new ServiceException("职级体系级别前缀长度不能大于5");
             }
         }
+        OfficialRankSystem officialRankSystem = new OfficialRankSystem();
+        BeanUtils.copyProperties(officialRankSystemDTO, officialRankSystem);
+        officialRankSystem.setUpdateTime(DateUtils.getNowDate());
+        officialRankSystem.setUpdateBy(SecurityUtils.getUserId());
+        officialRankSystemMapper.updateOfficialRankSystem(officialRankSystem);
 //        if (StringUtils.isNotNull(officialRankByPrefixCode)) {
 //            if (!officialRankByPrefixCode.getOfficialRankSystemId().equals(officialRankSystemId))
 //                throw new ServiceException("职级体系级别前缀重复");
 //        }
-        // 分解为度校验
+        List<OfficialRankDecomposeDTO> officialRankDecomposeDTOAfter = officialRankSystemDTO.getOfficialRankDecomposeDTOS();
         if (StringUtils.isEmpty(officialRankDecomposeDTOAfter)) {
-            throw new ServiceException("职级分解不能为空");
+            return 1;
         }
         List<Long> decomposeDimensions = new ArrayList<>();
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOAfter) {
@@ -536,19 +541,11 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             }
             decomposeDimensions.add(decomposeDimension);
         }
-        OfficialRankSystem officialRankSystem = new OfficialRankSystem();
-        BeanUtils.copyProperties(officialRankSystemDTO, officialRankSystem);
-        officialRankSystem.setUpdateTime(DateUtils.getNowDate());
-        officialRankSystem.setUpdateBy(SecurityUtils.getUserId());
-        officialRankSystemMapper.updateOfficialRankSystem(officialRankSystem);
         // ~先判断officialRankSystemDTO中的officialRankDecomposeDTOS是否为空，若是不为空则进行以下操作
         // 1需要根据officialRankSystemId查询之前的数据
         // 2判断分解rankDecomposeDimension有没有改动
         // 3.1没有改动直接进行operate，operate需要进行跟获取到的BeforeDTO进行取system-manage和差集
         // 3.2改动了进行新增，并根据officialRankSystemId和rankDecomposeDimension删除之前在official_rank_decompose中的数据
-        if (StringUtils.isEmpty(officialRankDecomposeDTOAfter)) {
-            return 1;
-        }
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOAfter) {
             if (StringUtils.isNull(officialRankDecomposeDTO.getDecomposeDimension())) {
                 throw new ServiceException("请选择分解维度");

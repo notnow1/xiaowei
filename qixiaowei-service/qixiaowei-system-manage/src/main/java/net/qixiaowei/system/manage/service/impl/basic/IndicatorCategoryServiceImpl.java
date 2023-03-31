@@ -143,7 +143,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         }
         IndicatorCategoryDTO indicatorCategoryByName = indicatorCategoryMapper.checkNameUnique(indicatorCategoryName);
         if (StringUtils.isNotNull(indicatorCategoryByName)) {
-            throw new ServiceException("指标类型名称重复");
+            throw new ServiceException("指标类型名称已存在");
         }
         if (StringUtils.isNull(indicatorType)) {
             throw new ServiceException("指标类型不可以为空");

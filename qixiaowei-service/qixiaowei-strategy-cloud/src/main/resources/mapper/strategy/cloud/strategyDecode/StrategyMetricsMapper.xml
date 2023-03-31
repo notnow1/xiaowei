@@ -433,6 +433,7 @@
         <if test="strategyMetrics.params.createTimeEnd != null and strategyMetrics.params.createTimeEnd != ''"><!-- 结束时间检索 -->
             AND date_format(sm.create_time,'%Y/%m/%d') &lt;= #{strategyMetrics.params.createTimeEnd}
         </if>
+        ${strategyMetrics.params.dataScope}
         ORDER BY sm.create_time DESC
     </select>
     <!--根据清单ID查询战略衡量指标-->

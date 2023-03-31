@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
@@ -43,6 +44,7 @@ public class StrategyMeasureController extends BaseController {
      */
     @RequiresPermissions("strategy:cloud:strategyMeasure:pageList")
     @GetMapping("/pageList")
+    @DataScope(businessAlias = "sm")
     public TableDataInfo pageList(StrategyMeasureDTO strategyMeasureDTO) {
         startPage();
         List<StrategyMeasureDTO> list = strategyMeasureService.selectStrategyMeasureList(strategyMeasureDTO);

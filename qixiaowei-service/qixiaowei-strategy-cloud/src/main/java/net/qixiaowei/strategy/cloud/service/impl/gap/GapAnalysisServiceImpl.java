@@ -17,6 +17,8 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysis;
+import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysisOperate;
+import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
@@ -462,6 +464,23 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                 gapAnalysisPerformanceDTO.setSort(sort);
                 sort++;
             }
+            List<Long> proposeEmployeeIds = gapAnalysisPerformanceDTOS.stream().map(GapAnalysisPerformanceDTO::getProposeEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(proposeEmployeeIds)) {
+                R<List<EmployeeDTO>> employeeDTOSR = employeeService.selectByEmployeeIds(proposeEmployeeIds, SecurityConstants.INNER);
+                List<EmployeeDTO> employeeDTOS = employeeDTOSR.getData();
+                if (StringUtils.isEmpty(employeeDTOS)) {
+                    throw new ServiceException("当前提出人已不存在 请检查员工配置");
+                }
+                for (GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO : gapAnalysisPerformanceDTOS) {
+                    for (EmployeeDTO employeeDTO : employeeDTOS) {
+                        if (employeeDTO.getEmployeeId().equals(gapAnalysisPerformanceDTO.getProposeEmployeeId())) {
+                            gapAnalysisPerformanceDTO.setProposeEmployeeName(employeeDTO.getEmployeeName());
+                            gapAnalysisPerformanceDTO.setProposeEmployeeCode(employeeDTO.getEmployeeCode());
+                            break;
+                        }
+                    }
+                }
+            }
             gapAnalysisPerformanceService.insertGapAnalysisPerformances(gapAnalysisPerformanceDTOS);
         }
         // 机会差距
@@ -472,6 +491,23 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                 gapAnalysisOpportunityDTO.setGapAnalysisId(gapAnalysisId);
                 gapAnalysisOpportunityDTO.setSort(sort);
                 sort++;
+            }
+            List<Long> proposeEmployeeIds = gapAnalysisOpportunityDTOS.stream().map(GapAnalysisOpportunityDTO::getProposeEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(proposeEmployeeIds)) {
+                R<List<EmployeeDTO>> employeeDTOSR = employeeService.selectByEmployeeIds(proposeEmployeeIds, SecurityConstants.INNER);
+                List<EmployeeDTO> employeeDTOS = employeeDTOSR.getData();
+                if (StringUtils.isEmpty(employeeDTOS)) {
+                    throw new ServiceException("当前提出人已不存在 请检查员工配置");
+                }
+                for (GapAnalysisOpportunityDTO gapAnalysisOpportunityDTO : gapAnalysisOpportunityDTOS) {
+                    for (EmployeeDTO employeeDTO : employeeDTOS) {
+                        if (employeeDTO.getEmployeeId().equals(gapAnalysisOpportunityDTO.getProposeEmployeeId())) {
+                            gapAnalysisOpportunityDTO.setProposeEmployeeName(employeeDTO.getEmployeeName());
+                            gapAnalysisOpportunityDTO.setProposeEmployeeCode(employeeDTO.getEmployeeCode());
+                            break;
+                        }
+                    }
+                }
             }
             gapAnalysisOpportunityService.insertGapAnalysisOpportunitys(gapAnalysisOpportunityDTOS);
         }
@@ -489,7 +525,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
     private void addAnalysisOperateList(Long gapAnalysisId, List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS, GapAnalysisDTO gapAnalysisDTO) {
         if (StringUtils.isNotEmpty(gapAnalysisOperateDTOS)) {
             Integer planYear = gapAnalysisDTO.getPlanYear();
-            List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
+            List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(indicatorIds)) {
                 R<List<IndicatorDTO>> indicatorByIdR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
                 List<IndicatorDTO> indicatorById = indicatorByIdR.getData();
@@ -651,6 +687,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
                     for (EmployeeDTO employeeDTO : employeeDTOS) {
                         if (employeeDTO.getEmployeeId().equals(gapAnalysisOpportunityDTO.getProposeEmployeeId())) {
                             gapAnalysisOpportunityDTO.setProposeEmployeeName(employeeDTO.getEmployeeName());
+                            gapAnalysisOpportunityDTO.setProposeEmployeeCode(employeeDTO.getEmployeeCode());
                             break;
                         }
                     }
@@ -698,6 +735,24 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             }
         }
         if (StringUtils.isNotEmpty(gapAnalysisPerformanceDTOSAfter)) {
+            List<Long> proposeEmployeeIds = gapAnalysisPerformanceDTOSAfter.stream().map(GapAnalysisPerformanceDTO::getProposeEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(proposeEmployeeIds)) {
+                R<List<EmployeeDTO>> employeeDTOSR = employeeService.selectByEmployeeIds(proposeEmployeeIds, SecurityConstants.INNER);
+                List<EmployeeDTO> employeeDTOS = employeeDTOSR.getData();
+                if (StringUtils.isEmpty(employeeDTOS)) {
+                    throw new ServiceException("当前提出人已不存在 请检查员工配置");
+                }
+                for (GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO : gapAnalysisPerformanceDTOSAfter) {
+                    for (EmployeeDTO employeeDTO : employeeDTOS) {
+                        if (employeeDTO.getEmployeeId().equals(gapAnalysisPerformanceDTO.getProposeEmployeeId())) {
+                            gapAnalysisPerformanceDTO.setProposeEmployeeName(employeeDTO.getEmployeeName());
+                            gapAnalysisPerformanceDTO.setProposeEmployeeCode(employeeDTO.getEmployeeCode());
+                            break;
+                        }
+                    }
+                }
+            }
+
             List<GapAnalysisPerformanceDTO> gapAnalysisPerformanceDTOBefore = gapAnalysisPerformanceService.selectGapAnalysisPerformanceByGapAnalysisId(gapAnalysisId);
             List<GapAnalysisPerformanceDTO> editPerformanceS = gapAnalysisPerformanceDTOSAfter.stream().filter(gapAnalysisPerformanceDTO ->
                     gapAnalysisPerformanceDTOBefore.stream().map(GapAnalysisPerformanceDTO::getGapAnalysisPerformanceId).collect(Collectors.toList())

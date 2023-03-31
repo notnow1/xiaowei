@@ -214,9 +214,7 @@
         </if>
         <!--总计（工资+津贴+福利+奖金）-->
         <if test="salaryPay.params.totalAmountEqual != null and salaryPay.params.totalAmountEqual.size() > 0">
-            AND
-            IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0)
-            IN
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) IN
             <foreach item="item"
                      collection="salaryPay.params.totalAmountEqual"
                      index="index" open="(" separator="," close=")">
@@ -224,9 +222,7 @@
             </foreach>
         </if>
         <if test="salaryPay.params.totalAmountNotEqual != null and salaryPay.params.totalAmountNotEqual.size() > 0">
-            AND
-            IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0)
-            NOT
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) NOT
             IN
             <foreach item="item"
                      collection="salaryPay.params.totalAmountNotEqual"
@@ -235,27 +231,19 @@
             </foreach>
         </if>
         <if test="salaryPay.params.totalAmountGreaterThan != null and salaryPay.params.totalAmountGreaterThan != ''">
-            AND
-            IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0)
-            &gt;
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) &gt;
             #{salaryPay.params.totalAmountGreaterThan}
         </if>
         <if test="salaryPay.params.totalAmountNotGreaterThan != null and salaryPay.params.totalAmountNotGreaterThan != ''">
-            AND
-            IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0)
-            &lt;=
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) &lt;=
             #{salaryPay.params.totalAmountNotGreaterThan}
         </if>
         <if test="salaryPay.params.totalAmountLessThan != null and salaryPay.params.totalAmountLessThan != ''">
-            AND
-            IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0)
-            &lt;
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) &lt;
             #{salaryPay.params.totalAmountLessThan}
         </if>
         <if test="salaryPay.params.totalAmountNotLessThan != null and salaryPay.params.totalAmountNotLessThan != ''">
-            AND
-            IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0)
-            &gt;=
+            AND IFNULL(sp.salary_amount,0)+IFNULL(sp.allowance_amount,0)+IFNULL(sp.welfare_amount,0)+IFNULL(sp.bonus_amount,0) &gt;=
             #{salaryPay.params.totalAmountNotLessThan}
         </if>
         <!--    员工高级搜索-->

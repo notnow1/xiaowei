@@ -252,10 +252,20 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             throw new ServiceException("职级等级ID为空");
         }
         List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = officialRankEmolumentDTO.getOfficialRankEmolumentDTOList();
-        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
         if (StringUtils.isEmpty(officialRankEmolumentDTOList)) {
             throw new ServiceException("当前的职级薪酬表为空 请先配置");
         }
+        for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
+            if (Optional.ofNullable(emolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO)
+                    .compareTo(Optional.ofNullable(emolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO)) < 0) {
+                throw new ServiceException("工资上限应大于等于工资下限");
+            }
+            if (Optional.ofNullable(emolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO).compareTo(Optional.ofNullable(emolumentDTO.getSalaryMedian()).orElse(BigDecimal.ZERO)) < 0
+                    || Optional.ofNullable(emolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO).compareTo(Optional.ofNullable(emolumentDTO.getSalaryMedian()).orElse(BigDecimal.ZERO)) > 0) {
+                throw new ServiceException("工资中位值应在工资上下限范围内");
+            }
+        }
+        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
         if (StringUtils.isEmpty(officialRankEmolumentDTOS)) {// 新增
             for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOList) {
                 rankEmolumentDTO.setOfficialRankSystemId(officialRankSystemId);

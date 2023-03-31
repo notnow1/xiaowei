@@ -120,6 +120,13 @@
         <if test="fieldListConfig.updateTime != null">
             and update_time=#{fieldListConfig.updateTime}
         </if>
+        <if test="fieldListConfig.params.fieldConfigIds != null">
+            and field_config_id IN
+            <foreach collection="fieldListConfig.params.fieldConfigIds" item="item" index="index" open="(" close=")"
+                     separator=",">
+                #{item}
+            </foreach>
+        </if>
     </select>
     <!--新增字段列表配置表-->
     <insert id="insertFieldListConfig" useGeneratedKeys="true" keyProperty="fieldListConfigId">

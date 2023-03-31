@@ -197,6 +197,10 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             params = new HashMap<>();
             params.put("employeeIds", employeeIds);
         }
+        String payYearMonth = salaryPayDTO.getPayYearMonth();
+        if (StringUtils.isNotNull(payYearMonth)) {
+            params.put("payYearMonth", payYearMonth);
+        }
         salaryPay.setParams(params);
         salaryPayDTOList = salaryPayMapper.selectSalaryPayList(salaryPay);
         if (StringUtils.isNotEmpty(salaryPayDTOList)) {
@@ -385,7 +389,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         }
         List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectSalaryPayList(salaryPayByTime);
         if (StringUtils.isNotEmpty(salaryPayDTOS)) {
-            throw new ServiceException("该员工XX年XX月工资数据已存在");
+            throw new ServiceException("该员工" + salaryPayDTO.getPayYear() + "年" + salaryPayDTO.getPayMonth() + "月工资数据已存在");
         }
         if (StringUtils.isEmpty(salaryPayDTOList)) {
             throw new ServiceException("月度工资数据不可以为空");

@@ -451,7 +451,8 @@
     <!--评议撤回-->
     <update id="withdrawPerformanceAppraisalItems">
         UPDATE performance_appraisal_items
-        SET actual_value = null
+        SET actual_value = null,
+        remark = null
         WHERE
         perform_appraisal_items_id IN
         <foreach collection="itemsDTOList" open="(" close=")" separator="," index="index" item="item">

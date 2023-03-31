@@ -108,4 +108,12 @@ public interface IFieldListConfigService{
     * @return 结果
     */
     int deleteFieldListConfigByFieldListConfigId(Long fieldListConfigId);
+
+    /**
+     * 表头信息修改
+     *
+     * @param businessType 业务类型
+     * @return 结果
+     */
+    int changeHead(Integer businessType);
 }

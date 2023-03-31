@@ -452,6 +452,7 @@
         <if test="strategyMeasure.params.createTimeEnd != null and strategyMeasure.params.createTimeEnd != ''"><!-- 结束时间检索 -->
             AND date_format(sm.create_time,'%Y/%m/%d') &lt;= #{strategyMeasure.params.createTimeEnd}
         </if>
+        ${strategyMeasure.params.dataScope}
         ORDER BY sm.create_time DESC
     </select>
     <!--远程引用查询详情-->

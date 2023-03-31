@@ -59,25 +59,21 @@ public class SysLoginService {
     public LoginUserVO login(HttpServletRequest request, String userAccount, String password) {
         // 用户名或密码为空 错误
         if (StringUtils.isAnyBlank(userAccount, password)) {
-//            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "用户/密码必须填写");
             throw new ServiceException("账号或密码有误");
         }
         // 密码如果不在指定范围内 错误
         if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
                 || password.length() > UserConstants.PASSWORD_MAX_LENGTH) {
-//            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "用户密码不在指定范围");
             throw new ServiceException("账号或密码有误");
         }
         // 用户名不在指定范围内 错误 20230111 需求更改，帐号长度范围改为1-20
         if (userAccount.length() > UserConstants.USERNAME_MAX_LENGTH) {
-//            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "用户名不在指定范围");
             throw new ServiceException("账号或密码有误");
         }
         // 查询用户信息
         String serverName = StringUtils.isNotEmpty(request.getHeader("proxyHost")) ? request.getHeader("proxyHost") : request.getServerName();
         R<LoginUserVO> userResult = remoteUserService.getUserInfo(userAccount, serverName, SecurityConstants.INNER);
         if (StringUtils.isNull(userResult)) {
-//            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "登录用户不存在");
             throw new ServiceException("您输入的账号或密码有误，请重新输入。");
         }
         if (R.FAIL == userResult.getCode()) {
@@ -85,16 +81,10 @@ public class SysLoginService {
         }
         LoginUserVO userInfo = userResult.getData();
         UserDTO user = userInfo.getUserDTO();
-        if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag())) {
-//            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "对不起，您的账号已被删除");
-            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
-        }
-        if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
-//            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "用户已停用，请联系管理员");
+        if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag()) || UserStatus.DISABLE.getCode().equals(user.getStatus())) {
             throw new ServiceException("您输入的账号或密码有误，请重新输入。");
         }
         passwordService.validate(user, password);
-//        recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_SUCCESS, "登录成功");
         return userInfo;
     }
 
@@ -130,6 +120,11 @@ public class SysLoginService {
         LoginUserVO userInfo = userResult.getData();
         UserDTO user = userInfo.getUserDTO();
         Long tenantId = user.getTenantId();
+        String intervalCacheKey = passwordService.getResetIntervalCacheKeyContainTenantId(userAccount, tenantId);
+        if (redisService.hasKey(intervalCacheKey)) {
+            long expire = redisService.getExpire(intervalCacheKey);
+            throw new ServiceException("请等待" + expire + "秒后再重置密码。");
+        }
         passwordService.validateOfReset(userAccount, tenantId);
         if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag())) {
             throw new ServiceException("账号与邮箱不匹配，请重新输入。");
@@ -150,11 +145,6 @@ public class SysLoginService {
         }
         //发送邮件
         this.sendEmail(userId, emailOfUser, password);
-        String intervalCacheKey =  passwordService.getResetIntervalCacheKeyContainTenantId(userAccount, tenantId);
-        if (redisService.hasKey(intervalCacheKey)) {
-            long expire = redisService.getExpire(intervalCacheKey);
-            throw new ServiceException("请等待" + expire + "秒后再重置密码。");
-        }
         //发送间隔：10分钟。
         long keyExpireTime = 10;
         redisService.setCacheObject(intervalCacheKey, null, keyExpireTime, TimeUnit.MINUTES);

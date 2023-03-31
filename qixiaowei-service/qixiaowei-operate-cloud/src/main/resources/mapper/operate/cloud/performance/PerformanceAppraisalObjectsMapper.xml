@@ -627,8 +627,9 @@
     </update>
     <update id="withdrawPerformanceAppraisalObjects">
         UPDATE performance_appraisal_objects
-        SET evaluation_score = #{performanceAppraisalObjects.evaluationScore},appraisal_object_status =
-        #{performanceAppraisalObjects.appraisalObjectStatus}
+        SET evaluation_score = #{performanceAppraisalObjects.evaluationScore},
+        appraisal_object_status = #{performanceAppraisalObjects.appraisalObjectStatus},
+        remark = #{performanceAppraisalObjects.remark}
         WHERE
         perform_appraisal_objects_id = #{performanceAppraisalObjects.performAppraisalObjectsId}
     </update>

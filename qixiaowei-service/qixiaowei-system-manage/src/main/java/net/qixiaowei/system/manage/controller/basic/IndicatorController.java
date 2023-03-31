@@ -54,7 +54,7 @@ public class IndicatorController extends BaseController {
     public AjaxResult treeList(IndicatorDTO indicatorDTO) {
         Integer indicatorType = indicatorDTO.getIndicatorType();
         indicatorDTO.setIndicatorType(null);
-        if (!CheckObjectIsNullUtils.isNull(indicatorDTO)) {
+        if (!CheckObjectIsNullUtils.isNull(indicatorDTO) || StringUtils.isNotEmpty(indicatorDTO.getParams())) {
             indicatorDTO.setIndicatorType(indicatorType);
             return AjaxResult.success(indicatorService.selectIndicatorList(indicatorDTO));
         }

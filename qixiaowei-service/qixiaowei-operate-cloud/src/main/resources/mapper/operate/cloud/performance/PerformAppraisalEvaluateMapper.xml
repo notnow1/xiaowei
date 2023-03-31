@@ -198,9 +198,7 @@
             </trim>
             <trim prefix="actual_value=case" suffix="end,">
                 <foreach collection="performAppraisalEvaluateList" item="item" index="index">
-                    <if test="item.actualValue != null">
-                        when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then #{item.actualValue}
-                    </if>
+                    when perform_appraisal_evaluate_id=#{item.performAppraisalEvaluateId} then #{item.actualValue}
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">

@@ -15,6 +15,7 @@ import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
@@ -61,6 +62,7 @@ public class GapAnalysisController extends BaseController {
      * 分页查询差距分析表列表
      */
     @RequiresPermissions("strategy:cloud:gapAnalysis:pageList")
+    @DataScope(businessAlias = "ga")
     @GetMapping("/pageList")
     public TableDataInfo pageList(GapAnalysisDTO gapAnalysisDTO) {
         startPage();

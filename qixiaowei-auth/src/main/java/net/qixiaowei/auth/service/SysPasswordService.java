@@ -116,7 +116,7 @@ public class SysPasswordService {
             retryCount = retryCount + 1;
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, String.format("密码输入错误%s次", retryCount));
             redisService.setCacheObject(cacheKey, retryCount, lockTime, TimeUnit.MINUTES);
-            throw new ServiceException("账号或密码有误，请重新输入！");
+            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
         } else {
             clearLoginRecordCache(cacheKey);
         }

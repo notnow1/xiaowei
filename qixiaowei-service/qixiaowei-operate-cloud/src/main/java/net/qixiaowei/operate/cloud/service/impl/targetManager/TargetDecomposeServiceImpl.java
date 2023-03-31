@@ -3377,7 +3377,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 for (EmployeeDTO employeeDTO : employeeDTOList) {
                                     String employeeCode = employeeDTO.getEmployeeCode();
                                     if (StringUtils.isBlank(employeeCode)) {
-                                        codeErreo.append("第" + i + "列员工为必填项！");
+                                        codeErreo.append("第" + i + "行员工为必填项！");
                                         i++;
                                         continue;
                                     }
@@ -3386,7 +3386,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                             List<String> employeeCodes = employeeDTOS.stream().filter(f -> (null != f.getEmploymentStatus() && null != f.getStatus())
                                                     && (1 == f.getEmploymentStatus() && 1 == f.getStatus())).map(EmployeeDTO::getEmployeeCode).collect(Collectors.toList());
                                             if (!employeeCodes.contains(employeeDTO.getEmployeeCode())) {
-                                                codeErreo.append("第" + i + "列" + employeeDTO.getEmployeeCode() + "该员工不存在！");
+                                                codeErreo.append("第" + i + "行" + employeeDTO.getEmployeeCode() + "该员工不存在！");
                                                 break;
                                             } else {
                                                 if (employeeDTO.getEmployeeCode().equals(dto.getEmployeeCode())) {
@@ -3440,7 +3440,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                         if (StringUtils.isNotBlank(areaCode)) {
                                             List<String> areaCodes = areaDTOS.stream().map(AreaDTO::getAreaCode).collect(Collectors.toList());
                                             if (!areaCodes.contains(areaDTO.getAreaCode())) {
-                                                codeErreo.append("第" + i + "列" + areaDTO.getAreaCode() + "该区域不存在！");
+                                                codeErreo.append("第" + i + "行" + areaDTO.getAreaCode() + "该区域不存在！");
                                                 break;
                                             } else {
                                                 if (areaDTO.getAreaCode().equals(dto.getAreaCode())) {
@@ -3490,7 +3490,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 for (DepartmentDTO departmentDTO : departmentDTOList) {
                                     String departmentCode = departmentDTO.getDepartmentCode();
                                     if (StringUtils.isBlank(departmentCode)) {
-                                        codeErreo.append("第" + i + "列" + "部门为必填项！");
+                                        codeErreo.append("第" + i + "行" + "部门为必填项！");
                                         i++;
                                         continue;
                                     }
@@ -3498,7 +3498,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                         if (StringUtils.isNotBlank(departmentCode)) {
                                             List<String> departmentCodes = departmentDTOS.stream().filter(f -> (null != f.getStatus() && f.getStatus() == 1)).map(DepartmentDTO::getDepartmentCode).collect(Collectors.toList());
                                             if (!departmentCodes.contains(departmentDTO.getDepartmentCode())) {
-                                                codeErreo.append("第" + i + "列" + departmentCode + "该部门为不存在！");
+                                                codeErreo.append("第" + i + "行" + departmentCode + "该部门为不存在！");
                                                 break;
                                             } else {
                                                 if (departmentDTO.getDepartmentCode().equals(dto.getDepartmentCode())) {
@@ -3547,7 +3547,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 for (IndustryDTO industryDTO : industryDTOList) {
                                     String industryCode = industryDTO.getIndustryCode();
                                     if (StringUtils.isBlank(industryCode)) {
-                                        codeErreo.append("第" + i + "列" + "行业为必填项！");
+                                        codeErreo.append("第" + i + "行" + "行业为必填项！");
                                         i++;
                                         continue;
                                     }
@@ -3555,7 +3555,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                         if (StringUtils.isNotBlank(industryCode)) {
                                             List<String> industryCodes = industryDTOS.stream().filter(f -> (null != f.getStatus() && 1 == f.getStatus())).map(IndustryDTO::getIndustryCode).collect(Collectors.toList());
                                             if (!industryCodes.contains(industryCode)) {
-                                                codeErreo.append("第" + i + "列" + industryCode + "该行业不存在！");
+                                                codeErreo.append("第" + i + "行" + industryCode + "该行业不存在！");
                                                 break;
                                             } else {
                                                 if (industryDTO.getIndustryCode().equals(dto.getIndustryCode())) {
@@ -3605,7 +3605,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 for (RegionDTO regionDTO : regionDTOList) {
                                     String provinceName = regionDTO.getProvinceName();
                                     if (StringUtils.isBlank(provinceName)) {
-                                        codeErreo.append("第" + i + "列" + "省份为必填项！");
+                                        codeErreo.append("第" + i + "行" + "省份为必填项！");
                                         i++;
                                         continue;
                                     }
@@ -3613,7 +3613,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                         if (StringUtils.isNotBlank(provinceName)) {
                                             List<String> provinceNames = regionDTOS.stream().filter(f -> StringUtils.isNotBlank(f.getProvinceName())).map(RegionDTO::getProvinceName).collect(Collectors.toList());
                                             if (!provinceNames.contains(provinceName)) {
-                                                codeErreo.append("第" + i + "列" + dto.getProvinceName() + "该省份不存在！");
+                                                codeErreo.append("第" + i + "行" + dto.getProvinceName() + "该省份不存在！");
                                                 break;
                                             } else {
                                                 if (StringUtils.equals(dto.getProvinceName(), regionDTO.getProvinceName())) {
@@ -3660,7 +3660,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 for (ProductDTO productDTO : productDTOList) {
                                     String productCode = productDTO.getProductCode();
                                     if (StringUtils.isBlank(productCode)) {
-                                        codeErreo.append("第" + i + "列" + "产品为必填项！");
+                                        codeErreo.append("第" + i + "行" + "产品为必填项！");
                                         i++;
                                         continue;
                                     }
@@ -3668,7 +3668,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                         if (StringUtils.isNotBlank(productCode)) {
                                             List<String> productCodes = productDTOS.stream().map(ProductDTO::getProductCode).collect(Collectors.toList());
                                             if (!productCodes.contains(productCode)) {
-                                                codeErreo.append("第" + i + "列" + dto.getProductCode() + "该产品不存在！");
+                                                codeErreo.append("第" + i + "行" + dto.getProductCode() + "该产品不存在！");
                                                 break;
                                             } else {
                                                 if (dto.getProductCode().equals(productDTO.getProductCode())) {
@@ -3700,12 +3700,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     }
                 });
             }
-            if (codeErreo.length() > 1) {
+/*            if (codeErreo.length() > 1) {
                 throw new ServiceException(codeErreo.toString());
-            }
-        } catch (ServiceException e) {
+            }*/
+        } /*catch (ServiceException e) {
             throw e;
-        } catch (Exception e) {
+        }*/ catch (Exception e) {
             throw new ServiceException("模板格式不正确！");
         }
         return mapAllEndData;

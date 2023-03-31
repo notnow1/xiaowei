@@ -763,9 +763,6 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
         if (commentFlag == 0) {
             if (submitFlag == 0) {
-                //评议日期
-                employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
-                employeeAnnualBonus.setStatus(Constants.ZERO);
                 packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus,null);
             } else {
                 //评议日期
@@ -807,11 +804,16 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             List<UserDTO> UserData = listR.getData();
             if (StringUtils.isNotEmpty(UserData)){
                 for (EmpAnnualBonusObjects empAnnualBonusObjects : empAnnualBonusObjectsList) {
-                    for (UserDTO userDatum : UserData) {
-                        if (empAnnualBonusObjects.getResponsibleEmployeeId().equals(userDatum.getEmployeeId())){
-                            empAnnualBonusObjects.setUserId(userDatum.getUserId());
+                    if (StringUtils.isNotNull(empAnnualBonusObjects.getResponsibleEmployeeId())){
+                        for (UserDTO userDatum : UserData) {
+                            if (StringUtils.isNotNull(userDatum.getEmployeeId())){
+                                if (empAnnualBonusObjects.getResponsibleEmployeeId().equals(userDatum.getEmployeeId())){
+                                    empAnnualBonusObjects.setUserId(userDatum.getUserId());
+                                }
+                            }
                         }
                     }
+
                 }
                 //根据主管id分组
                 Map<Long, List<EmpAnnualBonusObjects>> employeeMap = empAnnualBonusObjectsList.parallelStream().filter(f -> f.getResponsibleEmployeeId() != null).collect(Collectors.groupingBy(EmpAnnualBonusObjects::getResponsibleEmployeeId));
