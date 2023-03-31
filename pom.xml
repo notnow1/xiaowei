@@ -47,7 +47,7 @@
         <poi.version>4.1.2</poi.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         <hutool.version>5.8.8</hutool.version>
-        <easyexcel.version>3.1.2</easyexcel.version>
+        <easyexcel.version>3.2.1</easyexcel.version>
         <xxl-job.version>2.3.1</xxl-job.version>
     </properties>
 
