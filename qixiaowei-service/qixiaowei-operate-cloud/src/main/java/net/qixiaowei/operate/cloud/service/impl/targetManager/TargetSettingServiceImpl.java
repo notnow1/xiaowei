@@ -2172,9 +2172,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     ((salesRevenueGuaranteed.multiply(BigDecimal.valueOf(DSO))).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP)).subtract(balanceReceivables);
             // 【回款总目标】：公式=上年年末应收账款余额+销售收入目标*（1+平均增值税率）-期末应收账款余额。
             BigDecimal rate = (percentage.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)).add(BigDecimal.ONE);
-            BigDecimal totalTarget = balanceReceivables.add(salesRevenueTarget.multiply(rate)).add(endingBalanceTarget);
-            BigDecimal totalChallenge = balanceReceivables.add(salesRevenueChallenge.multiply(rate)).add(endingBalanceChallenge);
-            BigDecimal totalGuaranteed = balanceReceivables.add(salesRevenueGuaranteed.multiply(rate)).add(endingBalanceGuaranteed);
+            BigDecimal totalTarget = balanceReceivables.add(salesRevenueTarget.multiply(rate)).subtract(endingBalanceTarget);
+            BigDecimal totalChallenge = balanceReceivables.add(salesRevenueChallenge.multiply(rate)).subtract(endingBalanceChallenge);
+            BigDecimal totalGuaranteed = balanceReceivables.add(salesRevenueGuaranteed.multiply(rate)).subtract(endingBalanceGuaranteed);
             Map<String, BigDecimal> challengeMap = new HashMap<>();
             Map<String, BigDecimal> targetMap = new HashMap<>();
             Map<String, BigDecimal> guaranteedMap = new HashMap<>();
