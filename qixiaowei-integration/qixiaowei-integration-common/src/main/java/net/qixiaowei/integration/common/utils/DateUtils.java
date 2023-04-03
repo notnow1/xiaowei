@@ -135,6 +135,20 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
     /**
+     * 将Excel中各种日期型字符串 转化为日期格式
+     */
+    public static Date parseAnalysisExcelDate(Object str) {
+        if (str == null) {
+            return null;
+        }
+        String replace = str.toString().replace("年", "/").replace("月", "/").replace("日", "");
+        try {
+            return parseDate(replace, parsePatterns);
+        } catch (ParseException e) {
+            throw new ServiceException("请输入正确的日期!"+str);
+        }
+    }
+    /**
      * 获取当前月
      */
     public static int getMonth() {
