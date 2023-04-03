@@ -1752,6 +1752,8 @@ public class ProductServiceImpl implements IProductService {
                         //目标价
                         if (StringUtils.isNotNull(listPrice)) {
                             productExportExcel.setListPrice(listPrice.toString());
+                        }else {
+                            productExportExcel.setListPrice("0.00");
                         }
                         //规格名称
                         if (StringUtils.isNotNull(specificationName)) {

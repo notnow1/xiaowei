@@ -296,7 +296,7 @@ public class EmployeeController extends BaseController {
                             sheet.setColumnWidth(columnIndex, (270 * 22));
                         }
                         // 行高7
-                        sheet.setDefaultRowHeight((short) (20 * 16));
+                        sheet.setDefaultRowHeight((short) (20 * 15));
                     }
                 })
                 .doWrite(EmployeeImportListener.dataList(employeeExcelList));

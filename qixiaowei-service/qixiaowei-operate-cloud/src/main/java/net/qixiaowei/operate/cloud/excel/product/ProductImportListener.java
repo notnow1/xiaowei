@@ -246,71 +246,55 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
     /**
      *导出数据的excel
      *
-     * @param selectMap
      * @param dictionaryTypeDTO
      * @param dictionaryLabels
      * @param productUnitDTOS
      * @return
      */
-    public static List<List<String>> exportHead(Map<Integer, List<String>> selectMap, DictionaryTypeDTO dictionaryTypeDTO, List<String> dictionaryLabels, List<ProductUnitDTO> productUnitDTOS) {
+    public static List<List<String>> exportHead(DictionaryTypeDTO dictionaryTypeDTO, List<String> dictionaryLabels, List<ProductUnitDTO> productUnitDTOS) {
         List<List<String>> list = new ArrayList<List<String>>();
         // 第一列
         List<String> head0 = new ArrayList<String>();
-        head0.add("产品基本信息");
-        head0.add("产品编码*");
+        head0.add("产品编码");
         // 第二列
         List<String> head1 = new ArrayList<String>();
-        head1.add("产品基本信息");
-        head1.add("产品名称*");
+        head1.add("产品名称");
         // 第三列
         List<String> head2 = new ArrayList<String>();
-        head2.add("产品基本信息");
         head2.add("上级产品编码");
 
         // 第四列
         List<String> head3 = new ArrayList<String>();
-        head3.add("产品基本信息");
-        head3.add("产品量纲*");
-        if (StringUtils.isNotEmpty(productUnitDTOS)) {
-            selectMap.put(3, productUnitDTOS.stream().map(ProductUnitDTO::getProductUnitName).collect(Collectors.toList()));
-        }
+        head3.add("产品量纲");
+
 
         // 第五列
         List<String> head4 = new ArrayList<String>();
-        head4.add("产品基本信息");
         if (StringUtils.isNotNull(dictionaryTypeDTO)){
             head4.add(dictionaryTypeDTO.getDictionaryName());
         }
-        if (StringUtils.isNotEmpty(dictionaryLabels)){
-            selectMap.put(4, dictionaryLabels);
-        }
+
         // 第六列
         List<String> head5 = new ArrayList<String>();
-        head5.add("产品基本信息");
         head5.add("是否上下架");
-        selectMap.put(5, Arrays.asList("上架", "下架"));
+
 
         // 第七列
         List<String> head6 = new ArrayList<String>();
-        head6.add("产品基本信息");
         head6.add("产品描述");
         // 第八列
         List<String> head7 = new ArrayList<String>();
-        head7.add("产品规格信息");
         head7.add("规格");
 
 
         // 第九列
         List<String> head8 = new ArrayList<String>();
-        head8.add("产品规格信息");
         head8.add("目录价（单位：元）");
         // 第十列
         List<String> head9 = new ArrayList<String>();
-        head9.add("产品规格信息");
         head9.add("参数名称");
         // 第十一列
         List<String> head10 = new ArrayList<String>();
-        head10.add("产品规格信息");
         head10.add("参数值");
         list.add(head0);
         list.add(head1);

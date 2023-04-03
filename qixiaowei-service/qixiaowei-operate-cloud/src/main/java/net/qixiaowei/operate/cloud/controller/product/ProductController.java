@@ -8,9 +8,12 @@ import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.handler.CellWriteHandler;
+import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
+import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
@@ -39,8 +42,9 @@ import net.qixiaowei.operate.cloud.service.product.IProductUnitService;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -278,9 +282,9 @@ public class ProductController extends BaseController {
         ProductUnitDTO productUnitDTO = new ProductUnitDTO();
         List<ProductUnitDTO> productUnitDTOS = productUnitService.selectProductUnitList(productUnitDTO);
 
-        Map<Integer, List<String>> selectMap = new HashMap<>();
+
         //自定义表头
-        List<List<String>> head = ProductImportListener.exportHead(selectMap,data,dictionaryLabels,productUnitDTOS);
+        List<List<String>> head = ProductImportListener.exportHead(data,dictionaryLabels,productUnitDTOS);
         List<Long> productIds = new ArrayList<>();
         if (!CheckObjectIsNullUtils.isNull(productDTO)){
             List<Long> productIds1 = productDTO.getProductIds();
@@ -304,12 +308,14 @@ public class ProductController extends BaseController {
         String fileName = URLEncoder.encode("产品配置" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        CustomVerticalCellStyleStrategy levelStrategy = new CustomVerticalCellStyleStrategy(head);
+
 
         EasyExcel.write(response.getOutputStream())
                 .excelType(ExcelTypeEnum.XLSX)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .inMemory(true)
+                .useDefaultStyle(false)
                 .head(head)
+                .sheet("产品配置")// 设置 sheet 的名字
                 //设置文本
                 .registerWriteHandler(new CellWriteHandler() {
                     @Override
@@ -322,9 +328,95 @@ public class ProductController extends BaseController {
                         writeCellStyle.setDataFormatData(dataFormatData);
                     }
                 })
-                .registerWriteHandler(levelStrategy)
-                .registerWriteHandler(new SimpleColumnWidthStyleStrategy(21))
-                .sheet("产品配置")// 设置 sheet 的名字
+                .registerWriteHandler(new SheetWriteHandler() {
+                    @Override
+                    public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
+                        for (int i = 0; i < 100; i++) {
+                            // 设置为文本格式
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            CellStyle cellStyle = writeWorkbookHolder.getCachedWorkbook().createCellStyle();
+                            // 49为文本格式
+                            cellStyle.setDataFormat((short) 49);
+                            // i为列，一整列设置为文本格式
+                            sheet.setDefaultColumnStyle(i, cellStyle);
+
+                        }
+                    }
+                })
+                //设置文本
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        //设置文本
+                        DataFormatData dataFormatData = new DataFormatData();
+                        dataFormatData.setIndex((short) 49);
+                        writeCellStyle.setDataFormatData(dataFormatData);
+                        // 设置字体
+                        WriteFont headWriteFont = new WriteFont();
+                        if (context.getRowIndex() == 0) {
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            //加粗
+                            headWriteFont.setBold(true);
+                            headWriteFont.setFontName("微软雅黑");
+                            writeCellStyle.setWriteFont(headWriteFont);
+                            //靠左
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            //垂直居中
+                            writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            //设置边框
+                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                            writeCellStyle.setBorderTop(BorderStyle.THIN);
+                            writeCellStyle.setBorderRight(BorderStyle.THIN);
+                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                            // 拿到poi的workbook
+                            Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                            // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                            // 不同单元格尽量传同一个 cellStyle
+                            //设置rgb颜色
+                            byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                            CellStyle cellStyle = workbook.createCellStyle();
+                            XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                            xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                            // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                            // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                            // cell里面去 会导致自己设置的不一样（很关键）
+                            cellData.setOriginCellStyle(xssfCellColorStyle);
+                            cell.setCellStyle(cellStyle);
+                        } else {
+                            //居左
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            //垂直居中
+                            writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            headWriteFont.setFontName("微软雅黑");
+                            writeCellStyle.setWriteFont(headWriteFont);
+                        }
+                        cellData.setWriteCellStyle(writeCellStyle);
+                    }
+                })
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                        Sheet sheet = writeSheetHolder.getSheet();
+                        int columnIndex = cell.getColumnIndex();
+                        // 列宽16
+                        sheet.setColumnWidth(columnIndex, (270 * 16));
+                        // 行高
+                        sheet.setDefaultRowHeight((short) (20 * 15));
+                    }
+                })
                 .doWrite(ProductImportListener.dataList(productExportExcelList));
 
     }
