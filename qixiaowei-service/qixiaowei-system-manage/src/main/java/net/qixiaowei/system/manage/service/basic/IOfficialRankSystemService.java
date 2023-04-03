@@ -1,11 +1,9 @@
 package net.qixiaowei.system.manage.service.basic;
 
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
-import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 
 /**
@@ -131,10 +129,11 @@ public interface IOfficialRankSystemService {
     /**
      * 职级分解维度下拉框
      *
-     * @param rankDecomposeDimension
-     * @return
+     * @param type   类型
+     * @param status 状态
+     * @return 结果
      */
-    List<Map<String, String>> decomposeDrop(Integer rankDecomposeDimension);
+    List<Map<String, String>> decomposeDrop(Integer type, Integer status);
 
     /**
      * 通过ID集合查找职级等级列表

@@ -1090,9 +1090,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingExcel.setTargetYear(targetYear);
                 targetSettingExcel.setIndicatorName(settingDTO.getIndicatorName());
                 targetSettingExcel.setIndicatorCode(settingDTO.getIndicatorCode());
-                targetSettingExcel.setChallengeValue(settingDTO.getChallengeValue());
-                targetSettingExcel.setTargetValue(settingDTO.getTargetValue());
-                targetSettingExcel.setGuaranteedValue(settingDTO.getGuaranteedValue());
+                targetSettingExcel.setChallengeValue(Optional.ofNullable(settingDTO.getChallengeValue()).orElse(BigDecimal.ZERO));
+                targetSettingExcel.setTargetValue(Optional.ofNullable(settingDTO.getTargetValue()).orElse(BigDecimal.ZERO));
+                targetSettingExcel.setGuaranteedValue(Optional.ofNullable(settingDTO.getGuaranteedValue()).orElse(BigDecimal.ZERO));
                 targetSettingExcels.add(targetSettingExcel);
             });
             targetSettingExcelLists.add(targetSettingExcels);

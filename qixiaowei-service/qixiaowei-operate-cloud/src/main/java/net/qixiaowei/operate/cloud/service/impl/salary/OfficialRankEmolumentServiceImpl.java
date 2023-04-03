@@ -281,14 +281,6 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                 addRankEmolumentDTOList.add(emolumentDTO);
                 officialRankEmolumentDTOList.remove(i);
             }
-            if (Optional.ofNullable(emolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO)
-                    .compareTo(Optional.ofNullable(emolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO)) < 0) {
-                throw new ServiceException("工资上限应大于等于工资下限");
-            }
-            if (Optional.ofNullable(emolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO).compareTo(Optional.ofNullable(emolumentDTO.getSalaryMedian()).orElse(BigDecimal.ZERO)) < 0
-                    || Optional.ofNullable(emolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO).compareTo(Optional.ofNullable(emolumentDTO.getSalaryMedian()).orElse(BigDecimal.ZERO)) > 0) {
-                throw new ServiceException("工资中位值应在工资上下限范围内");
-            }
         }
         if (StringUtils.isNotEmpty(addRankEmolumentDTOList)) {
             insertOfficialRankEmoluments(addRankEmolumentDTOList);

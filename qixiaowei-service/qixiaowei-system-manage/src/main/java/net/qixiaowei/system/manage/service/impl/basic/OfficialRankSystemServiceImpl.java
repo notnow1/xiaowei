@@ -136,15 +136,18 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     /**
      * 职级分解维度下拉框
      *
-     * @param rankDecomposeDimension 分解类型
+     * @param type   分解类型
+     * @param status 状态
      * @return dropList
      */
     @Override
-    public List<Map<String, String>> decomposeDrop(Integer rankDecomposeDimension) {
+    public List<Map<String, String>> decomposeDrop(Integer type, Integer status) {
         List<Map<String, String>> dropList = new ArrayList<>();
-        switch (rankDecomposeDimension) {
+        switch (type) {
             case 1:// todo 1部门
-                List<DepartmentDTO> listDepartment = departmentService.dropList(new Department());
+                Department department1 = new Department();
+                department1.setStatus(1);
+                List<DepartmentDTO> listDepartment = departmentService.dropList(department1);
                 if (StringUtils.isNotEmpty(listDepartment)) {
                     for (DepartmentDTO department : listDepartment) {
                         HashMap<String, String> departmentMap = new HashMap<>();
@@ -183,6 +186,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 break;
             case 4:// todo 4产品
                 ProductDTO productDTO = new ProductDTO();
+                productDTO.setListingFlag(1);
                 R<List<ProductDTO>> listProduct = productService.dropList(productDTO, SecurityConstants.INNER);
                 if (listProduct.getCode() == 200 && StringUtils.isNotEmpty(listProduct.getData())) {
                     List<ProductDTO> data = listProduct.getData();

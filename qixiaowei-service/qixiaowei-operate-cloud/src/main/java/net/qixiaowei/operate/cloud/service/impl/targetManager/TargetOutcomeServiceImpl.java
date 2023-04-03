@@ -602,8 +602,8 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     /**
      * 导入Excel
      *
-     * @param dataList
-     * @param targetOutcomeId
+     * @param dataList        数据列表
+     * @param targetOutcomeId 结果ID
      */
     @Override
     @Transactional
@@ -775,8 +775,8 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     /**
      * 通过targetYear查找Target Outcome DTO
      *
-     * @param targetYear
-     * @return
+     * @param targetYear 目标年度
+     * @return 结果
      */
     @Override
     public TargetOutcomeDTO selectTargetOutcomeByTargetYear(Integer targetYear) {

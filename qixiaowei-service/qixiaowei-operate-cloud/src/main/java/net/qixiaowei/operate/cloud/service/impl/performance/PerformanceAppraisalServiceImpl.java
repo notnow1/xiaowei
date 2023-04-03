@@ -2324,25 +2324,25 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         performanceAppraisalObjectsDTO.setAppraisalObjectStatusList(appraisalObjectStatuses);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
-        Map<String, Object> params2 = new HashMap<>();
-        for (String key : params.keySet()) {
-            switch (key) {
-                case "departmentNameEqual":
-                    params2.put("departmentNameEqual", params.get("departmentNameEqual"));
-                    break;
-                case "departmentNameNotEqual":
-                    params2.put("departmentNameNotEqual", params.get("departmentNameNotEqual"));
-                    break;
-            }
-        }
-        if (StringUtils.isNotEmpty(params2)) {
-            List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
-            if (StringUtils.isEmpty(departmentDTOS)) {
-                return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
-            }
-            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            params.put("departmentIds", departmentIds);
-        }
+//        Map<String, Object> params2 = new HashMap<>();
+//        for (String key : params.keySet()) {
+//            switch (key) {
+//                case "departmentNameEqual":
+//                    params2.put("departmentNameEqual", params.get("departmentNameEqual"));
+//                    break;
+//                case "departmentNameNotEqual":
+//                    params2.put("departmentNameNotEqual", params.get("departmentNameNotEqual"));
+//                    break;
+//            }
+//        }
+//        if (StringUtils.isNotEmpty(params2)) {
+//            List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
+//            if (StringUtils.isEmpty(departmentDTOS)) {
+//                return PageUtils.tableDataInfo(HttpStatus.SUCCESS, new ArrayList<>(), 0);
+//            }
+//            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+//            params.put("departmentIds", departmentIds);
+//        }
         performanceAppraisalObjectsDTO.setParams(params);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
         this.handleResultOfPerformanceAppraisalObjects(performanceAppraisalObjectsDTOList);
@@ -2406,17 +2406,17 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 case "employeeCodeNotEqual":
                     params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
                     break;
-                case "employeePostNameEqual":
-                    params2.put("employeePostNameEqual", params.get("employeePostNameEqual"));
+                case "employeeDepartmentIdEqual":
+                    params2.put("employeeDepartmentIdEqual", params.get("employeeDepartmentIdEqual"));
                     break;
-                case "employeePostNameNotEqual":
-                    params2.put("employeePostNameNotEqual", params.get("employeePostNameNotEqual"));
+                case "employeeDepartmentIdNotEqual":
+                    params2.put("employeeDepartmentIdNotEqual", params.get("employeeDepartmentIdNotEqual"));
                     break;
-                case "employeeDepartmentNameEqual":
-                    params2.put("employeeDepartmentNameEqual", params.get("employeeDepartmentNameEqual"));
+                case "employeePostIdEqual":
+                    params2.put("employeePostIdEqual", params.get("employeePostIdEqual"));
                     break;
-                case "employeeDepartmentNameNotEqual":
-                    params2.put("employeeDepartmentNameNotEqual", params.get("employeeDepartmentNameNotEqual"));
+                case "employeePostIdNotEqual":
+                    params2.put("employeePostIdNotEqual", params.get("employeePostIdNotEqual"));
                     break;
             }
         }
@@ -2701,11 +2701,17 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Map<String, Object> params2 = new HashMap<>();
         for (String key : params.keySet()) {
             switch (key) {
-                case "departmentNameEqual":
-                    params2.put("departmentNameEqual", params.get("departmentNameEqual"));
+                case "employeeDepartmentIdEqual":
+                    params2.put("employeeDepartmentIdEqual", params.get("employeeDepartmentIdEqual"));
                     break;
-                case "departmentNameNotEqual":
-                    params2.put("departmentNameNotEqual", params.get("departmentNameNotEqual"));
+                case "employeeDepartmentIdNotEqual":
+                    params2.put("employeeDepartmentIdNotEqual", params.get("employeeDepartmentIdNotEqual"));
+                    break;
+                case "employeePostIdEqual":
+                    params2.put("employeePostIdEqual", params.get("employeePostIdEqual"));
+                    break;
+                case "employeePostIdNotEqual":
+                    params2.put("employeePostIdNotEqual", params.get("employeePostIdNotEqual"));
                     break;
             }
         }
@@ -2780,17 +2786,17 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 case "employeeCodeNotEqual":
                     params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
                     break;
-                case "employeePostNameEqual":
-                    params2.put("employeePostNameEqual", params.get("employeePostNameEqual"));
+                case "employeeDepartmentIdEqual":
+                    params2.put("employeeDepartmentIdEqual", params.get("employeeDepartmentIdEqual"));
                     break;
-                case "employeePostNameNotEqual":
-                    params2.put("employeePostNameNotEqual", params.get("employeePostNameNotEqual"));
+                case "employeeDepartmentIdNotEqual":
+                    params2.put("employeeDepartmentIdNotEqual", params.get("employeeDepartmentIdNotEqual"));
                     break;
-                case "employeeDepartmentNameEqual":
-                    params2.put("employeeDepartmentNameEqual", params.get("employeeDepartmentNameEqual"));
+                case "employeePostIdEqual":
+                    params2.put("employeePostIdEqual", params.get("employeePostIdEqual"));
                     break;
-                case "employeeDepartmentNameNotEqual":
-                    params2.put("employeeDepartmentNameNotEqual", params.get("employeeDepartmentNameNotEqual"));
+                case "employeePostIdNotEqual":
+                    params2.put("employeePostIdNotEqual", params.get("employeePostIdNotEqual"));
                     break;
             }
         }

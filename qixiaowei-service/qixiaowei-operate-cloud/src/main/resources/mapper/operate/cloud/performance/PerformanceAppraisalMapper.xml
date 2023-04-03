@@ -693,6 +693,48 @@
             OR pao.appraisal_object_status IS NULL
             )
         </if>
+        <!--部门高级搜索-->
+        <if test="performanceAppraisalObjectsDTO.params.departmentIdEqual != null and performanceAppraisalObjectsDTO.params.departmentIdEqual.size() > 0">
+            AND pa.appraisal_object = 1
+            AND pao.appraisal_object_id IN
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.departmentIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisalObjectsDTO.params.departmentIdNotEqual != null and performanceAppraisalObjectsDTO.params.departmentIdNotEqual.size() > 0">
+            AND pa.appraisal_object = 1
+            AND (pao.appraisal_object_id NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.departmentIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pao.appraisal_object_id IS NULL
+            )
+        </if>
+        <!--员工高级搜索-->
+        <if test="performanceAppraisalObjectsDTO.params.employeeIdEqual != null and performanceAppraisalObjectsDTO.params.employeeIdEqual.size() > 0">
+            AND pa.appraisal_object = 2
+            AND pao.appraisal_object_id IN
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.employeeIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisalObjectsDTO.params.employeeIdNotEqual != null and performanceAppraisalObjectsDTO.params.employeeIdNotEqual.size() > 0">
+            AND pa.appraisal_object = 2
+            AND (pao.appraisal_object_id NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.employeeIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pao.appraisal_object_id IS NULL
+            )
+        </if>
         <!--        平移分数-->
         <if test="performanceAppraisalObjectsDTO.params.evaluationScoreEqual != null and performanceAppraisalObjectsDTO.params.evaluationScoreEqual.size() > 0">
             AND ifnull(pao.evaluation_score,0) IN

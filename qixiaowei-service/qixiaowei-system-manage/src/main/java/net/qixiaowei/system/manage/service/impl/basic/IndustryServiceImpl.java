@@ -206,6 +206,7 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.putExtra("level", treeNode.getLevel());
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());
+            tree.putExtra("statusFlag", treeNode.getStatus() != 1);
             tree.putExtra("createBy", treeNode.getCreateBy());
             tree.putExtra("createByName", treeNode.getCreateByName());
             tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
@@ -829,6 +830,7 @@ public class IndustryServiceImpl implements IIndustryService {
                 tree.putExtra("level", treeNode.getLevel());
                 tree.putExtra("industryCode", treeNode.getIndustryCode());
                 tree.putExtra("status", treeNode.getStatus());
+                tree.putExtra("statusFlag", treeNode.getStatus() != 1);
                 tree.putExtra("createBy", treeNode.getCreateBy());
                 tree.putExtra("statusValue", treeNode.getStatus() != 1);
                 tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
@@ -852,6 +854,7 @@ public class IndustryServiceImpl implements IIndustryService {
                 tree.putExtra("level", treeNode.getLevel());
                 tree.putExtra("industryCode", treeNode.getIndustryCode());
                 tree.putExtra("status", treeNode.getStatus());
+                tree.putExtra("statusFlag", treeNode.getStatus() != 1);
                 tree.putExtra("createBy", treeNode.getCreateBy());
                 tree.putExtra("statusValue", treeNode.getStatus() != 1);
                 tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
@@ -1048,6 +1051,7 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.putExtra("level", treeNode.getLevel());
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());
+            tree.putExtra("statusFlag", treeNode.getStatus() != 1);
         });
     }
 }

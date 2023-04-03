@@ -51,11 +51,13 @@ public class TargetSettingExcel {
      * 指标ID
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "指标名称"})
+    @ColumnWidth(16)
     private String indicatorName;
     /**
      * 指标ID
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "指标编码"})
+    @ColumnWidth(16)
     private String indicatorCode;
     /**
      * 目标年度
@@ -73,16 +75,19 @@ public class TargetSettingExcel {
      * 挑战值
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "挑战值"})
+    @ColumnWidth(16)
     private BigDecimal challengeValue;
     /**
      * 目标值
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "目标值"})
+    @ColumnWidth(16)
     private BigDecimal targetValue;
     /**
      * 保底值
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "保底值"})
+    @ColumnWidth(16)
     private BigDecimal guaranteedValue;
     /**
      * 排序
