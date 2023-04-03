@@ -116,7 +116,10 @@ public class ExcelUtils {
                 }
             }
         }
-        return excelDateTime;
+        if (StringUtils.isNotBlank(excelDateTime)){
+            str=excelDateTime;
+        }
+        return str;
     }
     
     /**
@@ -201,8 +204,11 @@ public class ExcelUtils {
         T t1 = (T) t.getClass().newInstance();
 
         Field[] fields = t1.getClass().getDeclaredFields();
-        if (list.size() != fields.length) {
-            return t1;
+        int  difference = fields.length - list.size();
+        if (difference>0){
+            for (int i = 0; i < difference; i++) {
+                list.add("");
+            }
         }
         for (int k = 0, len = fields.length; k < len; k++) {
             // 根据属性名称,找寻合适的set方法
