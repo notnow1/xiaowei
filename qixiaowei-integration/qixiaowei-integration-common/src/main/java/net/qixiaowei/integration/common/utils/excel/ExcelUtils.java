@@ -59,7 +59,7 @@ public class ExcelUtils {
                 map.forEach((key, value) -> {
                     //从第几列开始
                     if (key >= line) {
-                        String s =  ExcelUtils.parseYearCh(map.get(key));
+                        String s =  ExcelUtils.parseExcelTime(map.get(key));
                         if (StringUtils.isBlank(s)) {
                             list2.add("");
                         } else {
@@ -85,7 +85,7 @@ public class ExcelUtils {
      * @param str
      * @return
      */
-    public static String parseYearCh(String str) {
+    public static String parseExcelTime(String str) {
         String excelDateTime = null;
         if (StringUtils.isNotBlank(str)){
             if (str.contains("月")){
