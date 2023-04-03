@@ -194,7 +194,7 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
         head12.add("部门*");
-        selectMap.put(12, parentDepartmentExcelNames);
+        selectMap.put(13, parentDepartmentExcelNames);
 
         // 第十四列
         List<String> head13 = new ArrayList<String>();
@@ -205,7 +205,7 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
         head13.add("岗位*");
-        selectMap.put(13, postNames);
+        selectMap.put(14, postNames);
         // 第十五列
         List<String> head14 = new ArrayList<String>();
         head14.add("说明：\n" +
@@ -473,7 +473,7 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
         logger.info("Excel解析完成");
 
         EmployeeExcel employeeExcel = new EmployeeExcel();
-        ExcelUtils.mapToListModel(2, 0, listMap, employeeExcel, list);
+        ExcelUtils.mapToListModel(1, 0, listMap, employeeExcel, list);
 
 
         // 达到BATCH_COUNT，则调用importer方法入库，防止数据几万条数据在内存，容易OOM

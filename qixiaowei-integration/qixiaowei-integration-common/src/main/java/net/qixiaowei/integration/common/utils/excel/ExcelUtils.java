@@ -59,7 +59,7 @@ public class ExcelUtils {
                 map.forEach((key, value) -> {
                     //从第几列开始
                     if (key >= line) {
-                        String s = map.get(key);
+                        String s =  ExcelUtils.parseYearCh(map.get(key));
                         if (StringUtils.isBlank(s)) {
                             list2.add("");
                         } else {
@@ -80,7 +80,113 @@ public class ExcelUtils {
 
 
     }
+    /**
+     * 判断是否是自定义格式的数据
+     * @param str
+     * @return
+     */
+    public static String parseYearCh(String str) {
+        String excelDateTime = null;
+        if (StringUtils.isNotBlank(str)){
+            if (str.contains("月")){
+                if (str.contains("一")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("二")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("三")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("四")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("五")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("六")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("七")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("八")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("九")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("十")){
+                    excelDateTime= excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("十一")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }else if (str.contains("十二")){
+                    excelDateTime=ExcelUtils.getExcelDateTime(excelDateTime,str);
+                }
+            }
+        }
+        return excelDateTime;
+    }
+    
+    /**
+     * 解析中文年份
+     * @param excelDateTime
+     * @param str
+     * @return
+     */
+    private static String getExcelDateTime(String excelDateTime, String str) {
+        if (StringUtils.isNotBlank(str)){
+            String chMonth = str.split("-")[0];
+            String chYear = "20" + str.split("-")[1];
+            switch (chMonth) {
+                case "一月":
+                    excelDateTime=chYear+"/1";
+                    break;
+                case "二月":
+                    excelDateTime=chYear+"/2";
+                    break;
+                case "三月":
+                    excelDateTime=chYear+"/3";
+                    break;
+                case "四月":
+                    excelDateTime=chYear+"/4";
+                    break;
+                case "五月":
+                    excelDateTime=chYear+"/5";
+                    break;
+                case "六月":
+                    excelDateTime=chYear+"/6";
+                    break;
+                case "七月":
+                    excelDateTime=chYear+"/7";
+                    break;
+                case "八月":
+                    excelDateTime=chYear+"/8";
+                    break;
+                case "九月":
+                    excelDateTime=chYear+"/9";
+                    break;
+                case "十月":
+                    excelDateTime=chYear+"/10";
+                    break;
+                case "十一月":
+                    excelDateTime=chYear+"/11";
+                    break;
+                case "十二月":
+                    excelDateTime=chYear+"/12";
+                    break;
+                default:
+                    break;
+            }
+        }
+        return excelDateTime;
+    }
 
+    /**
+     * 解析中文月份
+     *
+     * @param dateList 中文年月List
+     * @return monthList
+     */
+    public static List<Integer> parseMonthCh(List<String> dateList) {
+        List<Integer> monthList = new ArrayList<>();
+        for (String dateString : dateList) {
+
+
+        }
+        return monthList;
+    }
 
     /**
      * 将list转换为实体类(使用此方法字段属性为BigDecimal时，会报错，请改为其他属性，插入数据库时需修改成对应的属性，此方法的实体类仅作为Excel导入导出使用！)

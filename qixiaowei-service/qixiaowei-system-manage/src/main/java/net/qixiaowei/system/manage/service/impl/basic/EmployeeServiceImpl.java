@@ -475,6 +475,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     @Transactional
     public void importEmployee(List<EmployeeExcel> list) throws ParseException {
+        if (StringUtils.isEmpty(list)) {
+            throw new RuntimeException("请填写Excel数据!");
+        }
         //所有员工
         Employee employee = new Employee();
         List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeList(employee);
@@ -541,7 +544,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     employeeError.append(stringBuffer);
                     continue;
                 }
+                //员工工号
+/*                List<String> employeeCodeList = employeeExcelCodes.stream().filter(f -> f.equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
+                if (employeeCodeList.size() > 1) {
 
+                }else {
+
+                }*/
                 //用工关系状态
                 String employmentStatus = employeeExcel.getEmploymentStatus();
                 //性别
@@ -865,11 +874,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 }
             }
 
-            //员工工号
-            List<String> employeeCodeList = employeeExcelCodes.stream().filter(f -> f.equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
-            if (employeeCodeList.size() > 1) {
-                validEmployeeError.append("excel列表中员工工号重复");
-            }
+
             //身份证号码
             List<String> identityCards = excelIdentityCards.stream().filter(f -> f.equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
             if (identityCards.size() > 1) {

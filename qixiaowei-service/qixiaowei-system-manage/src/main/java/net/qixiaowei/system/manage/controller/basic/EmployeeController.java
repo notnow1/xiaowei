@@ -164,7 +164,7 @@ public class EmployeeController extends BaseController {
 
 
         EmployeeExcel employeeExcel = new EmployeeExcel();
-        ExcelUtils.mapToListModel(2, 0, listMap, employeeExcel, list);
+        ExcelUtils.mapToListModel(1, 0, listMap, employeeExcel, list);
         // 调用importer方法
         try {
             employeeService.importEmployee(list);
