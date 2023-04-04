@@ -235,10 +235,10 @@ public interface IEmployeeService {
     /**
      * 根据部门id查询员工表列表
      *
-     * @param employeeDepartmentId
+     * @param employeeDTO
      * @return
      */
-    List<EmployeeDTO> queryEmployeeByDept(Long employeeDepartmentId);
+    List<EmployeeDTO> queryEmployeeByDept(EmployeeDTO employeeDTO);
 
     /**
      * 查询一级部门下所有的人员 返回部门id和职级体系id

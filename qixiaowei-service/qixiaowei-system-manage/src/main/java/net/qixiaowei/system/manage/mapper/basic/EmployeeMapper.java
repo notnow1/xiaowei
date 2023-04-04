@@ -244,10 +244,10 @@ public interface EmployeeMapper {
     /**
      * 根据部门id查询员工表列表
      *
-     * @param employeeDepartmentId
+     * @param employee
      * @return
      */
-    List<EmployeeDTO> queryEmployeeByDept(@Param("employeeDepartmentId") Long employeeDepartmentId);
+    List<EmployeeDTO> queryEmployeeByDept(@Param("employee") Employee employee);
 
     /**
      * 查询员工表列表(下拉框)

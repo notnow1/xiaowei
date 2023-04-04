@@ -489,9 +489,9 @@ public class EmployeeController extends BaseController {
     /**
      * 根据部门id查询员工表列表
      */
-    @GetMapping("/queryEmployeeByDept/{employeeDepartmentId}")
-    public AjaxResult queryEmployeeByDept(@PathVariable Long employeeDepartmentId) {
-        List<EmployeeDTO> list = employeeService.queryEmployeeByDept(employeeDepartmentId);
+    @GetMapping("/queryEmployeeByDept")
+    public AjaxResult queryEmployeeByDept(EmployeeDTO employeeDTO) {
+        List<EmployeeDTO> list = employeeService.queryEmployeeByDept(employeeDTO);
         return AjaxResult.success(list);
     }
 

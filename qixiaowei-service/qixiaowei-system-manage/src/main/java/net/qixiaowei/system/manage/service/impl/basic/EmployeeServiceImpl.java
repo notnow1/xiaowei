@@ -1374,12 +1374,36 @@ public class EmployeeServiceImpl implements IEmployeeService {
     /**
      * 根据部门id查询员工表列表
      *
-     * @param employeeDepartmentId
+     * @param employeeDTO
      * @return
      */
     @Override
-    public List<EmployeeDTO> queryEmployeeByDept(Long employeeDepartmentId) {
-        return employeeMapper.queryEmployeeByDept(employeeDepartmentId);
+    public List<EmployeeDTO> queryEmployeeByDept(EmployeeDTO employeeDTO) {
+        List<EmployeeDTO> employeeList = new ArrayList<>();
+        Employee  employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO,employee);
+        String employeeFlag = employeeDTO.getEmployeeFlag();
+        //生效在职有账号的员工
+        if (StringUtils.equals("user", employeeFlag)) {
+            employee.setStatus(1);
+            employee.setEmploymentStatus(1);
+            List<EmployeeDTO> employeeDTOList = employeeMapper.queryEmployeeByDept(employee);
+            employeeList  = employeeDTOList.stream().filter(f -> f.getUserId() != null).collect(Collectors.toList());
+        }//生效包含在职离职有账号的员工
+        else if (StringUtils.equals("userAll", employeeFlag)) {
+            employee.setStatus(1);
+            List<EmployeeDTO> employeeDTOList = employeeMapper.queryEmployeeByDept(employee);
+            employeeList  = employeeDTOList.stream().filter(f -> f.getUserId() != null).collect(Collectors.toList());
+        }//生效包含在职离职的员工
+        else if (StringUtils.equals("1", employeeFlag)) {
+            employee.setStatus(1);
+            employeeList = employeeMapper.queryEmployeeByDept(employee);
+        } else {
+            employee.setStatus(1);
+            employee.setEmploymentStatus(1);
+            employeeList = employeeMapper.queryEmployeeByDept(employee);
+        }
+        return employeeList;
     }
 
     /**

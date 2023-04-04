@@ -1639,10 +1639,17 @@
         tenant_id
         FROM employee
         where delete_flag= 0
-        and employment_status=1
-        <if test="employeeDepartmentId != null">
-            and employee_department_id=#{employeeDepartmentId}
+        <if test="employee.status != null">
+            and status = #{employee.status}
         </if>
+        <if test="employee.employmentStatus != null">
+            and employment_status=#{employee.employmentStatus}
+        </if>
+
+        <if test="employee.employeeDepartmentId != null">
+            and employee_department_id=#{employee.employeeDepartmentId}
+        </if>
+        order by create_time desc
     </select>
     <!--    查询员工表列表(下拉框)-->
     <select id="selectDropEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
