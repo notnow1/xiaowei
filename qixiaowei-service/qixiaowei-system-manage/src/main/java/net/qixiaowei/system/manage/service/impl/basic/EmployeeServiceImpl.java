@@ -531,7 +531,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //修改list
         List<Employee> employeeUpdateList = new ArrayList<>();
 
-        if (StringUtils.isNotEmpty(list)) {
             //新增人员详细详细list
             List<EmployeeInfo> employeeInfoAddList = new ArrayList<>();
             //修改人员详细详细list
@@ -629,9 +628,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 employeeInfoMapper.updateEmployeeInfos(employeeInfoUpdateList);
             }
 
-        } else {
-            throw new ServiceException("请填写excel数据！！！");
-        }
+
     }
 
     /**
