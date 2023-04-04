@@ -143,7 +143,7 @@ public interface PostMapper {
      * @param departmentId
      * @return
      */
-    List<PostDTO> selectBydepartmentId(@Param("departmentId") Long departmentId);
+    List<PostDTO> selectBydepartmentId(@Param("departmentId") Long departmentId,@Param("status")Integer status);
 
     /**
      * 根据部门查询岗位表列表

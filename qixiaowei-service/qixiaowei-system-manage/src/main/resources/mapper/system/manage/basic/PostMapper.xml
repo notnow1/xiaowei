@@ -466,6 +466,9 @@
         <if test="departmentId != null">
             and d.department_id = #{departmentId}
         </if>
+        <if test="status != null">
+            and p.status = #{status}
+        </if>
     </select>
     <!--    查询岗位表列表-->
     <select id="selectPostListByOfficialRank" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">

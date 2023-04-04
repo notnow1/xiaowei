@@ -154,8 +154,8 @@ public class PostController extends BaseController {
      * 根据部门查询岗位表列表
      */
     @GetMapping("/postList/{departmentId}")
-    public AjaxResult selectBydepartmentId(@PathVariable Long departmentId) {
-        List<PostDTO> list = postService.selectBydepartmentId(departmentId);
+    public AjaxResult selectBydepartmentId(@PathVariable Long departmentId, @RequestParam(required = false) Integer status) {
+        List<PostDTO> list = postService.selectBydepartmentId(departmentId,status);
         return AjaxResult.success(list);
     }
 

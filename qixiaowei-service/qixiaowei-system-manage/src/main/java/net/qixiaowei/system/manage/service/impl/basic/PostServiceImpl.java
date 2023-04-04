@@ -373,8 +373,8 @@ public class PostServiceImpl implements IPostService {
      * @return
      */
     @Override
-    public List<PostDTO> selectBydepartmentId(Long departmentId) {
-        return postMapper.selectBydepartmentId(departmentId);
+    public List<PostDTO> selectBydepartmentId(Long departmentId,Integer status) {
+        return postMapper.selectBydepartmentId(departmentId,status);
     }
 
     /**
