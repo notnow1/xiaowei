@@ -397,41 +397,41 @@
             date_format(#{empSalaryAdjustPlan.params.effectiveDateEnd},'%y%m%d')
         </if>
         <!--    调整职级体系-->
-        <if test="empSalaryAdjustPlan.params.adjustOfficialRankSystemNameEqual != null and empSalaryAdjustPlan.params.adjustOfficialRankSystemNameEqual.size() > 0">
-            AND esa.adjust_official_rank_system_name IN
+        <if test="empSalaryAdjustPlan.params.adjustOfficialRankSystemIdEqual != null and empSalaryAdjustPlan.params.adjustOfficialRankSystemIdEqual.size() > 0">
+            AND esa.adjust_official_rank_system_id IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustOfficialRankSystemNameEqual"
+                     collection="empSalaryAdjustPlan.params.adjustOfficialRankSystemIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="empSalaryAdjustPlan.params.adjustOfficialRankSystemNameNotEqual != null and empSalaryAdjustPlan.params.adjustOfficialRankSystemNameNotEqual.size() > 0">
-            AND (esa.adjust_official_rank_system_name NOT IN
+        <if test="empSalaryAdjustPlan.params.adjustOfficialRankSystemIdNotEqual != null and empSalaryAdjustPlan.params.adjustOfficialRankSystemIdNotEqual.size() > 0">
+            AND (esa.adjust_official_rank_system_id NOT IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustOfficialRankSystemNameNotEqual"
+                     collection="empSalaryAdjustPlan.params.adjustOfficialRankSystemIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR esa.adjust_official_rank_system_name IS NULL
+            OR esa.adjust_official_rank_system_id IS NULL
             )
         </if>
         <!--    原职级体系-->
-        <if test="empSalaryAdjustPlan.params.officialRankSystemNameEqual != null and empSalaryAdjustPlan.params.officialRankSystemNameEqual.size() > 0">
-            AND ess.official_rank_system_name IN
+        <if test="empSalaryAdjustPlan.params.officialRankSystemIdEqual != null and empSalaryAdjustPlan.params.officialRankSystemIdEqual.size() > 0">
+            AND ess.official_rank_system_id IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.officialRankSystemNameEqual"
+                     collection="empSalaryAdjustPlan.params.officialRankSystemIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="empSalaryAdjustPlan.params.officialRankSystemNameNotEqual != null and empSalaryAdjustPlan.params.officialRankSystemNameNotEqual.size() > 0">
-            AND (ess.official_rank_system_name NOT IN
+        <if test="empSalaryAdjustPlan.params.officialRankSystemIdNotEqual != null and empSalaryAdjustPlan.params.officialRankSystemIdNotEqual.size() > 0">
+            AND (ess.official_rank_system_id NOT IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.officialRankSystemNameNotEqual"
+                     collection="empSalaryAdjustPlan.params.officialRankSystemIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ess.official_rank_system_name IS NULL
+            OR ess.official_rank_system_id IS NULL
             )
         </if>
         <!--    调整职级 -->
@@ -491,25 +491,19 @@
             OR esa.adjust_emolument IS NULL
             )
         </if>
-        <if test="empSalaryAdjustPlan.params.adjustEmolumentBefore != null and empSalaryAdjustPlan.params.adjustEmolumentBefore != ''">
-            AND esa.adjust_emolument &lt; #{empSalaryAdjustPlan.params.adjustEmolumentBefore}
+        <if test="empSalaryAdjustPlan.params.adjustEmolumentLessThan != null and empSalaryAdjustPlan.params.adjustEmolumentLessThan != ''">
+            AND esa.adjust_emolument &lt; #{empSalaryAdjustPlan.params.adjustEmolumentLessThan}
         </if>
-        <if test="empSalaryAdjustPlan.params.adjustEmolumentNotBefore != null and empSalaryAdjustPlan.params.adjustEmolumentNotBefore != ''">
-            AND esa.adjust_emolument &gt;= #{empSalaryAdjustPlan.params.adjustEmolumentNotBefore}
+        <if test="empSalaryAdjustPlan.params.adjustEmolumentNotLessThan != null and empSalaryAdjustPlan.params.adjustEmolumentNotLessThan != ''">
+            AND esa.adjust_emolument &gt;= #{empSalaryAdjustPlan.params.adjustEmolumentNotLessThan}
         </if>
-        <if test="empSalaryAdjustPlan.params.adjustEmolumentAfter != null and empSalaryAdjustPlan.params.adjustEmolumentAfter != ''">
-            AND esa.adjust_emolument &gt; #{empSalaryAdjustPlan.params.adjustEmolumentAfter}
+        <if test="empSalaryAdjustPlan.params.adjustEmolumentGreaterThan != null and empSalaryAdjustPlan.params.adjustEmolumentGreaterThan != ''">
+            AND esa.adjust_emolument &gt; #{empSalaryAdjustPlan.params.adjustEmolumentGreaterThan}
         </if>
-        <if test="empSalaryAdjustPlan.params.adjustEmolumentNotAfter != null and empSalaryAdjustPlan.params.adjustEmolumentNotAfter != ''">
-            AND esa.adjust_emolument &lt;= #{empSalaryAdjustPlan.params.adjustEmolumentNotAfter}
+        <if test="empSalaryAdjustPlan.params.adjustEmolumentNotGreaterThan != null and empSalaryAdjustPlan.params.adjustEmolumentNotGreaterThan != ''">
+            AND esa.adjust_emolument &lt;= #{empSalaryAdjustPlan.params.adjustEmolumentNotGreaterThan}
         </if>
-        <if test="empSalaryAdjustPlan.params.adjustEmolumentStart != null and empSalaryAdjustPlan.params.adjustEmolumentStart != ''">
-            AND esa.adjust_emolument &gt;= #{empSalaryAdjustPlan.params.adjustEmolumentStart}
-        </if>
-        <if test="empSalaryAdjustPlan.params.adjustEmolumentEnd != null and empSalaryAdjustPlan.params.adjustEmolumentEnd != ''">
-            AND esa.adjust_emolument &lt;= #{empSalaryAdjustPlan.params.adjustEmolumentEnd}
-        </if>
-        <!--    原工资 -->
+        <!--    原工资-->
         <if test="empSalaryAdjustPlan.params.basicWageEqual != null and empSalaryAdjustPlan.params.basicWageEqual.size() > 0">
             AND ess.basic_wage IN
             <foreach item="item"
@@ -519,34 +513,28 @@
             </foreach>
         </if>
         <if test="empSalaryAdjustPlan.params.basicWageNotEqual != null and empSalaryAdjustPlan.params.basicWageNotEqual.size() > 0">
-            AND (ess.adjust_emolument NOT IN
+            AND (ess.basic_wage NOT IN
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.basicWageNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ess.adjust_emolument IS NULL
+            OR ess.basic_wage IS NULL
             )
         </if>
-        <if test="empSalaryAdjustPlan.params.basicWageBefore != null and empSalaryAdjustPlan.params.basicWageBefore != ''">
-            AND ess.adjust_emolument &lt; #{empSalaryAdjustPlan.params.basicWageBefore}
+        <if test="empSalaryAdjustPlan.params.basicWageLessThan != null and empSalaryAdjustPlan.params.basicWageLessThan != ''">
+            AND ess.basic_wage &lt; #{empSalaryAdjustPlan.params.basicWageLessThan}
         </if>
-        <if test="empSalaryAdjustPlan.params.basicWageNotBefore != null and empSalaryAdjustPlan.params.basicWageNotBefore != ''">
-            AND ess.adjust_emolument &gt;= #{empSalaryAdjustPlan.params.basicWageNotBefore}
+        <if test="empSalaryAdjustPlan.params.basicWageNotLessThan != null and empSalaryAdjustPlan.params.basicWageNotLessThan != ''">
+            AND ess.basic_wage &gt;= #{empSalaryAdjustPlan.params.basicWageNotLessThan}
         </if>
-        <if test="empSalaryAdjustPlan.params.basicWageAfter != null and empSalaryAdjustPlan.params.basicWageAfter != ''">
-            AND ess.adjust_emolument &gt; #{empSalaryAdjustPlan.params.basicWageAfter}
+        <if test="empSalaryAdjustPlan.params.basicWageGreaterThan != null and empSalaryAdjustPlan.params.basicWageGreaterThan != ''">
+            AND ess.basic_wage &gt; #{empSalaryAdjustPlan.params.basicWageGreaterThan}
         </if>
-        <if test="empSalaryAdjustPlan.params.basicWageNotAfter != null and empSalaryAdjustPlan.params.basicWageNotAfter != ''">
-            AND ess.adjust_emolument &lt;= #{empSalaryAdjustPlan.params.basicWageNotAfter}
+        <if test="empSalaryAdjustPlan.params.basicWageNotGreaterThan != null and empSalaryAdjustPlan.params.basicWageNotGreaterThan != ''">
+            AND ess.basic_wage &lt;= #{empSalaryAdjustPlan.params.basicWageNotGreaterThan}
         </if>
-        <if test="empSalaryAdjustPlan.params.basicWageStart != null and empSalaryAdjustPlan.params.basicWageStart != ''">
-            AND ess.adjust_emolument &gt;= #{empSalaryAdjustPlan.params.basicWageStart}
-        </if>
-        <if test="empSalaryAdjustPlan.params.basicWageEnd != null and empSalaryAdjustPlan.params.basicWageEnd != ''">
-            AND ess.adjust_emolument &lt;= #{empSalaryAdjustPlan.params.basicWageEnd}
-        </if>
-        <!--    员工高级搜索-->
+        <!--员工高级搜索-->
         <!--员工名称-->
         <if test="empSalaryAdjustPlan.params.employeeNameEqual != null and empSalaryAdjustPlan.params.employeeNameEqual.size() > 0">
             AND ess.employee_name IN
@@ -653,98 +641,80 @@
             </foreach>
         </if>
         <!--调整部门-->
-        <if test="empSalaryAdjustPlan.params.adjustDepartmentNameEqual != null and empSalaryAdjustPlan.params.adjustDepartmentNameEqual.size() > 0">
-            AND esa.adjust_department_name IN
+        <if test="empSalaryAdjustPlan.params.adjustDepartmentIdEqual != null and empSalaryAdjustPlan.params.adjustDepartmentIdEqual.size() > 0">
+            AND esa.adjust_department_id IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustDepartmentNameEqual"
+                     collection="empSalaryAdjustPlan.params.adjustDepartmentIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="empSalaryAdjustPlan.params.adjustDepartmentNameNotEqual != null and empSalaryAdjustPlan.params.adjustDepartmentNameNotEqual.size() > 0">
-            AND (esa.adjust_department_name NOT IN
+        <if test="empSalaryAdjustPlan.params.adjustDepartmentIdNotEqual != null and empSalaryAdjustPlan.params.adjustDepartmentIdNotEqual.size() > 0">
+            AND (esa.adjust_department_id NOT IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustDepartmentNameNotEqual"
+                     collection="empSalaryAdjustPlan.params.adjustDepartmentIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR esa.adjust_department_name IS NULL
+            OR esa.adjust_department_id IS NULL
             )
         </if>
         <!--原部门-->
-        <if test="empSalaryAdjustPlan.params.departmentNameEqual != null and empSalaryAdjustPlan.params.departmentNameEqual.size() > 0">
-            AND ess.department_name IN
+        <if test="empSalaryAdjustPlan.params.departmentIdEqual != null and empSalaryAdjustPlan.params.departmentIdEqual.size() > 0">
+            AND ess.department_id IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.departmentNameEqual"
+                     collection="empSalaryAdjustPlan.params.departmentIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="empSalaryAdjustPlan.params.departmentNameNotEqual != null and empSalaryAdjustPlan.params.departmentNameNotEqual.size() > 0">
-            AND (ess.department_name NOT IN
+        <if test="empSalaryAdjustPlan.params.departmentIdNotEqual != null and empSalaryAdjustPlan.params.departmentIdNotEqual.size() > 0">
+            AND (ess.department_id NOT IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.departmentNameNotEqual"
+                     collection="empSalaryAdjustPlan.params.departmentIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ess.department_name IS NULL
+            OR ess.department_id IS NULL
             )
         </if>
         <!--调整岗位名称-->
-        <if test="empSalaryAdjustPlan.params.adjustPostNameEqual != null and empSalaryAdjustPlan.params.adjustPostNameEqual.size() > 0">
-            AND esa.adjust_post_name IN
+        <if test="empSalaryAdjustPlan.params.adjustPostIdEqual != null and empSalaryAdjustPlan.params.adjustPostIdEqual.size() > 0">
+            AND esa.adjust_post_id IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustPostNameEqual"
+                     collection="empSalaryAdjustPlan.params.adjustPostIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="empSalaryAdjustPlan.params.adjustPostNameNotEqual != null and empSalaryAdjustPlan.params.adjustPostNameNotEqual.size() > 0">
-            AND (esa.adjust_post_name NOT IN
+        <if test="empSalaryAdjustPlan.params.adjustPostIdNotEqual != null and empSalaryAdjustPlan.params.adjustPostIdNotEqual.size() > 0">
+            AND (esa.adjust_post_id NOT IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustPostNameNotEqual"
+                     collection="empSalaryAdjustPlan.params.adjustPostIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR esa.adjust_post_name IS NULL
+            OR esa.adjust_post_id IS NULL
             )
         </if>
         <!--原岗位名称-->
-        <if test="empSalaryAdjustPlan.params.postNameEqual != null and empSalaryAdjustPlan.params.postNameEqual.size() > 0">
-            AND ess.post_name IN
+        <if test="empSalaryAdjustPlan.params.postIdEqual != null and empSalaryAdjustPlan.params.postIdEqual.size() > 0">
+            AND ess.post_id IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.postNameEqual"
+                     collection="empSalaryAdjustPlan.params.postIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="empSalaryAdjustPlan.params.postNameNotEqual != null and empSalaryAdjustPlan.params.postNameNotEqual.size() > 0">
-            AND (ess.post_name NOT IN
+        <if test="empSalaryAdjustPlan.params.postIdNotEqual != null and empSalaryAdjustPlan.params.postIdNotEqual.size() > 0">
+            AND (ess.post_id NOT IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.postNameNotEqual"
+                     collection="empSalaryAdjustPlan.params.postIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ess.post_name IS NULL
+            OR ess.post_id IS NULL
             )
-        </if>
-        <!--    调整部门ID集合-->
-        <if test="empSalaryAdjustPlan.params.adjustDepartmentIds != null and empSalaryAdjustPlan.params.adjustDepartmentIds.size() > 0">
-            AND esa.adjust_department_id IN
-            <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustDepartmentIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <!--    调整岗位ID集合-->
-        <if test="empSalaryAdjustPlan.params.adjustPostIds != null and empSalaryAdjustPlan.params.adjustPostIds.size() > 0">
-            AND esa.adjust_post_id IN
-            <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustPostIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
         </if>
         <!-- 数据范围过滤 -->
         ${empSalaryAdjustPlan.params.dataScope}

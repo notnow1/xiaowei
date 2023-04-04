@@ -130,7 +130,38 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (StringUtils.isEmpty(employeeIds)) {
             return null;
         }
-        return employeeMapper.selectEmployeeByEmployeeIds(employeeIds);
+        List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeeByEmployeeIds(employeeIds);
+        //根据一级部门分组不同的树
+        Map<Long, List<DepartmentDTO>> departmentDTOListMap = new HashMap<>();
+        //查询所有一级部门
+        List<DepartmentDTO> parentDepartmentAllData = departmentMapper.getParentAll();
+        if (StringUtils.isNotEmpty(parentDepartmentAllData)) {
+            for (DepartmentDTO departmentDTO : parentDepartmentAllData) {
+                //查询一级部门及子级部门
+                List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(departmentDTO.getDepartmentId());
+                if (StringUtils.isNotEmpty(departmentDTOList)) {
+                    departmentDTOListMap.put(departmentDTO.getDepartmentId(), departmentDTOList);
+                }
+            }
+        }
+        //遍历一级部门分组不同的树
+        if (StringUtils.isNotEmpty(departmentDTOListMap)) {
+            for (EmployeeDTO dto : employeeDTOS) {
+                if (StringUtils.isNotNull(dto.getEmployeeDepartmentId())) {
+                    for (Long key : departmentDTOListMap.keySet()) {
+                        List<DepartmentDTO> departmentDTOList = departmentDTOListMap.get(key);
+                        if (StringUtils.isNotEmpty(departmentDTOList)) {
+                            //包含部门即为一级部门
+                            if (departmentDTOList.stream().map(DepartmentDTO::getDepartmentId).filter(Objects::nonNull).collect(Collectors.toList()).contains(dto.getEmployeeDepartmentId())) {
+                                dto.setTopLevelDepartmentName(departmentDTOList.get(0).getDepartmentName());
+                                dto.setTopLevelDepartmentId(departmentDTOList.get(0).getDepartmentId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return employeeDTOS;
     }
 
     /**
@@ -531,109 +562,108 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //修改list
         List<Employee> employeeUpdateList = new ArrayList<>();
 
-            //新增人员详细详细list
-            List<EmployeeInfo> employeeInfoAddList = new ArrayList<>();
-            //修改人员详细详细list
-            List<EmployeeInfo> employeeInfoUpdateList = new ArrayList<>();
-            //工号集合检验唯一性
-            List<String> employeeExcelCodes = list.stream().map(EmployeeExcel::getEmployeeCode).collect(Collectors.toList());
-            //身份证集合检验唯一性
-            List<String> excelIdentityCards = list.stream().map(EmployeeExcel::getIdentityCard).collect(Collectors.toList());
-            //返回报错信息
-            StringBuffer employeeError = new StringBuffer();
+        //新增人员详细详细list
+        List<EmployeeInfo> employeeInfoAddList = new ArrayList<>();
+        //修改人员详细详细list
+        List<EmployeeInfo> employeeInfoUpdateList = new ArrayList<>();
+        //工号集合检验唯一性
+        List<String> employeeExcelCodes = list.stream().map(EmployeeExcel::getEmployeeCode).collect(Collectors.toList());
+        //身份证集合检验唯一性
+        List<String> excelIdentityCards = list.stream().map(EmployeeExcel::getIdentityCard).collect(Collectors.toList());
+        //返回报错信息
+        StringBuffer employeeError = new StringBuffer();
 
-            //数据库已存在修改人员数据
-            List<String> updateCodes = new ArrayList<>();
-            for (EmployeeExcel employeeExcel : list) {
-                //数据库存在的工号 修改数据
-                if (StringUtils.isNotBlank(employeeExcel.getEmployeeCode())) {
-                    if (employeeCodes.contains(employeeExcel.getEmployeeCode())) {
-                        updateCodes.add(employeeExcel.getEmployeeCode());
-                    }
+        //数据库已存在修改人员数据
+        List<String> updateCodes = new ArrayList<>();
+        for (EmployeeExcel employeeExcel : list) {
+            //数据库存在的工号 修改数据
+            if (StringUtils.isNotBlank(employeeExcel.getEmployeeCode())) {
+                if (employeeCodes.contains(employeeExcel.getEmployeeCode())) {
+                    updateCodes.add(employeeExcel.getEmployeeCode());
                 }
             }
-            if (StringUtils.isNotEmpty(updateCodes)) {
-                List<String> codeList = updateCodes.stream().distinct().collect(Collectors.toList());
-                updateCodes.clear();
-                updateCodes.addAll(codeList);
-                List<EmployeeDTO> employeeDTOList1 = employeeMapper.selectByCodes(updateCodes);
-                if (StringUtils.isNotEmpty(employeeDTOList1)) {
-                    List<EmployeeInfoDTO> employeeInfoDTOS = employeeInfoMapper.selectEmployeeInfoByEmployeeIds(employeeDTOList1.stream().distinct().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList()));
-                    //根据人员id主表分组
-                    Map<Long, List<EmployeeInfoDTO>> employeeInfoMap = employeeInfoDTOS.stream().collect(Collectors.groupingBy(EmployeeInfoDTO::getEmployeeId));
+        }
+        if (StringUtils.isNotEmpty(updateCodes)) {
+            List<String> codeList = updateCodes.stream().distinct().collect(Collectors.toList());
+            updateCodes.clear();
+            updateCodes.addAll(codeList);
+            List<EmployeeDTO> employeeDTOList1 = employeeMapper.selectByCodes(updateCodes);
+            if (StringUtils.isNotEmpty(employeeDTOList1)) {
+                List<EmployeeInfoDTO> employeeInfoDTOS = employeeInfoMapper.selectEmployeeInfoByEmployeeIds(employeeDTOList1.stream().distinct().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList()));
+                //根据人员id主表分组
+                Map<Long, List<EmployeeInfoDTO>> employeeInfoMap = employeeInfoDTOS.stream().collect(Collectors.groupingBy(EmployeeInfoDTO::getEmployeeId));
 
-                        for (EmployeeExcel employeeExcel : list) {
-                            for (EmployeeDTO employeeDTO : employeeDTOList1) {
-                            //新增所有员工
-                            Employee employee2 = new Employee();
-                            //员工详细信息
-                            EmployeeInfo employeeInfo = new EmployeeInfo();
-                            if (StringUtils.equals(employeeDTO.getEmployeeCode(), employeeExcel.getEmployeeCode())) {
-                                StringBuffer stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap);
-                                if (stringBuffer.length() > 1) {
-                                    errorExcelList.add(employeeExcel);
-                                    employeeError.append(stringBuffer);
-                                    break;
-                                }
-
-                                //封装新增修改到数据库的数据
-                                this.packAddAndUpdateEmplyee(employeeInfoMap.get(employeeDTO.getEmployeeId()),employeeDTO,employeeCodes, nationDTOS, countryDTOS, regionProvinceNameAndCityNames, regionProvinceNameAndCityNameAndDistrictNames, postDTOS, departmentDTOList, simpleDateFormat, employeeUpdateList, employeeInfoUpdateList, employeeError, employeeExcel, employee2, employeeInfo);
+                for (EmployeeExcel employeeExcel : list) {
+                    for (EmployeeDTO employeeDTO : employeeDTOList1) {
+                        //新增所有员工
+                        Employee employee2 = new Employee();
+                        //员工详细信息
+                        EmployeeInfo employeeInfo = new EmployeeInfo();
+                        if (StringUtils.equals(employeeDTO.getEmployeeCode(), employeeExcel.getEmployeeCode())) {
+                            StringBuffer stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap);
+                            if (stringBuffer.length() > 1) {
+                                errorExcelList.add(employeeExcel);
+                                employeeError.append(stringBuffer);
                                 break;
                             }
+
+                            //封装新增修改到数据库的数据
+                            this.packAddAndUpdateEmplyee(employeeInfoMap.get(employeeDTO.getEmployeeId()), employeeDTO, employeeCodes, nationDTOS, countryDTOS, regionProvinceNameAndCityNames, regionProvinceNameAndCityNameAndDistrictNames, postDTOS, departmentDTOList, simpleDateFormat, employeeUpdateList, employeeInfoUpdateList, employeeError, employeeExcel, employee2, employeeInfo);
+                            break;
                         }
                     }
                 }
             }
-            for (EmployeeExcel employeeExcel : list) {
-                //新增所有员工
-                Employee employee2 = new Employee();
-                //员工详细信息
-                EmployeeInfo employeeInfo = new EmployeeInfo();
-                StringBuffer stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap);
-                if (stringBuffer.length() > 1) {
-                    errorExcelList.add(employeeExcel);
-                    employeeError.append(stringBuffer);
-                    continue;
-                }
-
-                //新增工号
-                if (StringUtils.isNotBlank(employeeExcel.getEmployeeCode())) {
-                    if (!employeeCodes.contains(employeeExcel.getEmployeeCode())) {
-                        //封装新增修改到数据库的数据
-                        this.packAddAndUpdateEmplyee(new ArrayList<>(), new EmployeeDTO(), employeeCodes, nationDTOS, countryDTOS, regionProvinceNameAndCityNames, regionProvinceNameAndCityNameAndDistrictNames, postDTOS, departmentDTOList, simpleDateFormat, employeeAddList, employeeInfoAddList, employeeError, employeeExcel, employee2, employeeInfo);
-                    }
-                }
-
-            }
-            //后续优化导入
-            if (employeeError.length() > 1) {
-                throw new ServiceException(employeeError.toString());
+        }
+        for (EmployeeExcel employeeExcel : list) {
+            //新增所有员工
+            Employee employee2 = new Employee();
+            //员工详细信息
+            EmployeeInfo employeeInfo = new EmployeeInfo();
+            StringBuffer stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap);
+            if (stringBuffer.length() > 1) {
+                errorExcelList.add(employeeExcel);
+                employeeError.append(stringBuffer);
+                continue;
             }
 
-            if (StringUtils.isNotEmpty(employeeAddList)) {
-                employeeMapper.batchEmployee(employeeAddList);
-                successExcelList.addAll(employeeAddList);
-            }
-            if (StringUtils.isNotEmpty(employeeUpdateList)) {
-                employeeMapper.updateEmployees(employeeUpdateList);
-                successExcelList.addAll(employeeUpdateList);
-            }
-            if (StringUtils.isNotEmpty(employeeInfoAddList)) {
-                for (int i = 0; i < employeeInfoAddList.size(); i++) {
-                    employeeInfoAddList.get(i).setEmployeeId(employeeAddList.get(i).getEmployeeId());
+            //新增工号
+            if (StringUtils.isNotBlank(employeeExcel.getEmployeeCode())) {
+                if (!employeeCodes.contains(employeeExcel.getEmployeeCode())) {
+                    //封装新增修改到数据库的数据
+                    this.packAddAndUpdateEmplyee(new ArrayList<>(), new EmployeeDTO(), employeeCodes, nationDTOS, countryDTOS, regionProvinceNameAndCityNames, regionProvinceNameAndCityNameAndDistrictNames, postDTOS, departmentDTOList, simpleDateFormat, employeeAddList, employeeInfoAddList, employeeError, employeeExcel, employee2, employeeInfo);
                 }
-                employeeInfoMapper.batchEmployeeInfo(employeeInfoAddList);
             }
-            if (StringUtils.isNotEmpty(employeeInfoUpdateList)) {
-                employeeInfoMapper.updateEmployeeInfos(employeeInfoUpdateList);
+
+        }
+        //后续优化导入
+        if (employeeError.length() > 1) {
+            throw new ServiceException(employeeError.toString());
+        }
+
+        if (StringUtils.isNotEmpty(employeeAddList)) {
+            employeeMapper.batchEmployee(employeeAddList);
+            successExcelList.addAll(employeeAddList);
+        }
+        if (StringUtils.isNotEmpty(employeeUpdateList)) {
+            employeeMapper.updateEmployees(employeeUpdateList);
+            successExcelList.addAll(employeeUpdateList);
+        }
+        if (StringUtils.isNotEmpty(employeeInfoAddList)) {
+            for (int i = 0; i < employeeInfoAddList.size(); i++) {
+                employeeInfoAddList.get(i).setEmployeeId(employeeAddList.get(i).getEmployeeId());
             }
+            employeeInfoMapper.batchEmployeeInfo(employeeInfoAddList);
+        }
+        if (StringUtils.isNotEmpty(employeeInfoUpdateList)) {
+            employeeInfoMapper.updateEmployeeInfos(employeeInfoUpdateList);
+        }
 
 
     }
 
     /**
      * 封装新增修改到数据库的数据封装新增修改到数据库的数据
-     *
      *
      * @param employeeInfoDTOS
      * @param employeeDTO
@@ -801,7 +831,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 }
             } else if (StringUtils.equals(employmentStatus, "离职")) {
                 //离职日期
-                if (StringUtils.isNotBlank(departureDate) && StringUtils.isNull(employeeDTO.getDepartureDate()) ) {
+                if (StringUtils.isNotBlank(departureDate) && StringUtils.isNull(employeeDTO.getDepartureDate())) {
                     employee2.setDepartureDate(DateUtils.parseAnalysisExcelDate(departureDate));
                 }
             }
@@ -894,7 +924,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (!employeeCodes.contains(employeeExcel.getEmployeeCode())) {
             employee2.setCreateBy(SecurityUtils.getUserId());
             employee2.setCreateTime(DateUtils.getNowDate());
-        }else {
+        } else {
             employee2.setEmployeeId(employeeDTO.getEmployeeId());
             employeeInfo.setEmployeeInfoId(employeeInfoDTOS.get(0).getEmployeeInfoId());
         }
@@ -953,12 +983,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (StringUtils.isBlank(employeeExcel.getEmploymentStatus())) {
                 validEmployeeError.append("用工关系状态为必填项");
             } else {
-                if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "在职") ) {
+                if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "在职")) {
                     if (StringUtils.isBlank(employmentDate)) {
                         validEmployeeError.append("入职日期为必填项");
                     }
                 }
-                if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "离职") ) {
+                if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "离职")) {
                     if (StringUtils.isBlank(departureDate)) {
                         validEmployeeError.append("离职日期为必填项");
                     }
@@ -1019,7 +1049,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (identityCards.size() > 1) {
                 validEmployeeError.append("excel列表中身份证号码重复");
             }
-
 
 
             //岗位是否属于这个部门

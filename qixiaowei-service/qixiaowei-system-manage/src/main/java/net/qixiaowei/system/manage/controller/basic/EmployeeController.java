@@ -357,7 +357,7 @@ public class EmployeeController extends BaseController {
                     @Override
                     public void afterCellDispose(WriteSheetHolder writeSheetHolder, WriteTableHolder writeTableHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
 
-                        if (cell.getRowIndex() == 0){
+                        if (cell.getRowIndex() == 0) {
                             Sheet sheet = writeSheetHolder.getSheet();
                             Workbook workbook = sheet.getWorkbook();
                             // xlsx格式，如果是老版本格式的话就用 HSSFRichTextString
@@ -407,7 +407,8 @@ public class EmployeeController extends BaseController {
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                             //设置 自动换行
-                            writeCellStyle.setWrapped(true);;
+                            writeCellStyle.setWrapped(true);
+                            ;
                         } else {
                             //设置边框
                             writeCellStyle.setBorderLeft(BorderStyle.THIN);
@@ -418,14 +419,14 @@ public class EmployeeController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            if (columnIndex == 0 || columnIndex == 1|| columnIndex == 2|| columnIndex == 4|| columnIndex == 11|| columnIndex == 13|| columnIndex == 14|| columnIndex == 15|| columnIndex == 17|| columnIndex == 23){
+                            if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 4 || columnIndex == 11 || columnIndex == 13 || columnIndex == 14 || columnIndex == 15 || columnIndex == 17 || columnIndex == 23) {
                                 //设置 自动换行
                                 writeCellStyle.setWrapped(true);
                                 headWriteFont.setColor(IndexedColors.RED.getIndex());
                                 headWriteFont.setFontHeightInPoints((short) 11);
                                 headWriteFont.setFontName("微软雅黑");
                                 writeCellStyle.setWriteFont(headWriteFont);
-                            }else {
+                            } else {
                                 //设置 自动换行
                                 writeCellStyle.setWrapped(true);
                                 headWriteFont.setColor(IndexedColors.BLACK.getIndex());
@@ -444,10 +445,10 @@ public class EmployeeController extends BaseController {
                         int columnIndex = cell.getColumnIndex();
                         int rowIndex = cell.getRowIndex();
                         Row row = cell.getRow();
-                        if (rowIndex==0){
+                        if (rowIndex == 0) {
                             // 行高7
                             row.setHeight((short) (20 * 100));
-                        }else {
+                        } else {
                             // 行高7
                             row.setHeight((short) (20 * 16));
                         }

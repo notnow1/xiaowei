@@ -50,6 +50,11 @@ public class TargetOutcomeExcel {
     @ExcelProperty(index = 0)
     private String indicatorName;
     /**
+     * 关键指标编码
+     */
+    @ExcelProperty(index = 0)
+    private String indicatorCode;
+    /**
      * 实际值合计
      */
     @ExcelProperty("实际值合计")

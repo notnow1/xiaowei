@@ -806,16 +806,13 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<Tree<Long>> getEnableList(IndustryDTO industryDTO) {
-        Integer isAll = industryDTO.getIsAll();
         Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
         if (StringUtils.isNull(enableType)) {
             throw new ServiceException("系统配置数据异常");
         }
         if (enableType == 2) {
             Industry industry = new Industry();
-            if (StringUtils.isNull(isAll)) {
-                industry.setStatus(1);
-            }
+            BeanUtils.copyProperties(industryDTO, industry);
             List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(industry);
             //自定义属性名
             TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
@@ -837,9 +834,7 @@ public class IndustryServiceImpl implements IIndustryService {
             });
         } else {
             IndustryDefault industryDefault = new IndustryDefault();
-            if (StringUtils.isNull(isAll)) {
-                industryDefault.setStatus(1);
-            }
+            BeanUtils.copyProperties(industryDTO, industryDefault);
             List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultMapper.selectIndustryDefaultList(industryDefault);
             //自定义属性名
             TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
