@@ -950,9 +950,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (StringUtils.isBlank(employeeExcel.getEmployeeName())) {
                 validEmployeeError.append("姓名为必填项");
             }
-            if (StringUtils.isBlank(employmentDate)) {
-                validEmployeeError.append("入职日期为必填项");
+            if (StringUtils.isBlank(employeeExcel.getEmploymentStatus())) {
+                validEmployeeError.append("用工关系状态为必填项");
+            } else {
+                if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "在职") ) {
+                    if (StringUtils.isBlank(employmentDate)) {
+                        validEmployeeError.append("入职日期为必填项");
+                    }
+                }
+                if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "离职") ) {
+                    if (StringUtils.isBlank(departureDate)) {
+                        validEmployeeError.append("离职日期为必填项");
+                    }
+                }
             }
+
             if (StringUtils.isBlank(employeeExcel.getIdentityCard())) {
                 validEmployeeError.append("证件号码为必填项");
             }
