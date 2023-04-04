@@ -446,10 +446,10 @@ public class EmployeeController extends BaseController {
                         int rowIndex = cell.getRowIndex();
                         Row row = cell.getRow();
                         if (rowIndex == 0) {
-                            // 行高7
+                            // 行高100
                             row.setHeight((short) (20 * 100));
                         } else {
-                            // 行高7
+                            // 行高16
                             row.setHeight((short) (20 * 16));
                         }
                         // 列宽16
