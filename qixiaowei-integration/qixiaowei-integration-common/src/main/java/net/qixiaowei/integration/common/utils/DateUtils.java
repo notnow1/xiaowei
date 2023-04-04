@@ -140,7 +140,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      */
     public static Date parseAnalysisExcelDate(Object str) {
         String replace = str.toString();
-        if (str == null) {
+        if (replace == null) {
             return null;
         }
         if (str.toString().contains("\\-") && !str.toString().contains("日") && str.toString().contains("月")) {
