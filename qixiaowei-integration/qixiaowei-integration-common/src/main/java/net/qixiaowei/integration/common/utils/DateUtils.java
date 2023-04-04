@@ -139,12 +139,12 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * 将Excel中各种日期型字符串 转化为日期格式
      */
     public static Date parseAnalysisExcelDate(Object str) {
-        String replace = null;
+        String replace = str.toString();
         if (str == null) {
             return null;
         }
         if (str.toString().contains("\\-") && !str.toString().contains("日") && str.toString().contains("月")) {
-            String s = ExcelUtils.parseExcelTime(str.toString());
+            replace = ExcelUtils.parseExcelTime(str.toString());
         } else if (str.toString().contains("年") && str.toString().contains("月") && str.toString().contains("日")) {
             replace = str.toString().replace("年", "/").replace("月", "/").replace("日", "");
         }
