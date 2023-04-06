@@ -561,14 +561,9 @@ public class PostServiceImpl implements IPostService {
                 Long postId = null;
                 //新增关联表
                 List<DepartmentPost> departmentPostAddList = new ArrayList<>();
+                //重复数据(认为错误数据)
                 List<PostExcel> postExcels = postExcelMap.get(key);
                 if (StringUtils.isNotEmpty(postExcels)) {
-                    //根据属性去重
-                    ArrayList<PostExcel> collect = postExcels.stream().collect(Collectors.collectingAndThen(
-                            Collectors.toCollection(() -> new TreeSet<>(
-                                    Comparator.comparing(
-                                            PostExcel::getParentDepartmentExcelName))), ArrayList::new));
-
                     //去重
                     List<PostExcel> postExcelDistinct = postExcels.stream().distinct().collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(postExcelDistinct)) {
@@ -581,10 +576,11 @@ public class PostServiceImpl implements IPostService {
                             StringBuffer stringBuffer = new StringBuffer();
                             //职级体系名称
                             String officialRankSystemName = postExcelDistinct.get(i).getOfficialRankSystemName();
-                            //岗位职级下限
-                            String postRankLowerName = postExcelDistinct.get(i).getPostRankLowerName();
                             //岗位职级上限
                             String postRankUpperName = postExcelDistinct.get(i).getPostRankUpperName();
+                            //岗位职级下限
+                            String postRankLowerName = postExcelDistinct.get(i).getPostRankLowerName();
+
                             //状态:失效;生效
                             String postStatus = postExcelDistinct.get(i).getStatus();
                             //适用组织 部门名称(excel用)

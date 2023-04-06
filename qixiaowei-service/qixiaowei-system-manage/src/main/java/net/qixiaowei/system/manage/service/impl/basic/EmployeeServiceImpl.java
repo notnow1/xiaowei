@@ -934,11 +934,18 @@ public class EmployeeServiceImpl implements IEmployeeService {
         employee2.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         employeeList.add(employee2);
         BeanUtils.copyProperties(employee2, employeeInfo);
-        employeeInfo.setCreateBy(SecurityUtils.getUserId());
-        employeeInfo.setCreateTime(DateUtils.getNowDate());
-        employeeInfo.setUpdateTime(DateUtils.getNowDate());
-        employeeInfo.setUpdateBy(SecurityUtils.getUserId());
-        employeeInfo.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        //新增还是修改
+        if (!employeeCodes.contains(employeeExcel.getEmployeeCode())) {
+            employeeInfo.setCreateBy(SecurityUtils.getUserId());
+            employeeInfo.setCreateTime(DateUtils.getNowDate());
+            employeeInfo.setUpdateTime(DateUtils.getNowDate());
+            employeeInfo.setUpdateBy(SecurityUtils.getUserId());
+            employeeInfo.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        } else {
+            employeeInfo.setUpdateTime(DateUtils.getNowDate());
+            employeeInfo.setUpdateBy(SecurityUtils.getUserId());
+        }
+
         employeeInfoList.add(employeeInfo);
     }
 

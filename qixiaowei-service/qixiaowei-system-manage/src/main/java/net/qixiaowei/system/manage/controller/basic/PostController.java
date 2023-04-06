@@ -198,7 +198,7 @@ public class PostController extends BaseController {
                 .head(head)
                 .registerWriteHandler(levelStrategy)
                 .registerWriteHandler(new SimpleColumnWidthStyleStrategy(17))
-                // 重写AbstractColumnWidthStyleStrategy策略的setColumnWidth方法
+                //重写AbstractColumnWidthStyleStrategy策略的setColumnWidth方法
                 .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
                     @Override
                     protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> list, Cell cell, Head head, Integer integer, Boolean aBoolean) {
