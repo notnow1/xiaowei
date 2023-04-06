@@ -115,6 +115,18 @@ public interface DepartmentPostMapper{
     List<DepartmentDTO> selectDepartmentPostId(@Param("postId")Long postId);
 
     /**
+     * Excel根据部门中间表id查询出数据库的数据
+     * @return
+     */
+    List<DepartmentPostDTO> selectExcelDepartmentPostId(@Param("postId")Long postId);
+    /**
+     * 根据部门中间表id集合查询出数据库的数据
+     * @param postIds
+     * @return
+     */
+    List<DepartmentPostDTO> selectDepartmentPostIds(@Param("postIds")List<Long> postIds);
+
+    /**
      * 根据部门id批量查询出数据库的数据
      * @return
      */

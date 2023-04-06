@@ -175,6 +175,75 @@
         </if>
         and dp.delete_flag=0
     </select>
+<!--    根据部门中间表id集合查询出数据库的数据-->
+    <select id="selectDepartmentPostIds" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
+        select ors.rank_prefix_code,
+               dm.department_code,
+               ors.official_rank_system_id,
+               ors.official_rank_system_name,
+               dm.department_name,
+               p.post_name as department_leader_post_name,
+               dp.department_post_id,
+               dp.department_id,
+               dp.post_id,
+               dp.department_sort,
+               dp.post_sort,
+               dp.delete_flag,
+               dp.create_by,
+               dp.create_time,
+               dp.update_by,
+               dp.update_time
+        from department_post dp
+                 left join department dm
+                           on dm.department_id = dp.department_id
+                               and dm.delete_flag = 0
+                 left join post p
+                           on p.post_id = dp.post_id
+                               and p.delete_flag = 0
+                 left join official_rank_system ors
+                           on p.official_rank_system_id = ors.official_rank_system_id
+                               and ors.delete_flag = 0
+        where dp.post_id in
+        <foreach item="item"
+                 collection="postIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          and dp.delete_flag = 0
+    </select>
+<!--    Excel根据部门中间表id查询出数据库的数据-->
+    <select id="selectExcelDepartmentPostId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
+        select ors.rank_prefix_code,
+               dm.department_code,
+               ors.official_rank_system_id,
+               ors.official_rank_system_name,
+               dm.department_name,
+               p.post_name as department_leader_post_name,
+               dp.department_post_id,
+               dp.department_id,
+               dp.post_id,
+               dp.department_sort,
+               dp.post_sort,
+               dp.delete_flag,
+               dp.create_by,
+               dp.create_time,
+               dp.update_by,
+               dp.update_time
+        from department_post dp
+                 left join department dm
+                           on dm.department_id = dp.department_id
+                               and dm.delete_flag = 0
+                 left join post p
+                           on p.post_id = dp.post_id
+                               and p.delete_flag = 0
+                 left join official_rank_system ors
+                           on p.official_rank_system_id = ors.official_rank_system_id
+                               and ors.delete_flag = 0
+        where dp.post_id =
+              #{postId}
+          and dp.delete_flag = 0
+    </select>
     <!--新增部门岗位关联表-->
     <insert id="insertDepartmentPost" useGeneratedKeys="true" keyProperty="departmentPostId">
         INSERT INTO department_post (department_id, post_id, department_sort, post_sort, delete_flag, create_by,

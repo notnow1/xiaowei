@@ -572,7 +572,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<String> excelIdentityCards = list.stream().map(EmployeeExcel::getIdentityCard).collect(Collectors.toList());
         //返回报错信息
         StringBuffer employeeError = new StringBuffer();
-
+        //todo 加参数是否修改
         //数据库已存在修改人员数据
         List<String> updateCodes = new ArrayList<>();
         for (EmployeeExcel employeeExcel : list) {
@@ -975,6 +975,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
             //个人职级名称
             String employeeRankName = employeeExcel.getEmployeeRankName();
             String employmentStatus = employeeExcel.getEmploymentStatus();
+/*            //参数是否校验
+            if (StringUtils.isNotBlank(employeeExcel.getEmployeeCode())) {
+                if (employeeCodes.contains(employeeExcel.getEmployeeCode())) {
+                    //封装新增修改到数据库的数据
+                    validEmployeeError.append("编码已存在");
+                }
+            }*/
             //用工关系状态
             if (StringUtils.isNotBlank(employmentStatus)) {
                 if (!StringUtils.equals(employmentStatus, "在职") && !StringUtils.equals(employmentStatus, "离职")) {

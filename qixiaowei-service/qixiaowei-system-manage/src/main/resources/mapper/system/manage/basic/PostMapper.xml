@@ -507,6 +507,31 @@
         where p.delete_flag = 0
           and p.official_rank_system_id = #{officialRankSystemId}
     </select>
+<!--    根据集合查询岗位表Code-->
+    <select id="selectPostCodes" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
+        SELECT post_id,
+               post_code,
+               post_name,
+               official_rank_system_id,
+               post_rank_lower,
+               post_rank,
+               post_rank_upper,
+               post_description,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM post
+        WHERE BINARY post_code IN
+        <foreach item="item"
+                 collection="postCodes"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          and delete_flag = 0
+    </select>
     <!--新增岗位表-->
     <insert id="insertPost" useGeneratedKeys="true" keyProperty="postId">
         INSERT INTO post

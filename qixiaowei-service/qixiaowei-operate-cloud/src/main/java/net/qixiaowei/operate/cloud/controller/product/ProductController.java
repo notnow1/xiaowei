@@ -427,18 +427,6 @@ public class ProductController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("产品配置")// 设置 sheet 的名字
-                //设置文本
-                .registerWriteHandler(new CellWriteHandler() {
-                    @Override
-                    public void afterCellDispose(CellWriteHandlerContext context) {
-                        // 3.0 设置单元格为文本
-                        WriteCellData<?> cellData = context.getFirstCellData();
-                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
-                        DataFormatData dataFormatData = new DataFormatData();
-                        dataFormatData.setIndex((short) 49);
-                        writeCellStyle.setDataFormatData(dataFormatData);
-                    }
-                })
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -462,10 +450,6 @@ public class ProductController extends BaseController {
                         // 3.0 设置单元格为文本
                         WriteCellData<?> cellData = context.getFirstCellData();
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
-                        //设置文本
-                        DataFormatData dataFormatData = new DataFormatData();
-                        dataFormatData.setIndex((short) 49);
-                        writeCellStyle.setDataFormatData(dataFormatData);
                         // 设置字体
                         WriteFont headWriteFont = new WriteFont();
                         if (context.getRowIndex() == 0) {
