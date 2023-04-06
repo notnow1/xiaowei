@@ -223,7 +223,7 @@
             AND
             <foreach item="item"
                      collection="product.params.productUnitIdNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 pu.product_unit_id NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
