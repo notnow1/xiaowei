@@ -464,9 +464,6 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         officialRankSystem.setUpdateBy(SecurityUtils.getUserId());
         officialRankSystem.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         officialRankSystemMapper.insertOfficialRankSystem(officialRankSystem);
-        if (StringUtils.isEmpty(officialRankDecomposeDTOS)) {
-            throw new ServiceException("职级分解不能为空");
-        }
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
             if (StringUtils.isNull(officialRankDecomposeDTO.getDecomposeDimension())) {
                 throw new ServiceException("请选择分解维度");
@@ -535,9 +532,6 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         }
         List<Long> decomposeDimensions = new ArrayList<>();
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOAfter) {
-            if (StringUtils.isNull(officialRankDecomposeDTO.getSalaryFactor())) {
-                throw new ServiceException("职级分解系数不可以为空");
-            }
             Long decomposeDimension = officialRankDecomposeDTO.getDecomposeDimension();
             if (decomposeDimensions.contains(decomposeDimension)) {
                 throw new ServiceException("分解维度不能重复");
