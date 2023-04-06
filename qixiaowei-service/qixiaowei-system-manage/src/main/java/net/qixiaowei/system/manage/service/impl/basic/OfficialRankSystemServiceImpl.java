@@ -146,7 +146,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         switch (type) {
             case 1:// todo 1部门
                 Department department1 = new Department();
-                department1.setStatus(1);
+                department1.setStatus(status);
                 List<DepartmentDTO> listDepartment = departmentService.dropList(department1);
                 if (StringUtils.isNotEmpty(listDepartment)) {
                     for (DepartmentDTO department : listDepartment) {
@@ -186,7 +186,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 break;
             case 4:// todo 4产品
                 ProductDTO productDTO = new ProductDTO();
-                productDTO.setListingFlag(1);
+                productDTO.setListingFlag(status);
                 R<List<ProductDTO>> listProduct = productService.dropList(productDTO, SecurityConstants.INNER);
                 if (listProduct.getCode() == 200 && StringUtils.isNotEmpty(listProduct.getData())) {
                     List<ProductDTO> data = listProduct.getData();
