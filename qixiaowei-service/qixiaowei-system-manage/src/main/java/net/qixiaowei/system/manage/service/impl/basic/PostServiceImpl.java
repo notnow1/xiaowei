@@ -574,6 +574,7 @@ public class PostServiceImpl implements IPostService {
 
             Map<String, List<PostExcel>> postExcelMap = postExcelList.parallelStream().collect(Collectors.groupingBy(PostExcel::getPostCode));
             for (String key : postExcelMap.keySet()) {
+                List<DepartmentPostDTO> departmentPostDTOList = new ArrayList<>();
                 Long postId = null;
                 //新增关联表
                 List<DepartmentPost> departmentPostAddList = new ArrayList<>();
@@ -590,9 +591,11 @@ public class PostServiceImpl implements IPostService {
                             //重复数据(认为错误数据)
                             if (StringUtils.isNotEmpty(postExcelDistinct)) {
                                 postExcels.removeAll(postExcelDistinct);
-                                errorExcelList.add(postExcelDistinct.get(i));
-                                postError.append("岗位" + postExcelDistinct.get(i).getPostName() + "数据重复");
-                                continue;
+                                if (StringUtils.isNotEmpty(postExcels)){
+                                    errorExcelList.add(postExcelDistinct.get(i));
+                                    postError.append("岗位" + postExcelDistinct.get(i).getPostName() + "数据重复");
+                                    continue;
+                                }
                             }
                             DepartmentPost departmentPost = new DepartmentPost();
                             Post post = new Post();
@@ -667,9 +670,9 @@ public class PostServiceImpl implements IPostService {
                                     } catch (Exception e) {
                                         throw new ServiceException("修改岗位表失败！");
                                     }
-                                    List<DepartmentPostDTO> departmentPostDTOList = departmentPostMapper.selectExcelDepartmentPostId(post.getPostId());
-                                    if (StringUtils.isNotEmpty(departmentPostDTOList)) {
-                                        departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+                                    List<DepartmentPostDTO> departmentPostDTOList2 = departmentPostMapper.selectExcelDepartmentPostId(post.getPostId());
+                                    if (StringUtils.isNotEmpty(departmentPostDTOList2)) {
+                                        departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentPostDTOList2.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
                                     }
                                     departmentPost.setPostId(post.getPostId());
                                     if (StringUtils.isNotEmpty(departmentDTOList)) {
@@ -697,6 +700,7 @@ public class PostServiceImpl implements IPostService {
                                 }
                                 successExcelList.add(post);
                             } else {
+
                                 this.onlyOne(departmentDTOList, officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
                                 if (stringBuffer.length() > 1) {
                                     postError.append(stringBuffer);
@@ -704,6 +708,7 @@ public class PostServiceImpl implements IPostService {
                                     continue;
                                 }
                                 if (i == 0) {
+
                                     //不包含就是新增数据
                                     if (StringUtils.isNotEmpty(postExcelUpdates) && !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
                                         post.setCreateBy(SecurityUtils.getUserId());
@@ -717,19 +722,27 @@ public class PostServiceImpl implements IPostService {
                                             throw new ServiceException("插入岗位表失败！");
                                         }
                                     } else if (StringUtils.isNotEmpty(postExcelUpdates) && postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                        for (PostDTO postExcelUpdate : postExcelUpdates) {
+                                            if (postExcelUpdate.getPostCode().equals(postExcelDistinct.get(i).getPostCode())){
+                                                post.setPostId(postExcelUpdate.getPostId());
+                                                break;
+                                            }
+                                        }
+
                                         post.setUpdateBy(SecurityUtils.getUserId());
                                         post.setUpdateTime(DateUtils.getNowDate());
                                         post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                                         //不可修改岗位名称
                                         post.setPostName("");
                                         try {
-                                            postMapper.insertPost(post);
+                                            postMapper.updatePost(post);
                                         } catch (Exception e) {
                                             throw new ServiceException("插入岗位表失败！");
                                         }
 
                                     }
                                     postId = post.getPostId();
+                                    departmentPostDTOList = departmentPostMapper.selectExcelDepartmentPostId(postId);
                                 }
                                 //不包含就是新增数据
                                 if (StringUtils.isNotEmpty(postExcelUpdates) && !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
@@ -764,6 +777,9 @@ public class PostServiceImpl implements IPostService {
                                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                                         List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
                                         if (StringUtils.isNotEmpty(departmentDTO)) {
+                                            if (StringUtils.isNotEmpty(departmentPostDTOList)){
+                                                departmentPost.setDepartmentPostId(departmentPostDTOList.get(0).getDepartmentPostId());
+                                            }
                                             //组织id
                                             departmentPost.setDepartmentId(departmentDTO.get(0).getDepartmentId());
                                             //组织排序
@@ -778,7 +794,7 @@ public class PostServiceImpl implements IPostService {
                                         throw new ServiceException("适用组织不存在! 请先配置组织数据");
                                     }
                                     if (i == (postExcelDistinct.size() - 1)) {
-                                        List<DepartmentPostDTO> departmentPostDTOList = departmentPostMapper.selectExcelDepartmentPostId(postId);
+
                                         if (StringUtils.isNotEmpty(departmentPostDTOList)) {
                                             departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
                                         }

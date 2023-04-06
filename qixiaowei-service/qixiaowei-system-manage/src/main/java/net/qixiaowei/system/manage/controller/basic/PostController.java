@@ -206,6 +206,8 @@ public class PostController extends BaseController {
                 .excelType(ExcelTypeEnum.XLSX)
                 .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
                 .head(head)
+                .inMemory(true)
+                .useDefaultStyle(false)
                 .sheet("岗位信息")// 设置 sheet 的名字
                 // 设置 sheet 的名字
                 .registerWriteHandler(new SheetWriteHandler() {
@@ -244,7 +246,7 @@ public class PostController extends BaseController {
                             font2.setFontHeightInPoints((short) 11);
                             font2.setColor(IndexedColors.BLACK.getIndex());
                             // 从哪到哪，你想设置成什么样的字体都行startIndex，endIndex
-                            richString.applyFont(3, 99, font2);
+                            richString.applyFont(3, 117, font2);
                             // 再设置回每个单元格里
                             cell.setCellValue(richString);
                         }
@@ -284,7 +286,7 @@ public class PostController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 4 || columnIndex == 5) {
+                            if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 4 || columnIndex == 6) {
                                 //设置 自动换行
                                 writeCellStyle.setWrapped(true);
                                 headWriteFont.setColor(IndexedColors.RED.getIndex());
