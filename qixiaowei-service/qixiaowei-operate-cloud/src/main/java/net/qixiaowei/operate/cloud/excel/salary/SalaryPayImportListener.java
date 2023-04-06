@@ -174,8 +174,7 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
             data2.add("工号");
             data2.add("姓名");
             data2.add("部门");
-            data2.add("年度");
-            data2.add("月份");
+            data2.add("发薪年月");
             for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
                 if (salaryPayDetailsDTO.getIsCondition() == 1) {
                     data2.add(salaryPayDetailsDTO.getThirdLevelItem());
@@ -187,8 +186,7 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
             data3.add(salaryPayDTO.getEmployeeCode());
             data3.add(salaryPayDTO.getEmployeeName());
             data3.add(salaryPayDTO.getEmployeeDepartmentName());
-            data3.add(salaryPayDTO.getPayYear());
-            data3.add(salaryPayDTO.getPayMonth());
+            data3.add(salaryPayDTO.getPayYearMonth());
             for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
                 if (salaryPayDetailsDTO.getIsCondition() == 1) {
                     data3.add(salaryPayDetailsDTO.getAmount());

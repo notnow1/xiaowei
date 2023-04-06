@@ -1438,20 +1438,20 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public List<EmployeeDTO> queryEmployeeByDept(EmployeeDTO employeeDTO) {
         List<EmployeeDTO> employeeList = new ArrayList<>();
-        Employee  employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO,employee);
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
         String employeeFlag = employeeDTO.getEmployeeFlag();
         //生效在职有账号的员工
         if (StringUtils.equals("user", employeeFlag)) {
             employee.setStatus(1);
             employee.setEmploymentStatus(1);
             List<EmployeeDTO> employeeDTOList = employeeMapper.queryEmployeeByDept(employee);
-            employeeList  = employeeDTOList.stream().filter(f -> f.getUserId() != null).collect(Collectors.toList());
+            employeeList = employeeDTOList.stream().filter(f -> f.getUserId() != null).collect(Collectors.toList());
         }//生效包含在职离职有账号的员工
         else if (StringUtils.equals("userAll", employeeFlag)) {
             employee.setStatus(1);
             List<EmployeeDTO> employeeDTOList = employeeMapper.queryEmployeeByDept(employee);
-            employeeList  = employeeDTOList.stream().filter(f -> f.getUserId() != null).collect(Collectors.toList());
+            employeeList = employeeDTOList.stream().filter(f -> f.getUserId() != null).collect(Collectors.toList());
         }//生效包含在职离职的员工
         else if (StringUtils.equals("1", employeeFlag)) {
             employee.setStatus(1);
@@ -1973,6 +1973,17 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public List<EmployeeDTO> getUseEmployeeUser() {
         return employeeMapper.getUseEmployeeUser();
+    }
+
+    /**
+     * 根据name 查询
+     *
+     * @param employeeNames 人员名称
+     * @return 结果
+     */
+    @Override
+    public List<EmployeeDTO> selectByNames(List<String> employeeNames) {
+        return employeeMapper.selectByNames(employeeNames);
     }
 
     /**

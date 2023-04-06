@@ -61,6 +61,11 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
             }
 
             @Override
+            public R<List<EmployeeDTO>> selectByNames(List<String> employeeNames, String source) {
+                return R.fail("根据 Name 集合 获取人员信息失败:" + throwable.getMessage());
+            }
+
+            @Override
             public R<List<EmployeeDTO>> selectDepartmentAndOfficialRankSystem(List<Long> departmentIds, String source) {
                 return R.fail("获取相同部门下 相同职级的 在职人数信息失败:" + throwable.getMessage());
             }
