@@ -268,24 +268,34 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             params = new HashMap<>();
         }
         EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
+        BeanUtils.copyProperties(empSalaryAdjustPlanDTO, empSalaryAdjustPlan);
+        String employeeName = empSalaryAdjustPlanDTO.getEmployeeName();
+        if (StringUtils.isNotNull(employeeName)) {
+            params.put("employeeName", employeeName);
+        }
+        String employeeCode = empSalaryAdjustPlanDTO.getEmployeeCode();
+        if (StringUtils.isNotNull(employeeCode)) {
+            params.put("employeeCode", employeeCode);
+        }
         empSalaryAdjustPlan.setParams(params);
-        Map<String, Object> params1 = empSalaryAdjustPlan.getParams();
-        List<String> workingAgeEqualList = (List<String>) params1.get("workingAgeEqual");
-        List<String> workingAgeNotEqualList = (List<String>) params1.get("workingAgeNotEqual");
-        List<Integer> workingAgeEqual = new ArrayList<>();
-        List<Integer> workingAgeNotEqual = new ArrayList<>();
-        if (StringUtils.isNotNull(workingAgeEqualList)) {
-            for (String s : workingAgeEqualList) {
-                workingAgeEqual.add(Integer.valueOf(s));
-            }
-            params1.put("workingAgeEqual", workingAgeEqual);
-        }
-        if (StringUtils.isNotNull(workingAgeNotEqualList)) {
-            for (String s : workingAgeNotEqualList) {
-                workingAgeNotEqual.add(Integer.valueOf(s));
-            }
-            params1.put("workingAgeNotEqual", workingAgeNotEqual);
-        }
+        // 司龄搜索
+//        Map<String, Object> params1 = empSalaryAdjustPlan.getParams();
+//        List<String> workingAgeEqualList = (List<String>) params1.get("workingAgeEqual");
+//        List<String> workingAgeNotEqualList = (List<String>) params1.get("workingAgeNotEqual");
+//        List<Integer> workingAgeEqual = new ArrayList<>();
+//        List<Integer> workingAgeNotEqual = new ArrayList<>();
+//        if (StringUtils.isNotNull(workingAgeEqualList)) {
+//            for (String s : workingAgeEqualList) {
+//                workingAgeEqual.add(Integer.valueOf(s));
+//            }
+//            params1.put("workingAgeEqual", workingAgeEqual);
+//        }
+//        if (StringUtils.isNotNull(workingAgeNotEqualList)) {
+//            for (String s : workingAgeNotEqualList) {
+//                workingAgeNotEqual.add(Integer.valueOf(s));
+//            }
+//            params1.put("workingAgeNotEqual", workingAgeNotEqual);
+//        }
         List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
         for (EmpSalaryAdjustPlanDTO salaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
             String adjustmentType = salaryAdjustPlanDTO.getAdjustmentType();
