@@ -182,12 +182,13 @@ public class FieldConfigServiceImpl implements IFieldConfigService {
      */
     @Override
     public List<FieldConfig> insertFieldConfigs(List<FieldConfigDTO> fieldConfigDtos) {
-        List<FieldConfig> fieldConfigList = new ArrayList();
+        List<FieldConfig> fieldConfigList = new ArrayList<>();
 
         for (FieldConfigDTO fieldConfigDTO : fieldConfigDtos) {
             FieldConfig fieldConfig = new FieldConfig();
             BeanUtils.copyProperties(fieldConfigDTO, fieldConfig);
-            fieldConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            fieldConfig.setCreateBy(SecurityUtils.getUserId());
+            fieldConfig.setCreateTime(DateUtils.getNowDate());
             fieldConfig.setUpdateTime(DateUtils.getNowDate());
             fieldConfig.setUpdateBy(SecurityUtils.getUserId());
             fieldConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
@@ -205,13 +206,12 @@ public class FieldConfigServiceImpl implements IFieldConfigService {
 
     @Override
     public int updateFieldConfigs(List<FieldConfigDTO> fieldConfigDtos) {
-        List<FieldConfig> fieldConfigList = new ArrayList();
+        List<FieldConfig> fieldConfigList = new ArrayList<>();
 
         for (FieldConfigDTO fieldConfigDTO : fieldConfigDtos) {
             FieldConfig fieldConfig = new FieldConfig();
             BeanUtils.copyProperties(fieldConfigDTO, fieldConfig);
-            fieldConfig.setCreateBy(SecurityUtils.getUserId());
-            fieldConfig.setCreateTime(DateUtils.getNowDate());
+            fieldConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             fieldConfig.setUpdateTime(DateUtils.getNowDate());
             fieldConfig.setUpdateBy(SecurityUtils.getUserId());
             fieldConfigList.add(fieldConfig);

@@ -239,6 +239,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
      *
      * @param businessType 业务类型
      */
+    @Transactional
     public void changeHeadData(Integer businessType) {
         BusinessType businessTypeEnum = BusinessType.getBusinessType(businessType);
         if (StringUtils.isNull(businessTypeEnum)) {
@@ -440,7 +441,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
 
     @Override
     public int insertFieldListConfigs(List<FieldListConfigDTO> fieldListConfigDtos) {
-        List<FieldListConfig> fieldListConfigList = new ArrayList();
+        List<FieldListConfig> fieldListConfigList = new ArrayList<>();
 
         for (FieldListConfigDTO fieldListConfigDTO : fieldListConfigDtos) {
             FieldListConfig fieldListConfig = new FieldListConfig();
