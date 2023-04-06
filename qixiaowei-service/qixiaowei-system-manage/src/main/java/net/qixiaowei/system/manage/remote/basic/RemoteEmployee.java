@@ -119,6 +119,19 @@ public class RemoteEmployee implements RemoteEmployeeService {
     }
 
     /**
+     * 根据Name集合
+     *
+     * @param employeeNames 员工名称
+     * @return 结果
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/selectByNames")
+    public R<List<EmployeeDTO>> selectByNames(@RequestBody List<String> employeeNames, String source) {
+        return R.ok(employeeService.selectByNames(employeeNames));
+    }
+
+    /**
      * 相同部门下 相同职级的 在职人数
      *
      * @param departmentIds

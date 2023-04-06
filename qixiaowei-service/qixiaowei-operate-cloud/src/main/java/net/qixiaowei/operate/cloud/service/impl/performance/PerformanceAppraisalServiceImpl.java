@@ -1361,86 +1361,80 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isNull(performanceAppraisalById)) {
             throw new ServiceException("当前绩效考核任务已不存在");
         }
-        //1.更新绩效考核表
-        PerformanceAppraisal appraisal = new PerformanceAppraisal();
-        appraisal.setPerformanceAppraisalId(performanceAppraisalId);
-        appraisal.setSelfDefinedColumnsFlag(0);// 是否自定义
-        appraisal.setUpdateBy(SecurityUtils.getUserId());
-        appraisal.setUpdateTime(DateUtils.getNowDate());
-        performanceAppraisalMapper.updatePerformanceAppraisal(appraisal);
-        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
-        List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalMapper.selectRankFactorByAppraisalId(performanceAppraisalId);
-        Map<String, Long> factorObjectMap = new HashMap<>();
-        if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
-            throw new ServiceException("当前绩效等级系数已不存在 请检查绩效等级");
-        }
-        for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
-            factorObjectMap.put(performanceRankFactorDTO.getPerformanceRankName(), performanceRankFactorDTO.getPerformanceRankFactorId());
-        }
-        Map<String, Long> orgObjectMap = new HashMap<>();// Code ,对象ID
-        Map<String, Long> idMap = new HashMap<>();// Code ,主ID
-        for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-            orgObjectMap.put(performanceAppraisalObjectsDTO.getAppraisalObjectCode(), performanceAppraisalObjectsDTO.getAppraisalObjectId());
-            idMap.put(performanceAppraisalObjectsDTO.getAppraisalObjectCode(), performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
-        }
-        ExcelReaderBuilder read;
         try {
-            read = EasyExcel.read(file.getInputStream());
+            //1.更新绩效考核表
+            PerformanceAppraisal appraisal = new PerformanceAppraisal();
+            appraisal.setPerformanceAppraisalId(performanceAppraisalId);
+            appraisal.setSelfDefinedColumnsFlag(0);// 是否自定义
+            appraisal.setUpdateBy(SecurityUtils.getUserId());
+            appraisal.setUpdateTime(DateUtils.getNowDate());
+            performanceAppraisalMapper.updatePerformanceAppraisal(appraisal);
+            List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+            List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalMapper.selectRankFactorByAppraisalId(performanceAppraisalId);
+            Map<String, Long> factorObjectMap = new HashMap<>();
+            if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
+                throw new ServiceException("当前绩效等级系数已不存在 请检查绩效等级");
+            }
+            for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
+                factorObjectMap.put(performanceRankFactorDTO.getPerformanceRankName(), performanceRankFactorDTO.getPerformanceRankFactorId());
+            }
+            Map<String, Long> orgObjectMap = new HashMap<>();// Code ,对象ID
+            Map<String, Long> idMap = new HashMap<>();// Code ,主ID
+            for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                orgObjectMap.put(performanceAppraisalObjectsDTO.getAppraisalObjectName(), performanceAppraisalObjectsDTO.getAppraisalObjectId());
+                idMap.put(performanceAppraisalObjectsDTO.getAppraisalObjectName(), performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
+            }
+            ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+//        List<Map<Integer, String>> listMap = read.doReadAllSync();
+            List<Map<Integer, String>> listMap = read.sheet(0).doReadSync();
+            if (StringUtils.isEmpty(listMap)) {
+                throw new ServiceException("绩效考核Excel没有数据 请检查");
+            }
+            //2.更新绩效考核对象表
+            List<EmployeeDTO> employeeDTOS = getEmployeeDTOS(listMap, 3);
+            List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = new ArrayList<>();//需要更新的对象表lIst
+            for (Map<Integer, String> map : listMap) {
+                if (StringUtils.isNull(map.get(0))) {
+                    break;
+                }
+                PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = new PerformanceAppraisalObjectsDTO();
+                Long performanceObjectId = orgObjectMap.get(map.get(0));
+                Long performAppraisalObjectsId = idMap.get(map.get(0));
+                Long factorResultId;
+                if (StringUtils.isNull(map.get(2))) {
+                    factorResultId = null;
+                } else {
+                    if (map.get(2).equals("不考核")) {
+                        factorResultId = 0L;
+                    } else {
+                        factorResultId = factorObjectMap.get(map.get(2));
+                    }
+                }
+                if (StringUtils.isNull(map.get(1))) {
+                    performanceAppraisalObjectsDTO.setEvaluationScore(BigDecimal.ZERO);
+                } else {
+                    performanceAppraisalObjectsDTO.setEvaluationScore(new BigDecimal(map.get(1)));
+                }
+                performanceAppraisalObjectsDTO.setAppraisalObjectId(performanceObjectId);
+                performanceAppraisalObjectsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
+                performanceAppraisalObjectsDTO.setAppraisalResultId(factorResultId);
+                performanceAppraisalObjectsDTO.setAppraisalResult(map.get(2));
+                performanceAppraisalObjectsDTO.setRemark(map.get(4));
+                if (StringUtils.isNotEmpty(employeeDTOS)) {
+                    for (EmployeeDTO employeeDTO : employeeDTOS) {
+                        if (employeeDTO.getEmployeeName().equals(map.get(3))) {
+                            performanceAppraisalObjectsDTO.setAppraisalPrincipalId(employeeDTO.getEmployeeId());
+                            performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeDTO.getEmployeeName());
+                            break;
+                        }
+                    }
+                }
+                performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
+            }
+            performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
         } catch (Exception e) {
             throw new ServiceException("导入绩效考核表Excel失败");
         }
-        List<Map<Integer, String>> listMap = read.doReadAllSync();
-        Map<Integer, String> head = listMap.get(1);
-        if (head.containsValue(null)) {
-            throw new ServiceException("请检查excel 表头不可以为空");
-        }
-        judgmentSysTemplate(head);
-        listMap.remove(1);
-        listMap.remove(0);
-        if (StringUtils.isEmpty(listMap)) {
-            throw new ServiceException("绩效考核Excel没有数据 请检查");
-        }
-        //2.更新绩效考核对象表
-        List<EmployeeDTO> employeeDTOS = getEmployeeDTOS(listMap, 4);
-        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = new ArrayList<>();//需要更新的对象表lIst
-        for (Map<Integer, String> map : listMap) {
-            if (StringUtils.isNull(map.get(1))) {
-                break;
-            }
-            PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = new PerformanceAppraisalObjectsDTO();
-            Long performanceObjectId = orgObjectMap.get(map.get(0));
-            Long performAppraisalObjectsId = idMap.get(map.get(0));
-            Long factorResultId;
-            if (StringUtils.isNull(map.get(3))) {
-                factorResultId = null;
-            } else {
-                if (map.get(3).equals("不考核")) {
-                    factorResultId = 0L;
-                } else {
-                    factorResultId = factorObjectMap.get(map.get(3));
-                }
-            }
-            if (StringUtils.isNull(map.get(2))) {
-                performanceAppraisalObjectsDTO.setEvaluationScore(BigDecimal.ZERO);
-            } else {
-                performanceAppraisalObjectsDTO.setEvaluationScore(new BigDecimal(map.get(2)));
-            }
-            performanceAppraisalObjectsDTO.setAppraisalObjectId(performanceObjectId);
-            performanceAppraisalObjectsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
-            performanceAppraisalObjectsDTO.setAppraisalResultId(factorResultId);
-            performanceAppraisalObjectsDTO.setAppraisalResult(map.get(3));
-            if (StringUtils.isNotEmpty(employeeDTOS)) {
-                for (EmployeeDTO employeeDTO : employeeDTOS) {
-                    if (employeeDTO.getEmployeeCode().equals(map.get(4))) {
-                        performanceAppraisalObjectsDTO.setAppraisalPrincipalId(employeeDTO.getEmployeeId());
-                        performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeDTO.getEmployeeName());
-                        break;
-                    }
-                }
-            }
-            performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
-        }
-        performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
     }
 
     /**
@@ -1451,7 +1445,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     private void judgmentSysTemplate(Map<Integer, String> head) {
         Collection<String> valueCollection = head.values();
         List<String> headValueList = new ArrayList<>(valueCollection);
-        if (!headValueList.contains("评议总分")) {
+        if (!headValueList.contains("评议总分数")) {
             throw new ServiceException("请导入正确的系统绩效考核模板");
         }
     }
@@ -1493,86 +1487,81 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isNull(performanceAppraisalById)) {
             throw new ServiceException("当前绩效考核任务已不存在");
         }
-        //1.更新绩效考核表
-        PerformanceAppraisal appraisal = new PerformanceAppraisal();
-        appraisal.setPerformanceAppraisalId(performanceAppraisalId);
-        appraisal.setSelfDefinedColumnsFlag(0);// 是否自定义
-        appraisal.setUpdateBy(SecurityUtils.getUserId());
-        appraisal.setUpdateTime(DateUtils.getNowDate());
-        performanceAppraisalMapper.updatePerformanceAppraisal(appraisal);
-        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
-        List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalMapper.selectRankFactorByAppraisalId(performanceAppraisalId);
-        Map<String, Long> factorObjectMap = new HashMap<>();
-        if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
-            throw new ServiceException("当前绩效等级系数已不存在 请检查绩效等级");
-        }
-        for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
-            factorObjectMap.put(performanceRankFactorDTO.getPerformanceRankName(), performanceRankFactorDTO.getPerformanceRankFactorId());
-        }
-        Map<String, Long> orgObjectMap = new HashMap<>();
-        Map<String, Long> idMap = new HashMap<>();// Code ,主ID
-        for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-            orgObjectMap.put(performanceAppraisalObjectsDTO.getAppraisalObjectCode(), performanceAppraisalObjectsDTO.getAppraisalObjectId());
-            idMap.put(performanceAppraisalObjectsDTO.getAppraisalObjectCode(), performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
-        }
-        ExcelReaderBuilder read;
         try {
-            read = EasyExcel.read(file.getInputStream());
+            //1.更新绩效考核表
+            PerformanceAppraisal appraisal = new PerformanceAppraisal();
+            appraisal.setPerformanceAppraisalId(performanceAppraisalId);
+            appraisal.setSelfDefinedColumnsFlag(0);// 是否自定义
+            appraisal.setUpdateBy(SecurityUtils.getUserId());
+            appraisal.setUpdateTime(DateUtils.getNowDate());
+            performanceAppraisalMapper.updatePerformanceAppraisal(appraisal);
+            List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+            List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalMapper.selectRankFactorByAppraisalId(performanceAppraisalId);
+            Map<String, Long> factorObjectMap = new HashMap<>();
+            if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
+                throw new ServiceException("当前绩效等级系数已不存在 请检查绩效等级");
+            }
+            for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
+                factorObjectMap.put(performanceRankFactorDTO.getPerformanceRankName(), performanceRankFactorDTO.getPerformanceRankFactorId());
+            }
+            Map<String, Long> orgObjectMap = new HashMap<>();
+            Map<String, Long> idMap = new HashMap<>();// Code ,主ID
+            for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                orgObjectMap.put(performanceAppraisalObjectsDTO.getAppraisalObjectCode(), performanceAppraisalObjectsDTO.getAppraisalObjectId());
+                idMap.put(performanceAppraisalObjectsDTO.getAppraisalObjectCode(), performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
+            }
+            ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+            List<Map<Integer, String>> listMap = read.sheet(0).doReadSync();
+            if (StringUtils.isEmpty(listMap)) {
+                throw new ServiceException("绩效考核Excel没有数据 请检查");
+            }
+//        Map<Integer, String> head = listMap.get(0);
+//        judgmentSysTemplate(head);
+            //2.更新绩效考核对象表
+            List<EmployeeDTO> employeeListByName = getEmployeeDTOS(listMap, 7);
+            List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = new ArrayList<>();//需要更新的对象表lIst
+            for (Map<Integer, String> map : listMap) {
+                if (StringUtils.isNull(map.get(0))) {
+                    break;
+                }
+                PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = new PerformanceAppraisalObjectsDTO();
+                Long performanceObjectId = orgObjectMap.get(map.get(0));
+                Long performAppraisalObjectsId = idMap.get(map.get(0));
+                Long factorResultId;
+                if (StringUtils.isNull(map.get(6))) {
+                    factorResultId = null;
+                } else {
+                    if (map.get(6).equals("不考核")) {
+                        factorResultId = 0L;
+                    } else {
+                        factorResultId = factorObjectMap.get(map.get(6));
+                    }
+                }
+                if (StringUtils.isNull(map.get(5))) {
+                    performanceAppraisalObjectsDTO.setEvaluationScore(BigDecimal.ZERO);
+                } else {
+                    performanceAppraisalObjectsDTO.setEvaluationScore(new BigDecimal(map.get(5)));
+                }
+                performanceAppraisalObjectsDTO.setAppraisalObjectId(performanceObjectId);
+                performanceAppraisalObjectsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
+                performanceAppraisalObjectsDTO.setAppraisalResultId(factorResultId);
+                performanceAppraisalObjectsDTO.setAppraisalResult(map.get(6));
+                performanceAppraisalObjectsDTO.setRemark(map.get(8));
+                if (StringUtils.isNotEmpty(employeeListByName)) {
+                    for (EmployeeDTO employeeDTO : employeeListByName) {
+                        if (employeeDTO.getEmployeeName().equals(map.get(7))) {
+                            performanceAppraisalObjectsDTO.setAppraisalPrincipalId(employeeDTO.getEmployeeId());
+                            performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeDTO.getEmployeeName());
+                            break;
+                        }
+                    }
+                }
+                performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
+            }
+            performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
         } catch (Exception e) {
             throw new ServiceException("导入绩效考核表Excel失败");
         }
-        List<Map<Integer, String>> listMap = read.doReadAllSync();
-        Map<Integer, String> head = listMap.get(1);
-        if (head.containsValue(null)) {
-            throw new ServiceException("请检查excel 表头不可以为空");
-        }
-        judgmentSysTemplate(head);
-        listMap.remove(1);
-        listMap.remove(0);
-        if (StringUtils.isEmpty(listMap)) {
-            throw new ServiceException("绩效考核Excel没有数据 请检查");
-        }
-        //2.更新绩效考核对象表
-        List<EmployeeDTO> employeeListByCode = getEmployeeDTOS(listMap, 7);
-        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = new ArrayList<>();//需要更新的对象表lIst
-        for (Map<Integer, String> map : listMap) {
-            if (StringUtils.isNull(map.get(0))) {
-                break;
-            }
-            PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = new PerformanceAppraisalObjectsDTO();
-            Long performanceObjectId = orgObjectMap.get(map.get(0));
-            Long performAppraisalObjectsId = idMap.get(map.get(0));
-            Long factorResultId;
-            if (StringUtils.isNull(map.get(6))) {
-                factorResultId = null;
-            } else {
-                if (map.get(6).equals("不考核")) {
-                    factorResultId = 0L;
-                } else {
-                    factorResultId = factorObjectMap.get(map.get(6));
-                }
-            }
-            if (StringUtils.isNull(map.get(5))) {
-                performanceAppraisalObjectsDTO.setEvaluationScore(BigDecimal.ZERO);
-            } else {
-                performanceAppraisalObjectsDTO.setEvaluationScore(new BigDecimal(map.get(5)));
-            }
-            performanceAppraisalObjectsDTO.setAppraisalObjectId(performanceObjectId);
-            performanceAppraisalObjectsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
-            performanceAppraisalObjectsDTO.setAppraisalResultId(factorResultId);
-            performanceAppraisalObjectsDTO.setAppraisalResult(map.get(6));
-            if (StringUtils.isNotEmpty(employeeListByCode)) {
-                for (EmployeeDTO employeeDTO : employeeListByCode) {
-                    if (employeeDTO.getEmployeeCode().equals(map.get(7))) {
-                        performanceAppraisalObjectsDTO.setAppraisalPrincipalId(employeeDTO.getEmployeeId());
-                        performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeDTO.getEmployeeName());
-                        break;
-                    }
-                }
-            }
-            performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
-        }
-        performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
     }
 
     /**
@@ -1596,7 +1585,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isEmpty(assessmentList)) {
             return new ArrayList<>();
         }
-        R<List<EmployeeDTO>> listR = employeeService.selectByCodes(assessmentList, SecurityConstants.INNER);
+        R<List<EmployeeDTO>> listR = employeeService.selectByNames(assessmentList, SecurityConstants.INNER);
         List<EmployeeDTO> employeeListByCode = listR.getData();
         if (listR.getCode() != 200) {
             throw new ServiceException("远程调用失败 请联系管理员");
@@ -2019,19 +2008,20 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         List<List<Object>> list = new ArrayList<>();
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
             List<Object> data = new ArrayList<>();
-            data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());//考核对象
+//            data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());//考核对象
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());//考核对象
             data.add(performanceAppraisalObjectsDTO.getEvaluationScore());//分数
             addResult(performanceRankFactorDTOS, data, performanceAppraisalObjectsDTO);
             if (StringUtils.isNotEmpty(employeeDTOS)) {
                 for (EmployeeDTO employeeDTO : employeeDTOS) {
                     if (employeeDTO.getEmployeeId().equals(performanceAppraisalObjectsDTO.getAppraisalPrincipalId())) {
-                        data.add(employeeDTO.getEmployeeCode());//考核责任人工号
+//                        data.add(employeeDTO.getEmployeeCode());//考核责任人工号
                         data.add(employeeDTO.getEmployeeName());//考核责任人姓名
                         break;
                     }
                 }
             }
+            data.add(performanceAppraisalObjectsDTO.getRemark());
             list.add(data);
         }
         return list;
@@ -2163,20 +2153,20 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             List<Object> data = new ArrayList<>();
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());//考核编码
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());//考核对象
-            data.add(performanceAppraisalObjectsDTO.getPostName());//岗位
             data.add(performanceAppraisalObjectsDTO.getDepartmentName());//部门
+            data.add(performanceAppraisalObjectsDTO.getPostName());//岗位
             data.add(performanceAppraisalObjectsDTO.getOfficialRankName());//个人职级
             data.add(performanceAppraisalObjectsDTO.getEvaluationScore());//分数
             addResult(performanceRankFactorDTOS, data, performanceAppraisalObjectsDTO);
             if (StringUtils.isNotEmpty(employeeDTOS)) {
                 for (EmployeeDTO employeeDTO : employeeDTOS) {
                     if (employeeDTO.getEmployeeId().equals(performanceAppraisalObjectsDTO.getAppraisalPrincipalId())) {
-                        data.add(employeeDTO.getEmployeeCode());//考核责任人工号
                         data.add(employeeDTO.getEmployeeName());//考核责任人姓名
                         break;
                     }
                 }
             }
+            data.add(performanceAppraisalObjectsDTO.getRemark());
             list.add(data);
         }
         return list;
