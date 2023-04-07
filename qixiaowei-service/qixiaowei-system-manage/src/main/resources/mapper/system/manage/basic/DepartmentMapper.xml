@@ -870,7 +870,7 @@
         SELECT level
         FROM department
         WHERE delete_flag = 0
-        order by level
+        group by level
     </select>
     <!--    查询所有一级部门-->
     <select id="getParentAll" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
