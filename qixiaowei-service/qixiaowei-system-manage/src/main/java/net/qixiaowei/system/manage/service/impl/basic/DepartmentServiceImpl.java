@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
+import com.alibaba.nacos.common.utils.CollectionUtils;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -243,7 +244,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<Integer> selectLevel() {
-        return departmentMapper.selectLevel();
+        List<Integer> list = departmentMapper.selectLevel();
+        Collections.sort(list);
+        return list;
     }
 
 

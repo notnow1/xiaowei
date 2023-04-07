@@ -796,10 +796,10 @@
             )
         </if>
         <if test="employee.params.employeeEmailNull != null">
-            AND (e.employee_email = '' or e.employee_email is null)
+            AND e.employee_email = ''
         </if>
         <if test="employee.params.employeeEmailNotNull != null">
-            AND (e.employee_email != '' or e.employee_email is not null)
+            AND e.employee_email != ''
         </if>
         <!-- 员工微信过滤  -->
         <if test="employee.params.wechatCodeEqual != null and employee.params.wechatCodeEqual.size() > 0">
@@ -839,10 +839,10 @@
             )
         </if>
         <if test="employee.params.wechatCodeNull != null">
-            AND (ei.wechat_code = '' or ei.wechat_code is null)
+            AND ei.wechat_code = ''
         </if>
         <if test="employee.params.wechatCodeNotNull != null">
-            AND (ei.wechat_code != '' or ei.wechat_code is not null)
+            AND ei.wechat_code != ''
         </if>
 
         <if test="employee.residentCityName != null and employee.residentCityName != ''">
