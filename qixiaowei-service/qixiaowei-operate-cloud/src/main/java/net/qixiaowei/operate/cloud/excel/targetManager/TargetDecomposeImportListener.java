@@ -1887,7 +1887,9 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             if (totalFlag) {
                 List<Object> data = new ArrayList<>();
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO1.getDecomposeDetailCyclesDTOS();
-                data.add("合计");
+                for (Map<String, String> stringStringMap : fileNameList) {
+                    data.add("");
+                }
                 data.add("合计");
                 //分解目标
                 data.add(targetDecomposeDetailsDTO1.getAmountTarget().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
