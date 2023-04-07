@@ -137,7 +137,7 @@ public class SalaryPayController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:salaryPay:import")
     @PostMapping("import")
-    public AjaxResult importSalaryPay(MultipartFile file) throws IOException {
+    public AjaxResult importSalaryPay(MultipartFile file) {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -171,7 +171,6 @@ public class SalaryPayController extends BaseController {
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         if (templateType == 1) { // 非月度工资
-
             String fileName = URLEncoder.encode("工资条导出" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                     , CharsetKit.UTF_8);
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");

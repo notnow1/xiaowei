@@ -2010,7 +2010,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             List<Object> data = new ArrayList<>();
 //            data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());//考核对象
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());//考核对象
-            data.add(performanceAppraisalObjectsDTO.getEvaluationScore());//分数
+            BigDecimal evaluationScore = performanceAppraisalObjectsDTO.getEvaluationScore();
+            data.add(StringUtils.isNull(evaluationScore) ? "0.00" : evaluationScore);//分数
             addResult(performanceRankFactorDTOS, data, performanceAppraisalObjectsDTO);
             if (StringUtils.isNotEmpty(employeeDTOS)) {
                 for (EmployeeDTO employeeDTO : employeeDTOS) {
@@ -2020,8 +2021,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                         break;
                     }
                 }
+            } else {
+                data.add("");
             }
-            data.add(performanceAppraisalObjectsDTO.getRemark());
+            String remark = performanceAppraisalObjectsDTO.getRemark();
+            data.add(StringUtils.isNull(remark) ? "" : remark);
             list.add(data);
         }
         return list;
@@ -2087,6 +2091,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             data.add(performanceAppraisalObjectsDTO.getDepartmentName());//部门
             data.add(performanceAppraisalObjectsDTO.getOfficialRankName());//个人职级
             addResult(performanceRankFactorDTOS, data, performanceAppraisalObjectsDTO);
+            String remark = performanceAppraisalObjectsDTO.getRemark();
+            data.add(StringUtils.isNull(remark) ? "" : remark);
             data.addAll(objects.get(i));//自定义的值
             list.add(data);
         }
@@ -2115,11 +2121,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 if (appraisalResultId == 0L) {
                     data.add("不考核");
                 } else {
-                    data.add(null);
+                    data.add("");
                 }
             }
         } else {
-            data.add(null);
+            data.add("");
         }
     }
 
@@ -2156,7 +2162,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             data.add(performanceAppraisalObjectsDTO.getDepartmentName());//部门
             data.add(performanceAppraisalObjectsDTO.getPostName());//岗位
             data.add(performanceAppraisalObjectsDTO.getOfficialRankName());//个人职级
-            data.add(performanceAppraisalObjectsDTO.getEvaluationScore());//分数
+            BigDecimal evaluationScore = performanceAppraisalObjectsDTO.getEvaluationScore();
+            data.add(StringUtils.isNull(evaluationScore) ? "0.00" : evaluationScore);//分数
             addResult(performanceRankFactorDTOS, data, performanceAppraisalObjectsDTO);
             if (StringUtils.isNotEmpty(employeeDTOS)) {
                 for (EmployeeDTO employeeDTO : employeeDTOS) {
@@ -2165,8 +2172,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                         break;
                     }
                 }
+            } else {
+                data.add("");
             }
-            data.add(performanceAppraisalObjectsDTO.getRemark());
+            String remark = performanceAppraisalObjectsDTO.getRemark();
+            data.add(StringUtils.isNull(remark) ? "" : remark);
             list.add(data);
         }
         return list;

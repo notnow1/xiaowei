@@ -57,7 +57,6 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     @Override
     public List<IndustryDefaultDTO> selectIndustryDefaultList(IndustryDefaultDTO industryDefaultDTO) {
         IndustryDefault industryDefault = new IndustryDefault();
-        Integer status = industryDefaultDTO.getStatus();
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
         Map<String, Object> params = industryDefault.getParams();
         industryDefault.setParams(params);
