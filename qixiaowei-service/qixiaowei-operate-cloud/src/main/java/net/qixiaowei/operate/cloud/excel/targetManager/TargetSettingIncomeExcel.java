@@ -6,6 +6,7 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.*;
 import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import lombok.Data;
+import org.checkerframework.common.value.qual.StringVal;
 
 import java.math.BigDecimal;
 
@@ -102,24 +103,28 @@ public class TargetSettingIncomeExcel {
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "挑战值"})
     @ColumnWidth(16)
+    @ContentStyle(dataFormat = 2)
     private BigDecimal challengeValue;
     /**
      * 目标值
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "目标值"})
     @ColumnWidth(16)
+    @ContentStyle(dataFormat = 2)
     private BigDecimal targetValue;
     /**
      * 保底值
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "保底值"})
     @ColumnWidth(16)
+    @ContentStyle(dataFormat = 2)
     private BigDecimal guaranteedValue;
     /**
      * 目标年度订单转化率（%）
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "订单转化率（%）"})
     @ColumnWidth(16)
+    @ContentStyle(dataFormat = 2)
     private BigDecimal percentage;
 }
 

@@ -106,12 +106,13 @@ public class TargetSettingController extends BaseController {
                         writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                         //设置 自动换行
                         writeCellStyle.setWrapped(true);
+                        //设置边框
+                        writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                        writeCellStyle.setBorderTop(BorderStyle.THIN);
+                        writeCellStyle.setBorderRight(BorderStyle.THIN);
+                        writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                        cellData.setWriteCellStyle(writeCellStyle);
                         if (context.getRowIndex() < 2) {
-                            //设置边框
-                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
-                            writeCellStyle.setBorderTop(BorderStyle.THIN);
-                            writeCellStyle.setBorderRight(BorderStyle.THIN);
-                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
                             // 拿到poi的workbook
                             Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                             // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -126,9 +127,10 @@ public class TargetSettingController extends BaseController {
                             // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
                             // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
                             // cell里面去 会导致自己设置的不一样（很关键）
-                            cellData.setWriteCellStyle(writeCellStyle);
                             cellData.setOriginCellStyle(xssfCellColorStyle);
                             cell.setCellStyle(cellStyle);
+                        } else if (context.getRowIndex() >= 2 && context.getColumnIndex() > 0) {
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                         }
                     }
                 })
@@ -194,14 +196,13 @@ public class TargetSettingController extends BaseController {
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
                         //居中
                         writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                        //设置 自动换行
-                        writeCellStyle.setWrapped(true);
+                        //设置边框
+                        writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                        writeCellStyle.setBorderTop(BorderStyle.THIN);
+                        writeCellStyle.setBorderRight(BorderStyle.THIN);
+                        writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                        cellData.setWriteCellStyle(writeCellStyle);
                         if (context.getRowIndex() < 2) {
-                            //设置边框
-                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
-                            writeCellStyle.setBorderTop(BorderStyle.THIN);
-                            writeCellStyle.setBorderRight(BorderStyle.THIN);
-                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
                             // 拿到poi的workbook
                             Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                             // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -216,9 +217,10 @@ public class TargetSettingController extends BaseController {
                             // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
                             // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
                             // cell里面去 会导致自己设置的不一样（很关键）
-                            cellData.setWriteCellStyle(writeCellStyle);
                             cellData.setOriginCellStyle(xssfCellColorStyle);
                             cell.setCellStyle(cellStyle);
+                        } else if (context.getRowIndex() >= 2 && context.getColumnIndex() > 0) {
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                         }
                     }
                 }).doWrite(targetSettingExcelList);
@@ -290,15 +292,16 @@ public class TargetSettingController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                         }
                         //设置 自动换行
-                        writeCellStyle.setWrapped(true);
+//                        writeCellStyle.setWrapped(true);
+                        //设置边框
+                        writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                        writeCellStyle.setBorderTop(BorderStyle.THIN);
+                        writeCellStyle.setBorderRight(BorderStyle.THIN);
+                        writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                        cellData.setWriteCellStyle(writeCellStyle);
                         if (context.getRowIndex() < 3) {
                             //加粗
                             headWriteFont.setBold(true);
-                            //设置边框
-                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
-                            writeCellStyle.setBorderTop(BorderStyle.THIN);
-                            writeCellStyle.setBorderRight(BorderStyle.THIN);
-                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
                             // 拿到poi的workbook
                             Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                             // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -313,9 +316,10 @@ public class TargetSettingController extends BaseController {
                             // 由于这里没有指定 data format 最后展示的数据 格式可能会不太正确
                             // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
                             // cell里面去 会导致自己设置的不一样（很关键）
-                            cellData.setWriteCellStyle(writeCellStyle);
                             cellData.setOriginCellStyle(xssfCellColorStyle);
                             cell.setCellStyle(cellStyle);
+                        } else if (context.getRowIndex() >= 3 && context.getColumnIndex() > 0) {
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                         }
                         writeCellStyle.setWriteFont(headWriteFont);
                     }
@@ -502,12 +506,13 @@ public class TargetSettingController extends BaseController {
                                 writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                                 //设置 自动换行
                                 writeCellStyle.setWrapped(true);
+                                //设置边框
+                                writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                                cellData.setWriteCellStyle(writeCellStyle);
                                 if (context.getRowIndex() < 2) {
-                                    //设置边框
-                                    writeCellStyle.setBorderLeft(BorderStyle.THIN);
-                                    writeCellStyle.setBorderTop(BorderStyle.THIN);
-                                    writeCellStyle.setBorderRight(BorderStyle.THIN);
-                                    writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -522,9 +527,10 @@ public class TargetSettingController extends BaseController {
                                     // 由于这里没有指定data format 最后展示的数据 格式可能会不太正确
                                     // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
                                     // cell里面去 会导致自己设置的不一样（很关键）
-                                    cellData.setWriteCellStyle(writeCellStyle);
                                     cellData.setOriginCellStyle(xssfCellColorStyle);
                                     cell.setCellStyle(cellStyle);
+                                } else if (context.getRowIndex() >= 2 && context.getColumnIndex() > 1) {
+                                    writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                                 }
                             }
                         })

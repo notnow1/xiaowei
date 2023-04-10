@@ -1457,6 +1457,21 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         if (StringUtils.isEmpty(targetSettingDTOList)) {
             throw new ServiceException("当前目标制定不存在");
         }
+        // 查询   remove    赋值0     排序    传给excel
+        for (TargetSettingDTO dto : targetSettingDTOList) {
+            historyYears.remove(dto.getTargetYear());
+        }
+        if (StringUtils.isNotEmpty(historyYears)) {
+            for (Integer targetYear : historyYears) {
+                TargetSettingDTO targetSetting = new TargetSettingDTO();
+                targetSetting.setTargetValue(BigDecimal.ZERO);
+                targetSetting.setChallengeValue(BigDecimal.ZERO);
+                targetSetting.setGuaranteedValue(BigDecimal.ZERO);
+                targetSetting.setPercentage(BigDecimal.ZERO);
+                targetSetting.setTargetYear(targetYear);
+                targetSettingDTOList.add(targetSetting);
+            }
+        }
         ArrayList<TargetSettingOrderExcel> targetSettingOrderExcels = new ArrayList<>();
         for (TargetSettingDTO dto : targetSettingDTOList) {
             TargetSettingOrderExcel targetSettingOrderExcel = new TargetSettingOrderExcel();
@@ -1467,6 +1482,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSettingOrderExcel.setChallengeValue(dto.getChallengeValue());
             targetSettingOrderExcels.add(targetSettingOrderExcel);
         }
+        targetSettingOrderExcels.sort(Comparator.comparing(TargetSettingOrderExcel::getHistoryYear));
         return targetSettingOrderExcels;
     }
 
@@ -1711,9 +1727,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingDTOList.add(targetSetting);
             }
         }
-        targetSettingDTOList.sort((TargetSettingDTO o1, TargetSettingDTO o2) -> {
-            return o2.getTargetYear() - o1.getTargetYear();
-        });
         List<TargetSettingIncomeExcel> targetSettingIncomeExcels = new ArrayList<>();
         for (TargetSettingDTO dto : targetSettingDTOList) {
             TargetSettingIncomeExcel targetSettingIncomeExcel = new TargetSettingIncomeExcel();
@@ -1724,6 +1737,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSettingIncomeExcel.setTargetYear(dto.getTargetYear());
             targetSettingIncomeExcels.add(targetSettingIncomeExcel);
         }
+        targetSettingIncomeExcels.sort(Comparator.comparing(TargetSettingIncomeExcel::getTargetYear));
         return targetSettingIncomeExcels;
     }
 
@@ -2241,6 +2255,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingRecoveriesExcels.add(targetSettingRecoveriesExcel);
             }
         }
+        targetSettingRecoveriesExcels.sort(Comparator.comparing(TargetSettingRecoveriesExcel::getTargetYear));
         return targetSettingRecoveriesExcels;
     }
 
