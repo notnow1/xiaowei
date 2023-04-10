@@ -363,7 +363,7 @@ public class ProductController extends BaseController {
         List<Map<Integer, String>> listMap = sheet.doReadSync();
 
         //产品
-        ProductImportListener.mapToListModel(2, 0, listMap, list);
+        ProductImportListener.mapToListModel(1, 0, listMap, list);
         // 调用importer方法
         productService.importProduct(list);
 
