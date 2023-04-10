@@ -178,7 +178,6 @@
             )
         </if>
         <if test="industry.params.parentIndustryNameNull != null">
-            AND (bd.area_id IS NULL or bd.area_id ='')
             and (i2.industry_name IS NULL OR i2.industry_name ='')
         </if>
         <if test="industry.params.parentIndustryNameNotNull != null">
