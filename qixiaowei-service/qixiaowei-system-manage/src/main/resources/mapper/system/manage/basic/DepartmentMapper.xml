@@ -219,28 +219,28 @@
             AND (ee.employee_name IS NOT NULL or ee.employee_name != '')
         </if>
         <!-- 组织负责人岗位过滤  -->
-        <if test="department.params.departmentLeaderPostNameEqual != null and department.params.departmentLeaderPostNameEqual.size() > 0">
+        <if test="department.params.departmentLeaderPostIdEqual != null and department.params.departmentLeaderPostIdEqual.size() > 0">
             AND p2.post_name IN
             <foreach item="item"
-                     collection="department.params.departmentLeaderPostNameEqual"
+                     collection="department.params.departmentLeaderPostIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="department.params.departmentLeaderPostNameNotEqual != null and department.params.departmentLeaderPostNameNotEqual.size() > 0">
+        <if test="department.params.departmentLeaderPostIdNotEqual != null and department.params.departmentLeaderPostIdNotEqual.size() > 0">
             AND (p2.post_name NOT IN
             <foreach item="item"
-                     collection="department.params.departmentLeaderPostNameNotEqual"
+                     collection="department.params.departmentLeaderPostIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
             OR p2.post_name IS NULL
             )
         </if>
-        <if test="department.params.departmentLeaderPostNameNull != null">
+        <if test="department.params.departmentLeaderPostIdNull != null">
             AND (p2.post_name IS NULL or p2.post_name ='')
         </if>
-        <if test="department.params.departmentLeaderPostNameNotNull != null">
+        <if test="department.params.departmentLeaderPostIdNotNull != null">
             AND (p2.post_name IS NOT NULL or p2.post_name != '')
         </if>
         <!-- 考核负责人过滤  -->
