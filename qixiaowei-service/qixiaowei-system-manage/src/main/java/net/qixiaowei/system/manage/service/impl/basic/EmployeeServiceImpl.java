@@ -578,7 +578,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //去重
         List<EmployeeExcel> distinctEmployeeExcelList = list.stream().distinct().collect(Collectors.toList());
         //赋值
-        List<EmployeeExcel> distinctEmployeeExcelDeleteList  =list;
+        List<EmployeeExcel> distinctEmployeeExcelDeleteList = new ArrayList<>();
+        distinctEmployeeExcelDeleteList.addAll(list);
         //todo 加参数是否修改
         //数据库已存在修改人员数据
         List<String> updateCodes = new ArrayList<>();
@@ -629,6 +630,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
         }
         for (EmployeeExcel employeeExcel : list) {
+            distinctEmployeeExcelDeleteList.removeAll(distinctEmployeeExcelList);
             if (StringUtils.isNotEmpty(distinctEmployeeExcelDeleteList)){
                 employeeError.append(employeeExcel.getEmployeeName()+"数据重复");
                 errorExcelList.add(employeeExcel);
