@@ -45,7 +45,7 @@ public interface IDepartmentService {
      *
      * @return 部门表集合
      */
-    List<String> selectDepartmentListName();
+    List<String> selectDepartmentListName(DepartmentDTO departmentDTO);
 
     /**
      * 查询部门名称附加父级名称

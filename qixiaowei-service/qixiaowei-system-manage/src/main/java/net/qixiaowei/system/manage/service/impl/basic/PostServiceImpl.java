@@ -533,9 +533,13 @@ public class PostServiceImpl implements IPostService {
     @Transactional
     public void importPost(List<PostExcel> postExcelList) {
         //查询岗位已有的数据
-        List<PostDTO> postDTOS = postMapper.selectPostList(new Post());
+        Post postExceExist = new Post();
+        postExceExist.setStatus(1);
+        List<PostDTO> postDTOS = postMapper.selectPostList(postExceExist);
         //查询部门已有数据
-        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(new Department());
+        Department departmentExcel = new Department();
+        departmentExcel.setStatus(1);
+        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(departmentExcel);
         //职级体系集合
         List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(new OfficialRankSystemDTO());
         //岗位名称集合

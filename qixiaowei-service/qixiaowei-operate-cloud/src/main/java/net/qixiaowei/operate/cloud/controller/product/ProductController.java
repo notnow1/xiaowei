@@ -193,7 +193,7 @@ public class ProductController extends BaseController {
             R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByProduct(data.getDictionaryTypeId(), SecurityConstants.INNER);
             List<DictionaryDataDTO> dictionaryDataDTOList = listR.getData();
             if (StringUtils.isNotEmpty(dictionaryDataDTOList)){
-                dictionaryLabels = dictionaryDataDTOList.stream().map(DictionaryDataDTO::getDictionaryLabel).collect(Collectors.toList());
+                dictionaryLabels = dictionaryDataDTOList.stream().filter(f ->f.getStatus() == 1).map(DictionaryDataDTO::getDictionaryLabel).collect(Collectors.toList());
             }
         }
         // 产品单位

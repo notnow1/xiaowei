@@ -169,7 +169,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @return
      */
     @Override
-    public List<String> selectDepartmentListName() {
+    public List<String> selectDepartmentListName(DepartmentDTO departmentDTO) {
         List<String> parentDepartmentExcelNames = new ArrayList<>();
         Department department = new Department();
         //查询数据
