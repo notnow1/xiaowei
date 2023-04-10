@@ -15,7 +15,6 @@ import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
-import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -170,7 +169,7 @@ public class SalaryPayController extends BaseController {
         int size = salaryPayDTOS.size();
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
-        if (templateType == 1) { // 非月度工资
+        if (StringUtils.isNull(templateType) || templateType == 1) { // 非月度工资
             String fileName = URLEncoder.encode("工资条导出" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                     , CharsetKit.UTF_8);
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
@@ -376,7 +375,8 @@ public class SalaryPayController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("operate:cloud:salaryPay:import")
     @GetMapping("/export-template")
-    public void exportTemplate(@RequestParam Map<String, Object> salaryPay, SalaryPayExcel salaryPayExcel, HttpServletResponse response) {
+    public void exportTemplate(@RequestParam Map<String, Object> salaryPay, SalaryPayExcel
+            salaryPayExcel, HttpServletResponse response) {
         try {
             List<SalaryItemDTO> salaryItemDTOS = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
             List<List<String>> headTemplate = SalaryPayImportListener.headTemplate(salaryItemDTOS);
