@@ -490,7 +490,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                         }
                         departmentDTOList.get(i1).setLevel(departmentDTO2.getLevel() + 1);
                         if (null != department.getStatus() && department.getStatus() == 0) {
-                            departmentDTOList.get(i1).setParentDepartmentId(department.getDepartmentId());
+                            departmentDTOList.get(i1).setStatus(department.getStatus());
                         }
                         departmentDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                         departmentDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
@@ -508,7 +508,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                         }
                         departmentDTOList.get(i1).setLevel(departmentDTO2.getLevel() + 1);
                         if (null != department.getStatus() && department.getStatus() == 0) {
-                            departmentDTOList.get(i1).setParentDepartmentId(department.getDepartmentId());
+                            departmentDTOList.get(i1).setStatus(department.getStatus());
                         }
                         departmentDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                         departmentDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());

@@ -679,7 +679,9 @@ public class ProductServiceImpl implements IProductService {
                         productDTOList.get(i1).setAncestors(product.getAncestors() + "," + product.getProductId());
                     }
                     productDTOList.get(i1).setLevel(product.getLevel() + 1);
-
+                    if (null != product.getListingFlag() && product.getListingFlag() == 0) {
+                        productDTOList.get(i1).setListingFlag(product.getListingFlag());
+                    }
                     productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                     productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                     productDTOList.get(i1).setParentProductId(product.getProductId());
@@ -696,6 +698,9 @@ public class ProductServiceImpl implements IProductService {
                             productDTOList.get(i1).setAncestors(productDTO2.getAncestors() + "," + productDTO2.getProductId());
                         }
                         productDTOList.get(i1).setLevel(productDTO2.getLevel() + 1);
+                        if (null != product.getListingFlag() && product.getListingFlag() == 0) {
+                            productDTOList.get(i1).setListingFlag(product.getListingFlag());
+                        }
                         productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                         productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                         productDTOList.get(i1).setParentProductId(productDTO2.getProductId());
@@ -712,6 +717,9 @@ public class ProductServiceImpl implements IProductService {
                             productDTOList.get(i1).setAncestors(productDTO2.getAncestors() + "," + productDTO2.getProductId());
                         }
                         productDTOList.get(i1).setLevel(productDTO2.getLevel() + 1);
+                        if (null != product.getListingFlag() && product.getListingFlag() == 0) {
+                            productDTOList.get(i1).setListingFlag(product.getListingFlag());
+                        }
                         productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                         productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                         productDTOList.get(i1).setParentProductId(productDTO2.getProductId());
