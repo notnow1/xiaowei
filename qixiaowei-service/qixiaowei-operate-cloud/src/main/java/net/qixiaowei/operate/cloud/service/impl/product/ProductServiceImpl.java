@@ -1405,7 +1405,7 @@ public class ProductServiceImpl implements IProductService {
         DictionaryTypeDTO dictionaryTypeDTO = dictionaryTypeDTOR.getData();
         if (StringUtils.isNotNull(dictionaryTypeDTO)) {
             R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByProduct(dictionaryTypeDTO.getDictionaryTypeId(), SecurityConstants.INNER);
-            dictionaryDataDTOList = listR.getData();
+            dictionaryDataDTOList = listR.getData().stream().filter(f ->f.getStatus() == 1).collect(Collectors.toList());
         }
         //新增list
         List<ProductExcel> successExcelList = new ArrayList<>();
