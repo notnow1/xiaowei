@@ -237,7 +237,7 @@ public class SalaryPayController extends BaseController {
                                 cellData.setOriginCellStyle(xssfCellColorStyle);
                                 cell.setCellStyle(cellStyle);
                             } else {
-                                if (context.getColumnIndex() > 4) {
+                                if (context.getColumnIndex() > 3) {
                                     writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                                 } else {
                                     writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
