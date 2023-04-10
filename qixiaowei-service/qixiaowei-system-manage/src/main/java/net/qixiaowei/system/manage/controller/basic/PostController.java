@@ -249,7 +249,7 @@ public class PostController extends BaseController {
                             font2.setFontHeightInPoints((short) 11);
                             font2.setColor(IndexedColors.BLACK.getIndex());
                             // 从哪到哪，你想设置成什么样的字体都行startIndex，endIndex
-                            richString.applyFont(3, 117, font2);
+                            richString.applyFont(3, 116, font2);
                             // 再设置回每个单元格里
                             cell.setCellValue(richString);
                         }
