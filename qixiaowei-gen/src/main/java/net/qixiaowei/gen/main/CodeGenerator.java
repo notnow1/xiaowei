@@ -21,9 +21,9 @@ public class CodeGenerator {
     //项目路径
     private static final String module_path = "strategy/cloud";
     //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
-    private static final String extend_Package = "/test" ;
+    private static final String extend_Package = "/strategy" ;
     //表名
-    private static final String tables = "mi_self_ability_access" ;
+    private static final String tables = "strategy_intent" ;
     //生成文件的作者名
     private static final String author ="TANGMICHI" ;
     //数据库配置
@@ -33,17 +33,17 @@ public class CodeGenerator {
 
 
     //实体类 默认生成 不生成改为false
-    private static final boolean default_entity = true;
+    private static final boolean default_entity = false;
     //枚举类
-    private static final boolean default_enum = false;
+    private static final boolean default_enum = true;
     //枚举类service实现类1
-    private static final boolean default_enum_FieldConfigImpl = false;
+    private static final boolean default_enum_FieldConfigImpl = true;
     //枚举类service实现类2
-    private static final boolean default_enum_FieldListConfigImpl = false;
+    private static final boolean default_enum_FieldListConfigImpl = true;
     //支持生成Excel生成导入导出
     private static final boolean default_excel = false;
     //DTO类
-    private static final boolean default_DTO = true;
+    private static final boolean default_DTO = false;
     //controller类
     private static final boolean default_controller = false;
     //service类
