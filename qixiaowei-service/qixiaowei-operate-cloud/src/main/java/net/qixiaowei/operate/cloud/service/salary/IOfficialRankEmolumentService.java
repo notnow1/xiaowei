@@ -139,7 +139,7 @@ public interface IOfficialRankEmolumentService {
      *
      * @param officialRankSystemId 职级体系ID
      * @param officialRank         职级
-     * @return
+     * @return 结果
      */
     String officialRankInfo(Long officialRankSystemId, Integer officialRank);
 }

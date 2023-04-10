@@ -170,7 +170,7 @@ public class SalaryPayController extends BaseController {
         int size = salaryPayDTOS.size();
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
-        if (templateType == 1) { // 非月度工资
+        if (StringUtils.isNull(templateType) || templateType == 1) { // 非月度工资
             String fileName = URLEncoder.encode("工资条导出" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                     , CharsetKit.UTF_8);
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
@@ -238,7 +238,7 @@ public class SalaryPayController extends BaseController {
                                 cellData.setOriginCellStyle(xssfCellColorStyle);
                                 cell.setCellStyle(cellStyle);
                             } else {
-                                if (context.getColumnIndex() > 4) {
+                                if (context.getColumnIndex() > 3) {
                                     writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                                 } else {
                                     writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);

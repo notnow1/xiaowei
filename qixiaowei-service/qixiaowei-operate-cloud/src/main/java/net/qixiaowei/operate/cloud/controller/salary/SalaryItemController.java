@@ -40,8 +40,26 @@ public class SalaryItemController extends BaseController {
     @GetMapping("/pageList")
     public TableDataInfo pageList(SalaryItemDTO salaryItemDTO) {
         startPage();
-        List<SalaryItemDTO> list = salaryItemService.selectSalaryItemList(salaryItemDTO);
+        List<SalaryItemDTO> list = salaryItemService.selectSalaryItemPageList(salaryItemDTO);
         return getDataTable(list);
+    }
+
+    /**
+     * 批量修改工资项
+     */
+    @RequiresPermissions("operate:cloud:salaryItem:edit")
+    @PostMapping("/edit")
+    public AjaxResult edit(@RequestBody List<SalaryItemDTO> salaryItemDTOS) {
+        return toAjax(salaryItemService.editSalaryItems(salaryItemDTOS));
+    }
+
+    /**
+     * 查询工资项列表
+     */
+    @GetMapping("/list")
+    public AjaxResult list(SalaryItemDTO salaryItemDTO) {
+        List<SalaryItemDTO> list = salaryItemService.selectSalaryItemList(salaryItemDTO);
+        return AjaxResult.success(list);
     }
 
     /**
@@ -124,15 +142,6 @@ public class SalaryItemController extends BaseController {
     @GetMapping("/applyBonus")
     public AjaxResult applyBonusList() {
         return AjaxResult.success(salaryItemService.applyBonusList());
-    }
-
-    /**
-     * 查询工资项列表
-     */
-    @GetMapping("/list")
-    public AjaxResult list(SalaryItemDTO salaryItemDTO) {
-        List<SalaryItemDTO> list = salaryItemService.selectSalaryItemList(salaryItemDTO);
-        return AjaxResult.success(list);
     }
 
 

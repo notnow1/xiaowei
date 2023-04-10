@@ -86,8 +86,56 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         salaryItem.setParams(params);
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);
         List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemList(salaryItem);
+        if (StringUtils.isEmpty(salaryItemDTOS)) {
+            return salaryItemDTOS;
+        }
+        List<SalaryItemDTO> salaryItemDTOList = salaryItemDTOS.stream().sorted(Comparator.comparing(SalaryItemDTO::getFirstLevelItem)
+                .thenComparing(SalaryItemDTO::getSecondLevelItem)
+                .thenComparing(SalaryItemDTO::getSort)).collect(Collectors.toList());
+        for (SalaryItemDTO itemDTO : salaryItemDTOList) {
+            if (itemDTO.getScope() == 1) {
+                itemDTO.setScopeName("部门级");
+            } else {
+                itemDTO.setScopeName("公司级");
+            }
+        }
+        return salaryItemDTOList;
+    }
+
+    /**
+     * 查询工资项分页列表
+     *
+     * @param salaryItemDTO 工资项
+     * @return 工资项集合
+     */
+    @Override
+    public List<SalaryItemDTO> selectSalaryItemPageList(SalaryItemDTO salaryItemDTO) {
+        SalaryItem salaryItem = new SalaryItem();
+        Map<String, Object> params = salaryItemDTO.getParams();
+        salaryItem.setParams(params);
+        BeanUtils.copyProperties(salaryItemDTO, salaryItem);
+        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemList(salaryItem);
         this.handleResult(salaryItemDTOS);
         return salaryItemDTOS;
+    }
+
+    /**
+     * 批量修改工资项
+     *
+     * @param salaryItemDTOS 项目dto列表
+     * @return 结果
+     */
+    @Override
+    public int editSalaryItems(List<SalaryItemDTO> salaryItemDTOS) {
+        for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
+            if (StringUtils.isNull(salaryItemDTO.getThirdLevelItem())) {
+                throw new ServiceException("请录入三级薪酬项目");
+            }
+            if (salaryItemDTO.getSecondLevelItem() != 2 && StringUtils.isNotNull(salaryItemDTO.getScope())) {
+                throw new ServiceException("只有奖金包才可以选择级别");
+            }
+        }
+        return 1;
     }
 
     /**
