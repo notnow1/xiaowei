@@ -1417,12 +1417,12 @@ public class ProductServiceImpl implements IProductService {
                 //返回报错信息
                 StringBuffer productErreo = new StringBuffer();
                 //根据产品code进行分组
-                Map<String, List<ProductExcel>> collect = list.parallelStream().collect(Collectors.groupingBy(ProductExcel::getProductCode, LinkedHashMap::new, Collectors.toList()));
+                Map<String, List<ProductExcel>> productExcelMap = list.parallelStream().collect(Collectors.groupingBy(ProductExcel::getProductCode, LinkedHashMap::new, Collectors.toList()));
 
-                for (String key : collect.keySet()) {
+                for (String key : productExcelMap.keySet()) {
                     Product product = new Product();
                     //分组后的数据
-                    List<ProductExcel> productExcels = collect.get(key);
+                    List<ProductExcel> productExcels = productExcelMap.get(key);
                     //产品规格参数集合
                     List<ProductSpecificationParam> productSpecificationParamList = new ArrayList<>();
                     //产品规格表
@@ -1487,11 +1487,15 @@ public class ProductServiceImpl implements IProductService {
                                         product.setProductCategory(productCategoryNames.get(0).getDictionaryDataId().toString());
                                     }
                                 }
-                                //是否上下架
-                                if (StringUtils.equals(listingFlag, "上架")) {
+                                if (StringUtils.isNotBlank(listingFlag)){
+                                    //是否上下架
+                                    if (StringUtils.equals(listingFlag, "上架")) {
+                                        product.setListingFlag(1);
+                                    } else if (StringUtils.equals(listingFlag, "下架")) {
+                                        product.setListingFlag(0);
+                                    }
+                                }else {
                                     product.setListingFlag(1);
-                                } else if (StringUtils.equals(listingFlag, "下架")) {
-                                    product.setListingFlag(0);
                                 }
                                 //产品描述
                                 product.setProductDescription(productExcels.get(i).getProductDescription());

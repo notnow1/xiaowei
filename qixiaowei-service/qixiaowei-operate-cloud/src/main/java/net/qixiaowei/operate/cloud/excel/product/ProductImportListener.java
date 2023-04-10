@@ -154,7 +154,7 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
                 "3、上级产品编码若为空，则该产品层级默认为1级\n" +
                 "4、参数名称与参数值一一对应，若有多个参数，在最右侧插入参数名称列与参数值列即可\n" +
                 "5、若产品存在多个规格，应分行录入");
-        head8.add("目录价（单位：元）");
+        head8.add("目录价（元）");
         // 第十列
         List<String> head9 = new ArrayList<String>();
         head9.add("说明：\n" +
