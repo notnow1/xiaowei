@@ -238,10 +238,10 @@
             )
         </if>
         <if test="department.params.departmentLeaderPostIdNull != null">
-            AND (p2.post_id IS NULL or p2.post_name ='')
+            AND (p2.post_id IS NULL or p2.post_id ='')
         </if>
         <if test="department.params.departmentLeaderPostIdNotNull != null">
-            AND (p2.post_id IS NOT NULL or p2.post_name != '')
+            AND (p2.post_id IS NOT NULL or p2.post_id != '')
         </if>
         <!-- 考核负责人过滤  -->
         <if test="department.params.examinationLeaderNameEqual != null and department.params.examinationLeaderNameEqual.size() > 0">
