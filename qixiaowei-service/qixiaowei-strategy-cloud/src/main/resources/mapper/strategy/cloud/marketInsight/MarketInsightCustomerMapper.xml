@@ -156,11 +156,11 @@
         </if>
         <!-- 区域ID为空  -->
         <if test="marketInsightCustomer.params.areaIdNull != null">
-            AND mic.area_id is null
+            AND mic.area_id is null OR mic.area_id = ''
         </if>
         <!-- 区域ID不为空  -->
         <if test="marketInsightCustomer.params.areaIdNotNull != null">
-            AND mic.area_id is not null
+            AND mic.area_id is not null  OR mic.area_id != ''
         </if>
         <!-- 部门ID过滤  -->
         <if test="marketInsightCustomer.params.departmentIdEqual != null and marketInsightCustomer.params.departmentIdEqual.size() > 0">

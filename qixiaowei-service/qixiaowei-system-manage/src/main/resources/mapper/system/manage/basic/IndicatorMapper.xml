@@ -225,10 +225,10 @@
             )
         </if>
         <if test="indicator.params.indicatorCategoryNameNull != null">
-            and t2.indicator_category_name IS NULL
+            and t2.indicator_category_name IS NULL OR t2.indicator_category_name = ''
         </if>
         <if test="indicator.params.indicatorCategoryNameNotNull != null">
-            and t2.indicator_category_name IS NOT NULL
+            and t2.indicator_category_name IS NOT NULL OR t2.indicator_category_name != ''
         </if>
         <!--    指标类型过滤-->
         <if test="indicator.params.indicatorTypeEqual != null and indicator.params.indicatorTypeEqual.size() > 0">
@@ -326,10 +326,10 @@
             )
         </if>
         <if test="indicator.params.parentIndicatorNameNull != null">
-            and t3.indicator_name IS NULL
+            and t3.indicator_name IS NULL OR t3.indicator_category_name = ''
         </if>
         <if test="indicator.params.parentIndicatorNameNotNull != null">
-            and t3.indicator_name IS NOT NULL
+            and t3.indicator_name IS NOT NULL OR t3.indicator_category_name != ''
         </if>
         <!--    指标层级过滤-->
         <if test="indicator.params.levelEqual != null and indicator.params.levelEqual.size() > 0">
