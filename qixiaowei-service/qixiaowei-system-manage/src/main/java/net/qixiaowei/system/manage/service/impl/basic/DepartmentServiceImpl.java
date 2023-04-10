@@ -44,6 +44,7 @@ import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
@@ -324,7 +325,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public DepartmentDTO insertDepartment(DepartmentDTO departmentDTO) {
         List<DepartmentPost> departmentPostList = new ArrayList<>();
-        List<DepartmentPostDTO> departmentPostDTOList = departmentDTO.getDepartmentPostDTOList();
+//        List<DepartmentPostDTO> departmentPostDTOList = departmentDTO.getDepartmentPostDTOList();
         //查询code编码是否已经存在
         DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentCode(departmentDTO.getDepartmentCode());
         if (null != departmentDTO1) {
@@ -352,7 +353,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             department.setAncestors("");
             departmentMapper.insertDepartment(department);
             departmentDTO.setDepartmentId(department.getDepartmentId());
-            this.packageInsertDepartmentPost(departmentDTO, departmentPostList, departmentPostDTOList);
+//            this.packageInsertDepartmentPost(departmentDTO, departmentPostList, departmentPostDTOList);
             return departmentDTO;
         } else {
             department = this.packDepartment(department);
@@ -372,8 +373,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             department.setAncestors(ancestors);
             departmentMapper.insertDepartment(department);
             departmentDTO.setDepartmentId(department.getDepartmentId());
-            this.packageInsertDepartmentPost(departmentDTO, departmentPostList, departmentPostDTOList);
-
+//            this.packageInsertDepartmentPost(departmentDTO, departmentPostList, departmentPostDTOList);
             return departmentDTO;
 
         }
@@ -520,7 +520,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             }
         }
 
-        //接收部门岗位关联表参数
+/*        //接收部门岗位关联表参数
         List<DepartmentPostDTO> departmentPostDTOList = departmentDTO.getDepartmentPostDTOList();
         //根据部门id查询出数据库的数据
         List<DepartmentPostDTO> departmentPostDTOList2 = departmentPostMapper.selectDepartmentId(departmentDTO.getDepartmentId());
@@ -587,7 +587,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                     throw new ServiceException("修改组织岗位信息失败");
                 }
             }
-        }
+        }*/
         try {
             num = departmentMapper.updateDepartment(department);
         } catch (Exception e) {
@@ -892,7 +892,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public DepartmentDTO deptParticulars(Long departmentId) {
         //查询组织信息
         DepartmentDTO departmentDTO = departmentMapper.selectParentDepartmentId(departmentId);
-
+        List<DepartmentPostDTO> departmentPostDTOList = new ArrayList<>();
         DepartmentDTO departmentDTO1 = departmentMapper.selectParentDepartmentId(departmentDTO.getParentDepartmentId());
         if (null != departmentDTO1) {
 
@@ -903,8 +903,16 @@ public class DepartmentServiceImpl implements IDepartmentService {
         }
         List<Long> departmentIds = new ArrayList<>();
         departmentIds.add(departmentId);
+        List<PostDTO> postDTOS = postMapper.selectBydepartmentId(departmentId, 1);
+        if (StringUtils.isNotEmpty(postDTOS)){
+            for (PostDTO postDTO : postDTOS) {
+                DepartmentPostDTO departmentPostDTO = new DepartmentPostDTO();
+                BeanUtils.copyProperties(postDTO,departmentPostDTO);
+                departmentPostDTOList.add(departmentPostDTO);
+            }
+        }
         //查询组织关联岗位信息
-        List<DepartmentPostDTO> departmentPostDTOList = departmentMapper.selectDeptAndPost(departmentIds);
+        //List<DepartmentPostDTO> departmentPostDTOList = departmentMapper.selectDeptAndPost(departmentIds);
         departmentDTO.setDepartmentPostDTOList(departmentPostDTOList);
         return departmentDTO;
     }
