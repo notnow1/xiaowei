@@ -13,6 +13,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
@@ -333,86 +334,86 @@ public class TargetOutcomeImportListener extends AnalysisEventListener<Map<Integ
             // 关键指标编码
             data.add(targetOutcomeExcel.getIndicatorCode());
             // 实际值合计
-            data.add(targetOutcomeExcel.getActualTotal());
+            data.add(targetOutcomeExcel.getActualTotal().setScale(2, RoundingMode.HALF_UP).toString());
             // 目标值
-            data.add(targetOutcomeExcel.getTargetValue());
+            data.add(targetOutcomeExcel.getTargetValue().setScale(2, RoundingMode.HALF_UP).toString());
             // 目标完成率（%）
-            data.add(targetOutcomeExcel.getTargetCompletionRate());
+            data.add(targetOutcomeExcel.getTargetCompletionRate().setScale(2, RoundingMode.HALF_UP).toString());
             int month = DateUtils.getMonth();
             if (targetYear == DateUtils.getYear()) {
                 if (month > 1) {
                     // 1月
-                    data.add(targetOutcomeExcel.getActualJanuary());
+                    data.add(targetOutcomeExcel.getActualJanuary().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 2) {
                     // 2月
-                    data.add(targetOutcomeExcel.getActualFebruary());
+                    data.add(targetOutcomeExcel.getActualFebruary().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 3) {
                     // 3月
-                    data.add(targetOutcomeExcel.getActualMarch());
+                    data.add(targetOutcomeExcel.getActualMarch().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 4) {
                     // 4月
-                    data.add(targetOutcomeExcel.getActualApril());
+                    data.add(targetOutcomeExcel.getActualApril().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 5) {
                     // 5月
-                    data.add(targetOutcomeExcel.getActualMay());
+                    data.add(targetOutcomeExcel.getActualMay().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 6) {
                     // 6月
-                    data.add(targetOutcomeExcel.getActualJune());
+                    data.add(targetOutcomeExcel.getActualJune().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 7) {
                     // 7月
-                    data.add(targetOutcomeExcel.getActualJuly());
+                    data.add(targetOutcomeExcel.getActualJuly().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 8) {
                     // 8月
-                    data.add(targetOutcomeExcel.getActualAugust());
+                    data.add(targetOutcomeExcel.getActualAugust().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 9) {
                     // 9月
-                    data.add(targetOutcomeExcel.getActualSeptember());
+                    data.add(targetOutcomeExcel.getActualSeptember().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 10) {
                     // 10月
-                    data.add(targetOutcomeExcel.getActualOctober());
+                    data.add(targetOutcomeExcel.getActualOctober().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 11) {
                     // 11月
-                    data.add(targetOutcomeExcel.getActualNovember());
+                    data.add(targetOutcomeExcel.getActualNovember().setScale(2, RoundingMode.HALF_UP).toString());
                 }
                 if (month > 13) {
                     // 12月
-                    data.add(targetOutcomeExcel.getActualDecember());
+                    data.add(targetOutcomeExcel.getActualDecember().setScale(2, RoundingMode.HALF_UP).toString());
                 }
             } else if (targetYear < DateUtils.getYear()) {
                 // 1月
-                data.add(targetOutcomeExcel.getActualJanuary());
+                data.add(targetOutcomeExcel.getActualJanuary().setScale(2, RoundingMode.HALF_UP).toString());
                 // 2月
-                data.add(targetOutcomeExcel.getActualFebruary());
+                data.add(targetOutcomeExcel.getActualFebruary().setScale(2, RoundingMode.HALF_UP).toString());
                 // 3月
-                data.add(targetOutcomeExcel.getActualMarch());
+                data.add(targetOutcomeExcel.getActualMarch().setScale(2, RoundingMode.HALF_UP).toString());
                 // 4月
-                data.add(targetOutcomeExcel.getActualApril());
+                data.add(targetOutcomeExcel.getActualApril().setScale(2, RoundingMode.HALF_UP).toString());
                 // 5月
-                data.add(targetOutcomeExcel.getActualMay());
+                data.add(targetOutcomeExcel.getActualMay().setScale(2, RoundingMode.HALF_UP).toString());
                 // 6月
-                data.add(targetOutcomeExcel.getActualJune());
+                data.add(targetOutcomeExcel.getActualJune().setScale(2, RoundingMode.HALF_UP).toString());
                 // 7月
-                data.add(targetOutcomeExcel.getActualJuly());
+                data.add(targetOutcomeExcel.getActualJuly().setScale(2, RoundingMode.HALF_UP).toString());
                 // 8月
-                data.add(targetOutcomeExcel.getActualAugust());
+                data.add(targetOutcomeExcel.getActualAugust().setScale(2, RoundingMode.HALF_UP).toString());
                 // 9月
-                data.add(targetOutcomeExcel.getActualSeptember());
+                data.add(targetOutcomeExcel.getActualSeptember().setScale(2, RoundingMode.HALF_UP).toString());
                 // 10月
-                data.add(targetOutcomeExcel.getActualOctober());
+                data.add(targetOutcomeExcel.getActualOctober().setScale(2, RoundingMode.HALF_UP).toString());
                 // 11月
-                data.add(targetOutcomeExcel.getActualNovember());
+                data.add(targetOutcomeExcel.getActualNovember().setScale(2, RoundingMode.HALF_UP).toString());
                 // 12月
-                data.add(targetOutcomeExcel.getActualDecember());
+                data.add(targetOutcomeExcel.getActualDecember().setScale(2, RoundingMode.HALF_UP).toString());
             }
             list.add(data);
         }
