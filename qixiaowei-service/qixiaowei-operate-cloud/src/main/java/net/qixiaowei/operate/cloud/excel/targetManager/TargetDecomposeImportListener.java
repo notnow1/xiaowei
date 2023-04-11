@@ -1324,21 +1324,27 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         List<List<String>> list = new ArrayList<List<String>>();
         // 第一列
         List<String> head0 = new ArrayList<String>();
+        head0.add("币种：人民币     单位：万元");
         head0.add("目标年度");
         // 第二列
         List<String> head1 = new ArrayList<String>();
+        head1.add("币种：人民币     单位：万元");
         head1.add("指标名称");
         // 第三列
         List<String> head2 = new ArrayList<String>();
+        head2.add("币种：人民币     单位：万元");
         head2.add("分解维度");
         // 第四列
         List<String> head3 = new ArrayList<String>();
+        head3.add("币种：人民币     单位：万元");
         head3.add("时间维度");
         // 第五列
         List<String> head4 = new ArrayList<String>();
+        head4.add("币种：人民币     单位：万元");
         head4.add("公司目标");
         // 第六列
         List<String> head5 = new ArrayList<String>();
+        head5.add("币种：人民币     单位：万元");
         head5.add("分解目标");
         list.add(head0);
         list.add(head1);

@@ -248,6 +248,10 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         BeanUtils.copyProperties(bonusBudgetDTO, bonusBudget);
         //总奖金包预算参数集合
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudgetDTO.getBonusBudgetParametersDTOS();
+        //检验指标重复数据
+        this.checkoutIndicatorList(bonusBudgetParametersDTOS);
+
+
         //未来三年奖金趋势
         List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS = bonusBudgetDTO.getFutureBonusBudgetLaddertersDTOS();
         if (StringUtils.isNotEmpty(futureBonusBudgetLaddertersDTOS)) {
@@ -267,6 +271,33 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         insertParametersDTOS(bonusBudget, bonusBudgetParametersList, bonusBudgetParametersDTOS);
         bonusBudgetDTO.setBonusBudgetId(bonusBudget.getBonusBudgetId());
         return bonusBudgetDTO;
+    }
+
+    /**
+     * 检验指标重复数据
+     * @param bonusBudgetParametersDTOS
+     */
+    private void checkoutIndicatorList(List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS) {
+        if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)){
+            List<BonusBudgetParametersDTO> bonusBudgetParametersAllList =new ArrayList<>();
+            bonusBudgetParametersAllList.addAll(bonusBudgetParametersDTOS);
+            //根据属性去重
+            ArrayList<BonusBudgetParametersDTO> bonusBudgetParametersDistinct = bonusBudgetParametersDTOS.stream().collect(Collectors.collectingAndThen(
+                    Collectors.toCollection(() -> new TreeSet<>(
+                            Comparator.comparing(
+                                    BonusBudgetParametersDTO::getIndicatorId))), ArrayList::new));
+            bonusBudgetParametersAllList.removeAll(bonusBudgetParametersDistinct);
+            if (StringUtils.isNotEmpty(bonusBudgetParametersAllList)){
+                List<Long> indicatorIds = bonusBudgetParametersAllList.stream().map(BonusBudgetParametersDTO::getIndicatorId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(indicatorIds)){
+                    R<List<IndicatorDTO>> IndicatorList = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+                    List<IndicatorDTO> data = IndicatorList.getData();
+                    if (StringUtils.isNotEmpty(data)){
+                        throw new ServiceException("请删除重复指标"+String.join(";",data.stream().map(IndicatorDTO::getIndicatorName).collect(Collectors.toList())));
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -318,6 +349,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         BeanUtils.copyProperties(bonusBudgetDTO, bonusBudget);
         //总奖金包预算参数集合
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudgetDTO.getBonusBudgetParametersDTOS();
+        //检验指标重复数据
+        this.checkoutIndicatorList(bonusBudgetParametersDTOS);
         //未来三年奖金趋势
         List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS = bonusBudgetDTO.getFutureBonusBudgetLaddertersDTOS();
         if (StringUtils.isNotEmpty(futureBonusBudgetLaddertersDTOS)) {

@@ -143,7 +143,52 @@ public class TargetDecomposeController extends BaseController {
         String fileName = URLEncoder.encode("销售订单目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class).sheet("销售订单目标分解详情").doWrite(targetDecomposeExcelList);
+        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
+                .inMemory(true)
+                .useDefaultStyle(false)
+                .sheet("销售订单目标分解详情")
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        //靠左
+                        writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                        //设置 自动换行
+                        writeCellStyle.setWrapped(true);
+                        if (context.getRowIndex() < 2) {
+                            //设置边框
+                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                            writeCellStyle.setBorderTop(BorderStyle.THIN);
+                            writeCellStyle.setBorderRight(BorderStyle.THIN);
+                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                            // 拿到poi的workbook
+                            Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                            // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                            // 不同单元格尽量传同一个 cellStyle
+                            //设置rgb颜色
+                            byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                            CellStyle cellStyle = workbook.createCellStyle();
+                            XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                            xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                            // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                            // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                            // cell里面去 会导致自己设置的不一样（很关键）
+                            cellData.setWriteCellStyle(writeCellStyle);
+                            cellData.setOriginCellStyle(xssfCellColorStyle);
+                            cell.setCellStyle(cellStyle);
+                        }
+                        if (context.getRowIndex() > 1 && context.getColumnIndex() > 2) {
+                            //靠右边
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                        }
+                    }
+                })
+                .doWrite(targetDecomposeExcelList);
     }
 
 
@@ -222,7 +267,52 @@ public class TargetDecomposeController extends BaseController {
         String fileName = URLEncoder.encode("销售收入目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class).sheet("销售收入目标分解详情").doWrite(targetDecomposeExcelList);
+        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
+                .inMemory(true)
+                .useDefaultStyle(false)
+                .sheet("销售收入目标分解详情")
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        //靠左
+                        writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                        //设置 自动换行
+                        writeCellStyle.setWrapped(true);
+                        if (context.getRowIndex() < 2) {
+                            //设置边框
+                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                            writeCellStyle.setBorderTop(BorderStyle.THIN);
+                            writeCellStyle.setBorderRight(BorderStyle.THIN);
+                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                            // 拿到poi的workbook
+                            Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                            // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                            // 不同单元格尽量传同一个 cellStyle
+                            //设置rgb颜色
+                            byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                            CellStyle cellStyle = workbook.createCellStyle();
+                            XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                            xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                            // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                            // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                            // cell里面去 会导致自己设置的不一样（很关键）
+                            cellData.setWriteCellStyle(writeCellStyle);
+                            cellData.setOriginCellStyle(xssfCellColorStyle);
+                            cell.setCellStyle(cellStyle);
+                        }
+                        if (context.getRowIndex() > 1 && context.getColumnIndex() > 2) {
+                            //靠右边
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                        }
+                    }
+                })
+                .doWrite(targetDecomposeExcelList);
     }
 
 
@@ -301,7 +391,52 @@ public class TargetDecomposeController extends BaseController {
         String fileName = URLEncoder.encode("销售回款目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class).sheet("销售回款目标分解详情").doWrite(targetDecomposeExcelList);
+        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
+                .inMemory(true)
+                .useDefaultStyle(false)
+                .sheet("销售回款目标分解详情")
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        //靠左
+                        writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                        //设置 自动换行
+                        writeCellStyle.setWrapped(true);
+                        if (context.getRowIndex() < 2) {
+                            //设置边框
+                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                            writeCellStyle.setBorderTop(BorderStyle.THIN);
+                            writeCellStyle.setBorderRight(BorderStyle.THIN);
+                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                            // 拿到poi的workbook
+                            Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                            // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                            // 不同单元格尽量传同一个 cellStyle
+                            //设置rgb颜色
+                            byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                            CellStyle cellStyle = workbook.createCellStyle();
+                            XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                            xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                            // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                            // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                            // cell里面去 会导致自己设置的不一样（很关键）
+                            cellData.setWriteCellStyle(writeCellStyle);
+                            cellData.setOriginCellStyle(xssfCellColorStyle);
+                            cell.setCellStyle(cellStyle);
+                        }
+                        if (context.getRowIndex() > 1 && context.getColumnIndex() > 2) {
+                            //靠右边
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                        }
+                    }
+                })
+                .doWrite(targetDecomposeExcelList);
     }
 
     //==============================自定义目标分解==================================//
@@ -382,9 +517,94 @@ public class TargetDecomposeController extends BaseController {
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
                 .head(head)// 设置表头
+                .inMemory(true)
+                .useDefaultStyle(false)
                 .sheet("自定义目标分解详情")// 设置 sheet 的名字
-                // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .registerWriteHandler(new SheetWriteHandler() {
+                    @Override
+                    public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
+                        for (int i = 0; i < 100; i++) {
+                            // 设置为文本格式
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            CellStyle cellStyle = writeWorkbookHolder.getCachedWorkbook().createCellStyle();
+                            // 49为文本格式
+                            cellStyle.setDataFormat((short) 49);
+                            // i为列，一整列设置为文本格式
+                            sheet.setDefaultColumnStyle(i, cellStyle);
+
+                        }
+                    }
+                })
+                //设置文本
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        // 设置字体
+                        WriteFont headWriteFont = new WriteFont();
+                        if (context.getRowIndex() < 2) {
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            headWriteFont.setBold(true);
+                            headWriteFont.setFontName("微软雅黑");
+                            writeCellStyle.setWriteFont(headWriteFont);
+                            //靠左
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            //垂直居中
+                            writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            //设置边框
+                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                            writeCellStyle.setBorderTop(BorderStyle.THIN);
+                            writeCellStyle.setBorderRight(BorderStyle.THIN);
+                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                            // 拿到poi的workbook
+                            Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                            // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                            // 不同单元格尽量传同一个 cellStyle
+                            //设置rgb颜色
+                            byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                            CellStyle cellStyle = workbook.createCellStyle();
+                            XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                            xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                            // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                            // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                            // cell里面去 会导致自己设置的不一样（很关键）
+                            cellData.setOriginCellStyle(xssfCellColorStyle);
+                            cell.setCellStyle(cellStyle);
+                        } else {
+
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            headWriteFont.setFontName("微软雅黑");
+                            writeCellStyle.setWriteFont(headWriteFont);
+                            if (context.getColumnIndex() > 2) {
+                                //靠右边
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                            }else {
+                                //靠左
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            }
+                            //垂直居中
+                            writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            //设置边框
+                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                            writeCellStyle.setBorderTop(BorderStyle.THIN);
+                            writeCellStyle.setBorderRight(BorderStyle.THIN);
+                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
+
+                        }
+                        cellData.setWriteCellStyle(writeCellStyle);
+                    }
+                })
                 .doWrite(TargetDecomposeImportListener.dataList(targetDecomposeExcelList));// 写入数据
     }
 
@@ -398,8 +618,9 @@ public class TargetDecomposeController extends BaseController {
     public TableDataInfo resultList(TargetDecomposeDTO targetDecomposeDTO) {
         startPage();
         List<TargetDecomposeDTO> list = targetDecomposeService.resultList(targetDecomposeDTO);
-       return getDataTable(list);
+        return getDataTable(list);
     }
+
     /**
      * 查询经营结果分析报表列表下拉框
      */
@@ -408,7 +629,7 @@ public class TargetDecomposeController extends BaseController {
     public AjaxResult resultListDroBox(TargetDecomposeDTO targetDecomposeDTO) {
         ArrayList<TargetDecomposeDTO> targetDecomposeList = new ArrayList<>();
         List<TargetDecomposeDTO> list = targetDecomposeService.rollPageList(targetDecomposeDTO);
-        if (StringUtils.isNotEmpty(list)){
+        if (StringUtils.isNotEmpty(list)) {
             //根据属性去重
             targetDecomposeList = list.stream().collect(Collectors.collectingAndThen(
                     Collectors.toCollection(() -> new TreeSet<>(
@@ -691,13 +912,13 @@ public class TargetDecomposeController extends BaseController {
                         // 设置字体
                         WriteFont headWriteFont = new WriteFont();
                         if (context.getRowIndex() < 5) {
-                            if (context.getColumnIndex()<2){
+                            if (context.getColumnIndex() < 2) {
                                 headWriteFont.setColor(IndexedColors.BLACK.getIndex());
                                 headWriteFont.setFontHeightInPoints((short) 11);
-                                if (context.getRowIndex() == 0){
+                                if (context.getRowIndex() == 0) {
                                     headWriteFont.setBold(true);
                                 }//加粗
-                                else if (context.getRowIndex() > 0 && context.getColumnIndex()==0){
+                                else if (context.getRowIndex() > 0 && context.getColumnIndex() == 0) {
                                     headWriteFont.setBold(true);
                                 }
 
@@ -735,7 +956,7 @@ public class TargetDecomposeController extends BaseController {
 
                             headWriteFont.setColor(IndexedColors.BLACK.getIndex());
                             headWriteFont.setFontHeightInPoints((short) 11);
-                            if (context.getRowIndex() == 6 || context.getRowIndex() == 7 ||context.getRowIndex() == 8   ){
+                            if (context.getRowIndex() == 6 || context.getRowIndex() == 7 || context.getRowIndex() == 8) {
                                 headWriteFont.setBold(true);
                             }
                             headWriteFont.setFontName("微软雅黑");
@@ -746,14 +967,14 @@ public class TargetDecomposeController extends BaseController {
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                             //设置 自动换行
                             writeCellStyle.setWrapped(true);
-                            if (context.getRowIndex() > 6){
+                            if (context.getRowIndex() > 6) {
                                 //设置边框
                                 writeCellStyle.setBorderLeft(BorderStyle.THIN);
                                 writeCellStyle.setBorderTop(BorderStyle.THIN);
                                 writeCellStyle.setBorderRight(BorderStyle.THIN);
                                 writeCellStyle.setBorderBottom(BorderStyle.THIN);
                             }
-                            if (context.getRowIndex() ==7 || context.getRowIndex() ==8){
+                            if (context.getRowIndex() == 7 || context.getRowIndex() == 8) {
                                 // 拿到poi的workbook
                                 Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                 // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
