@@ -920,8 +920,8 @@ public class ProductServiceImpl implements IProductService {
         //产品数据入参
         List<ProductSpecificationDataDTO> productSpecificationDataDTOList = new ArrayList<>();
         for (ProductDataDTO productDataDTO : productDataDTOList) {
-            for (ProductSpecificationDataDTO productSpecificationDataDTO : productDataDTO.getProductSpecificationDataDTOList()) {
-                productSpecificationDataDTOList.add(productSpecificationDataDTO);
+            if (StringUtils.isNotNull(productDataDTO) && StringUtils.isNotEmpty(productDataDTO.getProductSpecificationDataDTOList())){
+                productSpecificationDataDTOList.addAll(productDataDTO.getProductSpecificationDataDTOList());
             }
         }
         //查询数据库存在的产品数据
