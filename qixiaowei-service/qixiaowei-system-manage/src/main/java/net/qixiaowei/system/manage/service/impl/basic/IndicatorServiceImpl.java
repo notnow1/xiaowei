@@ -350,7 +350,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         Long parentIndicatorId = indicatorDTO.getParentIndicatorId();
         String parentAncestors = "";//仅在非一级行业时有用
         Integer parentLevel = 1;
-        if (StringUtils.isNotNull(parentIndicatorId)) {// 一级行业
+        if (StringUtils.isNotNull(parentIndicatorId) && parentIndicatorId != 0L) {// 一级行业
             IndicatorDTO parentIndicator = indicatorMapper.selectIndicatorByIndicatorId(parentIndicatorId);
             if (parentIndicator == null) {
                 throw new ServiceException("上级指标不存在");
@@ -360,7 +360,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
-        if (StringUtils.isNotNull(parentIndicatorId)) {
+        if (StringUtils.isNotNull(parentIndicatorId) && parentIndicatorId != 0L) {
             String ancestors = parentAncestors;
             if (StringUtils.isNotEmpty(ancestors)) {
                 ancestors = ancestors + ",";
@@ -570,7 +570,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         miOpponentFinanceDTO.setParams(params);
         R<List<MiOpponentFinanceDTO>> miOpponentFinanceList = remoteMarketInsightOpponentService.remoteMiOpponentFinanceList(miOpponentFinanceDTO, SecurityConstants.INNER);
         List<MiOpponentFinanceDTO> miOpponentFinanceListData = miOpponentFinanceList.getData();
-        if (StringUtils.isNotEmpty(miOpponentFinanceListData)){
+        if (StringUtils.isNotEmpty(miOpponentFinanceListData)) {
             throw new ServiceException("数据被引用!");
         }
     }
@@ -710,7 +710,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         // 总奖金包预算
         BonusBudgetDTO bonusBudgetDTO = new BonusBudgetDTO();
         bonusBudgetDTO.setIndicatorIds(indicatorIds);
-        R<List<BonusBudgetParametersDTO>> bonusBudgetParametersList= bonusBudgetService.selectBonusBudgetByIndicatorId(bonusBudgetDTO, SecurityConstants.INNER);
+        R<List<BonusBudgetParametersDTO>> bonusBudgetParametersList = bonusBudgetService.selectBonusBudgetByIndicatorId(bonusBudgetDTO, SecurityConstants.INNER);
 
         List<BonusBudgetParametersDTO> data = bonusBudgetParametersList.getData();
         if (StringUtils.isNotEmpty(data)) {

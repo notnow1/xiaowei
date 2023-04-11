@@ -2178,12 +2178,17 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             // 【DSO（应收账款周转天数）】：公式=DSO基线-DSO改进天数
             int DSO = targetSettingRecoveryDTO.getBaselineValue() - targetSettingRecoveryDTO.getImproveDays();
             // 【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额。
-            BigDecimal endingBalanceTarget =
-                    ((salesRevenueTarget.multiply(BigDecimal.valueOf(DSO))).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP)).subtract(balanceReceivables);
-            BigDecimal endingBalanceChallenge =
-                    ((salesRevenueChallenge.multiply(BigDecimal.valueOf(DSO))).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP)).subtract(balanceReceivables);
-            BigDecimal endingBalanceGuaranteed =
-                    ((salesRevenueGuaranteed.multiply(BigDecimal.valueOf(DSO))).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP)).subtract(balanceReceivables);
+            BigDecimal endingBalanceTarget = BigDecimal.ZERO;
+            BigDecimal endingBalanceChallenge = BigDecimal.ZERO;
+            BigDecimal endingBalanceGuaranteed = BigDecimal.ZERO;
+            for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : targetSettingRecoveriesDTOS) {
+                if (targetSettingRecoveriesDTO.getTargetSettingId().equals(targetSettingId) && targetSettingRecoveriesDTO.getType() == 5) {
+                    endingBalanceTarget = targetSettingRecoveriesDTO.getTargetValue();
+                    endingBalanceChallenge = targetSettingRecoveriesDTO.getChallengeValue();
+                    endingBalanceGuaranteed = targetSettingRecoveriesDTO.getGuaranteedValue();
+                    break;
+                }
+            }
             // 【回款总目标】：公式=上年年末应收账款余额+销售收入目标*（1+平均增值税率）-期末应收账款余额。
             BigDecimal rate = (percentage.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)).add(BigDecimal.ONE);
             BigDecimal totalTarget = balanceReceivables.add(salesRevenueTarget.multiply(rate)).subtract(endingBalanceTarget);
@@ -2216,9 +2221,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             challengeMap.put("期末应收账款余额", endingBalanceChallenge);
             targetMap.put("期末应收账款余额", endingBalanceTarget);
             guaranteedMap.put("期末应收账款余额", endingBalanceGuaranteed);
-            challengeMap.put("回款总目标", totalChallenge);
-            targetMap.put("回款总目标", totalTarget);
-            guaranteedMap.put("回款总目标", totalGuaranteed);
+            challengeMap.put("回款总目标", targetSetting.getChallengeValue());
+            targetMap.put("回款总目标", targetSetting.getTargetValue());
+            guaranteedMap.put("回款总目标", targetSetting.getGuaranteedValue());
             targetSettingRecoveriesExcel.setTargetMap(targetMap);
             targetSettingRecoveriesExcel.setChallengeMap(challengeMap);
             targetSettingRecoveriesExcel.setGuaranteedMap(guaranteedMap);
