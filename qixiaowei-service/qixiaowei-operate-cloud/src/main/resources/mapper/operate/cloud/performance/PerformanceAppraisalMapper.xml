@@ -86,8 +86,8 @@
         <if test="performanceAppraisal.cycleType != null">
             and pa.cycle_type=#{performanceAppraisal.cycleType}
         </if>
-        <if test="performanceAppraisal.cycleType != null">
-            and pa.pa.evaluation_type,=#{performanceAppraisal.evaluationType}
+        <if test="performanceAppraisal.evaluationType != null">
+            and pa.evaluation_type,=#{performanceAppraisal.evaluationType}
         </if>
         <if test="performanceAppraisal.cycleNumber != null">
             and pa.cycle_number=#{performanceAppraisal.cycleNumber}
