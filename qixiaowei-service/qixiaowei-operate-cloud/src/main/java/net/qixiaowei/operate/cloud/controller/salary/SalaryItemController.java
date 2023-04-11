@@ -45,18 +45,10 @@ public class SalaryItemController extends BaseController {
     }
 
     /**
-     * 批量修改工资项
-     */
-    @RequiresPermissions("operate:cloud:salaryItem:edit")
-    @PostMapping("/edit")
-    public AjaxResult edit(@RequestBody List<SalaryItemDTO> salaryItemDTOS) {
-        return toAjax(salaryItemService.editSalaryItems(salaryItemDTOS));
-    }
-
-    /**
      * 查询工资项列表
      */
     @GetMapping("/list")
+    @RequiresPermissions("operate:cloud:salaryItem:pageList")
     public AjaxResult list(SalaryItemDTO salaryItemDTO) {
         List<SalaryItemDTO> list = salaryItemService.selectSalaryItemList(salaryItemDTO);
         return AjaxResult.success(list);
