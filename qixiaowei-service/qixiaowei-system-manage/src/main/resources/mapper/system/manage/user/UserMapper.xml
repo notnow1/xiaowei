@@ -222,7 +222,7 @@
             AND
             <foreach item="item"
                      collection="user.params.userAccountNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 u.user_account NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -257,7 +257,7 @@
             AND (
             <foreach item="item"
                      collection="user.params.mobilePhoneNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 u.mobile_phone NOT LIKE concat('%', #{item}, '%')
             </foreach>
             OR u.mobile_phone IS NULL
@@ -294,7 +294,7 @@
             AND (
             <foreach item="item"
                      collection="user.params.emailNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 u.email NOT LIKE concat('%', #{item}, '%')
             </foreach>
             OR u.email IS NULL
@@ -331,7 +331,7 @@
             AND (
             <foreach item="item"
                      collection="user.params.userNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 u.user_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
             OR u.user_name IS NULL
