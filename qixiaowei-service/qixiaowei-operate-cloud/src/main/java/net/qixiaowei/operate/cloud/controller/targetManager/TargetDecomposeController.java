@@ -746,8 +746,14 @@ public class TargetDecomposeController extends BaseController {
                                     writeCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
                                 }
                             }else {
-                                //靠左
-                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                if (context.getRowIndex() > 8 && context.getColumnIndex()>1){
+                                    //靠左
+                                    writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                                }else {
+                                    //靠左
+                                    writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                }
+
                             }
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
