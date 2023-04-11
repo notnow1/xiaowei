@@ -241,10 +241,10 @@
             )
         </if>
         <if test="gapAnalysis.params.industryIdNull != null">
-            AND (ga.industry_id IS NULL or ga.industry_id ='')
+            AND ga.industry_id IS NULL
         </if>
         <if test="gapAnalysis.params.industryIdNotNull != null">
-            AND (ga.industry_id IS NOT NULL or ga.industry_id != '')
+            AND ga.industry_id IS NOT NULL
         </if>
         <!--区域-->
         <if test="gapAnalysis.params.areaIdEqual != null and gapAnalysis.params.areaIdEqual.size() > 0">
@@ -266,10 +266,10 @@
             )
         </if>
         <if test="gapAnalysis.params.areaIdNull != null">
-            AND (ga.area_id IS NULL or ga.area_id ='')
+            AND ga.area_id IS NULL
         </if>
         <if test="gapAnalysis.params.areaIdNotNull != null">
-            AND (ga.area_id IS NOT NULL or ga.area_id != '')
+            AND ga.area_id IS NOT NULL
         </if>
         <!--产品-->
         <if test="gapAnalysis.params.productIdEqual != null and gapAnalysis.params.productIdEqual.size() > 0">
@@ -291,10 +291,10 @@
             )
         </if>
         <if test="gapAnalysis.params.productIdNull != null">
-            AND (ga.product_id IS NULL or ga.product_id ='')
+            AND ga.product_id IS NULL
         </if>
         <if test="gapAnalysis.params.productIdNotNull != null">
-            AND (ga.product_id IS NOT NULL or ga.product_id != '')
+            AND ga.product_id IS NOT NULL
         </if>
         <!--部门-->
         <if test="gapAnalysis.params.departmentIdEqual != null and gapAnalysis.params.departmentIdEqual.size() > 0">
@@ -316,10 +316,10 @@
             )
         </if>
         <if test="gapAnalysis.params.departmentIdNull != null">
-            AND (ga.department_id IS NULL or ga.department_id ='')
+            AND ga.department_id IS NULL
         </if>
         <if test="gapAnalysis.params.departmentIdNotNull != null">
-            AND (ga.department_id IS NOT NULL or ga.department_id != '')
+            AND ga.department_id IS NOT NULL
         </if>
         <!-- 创建人等于过滤  -->
         <if test="gapAnalysis.params.createByNameEqual != null">
