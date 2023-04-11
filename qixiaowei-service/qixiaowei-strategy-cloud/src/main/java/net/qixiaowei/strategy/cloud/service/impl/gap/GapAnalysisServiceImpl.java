@@ -17,8 +17,6 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysis;
-import net.qixiaowei.strategy.cloud.api.domain.gap.GapAnalysisOperate;
-import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
@@ -525,7 +523,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
     private void addAnalysisOperateList(Long gapAnalysisId, List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS, GapAnalysisDTO gapAnalysisDTO) {
         if (StringUtils.isNotEmpty(gapAnalysisOperateDTOS)) {
             Integer planYear = gapAnalysisDTO.getPlanYear();
-            List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
+            List<Long> indicatorIds = gapAnalysisOperateDTOS.stream().map(GapAnalysisOperateDTO::getIndicatorId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(indicatorIds)) {
                 R<List<IndicatorDTO>> indicatorByIdR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
                 List<IndicatorDTO> indicatorById = indicatorByIdR.getData();
