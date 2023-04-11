@@ -270,6 +270,11 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
             }
         }
         for (AnnualKeyWorkDTO annualKeyDTO : annualKeyWorkDTOS) {
+            if (annualKeyDTO.getPlanRank() == 1) {
+                annualKeyDTO.setPlanRankName("部门级");
+            } else {
+                annualKeyDTO.setPlanRankName("公司级");
+            }
             String businessUnitDecompose = annualKeyDTO.getBusinessUnitDecompose();
             Long areaId = annualKeyDTO.getAreaId();
             Long industryId = annualKeyDTO.getIndustryId();

@@ -4,7 +4,7 @@ package net.qixiaowei.integration.common.enums.field.strategy;
 public enum AnnualKeyWorkField {
     PLAN_YEAR("plan_year", "规划年度"),
     BUSINESS_UNIT_NAME("business_unit_name", "规划业务单元名称"),
-    PLAN_RANK("plan_rank", "级别"),
+    PLAN_RANK("plan_rank_name", "级别"),
     AREA_ID("area_id", "区域"),
     DEPARTMENT_ID("department_id", "部门"),
     PRODUCT_ID("product_id", "产品"),
