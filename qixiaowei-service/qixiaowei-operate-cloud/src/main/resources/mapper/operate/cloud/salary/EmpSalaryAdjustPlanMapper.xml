@@ -122,7 +122,7 @@
             and esa.adjust_department_id=#{empSalaryAdjustPlan.adjustDepartmentId}
         </if>
         <if test="empSalaryAdjustPlan.adjustDepartmentName != null and empSalaryAdjustPlan.adjustDepartmentName != ''">
-            and esa.adjust_department_name=#{empSalaryAdjustPlan.adjustDepartmentName}
+            and esa.adjust_department_name like concat('%', #{empSalaryAdjustPlan.adjustDepartmentName}, '%')
         </if>
         <if test="empSalaryAdjustPlan.adjustPostId != null">
             and esa.adjust_post_id=#{empSalaryAdjustPlan.adjustPostId}
@@ -474,7 +474,7 @@
         </if>
         <!--    调整工资 -->
         <if test="empSalaryAdjustPlan.params.adjustEmolumentEqual != null and empSalaryAdjustPlan.params.adjustEmolumentEqual.size() > 0">
-            AND esa.adjust_emolument IN
+            AND IFNULL(esa.adjust_emolument,0) IN
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.adjustEmolumentEqual"
                      index="index" open="(" separator="," close=")">
@@ -482,14 +482,12 @@
             </foreach>
         </if>
         <if test="empSalaryAdjustPlan.params.adjustEmolumentNotEqual != null and empSalaryAdjustPlan.params.adjustEmolumentNotEqual.size() > 0">
-            AND (esa.adjust_emolument NOT IN
+            AND IFNULL(esa.adjust_emolument,0) NOT IN
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.adjustEmolumentNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR esa.adjust_emolument IS NULL
-            )
         </if>
         <if test="empSalaryAdjustPlan.params.adjustEmolumentLessThan != null and empSalaryAdjustPlan.params.adjustEmolumentLessThan != ''">
             AND esa.adjust_emolument &lt; #{empSalaryAdjustPlan.params.adjustEmolumentLessThan}
@@ -505,7 +503,7 @@
         </if>
         <!--    原工资-->
         <if test="empSalaryAdjustPlan.params.basicWageEqual != null and empSalaryAdjustPlan.params.basicWageEqual.size() > 0">
-            AND ess.basic_wage IN
+            AND IFNULL( ess.basic_wage, 0 ) IN
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.basicWageEqual"
                      index="index" open="(" separator="," close=")">
@@ -513,14 +511,12 @@
             </foreach>
         </if>
         <if test="empSalaryAdjustPlan.params.basicWageNotEqual != null and empSalaryAdjustPlan.params.basicWageNotEqual.size() > 0">
-            AND (ess.basic_wage NOT IN
+            AND IFNULL( ess.basic_wage, 0 ) NOT IN
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.basicWageNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ess.basic_wage IS NULL
-            )
         </if>
         <if test="empSalaryAdjustPlan.params.basicWageLessThan != null and empSalaryAdjustPlan.params.basicWageLessThan != ''">
             AND ess.basic_wage &lt; #{empSalaryAdjustPlan.params.basicWageLessThan}
