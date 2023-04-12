@@ -141,8 +141,8 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      * @return dropList
      */
     @Override
-    public List<Map<String, String>> decomposeDrop(Integer type, Integer status) {
-        List<Map<String, String>> dropList = new ArrayList<>();
+    public List<Map<String, Object>> decomposeDrop(Integer type, Integer status) {
+        List<Map<String, Object>> dropList = new ArrayList<>();
         switch (type) {
             case 1:// todo 1部门
                 Department department1 = new Department();
@@ -150,9 +150,10 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 List<DepartmentDTO> listDepartment = departmentService.dropList(department1);
                 if (StringUtils.isNotEmpty(listDepartment)) {
                     for (DepartmentDTO department : listDepartment) {
-                        HashMap<String, String> departmentMap = new HashMap<>();
+                        HashMap<String, Object> departmentMap = new HashMap<>();
                         departmentMap.put("rankDecomposeDimension", department.getDepartmentId().toString());
                         departmentMap.put("rankDecomposeDimensionName", department.getDepartmentName());
+                        departmentMap.put("status", department.getStatus());
                         dropList.add(departmentMap);
                     }
                     return dropList;
@@ -164,7 +165,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 if (listArea.getCode() == 200 && StringUtils.isNotEmpty(listArea.getData())) {
                     List<AreaDTO> data = listArea.getData();
                     for (AreaDTO area : data) {
-                        HashMap<String, String> areaMap = new HashMap<>();
+                        HashMap<String, Object> areaMap = new HashMap<>();
                         areaMap.put("rankDecomposeDimension", area.getAreaId().toString());
                         areaMap.put("rankDecomposeDimensionName", area.getAreaName());
                         dropList.add(areaMap);
@@ -176,7 +177,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 List<RegionDTO> regionDTOS = regionService.selectRegionByLevel(1);
                 if (StringUtils.isNotEmpty(regionDTOS)) {
                     for (RegionDTO region : regionDTOS) {
-                        HashMap<String, String> regionMap = new HashMap<>();
+                        HashMap<String, Object> regionMap = new HashMap<>();
                         regionMap.put("rankDecomposeDimension", region.getRegionId().toString());
                         regionMap.put("rankDecomposeDimensionName", region.getRegionName());
                         dropList.add(regionMap);
@@ -191,7 +192,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 if (listProduct.getCode() == 200 && StringUtils.isNotEmpty(listProduct.getData())) {
                     List<ProductDTO> data = listProduct.getData();
                     for (ProductDTO product : data) {
-                        HashMap<String, String> productMap = new HashMap<>();
+                        HashMap<String, Object> productMap = new HashMap<>();
                         productMap.put("rankDecomposeDimension", product.getProductId().toString());
                         productMap.put("rankDecomposeDimensionName", product.getProductName());
                         dropList.add(productMap);

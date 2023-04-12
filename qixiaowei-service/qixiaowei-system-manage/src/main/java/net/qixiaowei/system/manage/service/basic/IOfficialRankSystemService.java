@@ -133,7 +133,7 @@ public interface IOfficialRankSystemService {
      * @param status 状态
      * @return 结果
      */
-    List<Map<String, String>> decomposeDrop(Integer type, Integer status);
+    List<Map<String, Object>> decomposeDrop(Integer type, Integer status);
 
     /**
      * 通过ID集合查找职级等级列表
