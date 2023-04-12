@@ -164,69 +164,69 @@
             #{salaryPay.params.payYearMonth}
         </if>
         <!--发薪年月-->
-        <if test="salaryPay.params.payTimeEqual != null and salaryPay.params.payTimeEqual.size() > 0">
+        <if test="salaryPay.params.payYearMonthEqual != null and salaryPay.params.payYearMonthEqual.size() > 0">
             AND (CASE
             WHEN sp.pay_month &gt; 9 THEN
             CONCAT( sp.pay_year, "/", sp.pay_month )
             WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) IN
             <foreach item="item"
-                     collection="salaryPay.params.payTimeEqual"
+                     collection="salaryPay.params.payYearMonthEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="salaryPay.params.payTimeNotEqual != null and salaryPay.params.payTimeNotEqual.size() > 0">
+        <if test="salaryPay.params.payYearMonthNotEqual != null and salaryPay.params.payYearMonthNotEqual.size() > 0">
             AND (CASE
             WHEN sp.pay_month &gt; 9 THEN
             CONCAT( sp.pay_year, "/", sp.pay_month )
             WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) NOT IN
             <foreach item="item"
-                     collection="salaryPay.params.payTimeNotEqual"
+                     collection="salaryPay.params.payYearMonthNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="salaryPay.params.payTimeBefore != null and salaryPay.params.payTimeBefore != ''">
+        <if test="salaryPay.params.payYearMonthBefore != null and salaryPay.params.payYearMonthBefore != ''">
             AND (CASE
             WHEN sp.pay_month &gt; 9 THEN
             CONCAT( sp.pay_year, "/", sp.pay_month )
             WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &lt;
-            #{salaryPay.params.payTimeBefore}
+            #{salaryPay.params.payYearMonthBefore}
         </if>
-        <if test="salaryPay.params.payTimeNotBefore != null and salaryPay.params.payTimeNotBefore != ''">
+        <if test="salaryPay.params.payYearMonthNotBefore != null and salaryPay.params.payYearMonthNotBefore != ''">
             AND (CASE
             WHEN sp.pay_month &gt; 9 THEN
             CONCAT( sp.pay_year, "/", sp.pay_month )
             WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &gt;=
-            #{salaryPay.params.payTimeNotBefore}
+            #{salaryPay.params.payYearMonthNotBefore}
         </if>
-        <if test="salaryPay.params.payTimeAfter != null and salaryPay.params.payTimeAfter != ''">
+        <if test="salaryPay.params.payYearMonthAfter != null and salaryPay.params.payYearMonthAfter != ''">
             AND (CASE
             WHEN sp.pay_month &gt; 9 THEN
             CONCAT( sp.pay_year, "/", sp.pay_month )
             WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &gt;
-            #{salaryPay.params.payTimeAfter}
+            #{salaryPay.params.payYearMonthAfter}
         </if>
-        <if test="salaryPay.params.payTimeNotAfter != null and salaryPay.params.payTimeNotAfter != ''">
+        <if test="salaryPay.params.payYearMonthNotAfter != null and salaryPay.params.payYearMonthNotAfter != ''">
             AND (CASE
             WHEN sp.pay_month &gt; 9 THEN
             CONCAT( sp.pay_year, "/", sp.pay_month )
             WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &lt;=
-            #{salaryPay.params.payTimeNotAfter}
+            #{salaryPay.params.payYearMonthNotAfter}
         </if>
-        <if test="salaryPay.params.payTimeStart != null and salaryPay.params.payTimeStart != ''">
+        <if test="salaryPay.params.payYearMonthStart != null and salaryPay.params.payYearMonthStart != ''">
             AND (CASE
             WHEN sp.pay_month &gt; 9 THEN
             CONCAT( sp.pay_year, "/", sp.pay_month )
             WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &gt;=
-            #{salaryPay.params.payTimeStart}
+            #{salaryPay.params.payYearMonthStart}
         </if>
-        <if test="salaryPay.params.payTimeEnd != null and salaryPay.params.payTimeEnd != ''">
+        <if test="salaryPay.params.payYearMonthEnd != null and salaryPay.params.payYearMonthEnd != ''">
             AND (CASE
             WHEN sp.pay_month &gt; 9 THEN
             CONCAT( sp.pay_year, "/", sp.pay_month )
             WHEN sp.pay_month &lt; 10 THEN CONCAT( sp.pay_year, "/0", sp.pay_month ) END ) &lt;=
-            #{salaryPay.params.payTimeEnd}
+            #{salaryPay.params.payYearMonthEnd}
         </if>
         <!--总计（工资+津贴+福利+奖金）-->
         <if test="salaryPay.params.totalAmountEqual != null and salaryPay.params.totalAmountEqual.size() > 0">

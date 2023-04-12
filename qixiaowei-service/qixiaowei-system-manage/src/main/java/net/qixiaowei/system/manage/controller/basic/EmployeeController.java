@@ -29,6 +29,7 @@ import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
@@ -185,7 +186,7 @@ public class EmployeeController extends BaseController {
     @GetMapping("export")
     public void exportEmployee(@RequestParam Map<String, Object> employee, EmployeeDTO employeeDTO, HttpServletResponse response) {
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName();
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName(new DepartmentDTO());
         //岗位名称
         List<String> postNames = new ArrayList<>();
         PostDTO postDTO = new PostDTO();
@@ -311,8 +312,10 @@ public class EmployeeController extends BaseController {
     @RequiresPermissions("system:manage:employee:import")
     @GetMapping("/export-template")
     public void exportEmployeeTemplate(HttpServletResponse response) {
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName();
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName(departmentDTO);
         //岗位名称
         List<String> postNames = new ArrayList<>();
         PostDTO postDTO = new PostDTO();

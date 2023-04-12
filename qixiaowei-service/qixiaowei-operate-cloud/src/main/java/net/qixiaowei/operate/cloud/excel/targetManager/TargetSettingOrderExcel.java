@@ -4,7 +4,6 @@ package net.qixiaowei.operate.cloud.excel.targetManager;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.*;
-import com.alibaba.excel.enums.poi.FillPatternTypeEnum;
 import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import lombok.Data;
 
@@ -40,6 +39,7 @@ public class TargetSettingOrderExcel {
      */
     @ColumnWidth(22)
     @ExcelProperty(value = {"币种：人民币     单位：万元", "公司战略增长诉求（%）"})
+    @ContentStyle(dataFormat = 2)
     private BigDecimal percentage;
     /**
      * 目标制定ID
@@ -53,18 +53,21 @@ public class TargetSettingOrderExcel {
      */
     @ColumnWidth(16)
     @ExcelProperty(value = {"币种：人民币     单位：万元", "挑战值"})
+    @ContentStyle(dataFormat = 2)
     private BigDecimal challengeValue;
     /**
      * 目标值
      */
     @ColumnWidth(16)
     @ExcelProperty(value = {"币种：人民币     单位：万元", "目标值"})
+    @ContentStyle(dataFormat = 2)
     private BigDecimal targetValue;
     /**
      * 保底值
      */
     @ColumnWidth(16)
     @ExcelProperty(value = {"币种：人民币     单位：万元", "保底值"})
+    @ContentStyle(dataFormat = 2)
     private BigDecimal guaranteedValue;
 }
 

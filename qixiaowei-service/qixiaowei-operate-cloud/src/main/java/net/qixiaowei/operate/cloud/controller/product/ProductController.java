@@ -193,7 +193,7 @@ public class ProductController extends BaseController {
             R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByProduct(data.getDictionaryTypeId(), SecurityConstants.INNER);
             List<DictionaryDataDTO> dictionaryDataDTOList = listR.getData();
             if (StringUtils.isNotEmpty(dictionaryDataDTOList)){
-                dictionaryLabels = dictionaryDataDTOList.stream().map(DictionaryDataDTO::getDictionaryLabel).collect(Collectors.toList());
+                dictionaryLabels = dictionaryDataDTOList.stream().filter(f ->f.getStatus() == 1).map(DictionaryDataDTO::getDictionaryLabel).collect(Collectors.toList());
             }
         }
         // 产品单位
@@ -217,6 +217,7 @@ public class ProductController extends BaseController {
                 .head(head)
                 .inMemory(true)
                 .useDefaultStyle(false)
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
                 .sheet("产品配置")
                 // 设置 sheet 的名字
                 .registerWriteHandler(new SheetWriteHandler() {
@@ -255,7 +256,7 @@ public class ProductController extends BaseController {
                             font2.setFontHeightInPoints((short) 11);
                             font2.setColor(IndexedColors.BLACK.getIndex());
                             // 从哪到哪，你想设置成什么样的字体都行startIndex，endIndex
-                            richString.applyFont(3, 99, font2);
+                            richString.applyFont(3, 106, font2);
                             // 再设置回每个单元格里
                             cell.setCellValue(richString);
                         }
@@ -362,7 +363,7 @@ public class ProductController extends BaseController {
         List<Map<Integer, String>> listMap = sheet.doReadSync();
 
         //产品
-        ProductImportListener.mapToListModel(2, 0, listMap, list);
+        ProductImportListener.mapToListModel(1, 0, listMap, list);
         // 调用importer方法
         productService.importProduct(list);
 

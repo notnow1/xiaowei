@@ -270,10 +270,10 @@
             )
         </if>
         <if test="strategyMeasure.params.industryIdNull != null">
-            AND (sm.industry_id IS NULL or sm.industry_id ='')
+            AND sm.industry_id IS NULL
         </if>
         <if test="strategyMeasure.params.industryIdNotNull != null">
-            AND (sm.industry_id IS NOT NULL or sm.industry_id != '')
+            AND sm.industry_id IS NOT NULL
         </if>
         <!--区域-->
         <if test="strategyMeasure.params.areaIdEqual != null and strategyMeasure.params.areaIdEqual.size() > 0">
@@ -295,10 +295,10 @@
             )
         </if>
         <if test="strategyMeasure.params.areaIdNull != null">
-            AND (sm.area_id IS NULL or sm.area_id ='')
+            AND sm.area_id IS NULL
         </if>
         <if test="strategyMeasure.params.areaIdNotNull != null">
-            AND (sm.area_id IS NOT NULL or sm.area_id != '')
+            AND sm.area_id IS NOT NULL
         </if>
         <!--产品-->
         <if test="strategyMeasure.params.productIdEqual != null and strategyMeasure.params.productIdEqual.size() > 0">
@@ -320,10 +320,10 @@
             )
         </if>
         <if test="strategyMeasure.params.productIdNull != null">
-            AND (sm.product_id IS NULL or sm.product_id ='')
+            AND sm.product_id IS NULL
         </if>
         <if test="strategyMeasure.params.productIdNotNull != null">
-            AND (sm.product_id IS NOT NULL or sm.product_id != '')
+            AND sm.product_id IS NOT NULL
         </if>
         <!--部门-->
         <if test="strategyMeasure.params.departmentIdEqual != null and strategyMeasure.params.departmentIdEqual.size() > 0">
@@ -345,10 +345,10 @@
             )
         </if>
         <if test="strategyMeasure.params.departmentIdNull != null">
-            AND (sm.department_id IS NULL or sm.department_id ='')
+            AND sm.department_id IS NULL
         </if>
         <if test="strategyMeasure.params.departmentIdNotNull != null">
-            AND (sm.department_id IS NOT NULL or sm.department_id != '')
+            AND sm.department_id IS NOT NULL
         </if>
         <!-- 创建人等于过滤  -->
         <if test="strategyMeasure.params.createByNameEqual != null">

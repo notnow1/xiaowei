@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -111,7 +112,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<String> head4 = new ArrayList<String>();
         head4.add("币种：人民币     单位：万元");
         head4.add("期末应收账款余额");
-        head4.add("实际值");
+        head4.add("保底值");
         // 逾期清理
         List<String> head5 = new ArrayList<String>();
         head5.add("币种：人民币     单位：万元");
@@ -126,7 +127,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<String> head7 = new ArrayList<String>();
         head7.add("币种：人民币     单位：万元");
         head7.add("回款总目标");
-        head7.add("实际值");
+        head7.add("保底值");
         // 第三列
         List<String> head8 = new ArrayList<String>();
         head8.add("币种：人民币     单位：万元");
@@ -141,7 +142,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<String> head10 = new ArrayList<String>();
         head10.add("币种：人民币     单位：万元");
         head10.add("1.应回尽回");
-        head10.add("实际值");
+        head10.add("保底值");
         // 第六列
         List<String> head11 = new ArrayList<String>();
         head11.add("币种：人民币     单位：万元");
@@ -156,7 +157,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<String> head13 = new ArrayList<String>();
         head13.add("币种：人民币     单位：万元");
         head13.add("2.逾期清理");
-        head13.add("实际值");
+        head13.add("保底值");
         // 第七列
         List<String> head14 = new ArrayList<String>();
         head14.add("币种：人民币     单位：万元");
@@ -171,7 +172,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<String> head16 = new ArrayList<String>();
         head16.add("币种：人民币     单位：万元");
         head16.add("3.提前回款");
-        head16.add("实际值");
+        head16.add("保底值");
         list.add(head0);
         list.add(head1);
         list.add(head2);
@@ -216,25 +217,25 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
             Map<String, BigDecimal> challengeMap = targetSettingRecoveriesExcel.getChallengeMap();
             Map<String, BigDecimal> guaranteedMap = targetSettingRecoveriesExcel.getGuaranteedMap();
 
-            data.add(challengeMap.get("期末应收账款余额"));
-            data.add(targetMap.get("期末应收账款余额"));
-            data.add(guaranteedMap.get("期末应收账款余额"));
+            data.add(challengeMap.get("期末应收账款余额").setScale(2, RoundingMode.HALF_UP).toString());
+            data.add(targetMap.get("期末应收账款余额").setScale(2, RoundingMode.HALF_UP).toString());
+            data.add(guaranteedMap.get("期末应收账款余额").setScale(2, RoundingMode.HALF_UP).toString());
 
-            data.add(challengeMap.get("回款总目标"));
-            data.add(targetMap.get("回款总目标"));
-            data.add(guaranteedMap.get("回款总目标"));
+            data.add(challengeMap.get("回款总目标").setScale(2, RoundingMode.HALF_UP).toString());
+            data.add(targetMap.get("回款总目标").setScale(2, RoundingMode.HALF_UP).toString());
+            data.add(guaranteedMap.get("回款总目标").setScale(2, RoundingMode.HALF_UP).toString());
 
-            data.add(challengeMap.get("1.应回尽回"));
-            data.add(targetMap.get("1.应回尽回"));
-            data.add(guaranteedMap.get("1.应回尽回"));
+            data.add(challengeMap.get("1.应回尽回").setScale(2, RoundingMode.HALF_UP).toString());
+            data.add(targetMap.get("1.应回尽回").setScale(2, RoundingMode.HALF_UP).toString());
+            data.add(guaranteedMap.get("1.应回尽回").setScale(2, RoundingMode.HALF_UP).toString());
 
-            data.add(challengeMap.get("2.逾期清理"));
-            data.add(targetMap.get("2.逾期清理"));
-            data.add(guaranteedMap.get("2.逾期清理"));
+            data.add(challengeMap.get("2.逾期清理").setScale(2, RoundingMode.HALF_UP).toString());
+            data.add(targetMap.get("2.逾期清理").setScale(2, RoundingMode.HALF_UP).toString());
+            data.add(guaranteedMap.get("2.逾期清理").setScale(2, RoundingMode.HALF_UP).toString());
 
-            data.add(challengeMap.get("3.提前回款"));
-            data.add(targetMap.get("3.提前回款"));
-            data.add(guaranteedMap.get("3.提前回款"));
+            data.add(challengeMap.get("3.提前回款").setScale(2, RoundingMode.HALF_UP).toString());
+            data.add(targetMap.get("3.提前回款").setScale(2, RoundingMode.HALF_UP).toString());
+            data.add(guaranteedMap.get("3.提前回款").setScale(2, RoundingMode.HALF_UP).toString());
 
             list.add(data);
         }

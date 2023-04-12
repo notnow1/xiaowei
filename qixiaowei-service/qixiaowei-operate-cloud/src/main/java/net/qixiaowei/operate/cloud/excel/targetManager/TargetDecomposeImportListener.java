@@ -623,17 +623,17 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         }
         // 动态列
         List<String> head0 = new ArrayList<String>();
-        head0.add("币种：人民币   单位：万元\t\n");
-        head0.add("目标年度\n");
-        head0.add("指标名称\n");
-        head0.add("分解维度\n");
-        head0.add("时间维度\n");
+        head0.add("币种：人民币   单位：万元");
+        head0.add("目标年度");
+        head0.add("指标名称");
+        head0.add("分解维度");
+        head0.add("时间维度");
         head0.add("");
-        head0.add("分解详细信息：\n");
+        head0.add("分解详细信息：");
 
 
         List<String> head1 = new ArrayList<String>();
-        head1.add("币种：人民币   单位：万元\t\n");
+        head1.add("币种：人民币   单位：万元");
         head1.add(StringUtils.isNotBlank(targetDecomposeDTO.getTargetYear().toString())?targetDecomposeDTO.getTargetYear().toString():"");
         head1.add(StringUtils.isNotBlank(targetDecomposeDTO.getIndicatorName())?targetDecomposeDTO.getIndicatorName():"");
         head1.add(StringUtils.isNotBlank(stringBuffer.toString())?stringBuffer.toString():"");
@@ -694,7 +694,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         head4.add("");
         head4.add("");
         head4.add("");
-        head4.add("整年度");
+        head4.add("年度");
         head4.add("分解目标");
         list.add(head4);
         List<String> head5 = new ArrayList<String>();
@@ -705,8 +705,8 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         head5.add("");
         head5.add("");
         head5.add("");
-        head5.add("整年度");
-        head5.add("年度预测\n");
+        head5.add("年度");
+        head5.add("年度预测");
         list.add(head5);
         List<String> head6 = new ArrayList<String>();
         head6.add("");
@@ -716,8 +716,8 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         head6.add("");
         head6.add("");
         head6.add("");
-        head6.add("整年度");
-        head6.add("累计实际值\n");
+        head6.add("年度");
+        head6.add("累计实际值");
         list.add(head6);
         List<String> head7 = new ArrayList<String>();
         head7.add("");
@@ -727,8 +727,8 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         head7.add("");
         head7.add("");
         head7.add("");
-        head7.add("整年度");
-        head7.add("平均预测偏差率（%）\n");
+        head7.add("年度");
+        head7.add("平均预测偏差率（%）");
         list.add(head7);
         List<String> head8 = new ArrayList<String>();
         head8.add("");
@@ -738,8 +738,8 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         head8.add("");
         head8.add("");
         head8.add("");
-        head8.add("整年度");
-        head8.add("目标完成率（%）\n");
+        head8.add("年度");
+        head8.add("目标完成率（%）");
         list.add(head8);
         List<String> head9 = new ArrayList<String>();
         head9.add("");
@@ -749,8 +749,8 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         head9.add("");
         head9.add("");
         head9.add("");
-        head9.add("整年度");
-        head9.add("平均目标完成率（%）\n");
+        head9.add("年度");
+        head9.add("平均目标完成率（%）");
         list.add(head9);
         if (1 == targetDecomposeDTO.getTimeDimension()) {
             // 动态列
@@ -762,7 +762,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             head10.add("");
             head10.add("");
             head10.add("");
-            head10.add("年度");
+            head10.add("整年度");
             head10.add("目标值");
             List<String> head11 = new ArrayList<String>();
             head11.add("");
@@ -772,7 +772,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             head11.add("");
             head11.add("");
             head11.add("");
-            head11.add("年度");
+            head11.add("整年度");
             head11.add("预测值");
             List<String> head12 = new ArrayList<String>();
             head12.add("");
@@ -782,7 +782,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             head12.add("");
             head12.add("");
             head12.add("");
-            head12.add("年度");
+            head12.add("整年度");
             head12.add("实际值");
             List<String> head13 = new ArrayList<String>();
             head13.add("");
@@ -792,7 +792,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             head13.add("");
             head13.add("");
             head13.add("");
-            head13.add("年度");
+            head13.add("整年度");
             head13.add("预测偏差率（%）");
             List<String> head14 = new ArrayList<String>();
             head14.add("");
@@ -802,7 +802,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             head14.add("");
             head14.add("");
             head14.add("");
-            head14.add("年度");
+            head14.add("整年度");
             head14.add("目标完成率（%）");
             list.add(head10);
             list.add(head11);
@@ -1913,7 +1913,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         data.add(cycleForecastDeviationSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOS.size())),10,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
                     }else {
                         //平均预测偏差率（%）
-                        data.add("0");
+                        data.add("0.00");
                     }
                 }
 
@@ -1929,7 +1929,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         data.add(cyclePercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOS.size())),10,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
                     }else {
                         //平均预测偏差率（%）
-                        data.add("0");
+                        data.add("0.00");
                     }
                 }
 

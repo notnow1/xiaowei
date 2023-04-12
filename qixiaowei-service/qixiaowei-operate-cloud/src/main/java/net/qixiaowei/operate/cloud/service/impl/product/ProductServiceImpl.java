@@ -928,8 +928,8 @@ public class ProductServiceImpl implements IProductService {
         //产品数据入参
         List<ProductSpecificationDataDTO> productSpecificationDataDTOList = new ArrayList<>();
         for (ProductDataDTO productDataDTO : productDataDTOList) {
-            for (ProductSpecificationDataDTO productSpecificationDataDTO : productDataDTO.getProductSpecificationDataDTOList()) {
-                productSpecificationDataDTOList.add(productSpecificationDataDTO);
+            if (StringUtils.isNotNull(productDataDTO) && StringUtils.isNotEmpty(productDataDTO.getProductSpecificationDataDTOList())){
+                productSpecificationDataDTOList.addAll(productDataDTO.getProductSpecificationDataDTOList());
             }
         }
         //查询数据库存在的产品数据
@@ -1413,7 +1413,7 @@ public class ProductServiceImpl implements IProductService {
         DictionaryTypeDTO dictionaryTypeDTO = dictionaryTypeDTOR.getData();
         if (StringUtils.isNotNull(dictionaryTypeDTO)) {
             R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByProduct(dictionaryTypeDTO.getDictionaryTypeId(), SecurityConstants.INNER);
-            dictionaryDataDTOList = listR.getData();
+            dictionaryDataDTOList = listR.getData().stream().filter(f ->f.getStatus() == 1).collect(Collectors.toList());
         }
         //新增list
         List<ProductExcel> successExcelList = new ArrayList<>();
@@ -1425,12 +1425,12 @@ public class ProductServiceImpl implements IProductService {
                 //返回报错信息
                 StringBuffer productErreo = new StringBuffer();
                 //根据产品code进行分组
-                Map<String, List<ProductExcel>> collect = list.parallelStream().collect(Collectors.groupingBy(ProductExcel::getProductCode, LinkedHashMap::new, Collectors.toList()));
+                Map<String, List<ProductExcel>> productExcelMap = list.parallelStream().collect(Collectors.groupingBy(ProductExcel::getProductCode, LinkedHashMap::new, Collectors.toList()));
 
-                for (String key : collect.keySet()) {
+                for (String key : productExcelMap.keySet()) {
                     Product product = new Product();
                     //分组后的数据
-                    List<ProductExcel> productExcels = collect.get(key);
+                    List<ProductExcel> productExcels = productExcelMap.get(key);
                     //产品规格参数集合
                     List<ProductSpecificationParam> productSpecificationParamList = new ArrayList<>();
                     //产品规格表
@@ -1495,11 +1495,15 @@ public class ProductServiceImpl implements IProductService {
                                         product.setProductCategory(productCategoryNames.get(0).getDictionaryDataId().toString());
                                     }
                                 }
-                                //是否上下架
-                                if (StringUtils.equals(listingFlag, "上架")) {
+                                if (StringUtils.isNotBlank(listingFlag)){
+                                    //是否上下架
+                                    if (StringUtils.equals(listingFlag, "上架")) {
+                                        product.setListingFlag(1);
+                                    } else if (StringUtils.equals(listingFlag, "下架")) {
+                                        product.setListingFlag(0);
+                                    }
+                                }else {
                                     product.setListingFlag(1);
-                                } else if (StringUtils.equals(listingFlag, "下架")) {
-                                    product.setListingFlag(0);
                                 }
                                 //产品描述
                                 product.setProductDescription(productExcels.get(i).getProductDescription());
@@ -1752,6 +1756,8 @@ public class ProductServiceImpl implements IProductService {
                             } else if (listingFlag == 1) {
                                 productExportExcel.setListingFlag("上架");
                             }
+                        }else {
+                            productExportExcel.setListingFlag("上架");
                         }
                         //产品描述
                         if (StringUtils.isNotBlank(productDescription)) {
@@ -1838,7 +1844,7 @@ public class ProductServiceImpl implements IProductService {
             if (i == 0) {
                 if (StringUtils.isNotEmpty(productCodeListData)) {
                     if (productCodeListData.contains(productCode)) {
-                        validEmployeeErreo.append("已存在该编码 不允许重复新增");
+                        validEmployeeErreo.append("已存在该编码 "+productCode+"不允许重复新增");
                     }
                 }
             }

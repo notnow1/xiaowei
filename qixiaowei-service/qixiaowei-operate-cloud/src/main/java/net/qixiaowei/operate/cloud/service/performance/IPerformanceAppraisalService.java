@@ -7,6 +7,7 @@ import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjec
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
@@ -425,4 +426,10 @@ public interface IPerformanceAppraisalService {
      * @return List
      */
     List<PerformanceAppraisalDTO> selectPerformanceAppraisalByRankIds(List<Long> performanceRankIds);
+
+    /**
+     * 获取人员信息
+     * @return 结果
+     */
+    List<EmployeeDTO> getEmployeeData();
 }

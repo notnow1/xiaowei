@@ -44,7 +44,7 @@ public class PostImportListener extends AnalysisEventListener<PostExcel>{
                 List<List<String>> list = new ArrayList<List<String>>();
                 // 第一列
                 List<String> head0 = new ArrayList<String>();
-                head0.add("\"说明：\n" +
+                head0.add("说明：\n" +
                         "1、带*为必填项\n" +
                         "2、岗位编码不可重复\n" +
                         "3、职级体系、岗位状态、适用组织为下拉选择，请勿填写其他内容\n" +
@@ -53,7 +53,7 @@ public class PostImportListener extends AnalysisEventListener<PostExcel>{
                 head0.add("岗位编码*");
                 // 第二列
                 List<String> head1 = new ArrayList<String>();
-                head1.add("\"说明：\n" +
+                head1.add("说明：\n" +
                         "1、带*为必填项\n" +
                         "2、岗位编码不可重复\n" +
                         "3、职级体系、岗位状态、适用组织为下拉选择，请勿填写其他内容\n" +
@@ -62,7 +62,7 @@ public class PostImportListener extends AnalysisEventListener<PostExcel>{
                 head1.add("岗位名称*");
                 // 第三列
                 List<String> head2 = new ArrayList<String>();
-                head2.add("\"说明：\n" +
+                head2.add("说明：\n" +
                         "1、带*为必填项\n" +
                         "2、岗位编码不可重复\n" +
                         "3、职级体系、岗位状态、适用组织为下拉选择，请勿填写其他内容\n" +
@@ -73,7 +73,7 @@ public class PostImportListener extends AnalysisEventListener<PostExcel>{
 
                 // 第四列
                 List<String> head3 = new ArrayList<String>();
-                head3.add("\"说明：\n" +
+                head3.add("说明：\n" +
                         "1、带*为必填项\n" +
                         "2、岗位编码不可重复\n" +
                         "3、职级体系、岗位状态、适用组织为下拉选择，请勿填写其他内容\n" +
@@ -82,7 +82,7 @@ public class PostImportListener extends AnalysisEventListener<PostExcel>{
                 head3.add("职级上限*");
                 // 第五列
                 List<String> head4 = new ArrayList<String>();
-                head4.add("\"说明：\n" +
+                head4.add("说明：\n" +
                         "1、带*为必填项\n" +
                         "2、岗位编码不可重复\n" +
                         "3、职级体系、岗位状态、适用组织为下拉选择，请勿填写其他内容\n" +
@@ -91,7 +91,7 @@ public class PostImportListener extends AnalysisEventListener<PostExcel>{
                 head4.add("职级下限*");
                 // 第六列
                 List<String> head5 = new ArrayList<String>();
-                head5.add("\"说明：\n" +
+                head5.add("说明：\n" +
                         "1、带*为必填项\n" +
                         "2、岗位编码不可重复\n" +
                         "3、职级体系、岗位状态、适用组织为下拉选择，请勿填写其他内容\n" +
@@ -102,7 +102,7 @@ public class PostImportListener extends AnalysisEventListener<PostExcel>{
 
                 // 第七列
                 List<String> head6 = new ArrayList<String>();
-                head6.add("\"说明：\n" +
+                head6.add("说明：\n" +
                         "1、带*为必填项\n" +
                         "2、岗位编码不可重复\n" +
                         "3、职级体系、岗位状态、适用组织为下拉选择，请勿填写其他内容\n" +

@@ -126,12 +126,10 @@ public class IndustryServiceImpl implements IIndustryService {
     @DataScope(businessAlias = "i1")
     @Override
     public List<IndustryDTO> selectIndustryPageList(IndustryDTO industryDTO) {
-        Long parentIndustryId = industryDTO.getParentIndustryId();
-        if (StringUtils.isNull(parentIndustryId)) {
-            industryDTO.setParentIndustryId(0L);
-        }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
+        Map<String, Object> params = industryDTO.getParams();
+        industry.setParams(params);
         return industryMapper.selectIndustryList(industry);
     }
 

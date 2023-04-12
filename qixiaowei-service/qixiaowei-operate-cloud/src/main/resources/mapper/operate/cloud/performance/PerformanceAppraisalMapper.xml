@@ -86,8 +86,8 @@
         <if test="performanceAppraisal.cycleType != null">
             and pa.cycle_type=#{performanceAppraisal.cycleType}
         </if>
-        <if test="performanceAppraisal.cycleType != null">
-            and pa.pa.evaluation_type,=#{performanceAppraisal.evaluationType}
+        <if test="performanceAppraisal.evaluationType != null">
+            and pa.evaluation_type,=#{performanceAppraisal.evaluationType}
         </if>
         <if test="performanceAppraisal.cycleNumber != null">
             and pa.cycle_number=#{performanceAppraisal.cycleNumber}
@@ -195,7 +195,7 @@
         <if test="performanceAppraisal.params.performanceRankIdEqual != null and performanceAppraisal.params.performanceRankIdEqual.size() > 0">
             AND pa.performance_rank_id IN
             <foreach item="item"
-                     collection="performanceAppraisal.params.appraisalNameEqual"
+                     collection="performanceAppraisal.params.performanceRankIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>

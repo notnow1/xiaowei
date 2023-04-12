@@ -76,18 +76,21 @@ public class TargetSettingExcel {
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "挑战值"})
     @ColumnWidth(16)
+    @ContentStyle(dataFormat = 2)
     private BigDecimal challengeValue;
     /**
      * 目标值
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "目标值"})
     @ColumnWidth(16)
+    @ContentStyle(dataFormat = 2)
     private BigDecimal targetValue;
     /**
      * 保底值
      */
     @ExcelProperty(value = {"币种：人民币     单位：万元", "保底值"})
     @ColumnWidth(16)
+    @ContentStyle(dataFormat = 2)
     private BigDecimal guaranteedValue;
     /**
      * 排序

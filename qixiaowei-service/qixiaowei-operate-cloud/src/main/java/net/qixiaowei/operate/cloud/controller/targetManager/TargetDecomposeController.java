@@ -961,8 +961,21 @@ public class TargetDecomposeController extends BaseController {
                             }
                             headWriteFont.setFontName("微软雅黑");
                             writeCellStyle.setWriteFont(headWriteFont);
-                            //靠左
-                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            if (context.getRowIndex() == 7){
+                                if (context.getColumnIndex()>1){
+                                    //居中
+                                    writeCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                                }
+                            }else {
+                                if (context.getRowIndex() > 8 && context.getColumnIndex()>1){
+                                    //靠左
+                                    writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                                }else {
+                                    //靠左
+                                    writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                }
+
+                            }
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                             //设置 自动换行

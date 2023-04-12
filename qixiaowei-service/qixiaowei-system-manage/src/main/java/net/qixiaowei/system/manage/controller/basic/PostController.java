@@ -36,6 +36,7 @@ import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
@@ -176,8 +177,10 @@ public class PostController extends BaseController {
    @RequiresPermissions("system:manage:post:import")
     @GetMapping("/export-template")
     public void exportEmployeeTemplate(HttpServletResponse response) {
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName();
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName(departmentDTO);
         if (StringUtils.isNull(parentDepartmentExcelNames)){
             throw new ServiceException("请先创建部门数据！");
         }
@@ -246,7 +249,7 @@ public class PostController extends BaseController {
                             font2.setFontHeightInPoints((short) 11);
                             font2.setColor(IndexedColors.BLACK.getIndex());
                             // 从哪到哪，你想设置成什么样的字体都行startIndex，endIndex
-                            richString.applyFont(3, 117, font2);
+                            richString.applyFont(3, 116, font2);
                             // 再设置回每个单元格里
                             cell.setCellValue(richString);
                         }

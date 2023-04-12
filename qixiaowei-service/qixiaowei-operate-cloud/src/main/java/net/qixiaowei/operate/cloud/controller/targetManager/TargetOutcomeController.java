@@ -13,7 +13,6 @@ import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
-import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
@@ -296,7 +295,6 @@ public class TargetOutcomeController extends BaseController {
                             } else {
                                 writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             }
-
                             // 拿到poi的workbook
                             Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                             // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -315,8 +313,11 @@ public class TargetOutcomeController extends BaseController {
                             cellData.setOriginCellStyle(xssfCellColorStyle);
                             cell.setCellStyle(cellStyle);
                         } else {
-                            //居左
-                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            if (context.getColumnIndex() > 1) {
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                            } else {
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            }
                             //设置 自动换行
                             writeCellStyle.setWrapped(true);
                             headWriteFont.setColor(IndexedColors.BLACK.getIndex());

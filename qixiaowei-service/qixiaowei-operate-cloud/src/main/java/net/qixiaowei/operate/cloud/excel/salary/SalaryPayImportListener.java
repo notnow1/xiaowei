@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -189,7 +190,7 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
             data3.add(salaryPayDTO.getPayYearMonth());
             for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
                 if (salaryPayDetailsDTO.getIsCondition() == 1) {
-                    data3.add(salaryPayDetailsDTO.getAmount());
+                    data3.add(salaryPayDetailsDTO.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
                 }
             }
             list.add(data3);
@@ -222,9 +223,9 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
                     List<Long> salaryItemIds = salaryPayDetailsDTOList.stream().map(SalaryPayDetailsDTO::getSalaryItemId).filter(Objects::nonNull).collect(Collectors.toList());
                     if (salaryItemIds.contains(salaryItemDTO.getSalaryItemId())) {
                         SalaryPayDetailsDTO salaryPayDetailsDTO = salaryPayDetailsDTOList.stream().filter(s -> s.getSalaryItemId().equals(salaryItemDTO.getSalaryItemId())).collect(Collectors.toList()).get(0);
-                        data.add(salaryPayDetailsDTO.getAmount());
+                        data.add(salaryPayDetailsDTO.getAmount().setScale(2, RoundingMode.HALF_UP).toString());
                     } else {
-                        data.add("0");
+                        data.add("0.00");
                     }
                 }
                 list.add(data);

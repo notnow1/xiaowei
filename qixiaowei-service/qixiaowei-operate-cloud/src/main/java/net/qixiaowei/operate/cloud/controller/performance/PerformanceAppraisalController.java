@@ -14,9 +14,7 @@ import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
-import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
-import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
@@ -32,6 +30,7 @@ import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalImportListener;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalColumnsService;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalService;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
@@ -258,14 +257,12 @@ public class PerformanceAppraisalController extends BaseController {
 //            throw new ServiceException("请选择考核流程");
 //        }
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
-        if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
-            throw new ServiceException("当前的绩效等级未配置 请先配置绩效等级");
-        }
+        List<EmployeeDTO> employeeData = performanceAppraisalService.getEmployeeData();
         Map<Integer, List<String>> selectMap = new HashMap<>();
         List<List<String>> head;
         String fileName;
 //        if (importType.equals(1)) {//系统流程
-        head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS);
+        head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData);
         fileName = URLEncoder.encode("组织绩效归档导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
 //        } else {
 //            head = PerformanceAppraisalImportListener.headOrgCustomTemplate(selectMap, performanceRankFactorDTOS);
@@ -325,18 +322,7 @@ public class PerformanceAppraisalController extends BaseController {
                             headWriteFont.setFontName("微软雅黑");
                             writeCellStyle.setWriteFont(headWriteFont);
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                            //设置rgb颜色
-                            byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
-                            XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
-                            xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
-                            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
-                            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                            // 由于这里没有指定data format 最后展示的数据 格式可能会不太正确
-                            // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
-                            // cell里面去 会导致自己设置的不一样（很关键）
                             cellData.setWriteCellStyle(writeCellStyle);
-                            cellData.setOriginCellStyle(xssfCellColorStyle);
-                            cell.setCellStyle(cellStyle);
                         } else {
                             //居左
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
@@ -391,15 +377,13 @@ public class PerformanceAppraisalController extends BaseController {
     @GetMapping("exportOrg")
     public void exportOrg(@RequestParam Long performanceAppraisalId, HttpServletResponse response) {
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
-        if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
-            throw new ServiceException("当前的绩效等级不存在 请联系管理员,检查绩效等级");
-        }
 //        Integer selfDefinedColumnsFlag = performanceRankFactorDTOS.get(0).getSelfDefinedColumnsFlag();
         Map<Integer, List<String>> selectMap = new HashMap<>();
         List<List<String>> head;
         Collection<List<Object>> list = performanceAppraisalService.dataOrgSysList(performanceAppraisalId, performanceRankFactorDTOS);
+        List<EmployeeDTO> employeeData = performanceAppraisalService.getEmployeeData();
 //        if (selfDefinedColumnsFlag == 0) {
-        head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS);
+        head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData);
 //        } else {
 //            List<PerformanceAppraisalColumnsDTO> appraisalColumnsDTOList = performanceAppraisalColumnsService.selectAppraisalColumnsByAppraisalId(performanceAppraisalId);
 //            head = PerformanceAppraisalImportListener.headOrgCustom(selectMap, performanceRankFactorDTOS, appraisalColumnsDTOList);
@@ -458,18 +442,7 @@ public class PerformanceAppraisalController extends BaseController {
                             headWriteFont.setFontName("微软雅黑");
                             writeCellStyle.setWriteFont(headWriteFont);
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                            //设置rgb颜色
-                            byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
-                            XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
-                            xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
-                            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
-                            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                            // 由于这里没有指定data format 最后展示的数据 格式可能会不太正确
-                            // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
-                            // cell里面去 会导致自己设置的不一样（很关键）
                             cellData.setWriteCellStyle(writeCellStyle);
-                            cellData.setOriginCellStyle(xssfCellColorStyle);
-                            cell.setCellStyle(cellStyle);
                         } else {
                             //居左
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
@@ -660,15 +633,11 @@ public class PerformanceAppraisalController extends BaseController {
 //            throw new ServiceException("请选择考核流程");
 //        }
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
-        if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
-            throw new ServiceException("当前的绩效等级不存在 请联系管理员");
-        }
         Map<Integer, List<String>> selectMap = new HashMap<>();
-        List<List<String>> head;
-        String fileName;
+        List<EmployeeDTO> employeeData = performanceAppraisalService.getEmployeeData();
 //        if (importType.equals(1)) {//系统流程
-        head = PerformanceAppraisalImportListener.headPerSystemTemplate(selectMap, performanceRankFactorDTOS);
-        fileName = URLEncoder.encode("个人绩效归档导入系统模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+        List<List<String>> head = PerformanceAppraisalImportListener.headPerSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData);
+        String fileName = URLEncoder.encode("个人绩效归档导入系统模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
 //        } else {
 //            head = PerformanceAppraisalImportListener.headPerCustomTemplate(selectMap, performanceRankFactorDTOS);
 //            fileName = URLEncoder.encode("个人绩效归档导入自定义模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
@@ -788,15 +757,13 @@ public class PerformanceAppraisalController extends BaseController {
     @GetMapping("exportPer")
     public void exportPer(@RequestParam Long performanceAppraisalId, HttpServletResponse response) {
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
-        if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
-            throw new ServiceException("当前的绩效等级不存在 请联系管理员,检查绩效等级");
-        }
+        List<EmployeeDTO> employeeData = performanceAppraisalService.getEmployeeData();
 //        Integer selfDefinedColumnsFlag = performanceRankFactorDTOS.get(0).getSelfDefinedColumnsFlag();
         Map<Integer, List<String>> selectMap = new HashMap<>();
         List<List<String>> head;
         Collection<List<Object>> list = performanceAppraisalService.dataPerSysList(performanceAppraisalId, performanceRankFactorDTOS);
 //        if (selfDefinedColumnsFlag == 0) {
-        head = PerformanceAppraisalImportListener.headPerSystemTemplate(selectMap, performanceRankFactorDTOS);
+        head = PerformanceAppraisalImportListener.headPerSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData);
 //        } else {
 //            List<PerformanceAppraisalColumnsDTO> appraisalColumnsDTOList = performanceAppraisalColumnsService.selectAppraisalColumnsByAppraisalId(performanceAppraisalId);
 //            head = PerformanceAppraisalImportListener.headPerCustom(selectMap, performanceRankFactorDTOS, appraisalColumnsDTOList);
