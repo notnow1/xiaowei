@@ -139,4 +139,12 @@ public interface IStrategyIndexDimensionService {
      * @return 真假
      */
     boolean initStrategyIndexDimension(Long userId);
+
+    /**
+     * 查询有效的树结构列表
+     *
+     * @param strategyIndexDimensionDTO 战略指标维度dto
+     * @return 结果
+     */
+    List<Tree<Long>> selectStrategyIndexDimensionEffectiveTreeList(StrategyIndexDimensionDTO strategyIndexDimensionDTO);
 }
