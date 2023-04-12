@@ -104,8 +104,6 @@ public class TargetSettingController extends BaseController {
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
                         //居中
                         writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                        //设置 自动换行
-                        writeCellStyle.setWrapped(true);
                         //设置边框
                         writeCellStyle.setBorderLeft(BorderStyle.THIN);
                         writeCellStyle.setBorderTop(BorderStyle.THIN);
@@ -222,6 +220,7 @@ public class TargetSettingController extends BaseController {
                         } else if (context.getRowIndex() >= 2 && context.getColumnIndex() > 0) {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                         }
+                        writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                     }
                 }).doWrite(targetSettingExcelList);
     }
@@ -291,8 +290,6 @@ public class TargetSettingController extends BaseController {
                         } else {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                         }
-                        //设置 自动换行
-//                        writeCellStyle.setWrapped(true);
                         //设置边框
                         writeCellStyle.setBorderLeft(BorderStyle.THIN);
                         writeCellStyle.setBorderTop(BorderStyle.THIN);
@@ -405,8 +402,6 @@ public class TargetSettingController extends BaseController {
                             WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
                             //居中parseAnalysisExcelDate
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                            //设置 自动换行
-                            writeCellStyle.setWrapped(true);
                             if (context.getRowIndex() < 2) {
                                 //设置边框
                                 writeCellStyle.setBorderLeft(BorderStyle.THIN);
@@ -503,9 +498,7 @@ public class TargetSettingController extends BaseController {
                                 WriteCellData<?> cellData = context.getFirstCellData();
                                 WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
                                 //居中parseAnalysisExcelDate
-                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                                //设置 自动换行
-                                writeCellStyle.setWrapped(true);
+                                //writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                                 //设置边框
                                 writeCellStyle.setBorderLeft(BorderStyle.THIN);
                                 writeCellStyle.setBorderTop(BorderStyle.THIN);
