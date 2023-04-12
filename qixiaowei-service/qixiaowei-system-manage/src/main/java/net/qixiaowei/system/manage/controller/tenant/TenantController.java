@@ -203,8 +203,15 @@ public class TenantController extends BaseController {
                             cellData.setOriginCellStyle(xssfCellColorStyle);
                             cell.setCellStyle(cellStyle);
                         } else {
+                            //设置边框
+                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                            writeCellStyle.setBorderTop(BorderStyle.THIN);
+                            writeCellStyle.setBorderRight(BorderStyle.THIN);
+                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
                             //居左
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            //垂直居中
+                            writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                             //设置 自动换行
                             writeCellStyle.setWrapped(true);
                             headWriteFont.setColor(IndexedColors.BLACK.getIndex());
