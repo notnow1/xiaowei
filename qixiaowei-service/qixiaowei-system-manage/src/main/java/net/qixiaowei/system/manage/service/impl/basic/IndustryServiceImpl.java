@@ -1032,6 +1032,16 @@ public class IndustryServiceImpl implements IIndustryService {
             industryDTOS.removeAll(removeIndustryDTOS);
         }
         //自定义属性名
+        return getTreeList(industryDTOS);
+    }
+
+    /**
+     * 获取树
+     *
+     * @param industryDTOS 列表
+     * @return 结果
+     */
+    private static List<Tree<Long>> getTreeList(List<IndustryDTO> industryDTOS) {
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         treeNodeConfig.setIdKey("industryId");
         treeNodeConfig.setNameKey("industryName");
@@ -1046,6 +1056,22 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.putExtra("status", treeNode.getStatus());
             tree.putExtra("statusFlag", treeNode.getStatus() != 1);
         });
+    }
+
+    /**
+     * 查询行业树结构列表
+     *
+     * @param industryDTO 行业
+     * @return 结果
+     */
+    @Override
+    public List<Tree<Long>> selectIndustryEffectiveTreeList(IndustryDTO industryDTO) {
+        Integer status = industryDTO.getStatus();
+        if (StringUtils.isNull(status)) {
+            throw new ServiceException("请传入状态");
+        }
+        List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(new Industry().setStatus(status));
+        return getTreeList(industryDTOS);
     }
 }
 
