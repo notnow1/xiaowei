@@ -136,7 +136,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
                 }
             }
         }
-        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionRootList(new StrategyIndexDimensionDTO());
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionAllRootList(new StrategyIndexDimensionDTO());
         for (StrategyMeasureDetailVO strategyMeasureDetailVO : strategyMeasureDetailVOS) {
             for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
                 if (strategyIndexDimensionDTO.getStrategyIndexDimensionId().equals(strategyMeasureDetailVO.getStrategyIndexDimensionId())) {
