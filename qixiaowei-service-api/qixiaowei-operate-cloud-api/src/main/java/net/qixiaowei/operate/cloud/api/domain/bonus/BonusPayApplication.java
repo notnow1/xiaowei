@@ -84,14 +84,7 @@ public class BonusPayApplication extends TenantEntity {
      * 预算部门不等于
      */
     private String budgetDepartmentIdsNotEqual;
-    /**
-     * 预算部门包含
-     */
-    private String budgetDepartmentIdsLike;
-    /**
-     * 预算部门不包含
-     */
-    private String budgetDepartmentIdsNotLike;
+
     /**
      * 预算部门ID集合
      */

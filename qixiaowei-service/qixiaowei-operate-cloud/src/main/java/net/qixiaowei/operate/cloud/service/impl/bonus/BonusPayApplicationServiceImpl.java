@@ -252,7 +252,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 bonusPayApplicationDTO.setBudgetDepartmentIds(departmentIds);
             }
         }
-        BeanUtils.copyProperties(bonusPayApplicationDTO, bonusPayApplication);
+
         if (StringUtils.isNotEmpty(bonusPayApplicationDTO.getParams())){
             for (String key : bonusPayApplicationDTO.getParams().keySet()) {
                 switch (key) {
@@ -262,16 +262,11 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     case "budgetDepartmentIdNotEqual":
                         bonusPayApplication.setBudgetDepartmentIdsNotEqual( bonusPayApplicationDTO.getParams().get("budgetDepartmentIdNotEqual").toString().replace("[", "").replace("]", "").replace(";",",").replaceAll(" ",""));
                         break;
-                    case "budgetDepartmentIdLike":
-                        bonusPayApplication.setBudgetDepartmentIdsLike(bonusPayApplicationDTO.getParams().get("budgetDepartmentIdLike").toString().replace("[", "").replace("]", "").replace(";",",").replaceAll(" ",""));
-                        break;
-                    case "budgetDepartmentIdNotLike":
-                        bonusPayApplication.setBudgetDepartmentIdsNotLike(bonusPayApplicationDTO.getParams().get("budgetDepartmentIdNotLike").toString().replace("[", "").replace("]", "").replace(";",",").replaceAll(" ",""));
-                        break;
                     default:break;
                 }
             }
         }
+        BeanUtils.copyProperties(bonusPayApplicationDTO, bonusPayApplication);
             List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.selectBonusPayApplicationList(bonusPayApplication);
         if (StringUtils.isNotEmpty(bonusPayApplicationDTOS)) {
             //预算id集合

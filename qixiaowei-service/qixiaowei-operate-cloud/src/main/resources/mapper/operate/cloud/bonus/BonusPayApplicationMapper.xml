@@ -215,16 +215,38 @@
            '${bonusPayApplication.budgetDepartmentIdsNotEqual}'
             or bpa.apply_department_id is null)
         </if>
-        <!-- 预算部门高级过滤  -->
+<!--        &lt;!&ndash; 预算部门高级过滤  &ndash;&gt;
         <if test="bonusPayApplication.params.budgetDepartmentIdLike != null and bonusPayApplication.params.budgetDepartmentIdLike.size() > 0">
             AND (select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id) like
             '${bonusPayApplication.budgetDepartmentIdsLike}'
         </if>
-        <!-- 预算部门高级过滤  -->
+        &lt;!&ndash; 预算部门高级过滤  &ndash;&gt;
         <if test="bonusPayApplication.params.budgetDepartmentIdNotLike != null and bonusPayApplication.params.budgetDepartmentIdNotLike.size() > 0">
         AND ((select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id) NOT like
         '${bonusPayApplication.budgetDepartmentIdsNotLike}'
         or bpa.apply_department_id is null)
+        </if>-->
+
+        <!-- 预算部门高级过滤  -->
+        <if test="bonusPayApplication.params.budgetDepartmentIdLike != null and bonusPayApplication.params.budgetDepartmentIdLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="bonusPayApplication.params.budgetDepartmentIdLike"
+                     index="index" open="(" separator="AND" close=")">
+                find_in_set(#{item},
+                (select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id))
+            </foreach>
+        </if>
+        <!-- 预算部门高级过滤  -->
+        <if test="bonusPayApplication.params.budgetDepartmentIdNotLike != null and bonusPayApplication.params.budgetDepartmentIdNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="bonusPayApplication.params.budgetDepartmentIdLike"
+                     index="index" open="(" separator="AND" close=")">
+                (!find_in_set(#{item},
+                (select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id))
+                or bpa.apply_department_id is null)
+            </foreach>
         </if>
         <!-- 获奖时间过滤  -->
         <if test="bonusPayApplication.params.awardYearMonthEqual != null and bonusPayApplication.params.awardYearMonthEqual.size() > 0">
