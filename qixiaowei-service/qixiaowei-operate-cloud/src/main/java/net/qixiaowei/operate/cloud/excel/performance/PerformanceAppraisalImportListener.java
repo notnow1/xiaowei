@@ -11,6 +11,7 @@ import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColum
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -46,12 +47,16 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
      *
      * @return List
      */
-    public static List<List<String>> headOrgSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS) {
-        List<String> listSelect = new ArrayList<>();
+    public static List<List<String>> headOrgSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS, List<EmployeeDTO> employeeData) {
+        List<String> listSelectTwo = new ArrayList<>();
         for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
-            listSelect.add(performanceRankFactorDTO.getPerformanceRankName());
+            listSelectTwo.add(performanceRankFactorDTO.getPerformanceRankName());
         }
-        listSelect.add("不考核");
+        listSelectTwo.add("不考核");
+        List<String> listSelectThree = new ArrayList<>();
+        for (EmployeeDTO employeeDatum : employeeData) {
+            listSelectThree.add(employeeDatum.getEmployeeName() + "（" + employeeDatum.getEmployeeCode() + "）");
+        }
         List<List<String>> list = new ArrayList<List<String>>();
         // 第1列
         List<String> head0 = new ArrayList<String>();
@@ -62,10 +67,11 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
         // 第2列
         List<String> head2 = new ArrayList<String>();
         head2.add("考核结果*");
-        selectMap.put(2, listSelect);
+        selectMap.put(2, listSelectTwo);
         // 第3列
         List<String> head3 = new ArrayList<String>();
         head3.add("考核责任人");
+        selectMap.put(3, listSelectThree);
         // 第4列
         List<String> head4 = new ArrayList<String>();
         head4.add("备注");
@@ -189,14 +195,18 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
     /**
      * 个人绩效归档导入系统模板
      *
-     * @return
+     * @return 结果
      */
-    public static List<List<String>> headPerSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS) {
-        List<String> listSelect = new ArrayList<>();
+    public static List<List<String>> headPerSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS, List<EmployeeDTO> employeeData) {
+        List<String> listSelectSix = new ArrayList<>();
         for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
-            listSelect.add(performanceRankFactorDTO.getPerformanceRankName());
+            listSelectSix.add(performanceRankFactorDTO.getPerformanceRankName());
         }
-        listSelect.add("不考核");
+        listSelectSix.add("不考核");
+        List<String> listSelectSeven = new ArrayList<>();
+        for (EmployeeDTO employeeDatum : employeeData) {
+            listSelectSeven.add(employeeDatum.getEmployeeName() + "（" + employeeDatum.getEmployeeCode() + "）");
+        }
         List<List<String>> list = new ArrayList<List<String>>();
         // 第1列
         List<String> head0 = new ArrayList<String>();
@@ -218,11 +228,12 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
         head5.add("评议总分数");
         // 第4列
         List<String> head6 = new ArrayList<String>();
-        selectMap.put(6, listSelect);
+        selectMap.put(6, listSelectSix);
         head6.add("考核结果*");
         // 第4列
         List<String> head7 = new ArrayList<String>();
-        head7.add("考核责任人姓名");
+        selectMap.put(7, listSelectSeven);
+        head7.add("考核责任人");
         // 第4列
         List<String> head8 = new ArrayList<String>();
         head8.add("备注");
@@ -433,7 +444,7 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
             List<Object> data = new ArrayList<Object>();
             if (appraisalDTO.getAppraisalObject() == 1) {
-                data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());
+                data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName() + "（" + performanceAppraisalObjectsDTO.getAppraisalObjectCode() + "）");
             } else {
                 data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());
                 data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());

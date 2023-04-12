@@ -112,7 +112,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<String> head4 = new ArrayList<String>();
         head4.add("币种：人民币     单位：万元");
         head4.add("期末应收账款余额");
-        head4.add("实际值");
+        head4.add("保底值");
         // 逾期清理
         List<String> head5 = new ArrayList<String>();
         head5.add("币种：人民币     单位：万元");
@@ -127,7 +127,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<String> head7 = new ArrayList<String>();
         head7.add("币种：人民币     单位：万元");
         head7.add("回款总目标");
-        head7.add("实际值");
+        head7.add("保底值");
         // 第三列
         List<String> head8 = new ArrayList<String>();
         head8.add("币种：人民币     单位：万元");
@@ -142,7 +142,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<String> head10 = new ArrayList<String>();
         head10.add("币种：人民币     单位：万元");
         head10.add("1.应回尽回");
-        head10.add("实际值");
+        head10.add("保底值");
         // 第六列
         List<String> head11 = new ArrayList<String>();
         head11.add("币种：人民币     单位：万元");
@@ -157,7 +157,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<String> head13 = new ArrayList<String>();
         head13.add("币种：人民币     单位：万元");
         head13.add("2.逾期清理");
-        head13.add("实际值");
+        head13.add("保底值");
         // 第七列
         List<String> head14 = new ArrayList<String>();
         head14.add("币种：人民币     单位：万元");
@@ -172,7 +172,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         List<String> head16 = new ArrayList<String>();
         head16.add("币种：人民币     单位：万元");
         head16.add("3.提前回款");
-        head16.add("实际值");
+        head16.add("保底值");
         list.add(head0);
         list.add(head1);
         list.add(head2);
