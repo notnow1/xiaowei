@@ -250,8 +250,7 @@ public class EmployeeController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            //设置 自动换行
-                            writeCellStyle.setWrapped(true);
+
                             //设置边框
                             writeCellStyle.setBorderLeft(BorderStyle.THIN);
                             writeCellStyle.setBorderTop(BorderStyle.THIN);
@@ -278,8 +277,6 @@ public class EmployeeController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            //设置 自动换行
-                            writeCellStyle.setWrapped(true);
                             headWriteFont.setColor(IndexedColors.BLACK.getIndex());
                             headWriteFont.setFontHeightInPoints((short) 11);
                             headWriteFont.setFontName("微软雅黑");
