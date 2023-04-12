@@ -372,15 +372,15 @@ public class SalaryPayController extends BaseController {
             String fileName = URLEncoder.encode("经营云-月度工资数据管理导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                     , CharsetKit.UTF_8);
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
-            WriteSheet sheet = EasyExcel
-                    .writerSheet(0, "Sheet1")
+            EasyExcel.write(response.getOutputStream())
+                    .inMemory(true)
+                    .sheet(0, "月度工资条导入")
                     .useDefaultStyle(false)
                     .head(headTemplate)
                     .registerWriteHandler(new SheetWriteHandler() {
                         @Override
                         public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
-                            for (int i = 0; i < 6; i++) {
+                            for (int i = 0; i < 16; i++) {
                                 // 设置为文本格式
                                 Sheet sheet = writeSheetHolder.getSheet();
                                 CellStyle cellStyle = writeWorkbookHolder.getCachedWorkbook().createCellStyle();
@@ -464,9 +464,7 @@ public class SalaryPayController extends BaseController {
                             sheet.setDefaultRowHeight((short) (20 * 16));
                         }
                     })
-                    .build();
-            excelWriter.write(new ArrayList<>(), sheet);
-            excelWriter.finish();
+                    .doWrite(new ArrayList<>());
         } catch (IOException e) {
             throw new ServiceException("导出失败");
         }
