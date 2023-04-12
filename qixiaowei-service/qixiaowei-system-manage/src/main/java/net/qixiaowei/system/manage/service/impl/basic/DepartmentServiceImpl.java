@@ -1047,16 +1047,30 @@ public class DepartmentServiceImpl implements IDepartmentService {
         List<DepartmentDTO> departmentDTOList = new ArrayList<>();
         //根据id查询所有子级数据
         departmentDTOList = departmentMapper.selectAncestors(department.getDepartmentId());
-
+        if (StringUtils.isNotEmpty(departmentDTOList)){
+            throw new ServiceException("该部门存在子部门，请先删除子部门");
+        }
+/*        查子级并删除子级
         List<DepartmentDTO> departmentDTOList12 = departmentDTOList.stream().distinct().collect(Collectors.toList());
         if (StringUtils.isNotEmpty(departmentDTOList12)) {
-            List<Long> departmentIdList = departmentDTOList.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            this.quoteDepartment(departmentIdList, officialRankDecomposeerreo, employeeBudgetErreo, bonusPayApplicationErreo, employeeAnnualBonusErreo, posterreo, emplerreo, decomposesErreo, empSalaryAdjustPlanErreo);
-            //战略云引用
-            isStrategyQuote(departmentIdList);
-        }
+        List<Long> departmentIdList = departmentDTOList.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+
+        }*/
+        List<Long> departmentIdList =new ArrayList<>();
+        departmentIdList.add(departmentDTO.getDepartmentId());
+        //经营云以及基础配置引用
+        this.quoteDepartment(departmentIdList, officialRankDecomposeerreo, employeeBudgetErreo, bonusPayApplicationErreo, employeeAnnualBonusErreo, posterreo, emplerreo, decomposesErreo, empSalaryAdjustPlanErreo);
+        //战略云引用
+        this.isStrategyQuote(departmentIdList);
         //将错误信息放在一个字符串中
-        depterreo.append(posterreo).append(emplerreo).append(decomposesErreo).append(employeeBudgetErreo).append(bonusPayApplicationErreo).append(employeeAnnualBonusErreo).append(officialRankDecomposeerreo).append(empSalaryAdjustPlanErreo);
+        depterreo.append(posterreo)
+                .append(emplerreo)
+                .append(decomposesErreo)
+                .append(employeeBudgetErreo)
+                .append(bonusPayApplicationErreo)
+                .append(employeeAnnualBonusErreo)
+                .append(officialRankDecomposeerreo)
+                .append(empSalaryAdjustPlanErreo);
         if (depterreo.length() > 0) {
             throw new ServiceException(depterreo.toString());
         } else {
@@ -1070,7 +1084,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             try {
                 departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
             } catch (Exception e) {
-                throw new ServiceException("删除组织关联表失败");
+                throw new ServiceException("删除组织关联信息失败");
             }
         }
         return i;
