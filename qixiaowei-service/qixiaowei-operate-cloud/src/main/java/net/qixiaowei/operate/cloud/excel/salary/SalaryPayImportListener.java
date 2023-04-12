@@ -125,23 +125,19 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
         List<List<String>> list = new ArrayList<List<String>>();
         // 第一列
         List<String> head0 = new ArrayList<String>();
-        head0.add("员工工号");
-        head0.add("文本字段，填充员工工号");
-        // 第二列
-        List<String> head1 = new ArrayList<String>();
-        head1.add("发薪年月");
-        head1.add("格式：YYYY/MM");
+        head0.add("员工工号*");
         // 第一列
+        List<String> head1 = new ArrayList<String>();
+        head1.add("员工姓名*");
+        // 第二列
         List<String> head2 = new ArrayList<String>();
-        head2.add("员工姓名");
-        head2.add("文本字段，填充员工姓名");
+        head2.add("发薪年月*");
         list.add(head0);
-        list.add(head2);
         list.add(head1);
+        list.add(head2);
         for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
             list.add(new ArrayList<String>() {{
                 add(salaryItemDTO.getThirdLevelItem());
-                add(" 展示所有生效的工资条配置，若为0则可以不填写");
             }});
         }
         return list;
