@@ -54,6 +54,14 @@ public class StrategyIndexDimensionController extends BaseController {
     }
 
     /**
+     * 分页查询战略指标维度表列表
+     */
+    @GetMapping("/effectiveTreeList")
+    public AjaxResult effectiveTreeList(StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
+        return AjaxResult.success(strategyIndexDimensionService.selectStrategyIndexDimensionEffectiveTreeList(strategyIndexDimensionDTO));
+    }
+
+    /**
      * 查询战略指标维度表列表
      */
     @GetMapping("/list")

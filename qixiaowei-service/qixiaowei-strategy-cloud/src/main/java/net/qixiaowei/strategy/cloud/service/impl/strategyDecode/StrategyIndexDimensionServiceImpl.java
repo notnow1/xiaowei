@@ -117,7 +117,16 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
                 entity.setCreateByName(employeeNameMap.get(userId));
             });
         }
-        //自定义属性名
+        return getTreeList(list);
+    }
+
+    /**
+     * 获取树结构
+     *
+     * @param list 列表
+     * @return 结果
+     */
+    private static List<Tree<Long>> getTreeList(List<StrategyIndexDimensionDTO> list) {
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         treeNodeConfig.setIdKey("strategyIndexDimensionId");
         treeNodeConfig.setNameKey("indexDimensionName");
@@ -137,6 +146,22 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
                     tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
                 }
         );
+    }
+
+    /**
+     * 查询有效的树结构列表
+     *
+     * @param strategyIndexDimensionDTO 战略指标维度dto
+     * @return 结果
+     */
+    @Override
+    public List<Tree<Long>> selectStrategyIndexDimensionEffectiveTreeList(StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
+        Integer status = strategyIndexDimensionDTO.getStatus();
+        if (StringUtils.isNull(status)) {
+            throw new ServiceException("请传入状态");
+        }
+        List<StrategyIndexDimensionDTO> list = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(new StrategyIndexDimension().setStatus(status));
+        return getTreeList(list);
     }
 
     /**

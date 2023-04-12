@@ -51,6 +51,15 @@ public class IndustryController extends BaseController {
     }
 
     /**
+     * 查询行业树结构列表
+     */
+    @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
+    @GetMapping("/effectiveTreeList")
+    public AjaxResult effectiveTreeList(IndustryDTO industryDTO) {
+        return AjaxResult.success(industryService.selectIndustryEffectiveTreeList(industryDTO));
+    }
+
+    /**
      * 获取上级行业
      */
     @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
