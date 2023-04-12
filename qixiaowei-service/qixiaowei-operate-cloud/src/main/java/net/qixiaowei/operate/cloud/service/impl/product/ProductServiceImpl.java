@@ -936,15 +936,20 @@ public class ProductServiceImpl implements IProductService {
             productSpecificationDataMapper.logicDeleteProductSpecificationDataByProductSpecificationDataIds(collect, SecurityUtils.getUserId(), DateUtils.getNowDate());
         }
 
-        //去除已经删除的id
-        for (int i = 0; i < productDataDTOList.size(); i++) {
-            List<ProductSpecificationDataDTO> productSpecificationDataDTOList1 = productDataDTOList.get(i).getProductSpecificationDataDTOList();
-            for (int i1 = 0; i1 < productSpecificationDataDTOList1.size(); i1++) {
-                if (collect.contains(productSpecificationDataDTOList1.get(i1).getProductSpecificationDataId())) {
-                    productSpecificationDataDTOList1.remove(i1);
+        if (StringUtils.isNotEmpty(productDataDTOList)){
+            //去除已经删除的id
+            for (int i = 0; i < productDataDTOList.size(); i++) {
+                List<ProductSpecificationDataDTO> productSpecificationDataDTOList1 = productDataDTOList.get(i).getProductSpecificationDataDTOList();
+                if (StringUtils.isNotEmpty(productSpecificationDataDTOList1)){
+                    for (int i1 = 0; i1 < productSpecificationDataDTOList1.size(); i1++) {
+                        if (collect.contains(productSpecificationDataDTOList1.get(i1).getProductSpecificationDataId())) {
+                            productSpecificationDataDTOList1.remove(i1);
+                        }
+                    }
                 }
             }
         }
+
 
         //新增
         List<ProductSpecificationData> productSpecificationDataAddList = new ArrayList<>();
@@ -953,26 +958,28 @@ public class ProductServiceImpl implements IProductService {
         if (!StringUtils.isEmpty(productDataDTOList)) {
             for (int i = 0; i < productDataDTOList.size(); i++) {
                 List<ProductSpecificationDataDTO> productSpecificationDataDTOList1 = productDataDTOList.get(i).getProductSpecificationDataDTOList();
-                for (int i1 = 0; i1 < productSpecificationDataDTOList1.size(); i1++) {
-                    ProductSpecificationData productSpecificationData = new ProductSpecificationData();
-                    BeanUtils.copyProperties(productSpecificationDataDTOList1.get(i1), productSpecificationData);
-                    if (null == productSpecificationDataDTOList1.get(i1).getProductSpecificationDataId()) {
-                        //产品id
-                        productSpecificationData.setProductId(productDTO.getProductId());
-                        //产品规格id
-                        productSpecificationData.setProductSpecificationId(productDataDTOList.get(i).getProductSpecificationId());
-                        //产品参数id
-                        productSpecificationData.setProductSpecificationParamId(productSpecificationParamList.get(i1).getProductSpecificationParamId());
-                        productSpecificationData.setCreateBy(SecurityUtils.getUserId());
-                        productSpecificationData.setCreateTime(DateUtils.getNowDate());
-                        productSpecificationData.setUpdateTime(DateUtils.getNowDate());
-                        productSpecificationData.setUpdateBy(SecurityUtils.getUserId());
-                        productSpecificationData.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                        productSpecificationDataAddList.add(productSpecificationData);
-                    } else {
-                        productSpecificationData.setUpdateTime(DateUtils.getNowDate());
-                        productSpecificationData.setUpdateBy(SecurityUtils.getUserId());
-                        productSpecificationDataUpdateList.add(productSpecificationData);
+                if (StringUtils.isNotEmpty(productSpecificationDataDTOList1)){
+                    for (int i1 = 0; i1 < productSpecificationDataDTOList1.size(); i1++) {
+                        ProductSpecificationData productSpecificationData = new ProductSpecificationData();
+                        BeanUtils.copyProperties(productSpecificationDataDTOList1.get(i1), productSpecificationData);
+                        if (null == productSpecificationDataDTOList1.get(i1).getProductSpecificationDataId()) {
+                            //产品id
+                            productSpecificationData.setProductId(productDTO.getProductId());
+                            //产品规格id
+                            productSpecificationData.setProductSpecificationId(productDataDTOList.get(i).getProductSpecificationId());
+                            //产品参数id
+                            productSpecificationData.setProductSpecificationParamId(productSpecificationParamList.get(i1).getProductSpecificationParamId());
+                            productSpecificationData.setCreateBy(SecurityUtils.getUserId());
+                            productSpecificationData.setCreateTime(DateUtils.getNowDate());
+                            productSpecificationData.setUpdateTime(DateUtils.getNowDate());
+                            productSpecificationData.setUpdateBy(SecurityUtils.getUserId());
+                            productSpecificationData.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                            productSpecificationDataAddList.add(productSpecificationData);
+                        } else {
+                            productSpecificationData.setUpdateTime(DateUtils.getNowDate());
+                            productSpecificationData.setUpdateBy(SecurityUtils.getUserId());
+                            productSpecificationDataUpdateList.add(productSpecificationData);
+                        }
                     }
                 }
             }
