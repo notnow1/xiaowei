@@ -168,6 +168,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                         HashMap<String, Object> areaMap = new HashMap<>();
                         areaMap.put("rankDecomposeDimension", area.getAreaId().toString());
                         areaMap.put("rankDecomposeDimensionName", area.getAreaName());
+                        areaMap.put("status", 1);
                         dropList.add(areaMap);
                     }
                     return dropList;
@@ -180,6 +181,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                         HashMap<String, Object> regionMap = new HashMap<>();
                         regionMap.put("rankDecomposeDimension", region.getRegionId().toString());
                         regionMap.put("rankDecomposeDimensionName", region.getRegionName());
+                        regionMap.put("status", 1);
                         dropList.add(regionMap);
                     }
                     return dropList;
@@ -195,6 +197,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                         HashMap<String, Object> productMap = new HashMap<>();
                         productMap.put("rankDecomposeDimension", product.getProductId().toString());
                         productMap.put("rankDecomposeDimensionName", product.getProductName());
+                        productMap.put("status", 1);
                         dropList.add(productMap);
                     }
                     return dropList;
