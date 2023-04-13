@@ -413,17 +413,20 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         String ancestors = "";//仅在非一级指标时有用
         Long parentIndicatorId = 0L;
-        if (StringUtils.isNotNull(indicatorDTO.getParentIndicatorId()) && !indicatorDTO.getParentIndicatorId().equals(0L)) {
+        if (StringUtils.isNotNull(indicatorDTO.getParentIndicatorId())) {
             parentIndicatorId = indicatorDTO.getParentIndicatorId();
             IndicatorDTO parentIndicator = indicatorMapper.selectIndicatorByIndicatorId(parentIndicatorId);
-            if (StringUtils.isNull(parentIndicator) && !parentIndicatorId.equals(0L)) {
+            if (parentIndicator == null && !parentIndicatorId.equals(0L)) {
                 throw new ServiceException("上级指标不存在");
             }
-            ancestors = parentIndicator.getAncestors();
-            if (StringUtils.isNotEmpty(ancestors)) {
-                ancestors = ancestors + ",";
+            if (!indicatorById.getParentIndicatorId().equals(parentIndicatorId) && !parentIndicatorId.equals(0L)) {
+                // 路径修改
+                ancestors = parentIndicator.getAncestors();
+                if (StringUtils.isNotEmpty(ancestors)) {
+                    ancestors = ancestors + ",";
+                }
+                ancestors = ancestors + parentIndicatorId;
             }
-            ancestors = ancestors + parentIndicatorId;
         }
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
