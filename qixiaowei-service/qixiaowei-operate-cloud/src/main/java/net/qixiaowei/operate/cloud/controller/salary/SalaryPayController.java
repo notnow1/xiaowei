@@ -380,7 +380,7 @@ public class SalaryPayController extends BaseController {
                     .registerWriteHandler(new SheetWriteHandler() {
                         @Override
                         public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
-                            for (int i = 0; i < 16; i++) {
+                            for (int i = 0; i < salaryItemDTOS1.size() + 3; i++) {
                                 // 设置为文本格式
                                 Sheet sheet = writeSheetHolder.getSheet();
                                 CellStyle cellStyle = writeWorkbookHolder.getCachedWorkbook().createCellStyle();
