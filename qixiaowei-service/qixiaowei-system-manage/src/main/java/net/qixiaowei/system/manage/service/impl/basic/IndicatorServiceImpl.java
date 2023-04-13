@@ -413,7 +413,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         String ancestors = "";//仅在非一级指标时有用
         Long parentIndicatorId = 0L;
-        if (StringUtils.isNotNull(indicatorDTO.getParentIndicatorId())) {
+        if (StringUtils.isNotNull(indicatorDTO.getParentIndicatorId()) && !indicatorDTO.getParentIndicatorId().equals(0L)) {
             parentIndicatorId = indicatorDTO.getParentIndicatorId();
             IndicatorDTO parentIndicator = indicatorMapper.selectIndicatorByIndicatorId(parentIndicatorId);
             if (StringUtils.isNull(parentIndicator) && !parentIndicatorId.equals(0L)) {
