@@ -156,8 +156,6 @@ public class TargetDecomposeController extends BaseController {
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
                         //靠左
                         writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                        //设置 自动换行
-                        writeCellStyle.setWrapped(true);
                         if (context.getRowIndex() < 2) {
                             //设置边框
                             writeCellStyle.setBorderLeft(BorderStyle.THIN);
@@ -281,7 +279,6 @@ public class TargetDecomposeController extends BaseController {
                         //靠左
                         writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                         //设置 自动换行
-                        writeCellStyle.setWrapped(true);
                         if (context.getRowIndex() < 2) {
                             //设置边框
                             writeCellStyle.setBorderLeft(BorderStyle.THIN);
@@ -404,8 +401,6 @@ public class TargetDecomposeController extends BaseController {
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
                         //靠左
                         writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                        //设置 自动换行
-                        writeCellStyle.setWrapped(true);
                         if (context.getRowIndex() < 2) {
                             //设置边框
                             writeCellStyle.setBorderLeft(BorderStyle.THIN);
@@ -555,8 +550,6 @@ public class TargetDecomposeController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            //设置 自动换行
-                            writeCellStyle.setWrapped(true);
                             //设置边框
                             writeCellStyle.setBorderLeft(BorderStyle.THIN);
                             writeCellStyle.setBorderTop(BorderStyle.THIN);
@@ -587,14 +580,12 @@ public class TargetDecomposeController extends BaseController {
                             if (context.getColumnIndex() > 2) {
                                 //靠右边
                                 writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
-                            }else {
+                            } else {
                                 //靠左
                                 writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             }
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            //设置 自动换行
-                            writeCellStyle.setWrapped(true);
                             //设置边框
                             writeCellStyle.setBorderLeft(BorderStyle.THIN);
                             writeCellStyle.setBorderTop(BorderStyle.THIN);
@@ -714,8 +705,6 @@ public class TargetDecomposeController extends BaseController {
                         WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
                         //居中
                         contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
-                        //设置 自动换行
-                        contentWriteCellStyle.setWrapped(true);
                         // 字体策略
                         WriteFont contentWriteFont = new WriteFont();
                         // 字体大小
@@ -928,8 +917,6 @@ public class TargetDecomposeController extends BaseController {
                                 writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                                 //垂直居中
                                 writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                                //设置 自动换行
-                                writeCellStyle.setWrapped(true);
                                 //设置边框
                                 writeCellStyle.setBorderLeft(BorderStyle.THIN);
                                 writeCellStyle.setBorderTop(BorderStyle.THIN);
@@ -961,16 +948,16 @@ public class TargetDecomposeController extends BaseController {
                             }
                             headWriteFont.setFontName("微软雅黑");
                             writeCellStyle.setWriteFont(headWriteFont);
-                            if (context.getRowIndex() == 7){
-                                if (context.getColumnIndex()>1){
+                            if (context.getRowIndex() == 7) {
+                                if (context.getColumnIndex() > 1) {
                                     //居中
                                     writeCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
                                 }
-                            }else {
-                                if (context.getRowIndex() > 8 && context.getColumnIndex()>1){
+                            } else {
+                                if (context.getRowIndex() > 8 && context.getColumnIndex() > 1) {
                                     //靠左
                                     writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
-                                }else {
+                                } else {
                                     //靠左
                                     writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                                 }
@@ -978,8 +965,7 @@ public class TargetDecomposeController extends BaseController {
                             }
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            //设置 自动换行
-                            writeCellStyle.setWrapped(true);
+
                             if (context.getRowIndex() > 6) {
                                 //设置边框
                                 writeCellStyle.setBorderLeft(BorderStyle.THIN);
@@ -1017,10 +1003,7 @@ public class TargetDecomposeController extends BaseController {
                         int columnIndex = cell.getColumnIndex();
                         // 列宽16
                         sheet.setColumnWidth(columnIndex, (270 * 16));
-                        if (columnIndex == 4) {
-                            sheet.setColumnWidth(columnIndex, (270 * 22));
-                        }
-                        // 行高7
+                        // 行高20
                         sheet.setDefaultRowHeight((short) (20 * 15));
                     }
                 })
@@ -1132,19 +1115,164 @@ public class TargetDecomposeController extends BaseController {
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
                 .head(head)// 设置表头
-                .sheet("自定义目标分解详情")// 设置 sheet 的名字
-                // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .inMemory(true)
+                .useDefaultStyle(false)
+                .sheet(targetDecomposeDTO.getIndicatorName() + "目标分解详情")// 设置 sheet 的名字
+                .registerWriteHandler(new SheetWriteHandler() {
+                    @Override
+                    public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
+                        for (int i = 0; i < 100; i++) {
+                            // 设置为文本格式
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            CellStyle cellStyle = writeWorkbookHolder.getCachedWorkbook().createCellStyle();
+                            // 49为文本格式
+                            cellStyle.setDataFormat((short) 49);
+                            // i为列，一整列设置为文本格式
+                            sheet.setDefaultColumnStyle(i, cellStyle);
+
+                        }
+                    }
+                })
                 //设置文本
                 .registerWriteHandler(new CellWriteHandler() {
                     @Override
                     public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
                         // 3.0 设置单元格为文本
                         WriteCellData<?> cellData = context.getFirstCellData();
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        //设置文本
                         DataFormatData dataFormatData = new DataFormatData();
                         dataFormatData.setIndex((short) 49);
                         writeCellStyle.setDataFormatData(dataFormatData);
+                        // 设置字体
+                        WriteFont headWriteFont = new WriteFont();
+                        if (context.getRowIndex() < 5) {
+                            if (context.getColumnIndex() < 2) {
+                                headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                headWriteFont.setFontHeightInPoints((short) 11);
+                                if (context.getRowIndex() == 0) {
+                                    headWriteFont.setBold(true);
+                                }//加粗
+                                else if (context.getRowIndex() > 0 && context.getColumnIndex() == 0) {
+                                    headWriteFont.setBold(true);
+                                }
+
+                                headWriteFont.setFontName("微软雅黑");
+                                writeCellStyle.setWriteFont(headWriteFont);
+                                //靠左
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                //垂直居中
+                                writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                                //设置边框
+                                writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                                // 拿到poi的workbook
+                                Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                                // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                                // 不同单元格尽量传同一个 cellStyle
+                                //设置rgb颜色
+                                byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                                CellStyle cellStyle = workbook.createCellStyle();
+                                XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                                // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                                // cell里面去 会导致自己设置的不一样（很关键）
+                                cellData.setOriginCellStyle(xssfCellColorStyle);
+                                cell.setCellStyle(cellStyle);
+                            }
+                        } else {
+
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            if (context.getRowIndex() == 6 || context.getRowIndex() == 7 || context.getRowIndex() == 10 || context.getRowIndex() == 11) {
+                                headWriteFont.setBold(true);
+                            }
+                            headWriteFont.setFontName("微软雅黑");
+                            writeCellStyle.setWriteFont(headWriteFont);
+                            //靠左
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            if (context.getRowIndex() == 8 && context.getColumnIndex() > 0) {
+                                //靠右
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+
+                            }
+                            if (context.getRowIndex() > 11 && context.getColumnIndex() > (targetDecomposeDTO.getFileNameList().size())) {
+                                //靠右
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                            }
+                            //垂直居中
+                            writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                            if (context.getRowIndex() > 6) {
+                                //设置边框
+                                writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                            }
+                            if (context.getRowIndex() == 7 || context.getRowIndex() == 8) {
+                                if (context.getColumnIndex() < 7) {
+                                    // 拿到poi的workbook
+                                    Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                                    // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                                    // 不同单元格尽量传同一个 cellStyle
+                                    //设置rgb颜色
+                                    byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                                    CellStyle cellStyle = workbook.createCellStyle();
+                                    XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                    xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                    // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                    cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                    // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                                    // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                                    // cell里面去 会导致自己设置的不一样（很关键）
+                                    cellData.setOriginCellStyle(xssfCellColorStyle);
+                                    cell.setCellStyle(cellStyle);
+                                }
+
+                            }
+                            if (context.getRowIndex() == 11) {
+                                int num = 0;
+                                if (StringUtils.isNotEmpty(targetDecomposeDetailsExcels)) {
+                                    num = targetDecomposeDetailsExcels.get(0).getCycleTargets().size();
+                                }
+                                if (context.getColumnIndex() < (targetDecomposeDTO.getFileNameList().size() + 2 + num)) {
+                                    // 拿到poi的workbook
+                                    Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                                    // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                                    // 不同单元格尽量传同一个 cellStyle
+                                    //设置rgb颜色
+                                    byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                                    CellStyle cellStyle = workbook.createCellStyle();
+                                    XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                    xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                    // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                    cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                    // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                                    // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                                    // cell里面去 会导致自己设置的不一样（很关键）
+                                    cellData.setOriginCellStyle(xssfCellColorStyle);
+                                    cell.setCellStyle(cellStyle);
+                                }
+                            }
+                        }
+                        cellData.setWriteCellStyle(writeCellStyle);
+                    }
+                })
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                        Sheet sheet = writeSheetHolder.getSheet();
+                        int columnIndex = cell.getColumnIndex();
+                        // 列宽16
+                        sheet.setColumnWidth(columnIndex, (270 * 16));
+                        // 行高7
+                        sheet.setDefaultRowHeight((short) (20 * 15));
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsDataList(targetDecomposeDetailsExcels, targetDecomposeDTO));

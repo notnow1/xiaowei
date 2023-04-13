@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -128,72 +129,883 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
      * @return
      */
     public static List<List<String>> headDetails(TargetDecomposeDTO targetDecomposeDTO) {
+        List<Map<String, String>> fileNameList = targetDecomposeDTO.getFileNameList();
         List<List<String>> list = new ArrayList<List<String>>();
         // 第一列
         List<String> head0 = new ArrayList<String>();
+        head0.add("币种：人民币   单位：万元");
+        head0.add("目标年度");
+        head0.add("指标名称");
+        head0.add("分解维度");
+        head0.add("时间维度");
         head0.add("");
+        head0.add("分解基础信息：");
+        head0.add("指标名称：");
+        head0.add(StringUtils.isNotBlank(targetDecomposeDTO.getIndicatorName()) ? targetDecomposeDTO.getIndicatorName() : "");
         head0.add("");
-        list.add(head0);
+        head0.add("分解详细信息：");
 
-        List<Map<String, String>> fileNameList = targetDecomposeDTO.getFileNameList();
-        for (Map<String, String> stringStringMap : fileNameList) {
-            // 动态列
-            List<String> head1 = new ArrayList<String>();
-            head1.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-            head1.add(stringStringMap.get("label"));
-            list.add(head1);
+        // 第二列
+        List<String> head1 = new ArrayList<String>();
+        head1.add("币种：人民币   单位：万元");
+        head1.add(StringUtils.isNotNull(targetDecomposeDTO.getTargetYear()) ? targetDecomposeDTO.getTargetYear().toString() : "");
+        head1.add(StringUtils.isNotBlank(targetDecomposeDTO.getIndicatorName()) ? targetDecomposeDTO.getIndicatorName() : "");
+        head1.add(StringUtils.isNotBlank(targetDecomposeDTO.getDecompositionDimension()) ? targetDecomposeDTO.getDecompositionDimension() : "");
+        if (StringUtils.isNotNull(targetDecomposeDTO.getTimeDimension())) {
+            if (targetDecomposeDTO.getTimeDimension() == 1) {
+                head1.add(StringUtils.isNotNull(targetDecomposeDTO.getTimeDimension()) ? "年度" : "");
+            } else if (targetDecomposeDTO.getTimeDimension() == 2) {
+                head1.add(StringUtils.isNotNull(targetDecomposeDTO.getTimeDimension()) ? "半年度" : "");
+            } else if (targetDecomposeDTO.getTimeDimension() == 3) {
+                head1.add(StringUtils.isNotNull(targetDecomposeDTO.getTimeDimension()) ? "季度" : "");
+            } else if (targetDecomposeDTO.getTimeDimension() == 4) {
+                head1.add(StringUtils.isNotNull(targetDecomposeDTO.getTimeDimension()) ? "月度" : "");
+            } else if (targetDecomposeDTO.getTimeDimension() == 5) {
+                head1.add(StringUtils.isNotNull(targetDecomposeDTO.getTimeDimension()) ? "周" : "");
+            }
         }
+        head1.add("");
+        head1.add("");
+        head1.add("挑战值");
+        head1.add(null != targetDecomposeDTO.getChallengeValue() ? targetDecomposeDTO.getChallengeValue().setScale(2, RoundingMode.HALF_UP).toString() : "0.00");
+        head1.add("");
+        head1.add("");
+        // 第三列
         List<String> head2 = new ArrayList<String>();
-        head2.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-        head2.add("滚动预测负责人");
-        list.add(head2);
+        head2.add("");
+        head2.add("");
+        head2.add("");
+        head2.add("");
+        head2.add("");
+        head2.add("");
+        head2.add("");
+        head2.add("目标值");
+        head2.add(null != targetDecomposeDTO.getTargetValue() ? targetDecomposeDTO.getTargetValue().setScale(2, RoundingMode.HALF_UP).toString() : "0.00");
+        head2.add("");
+        head2.add("");
+        // 第四列
         List<String> head3 = new ArrayList<String>();
-        head3.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-        head3.add("汇总金额");
-        list.add(head3);
-        if (1 == targetDecomposeDTO.getTimeDimension()) {
+        head3.add("");
+        head3.add("");
+        head3.add("");
+        head3.add("");
+        head3.add("");
+        head3.add("");
+        head3.add("");
+        head3.add("保底值");
+        head3.add(null != targetDecomposeDTO.getGuaranteedValue() ? targetDecomposeDTO.getGuaranteedValue().setScale(2, RoundingMode.HALF_UP).toString() : "0.00");
+        head3.add("");
+        head3.add("");
+        // 第五列
+        List<String> head4 = new ArrayList<String>();
+        head4.add("");
+        head4.add("");
+        head4.add("");
+        head4.add("");
+        head4.add("");
+        head4.add("");
+        head4.add("");
+        head4.add("分解目标");
+        head4.add(null != targetDecomposeDTO.getDecomposeTarget() ? targetDecomposeDTO.getDecomposeTarget().setScale(2, RoundingMode.HALF_UP).toString() : "0.00");
+        head4.add("");
+        head4.add("");
+        // 第六列
+        List<String> head5 = new ArrayList<String>();
+        head5.add("");
+        head5.add("");
+        head5.add("");
+        head5.add("");
+        head5.add("");
+        head5.add("");
+        head5.add("");
+        head5.add("已分解");
+        head5.add(null != targetDecomposeDTO.getDecomposed() ? targetDecomposeDTO.getDecomposed().setScale(2, RoundingMode.HALF_UP).toString() : "0.00");
+        head5.add("");
+        head5.add("");
+        // 第七列
+        List<String> head6 = new ArrayList<String>();
+        head6.add("");
+        head6.add("");
+        head6.add("");
+        head6.add("");
+        head6.add("");
+        head6.add("");
+        head6.add("");
+        head6.add("未分解");
+        head6.add(null != targetDecomposeDTO.getUndecomposed() ? targetDecomposeDTO.getUndecomposed().setScale(2, RoundingMode.HALF_UP).toString() : "0.00");
+        head6.add("");
+        head6.add("");
+        if (fileNameList.size() >= 6) {
+            head6.add("滚动预测负责人");
+        }
+        // 第七列
+        List<String> head7 = new ArrayList<String>();
+        head7.add("");
+        head7.add("");
+        head7.add("");
+        head7.add("");
+        head7.add("");
+        head7.add("");
+        head7.add("");
+        head7.add("");
+        head7.add("");
+        head7.add("");
+        head7.add("");
+        if (fileNameList.size() >= 6) {
+            head7.add("汇总金额");
+        }
 
-            // 动态列
-            List<String> head4 = new ArrayList<String>();
-            head4.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-            head4.add("年度");
+        for (int i = 0; i < fileNameList.size(); i++) {
+            if (i == 0) {
+                head0.add(fileNameList.get(i).get("label"));
+                if (fileNameList.size() == 1) {
+                    head1.add("滚动预测负责人");
+                    head2.add("汇总金额");
+                    if (1 == targetDecomposeDTO.getTimeDimension()) {
+                        head3.add("年度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                    } else if (2 == targetDecomposeDTO.getTimeDimension()) {
+                        head3.add("上年度");
+                        head4.add("下年度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                    } else if (3 == targetDecomposeDTO.getTimeDimension()) {
+                        head3.add("一季度");
+                        head4.add("二季度");
+                        head5.add("三季度");
+                        head6.add("四季度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+
+                    } else if (4 == targetDecomposeDTO.getTimeDimension()) {
+                        head3.add("1月");
+                        head4.add("2月");
+                        head5.add("3月");
+                        head6.add("4月");
+                        head7.add("5月");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+
+
+                        for (int i1 = 0; i1 < 7; i1++) {
+                            // 动态列
+                            List<String> head8 = new ArrayList<String>();
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add((i1+6) + "月");
+                            list.add(head8);
+                        }
+
+                    } else if (5 == targetDecomposeDTO.getTimeDimension()) {
+                        head3.add("第1周");
+                        head4.add("第2周");
+                        head5.add("第3周");
+                        head6.add("第4周");
+                        head7.add("第5周");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+
+                        for (int i1 = 0; i1 < 47; i1++) {
+                            // 动态列
+                            List<String> head8 = new ArrayList<String>();
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("第"+(i1+6) + "周");
+                            list.add(head8);
+                        }
+                    }
+
+                }
+            } else if (i == 1) {
+                    head1.add(fileNameList.get(i).get("label"));
+                if (fileNameList.size() == 2) {
+                    head2.add("滚动预测负责人");
+                    head3.add("汇总金额");
+                    if (1 == targetDecomposeDTO.getTimeDimension()) {
+                        head4.add("年度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                    } else if (2 == targetDecomposeDTO.getTimeDimension()) {
+                        head4.add("上年度");
+                        head5.add("下年度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                    } else if (3 == targetDecomposeDTO.getTimeDimension()) {
+                        head4.add("一季度");
+                        head5.add("二季度");
+                        head6.add("三季度");
+                        head7.add("四季度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+
+                    } else if (4 == targetDecomposeDTO.getTimeDimension()) {
+                        head4.add("1月");
+                        head5.add("2月");
+                        head6.add("3月");
+                        head7.add("4月");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        for (int i1 = 0; i1 < 8; i1++) {
+                            // 动态列
+                            List<String> head8 = new ArrayList<String>();
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add((i1+5) + "月");
+                            list.add(head8);
+                        }
+
+                    } else if (5 == targetDecomposeDTO.getTimeDimension()) {
+                        head4.add("第1周");
+                        head5.add("第2周");
+                        head6.add("第3周");
+                        head7.add("第4周");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        for (int i1 = 0; i1 < 48; i1++) {
+                            // 动态列
+                            List<String> head8 = new ArrayList<String>();
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("第"+(i1+5) + "周");
+                            list.add(head8);
+                        }
+                    }
+                }
+
+            } else if (i == 2) {
+                head2.add(fileNameList.get(i).get("label"));
+                if (fileNameList.size() == 3) {
+                    head3.add("滚动预测负责人");
+                    head4.add("汇总金额");
+                    if (1 == targetDecomposeDTO.getTimeDimension()) {
+                        head5.add("年度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                    } else if (2 == targetDecomposeDTO.getTimeDimension()) {
+                        head5.add("上年度");
+                        head6.add("下年度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+
+                    } else if (3 == targetDecomposeDTO.getTimeDimension()) {
+                        head5.add("一季度");
+                        head6.add("二季度");
+                        head7.add("三季度");
+                        // 动态列
+                        List<String> head8 = new ArrayList<String>();
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("四季度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        list.add(head8);
+
+
+                    } else if (4 == targetDecomposeDTO.getTimeDimension()) {
+                        head5.add("1月");
+                        head6.add("2月");
+                        head7.add("3月");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+
+                        for (int i1 = 0; i1 < 9; i1++) {
+                            // 动态列
+                            List<String> head8 = new ArrayList<String>();
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add((i1+4) + "月");
+                            list.add(head8);
+                        }
+
+                    } else if (5 == targetDecomposeDTO.getTimeDimension()) {
+                        head5.add("第1周");
+                        head6.add("第2周");
+                        head7.add("第3周");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        for (int i1 = 0; i1 < 49; i1++) {
+                            // 动态列
+                            List<String> head8 = new ArrayList<String>();
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("第"+(i1+4) + "周");
+                            list.add(head8);
+                        }
+                    }
+                }
+            } else if (i == 3) {
+                head3.add(fileNameList.get(i).get("label"));
+                if (fileNameList.size() == 4) {
+                    head4.add("滚动预测负责人");
+                    head5.add("汇总金额");
+                    if (1 == targetDecomposeDTO.getTimeDimension()) {
+                        head6.add("年度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                    } else if (2 == targetDecomposeDTO.getTimeDimension()) {
+                        head6.add("上年度");
+                        head7.add("下年度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                    } else if (3 == targetDecomposeDTO.getTimeDimension()) {
+                        head6.add("一季度");
+                        head7.add("二季度");
+
+                        // 动态列
+                        List<String> head8 = new ArrayList<String>();
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("三季度");
+                        // 动态列
+                        List<String> head9 = new ArrayList<String>();
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("四季度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        list.add(head8);
+                        list.add(head9);
+
+                    } else if (4 == targetDecomposeDTO.getTimeDimension()) {
+                        head6.add("1月");
+                        head7.add("2月");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        for (int i1 = 0; i1 < 10; i1++) {
+                            // 动态列
+                            List<String> head8 = new ArrayList<String>();
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add((i1+3) + "月");
+                            list.add(head8);
+                        }
+
+                    } else if (5 == targetDecomposeDTO.getTimeDimension()) {
+                        head6.add("第1周");
+                        head7.add("第2周");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        for (int i1 = 0; i1 < 50; i1++) {
+                            // 动态列
+                            List<String> head8 = new ArrayList<String>();
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("第"+(i1+3) + "周");
+                            list.add(head8);
+                        }
+                    }
+                }
+            } else if (i == 4) {
+                head4.add(fileNameList.get(i).get("label"));
+                if (fileNameList.size() == 5) {
+                    head5.add("滚动预测负责人");
+                    head6.add("汇总金额");
+                    if (1 == targetDecomposeDTO.getTimeDimension()) {
+                        head7.add("年度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                    } else if (2 == targetDecomposeDTO.getTimeDimension()) {
+                        // 动态列
+                        List<String> head8 = new ArrayList<String>();
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("上年度");
+                        // 动态列
+                        List<String> head9 = new ArrayList<String>();
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("下年度");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        list.add(head8);
+                        list.add(head9);
+
+                    } else if (3 == targetDecomposeDTO.getTimeDimension()) {
+                        head7.add("一季度");
+                        // 动态列
+                        List<String> head8 = new ArrayList<String>();
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("");
+                        head8.add("二季度");
+                        // 动态列
+                        List<String> head9 = new ArrayList<String>();
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("");
+                        head9.add("三季度");
+                        // 动态列
+                        List<String> head10 = new ArrayList<String>();
+                        head10.add("");
+                        head10.add("");
+                        head10.add("");
+                        head10.add("");
+                        head10.add("");
+                        head10.add("");
+                        head10.add("");
+                        head10.add("");
+                        head10.add("");
+                        head10.add("");
+                        head10.add("");
+                        head10.add("四季度");
+
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        list.add(head8);
+                        list.add(head9);
+                        list.add(head10);
+
+                    } else if (4 == targetDecomposeDTO.getTimeDimension()) {
+                        head7.add("1月");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        for (int i1 = 0; i1 < 11; i1++) {
+                            // 动态列
+                            List<String> head8 = new ArrayList<String>();
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add((i1+2) + "月");
+                            list.add(head8);
+                        }
+
+                    } else if (5 == targetDecomposeDTO.getTimeDimension()) {
+                        head6.add("第1周");
+                        list.add(head0);
+                        list.add(head1);
+                        list.add(head2);
+                        list.add(head3);
+                        list.add(head4);
+                        list.add(head5);
+                        list.add(head6);
+                        list.add(head7);
+                        for (int i1 = 0; i1 < 51; i1++) {
+                            // 动态列
+                            List<String> head8 = new ArrayList<String>();
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("");
+                            head8.add("第"+(i1+2) + "周");
+                            list.add(head8);
+                        }
+                    }
+                }
+            } else if (i == 5) {
+                head5.add(fileNameList.get(i).get("label"));
+            }
+        }
+
+
+
+        if (fileNameList.size() >= 6) {
+            list.add(head0);
+            list.add(head1);
+            list.add(head2);
+            list.add(head3);
             list.add(head4);
-        } else if (2 == targetDecomposeDTO.getTimeDimension()) {
-            // 动态列
-            List<String> head5 = new ArrayList<String>();
-            head5.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-            head5.add("上年度");
-            // 动态列
-            List<String> head6 = new ArrayList<String>();
-            head6.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-            head6.add("下年度");
             list.add(head5);
             list.add(head6);
-        } else if (3 == targetDecomposeDTO.getTimeDimension()) {
-            for (int i = 1; i <= 4; i++) {
-                // 动态列
-                List<String> head7 = new ArrayList<String>();
-                head7.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-                head7.add(Convert.int2chineseNum(i) + "季度");
-                list.add(head7);
-            }
-        } else if (4 == targetDecomposeDTO.getTimeDimension()) {
-            for (int i = 1; i <= 12; i++) {
+            list.add(head7);
+            if (1 == targetDecomposeDTO.getTimeDimension()) {
                 // 动态列
                 List<String> head8 = new ArrayList<String>();
-                head8.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-                head8.add(i + "月");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("年度");
                 list.add(head8);
-            }
-        } else if (5 == targetDecomposeDTO.getTimeDimension()) {
-            for (int i = 1; i <= 52; i++) {
+
+            } else if (2 == targetDecomposeDTO.getTimeDimension()) {
+                // 动态列
+                List<String> head8 = new ArrayList<String>();
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("");
+                head8.add("上年度");
+
                 // 动态列
                 List<String> head9 = new ArrayList<String>();
-                head9.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-                head9.add(i + "周");
+                head9.add("");
+                head9.add("");
+                head9.add("");
+                head9.add("");
+                head9.add("");
+                head9.add("");
+                head9.add("");
+                head9.add("");
+                head9.add("");
+                head9.add("");
+                head9.add("");
+                head9.add("下年度");
+                list.add(head8);
                 list.add(head9);
+            } else if (3 == targetDecomposeDTO.getTimeDimension()) {
+                for (int i = 1; i <= 4; i++) {
+                    // 动态列
+                    List<String> head8 = new ArrayList<String>();
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add(Convert.int2chineseNum(i) + "季度");
+                }
+            } else if (4 == targetDecomposeDTO.getTimeDimension()) {
+                for (int i = 1; i <= 12; i++) {
+                    // 动态列
+                    List<String> head8 = new ArrayList<String>();
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add(i + "月");
+
+                    list.add(head8);
+                }
+            } else if (5 == targetDecomposeDTO.getTimeDimension()) {
+                for (int i = 1; i <= 52; i++) {
+                    // 动态列
+                    List<String> head8 = new ArrayList<String>();
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("");
+                    head8.add("第"+i + "周");
+                    list.add(head8);
+                }
             }
         }
+
         return list;
     }
 
@@ -594,7 +1406,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
      * @return
      */
     public static List<List<String>> headResultDetails(TargetDecomposeDTO targetDecomposeDTO) {
-        if (StringUtils.isNull(targetDecomposeDTO)){
+        if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在 请刷新页面重试！");
         }
         List<List<String>> list = new ArrayList<List<String>>();
@@ -603,15 +1415,15 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         Integer timeDimension = targetDecomposeDTO.getTimeDimension();
 
         if (timeDimension == 1) {
-            timeDimensionName="年度";
+            timeDimensionName = "年度";
         } else if (timeDimension == 2) {
-            timeDimensionName="半年度";
+            timeDimensionName = "半年度";
         } else if (timeDimension == 3) {
-            timeDimensionName="季度";
+            timeDimensionName = "季度";
         } else if (timeDimension == 4) {
-            timeDimensionName="月度";
+            timeDimensionName = "月度";
         } else if (timeDimension == 5) {
-            timeDimensionName="周";
+            timeDimensionName = "周";
         }
         StringBuffer stringBuffer = new StringBuffer();
         for (int i1 = 0; i1 < targetDecomposeDTO.getFileNameList().size(); i1++) {
@@ -634,29 +1446,29 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
 
         List<String> head1 = new ArrayList<String>();
         head1.add("币种：人民币   单位：万元");
-        head1.add(StringUtils.isNotBlank(targetDecomposeDTO.getTargetYear().toString())?targetDecomposeDTO.getTargetYear().toString():"");
-        head1.add(StringUtils.isNotBlank(targetDecomposeDTO.getIndicatorName())?targetDecomposeDTO.getIndicatorName():"");
-        head1.add(StringUtils.isNotBlank(stringBuffer.toString())?stringBuffer.toString():"");
-        head1.add(StringUtils.isNotBlank(timeDimensionName)?timeDimensionName:"" );
+        head1.add(StringUtils.isNotBlank(targetDecomposeDTO.getTargetYear().toString()) ? targetDecomposeDTO.getTargetYear().toString() : "");
+        head1.add(StringUtils.isNotBlank(targetDecomposeDTO.getIndicatorName()) ? targetDecomposeDTO.getIndicatorName() : "");
+        head1.add(StringUtils.isNotBlank(stringBuffer.toString()) ? stringBuffer.toString() : "");
+        head1.add(StringUtils.isNotBlank(timeDimensionName) ? timeDimensionName : "");
         head1.add("");
         // 动态列
         for (int i = 0; i < fileNameList.size(); i++) {
-            if (i == 0){
+            if (i == 0) {
                 head0.add(fileNameList.get(i).get("label"));
                 head0.add(fileNameList.get(i).get("label"));
                 list.add(head0);
-                if (fileNameList.size()<2){
+                if (fileNameList.size() < 2) {
                     head1.add("");
                     head1.add("滚动预测负责人");
                     head1.add("滚动预测负责人");
                     list.add(head1);
                 }
-            }else if (i ==1){
+            } else if (i == 1) {
                 head1.add("");
                 head1.add(fileNameList.get(i).get("label"));
                 head1.add(fileNameList.get(i).get("label"));
                 list.add(head1);
-            }else {
+            } else {
                 // 动态列
                 List<String> head2 = new ArrayList<String>();
                 head2.add("");
@@ -671,7 +1483,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 list.add(head2);
             }
         }
-        if (fileNameList.size()>1){
+        if (fileNameList.size() > 1) {
             List<String> head3 = new ArrayList<String>();
             head3.add("");
             head3.add("");
@@ -1174,7 +1986,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             int index2 = index.get();
                             for (int i1 = 0; i1 < 2; i1++) {
                                 if (i1 == 0) {
-                                    index2 =index2 + 1;
+                                    index2 = index2 + 1;
                                     listForecast.add(index2);
                                 } else {
                                     index2 = index2 + 3;
@@ -1186,7 +1998,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             int index2 = index.get();
                             for (int i1 = 0; i1 < 4; i1++) {
                                 if (i1 == 0) {
-                                    index2 =index2 + 1;
+                                    index2 = index2 + 1;
                                     listForecast.add(index2);
                                 } else {
                                     index2 = index2 + 3;
@@ -1197,7 +2009,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             int index2 = index.get();
                             for (int i1 = 0; i1 < 12; i1++) {
                                 if (i1 == 0) {
-                                    index2 =index2 + 1;
+                                    index2 = index2 + 1;
                                     listForecast.add(index2);
                                 } else {
                                     index2 = index2 + 3;
@@ -1208,7 +2020,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             int index2 = index.get();
                             for (int i1 = 0; i1 < 52; i1++) {
                                 if (i1 == 0) {
-                                    index2 =index2 + 1;
+                                    index2 = index2 + 1;
                                     listForecast.add(index2);
                                 } else {
                                     index2 = index2 + 3;
@@ -1222,10 +2034,10 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         } else if (timeDimension == 2) {
                             int index2 = index.get();
                             for (int i1 = 0; i1 < 2; i1++) {
-                                if (i1 == 0){
+                                if (i1 == 0) {
                                     index2 = index2 + 2;
                                     listAdd.add(index2);
-                                }else {
+                                } else {
                                     index2 = index2 + 3;
                                     listAdd.add(index2);
                                 }
@@ -1234,10 +2046,10 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         } else if (timeDimension == 3) {
                             int index2 = index.get();
                             for (int i1 = 0; i1 < 4; i1++) {
-                                if (i1 == 0){
+                                if (i1 == 0) {
                                     index2 = index2 + 2;
                                     listAdd.add(index2);
-                                }else {
+                                } else {
                                     index2 = index2 + 3;
                                     listAdd.add(index2);
                                 }
@@ -1245,10 +2057,10 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         } else if (timeDimension == 4) {
                             int index2 = index.get();
                             for (int i1 = 0; i1 < 12; i1++) {
-                                if (i1 == 0){
+                                if (i1 == 0) {
                                     index2 = index2 + 2;
                                     listAdd.add(index2);
-                                }else {
+                                } else {
                                     index2 = index2 + 3;
                                     listAdd.add(index2);
                                 }
@@ -1256,10 +2068,10 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         } else if (timeDimension == 5) {
                             int index2 = index.get();
                             for (int i1 = 0; i1 < 52; i1++) {
-                                if (i1 == 0){
+                                if (i1 == 0) {
                                     index2 = index2 + 2;
                                     listAdd.add(index2);
-                                }else {
+                                } else {
                                     index2 = index2 + 3;
                                     listAdd.add(index2);
                                 }
@@ -1410,10 +2222,10 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         List<Object> list8 = new ArrayList<>();
         list1.add("目标年度：" + targetDecomposeDTO.getTargetYear());
         list2.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-        list3.add("挑战值：" + (targetDecomposeDTO.getChallengeValue()==null?0:targetDecomposeDTO.getChallengeValue()));
-        list4.add("目标值：" + (targetDecomposeDTO.getTargetValue()==null?0:targetDecomposeDTO.getTargetValue()));
-        list5.add("保底值：" + (targetDecomposeDTO.getGuaranteedValue()==null?0:targetDecomposeDTO.getGuaranteedValue()));
-        list6.add("分解目标：" + (targetDecomposeDTO.getDecomposeTarget()==null?0:targetDecomposeDTO.getDecomposeTarget()));
+        list3.add("挑战值：" + (targetDecomposeDTO.getChallengeValue() == null ? 0 : targetDecomposeDTO.getChallengeValue()));
+        list4.add("目标值：" + (targetDecomposeDTO.getTargetValue() == null ? 0 : targetDecomposeDTO.getTargetValue()));
+        list5.add("保底值：" + (targetDecomposeDTO.getGuaranteedValue() == null ? 0 : targetDecomposeDTO.getGuaranteedValue()));
+        list6.add("分解目标：" + (targetDecomposeDTO.getDecomposeTarget() == null ? 0 : targetDecomposeDTO.getDecomposeTarget()));
         list7.add("");
         list8.add("注：省份维度录入汉字，部门/销售员/产品/区域/行业维度录入编码");
         list.add(list1);
@@ -1439,109 +2251,53 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         if (StringUtils.isNotEmpty(targetDecomposeDetailsExcelList)) {
             //汇总金额合计
             String amountTargetSum = targetDecomposeDetailsExcelList.get(0).getAmountTargetSum();
-            //周期目标值集合
+            //周期目标值总计集合
             List<String> cycleTargetSum = targetDecomposeDetailsExcelList.get(0).getCycleTargetSum();
             //分解维度数据集合
             List<String> decompositionDimensions1 = targetDecomposeDetailsExcelList.get(0).getDecompositionDimensions();
-            //周期目标值集合
-            List<String> cycleTargets1 = targetDecomposeDetailsExcelList.get(0).getCycleTargets();
-            for (int i = 0; i < Math.max(targetDecomposeDetailsExcelList.size(), 8); i++) {
+
+            for (int i = 0; i < targetDecomposeDetailsExcelList.size(); i++) {
                 //每一行的数据集合
                 List<Object> data = new ArrayList<Object>();
-                TargetDecomposeDetailsExcel targetDecomposeDetailsExcel = new TargetDecomposeDetailsExcel();
-                if (i < targetDecomposeDetailsExcelList.size()) {
-                    targetDecomposeDetailsExcel = targetDecomposeDetailsExcelList.get(i);
-                }
-
+                TargetDecomposeDetailsExcel targetDecomposeDetailsExcel = targetDecomposeDetailsExcelList.get(i);
 
                 //分解维度数据集合
                 List<String> decompositionDimensions = targetDecomposeDetailsExcel.getDecompositionDimensions();
                 //周期目标值集合
                 List<String> cycleTargets = targetDecomposeDetailsExcel.getCycleTargets();
-                if (i == 0) {
-                    StringBuffer stringBuffer = new StringBuffer();
-                    for (int i1 = 0; i1 < targetDecomposeDTO.getFileNameList().size(); i1++) {
-                        if (i1 != 0) {
-                            stringBuffer.append("+").append(targetDecomposeDTO.getFileNameList().get(i1).get("label"));
-                        } else {
-                            stringBuffer.append(targetDecomposeDTO.getFileNameList().get(i1).get("label"));
-                        }
-                    }
-                    data.add("分解维度：" + stringBuffer);
-                } else if (i == 1) {
-                    if (StringUtils.isNotEmpty(cycleTargets1)) {
-                        if (cycleTargets1.size() == 1) {
-                            data.add("时间维度：年度");
-                        } else if (cycleTargets1.size() == 2) {
-                            data.add("时间维度：半年度");
-                        } else if (cycleTargets1.size() == 4) {
-                            data.add("时间维度：季度");
-                        } else if (cycleTargets1.size() == 12) {
-                            data.add("时间维度：月度");
-                        } else if (cycleTargets1.size() == 52) {
-                            data.add("时间维度：周");
-                        }
-                    }
-                } else if (i == 2) {
-                    data.add("挑战值：" + targetDecomposeDTO.getChallengeValue());
-                } else if (i == 3) {
-                    data.add("目标值：" + targetDecomposeDTO.getTargetValue());
-                } else if (i == 4) {
-                    data.add("保底值：" + targetDecomposeDTO.getGuaranteedValue());
-                } else if (i == 5) {
-                    data.add("分解目标：" + targetDecomposeDTO.getDecomposeTarget());
-                } else if (i == 6) {
-                    data.add("已分解：" + amountTargetSum);
-                } else if (i == 7) {
-                    data.add("未分解：" + targetDecomposeDTO.getDecomposeTarget().subtract(new BigDecimal(amountTargetSum)));
-                }
+
                 if (StringUtils.isNotEmpty(decompositionDimensions)) {
                     for (String decompositionDimension : decompositionDimensions) {
                         data.add(decompositionDimension);
                     }
                 }
 
-                if (targetDecomposeDetailsExcelList.size() < 8) {
-                    if (targetDecomposeDetailsExcelList.size() == i) {
-                        for (int i1 = 0; i1 < decompositionDimensions1.size(); i1++) {
-                            data.add("");
-                        }
-                        data.add("合计");
-                        data.add(amountTargetSum);
-                        if (StringUtils.isNotEmpty(cycleTargetSum)) {
-                            for (String s : cycleTargetSum) {
-                                data.add(s);
-                            }
-                        }
-                    }
-                }
                 //负责人名称
                 data.add(targetDecomposeDetailsExcel.getPrincipalEmployeeName());
                 //汇总金额
-                data.add(targetDecomposeDetailsExcel.getAmountTarget());
+                data.add(StringUtils.isNotBlank(targetDecomposeDetailsExcel.getAmountTarget()) ? targetDecomposeDetailsExcel.getAmountTarget() : "0.00");
                 if (StringUtils.isNotEmpty(cycleTargets)) {
                     for (String cycleTarget : cycleTargets) {
-                        data.add(cycleTarget);
+                        data.add(StringUtils.isNotBlank(cycleTarget) ? cycleTarget : "0.00");
                     }
                 }
 
                 list.add(data);
             }
-            if (targetDecomposeDetailsExcelList.size() >= 8) {
-                //每一行的数据集合
-                List<Object> dataMax = new ArrayList<Object>();
-                while (dataMax.size() < (decompositionDimensions1.size() + 1)) {
-                    dataMax.add("");
-                }
-                dataMax.add("合计");
-                dataMax.add(amountTargetSum);
-                if (StringUtils.isNotEmpty(cycleTargetSum)) {
-                    for (String s : cycleTargetSum) {
-                        dataMax.add(s);
-                    }
-                }
-                list.add(dataMax);
+
+            //每一行的数据集合
+            List<Object> dataMax = new ArrayList<Object>();
+            while (dataMax.size() < decompositionDimensions1.size()) {
+                dataMax.add("");
             }
+            dataMax.add("合计");
+            dataMax.add(StringUtils.isNotBlank(amountTargetSum) ? amountTargetSum : "0.00");
+            if (StringUtils.isNotEmpty(cycleTargetSum)) {
+                for (String s : cycleTargetSum) {
+                    dataMax.add(StringUtils.isNotBlank(s) ? s : "0.00");
+                }
+            }
+            list.add(dataMax);
         }
         return list;
     }
@@ -1713,6 +2469,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         }
         return list;
     }
+
     /**
      * 封装经营结果分析报表导出数据
      *
@@ -1788,15 +2545,15 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
 
             BigDecimal amountTarget = targetDecomposeDetailsDTOS.stream().map(TargetDecomposeDetailsDTO::getAmountTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal actualTotal = targetDecomposeDetailsDTOS.stream().map(TargetDecomposeDetailsDTO::getActualTotal).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-            targetDecomposeDetailsDTO1.setAmountTarget(amountTarget.setScale(2,BigDecimal.ROUND_HALF_UP));
-            targetDecomposeDetailsDTO1.setForecastYear(targetDecomposeDetailsDTOS.stream().map(TargetDecomposeDetailsDTO::getForecastYear).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2,BigDecimal.ROUND_HALF_UP));
-            targetDecomposeDetailsDTO1.setActualTotal(actualTotal.setScale(2,BigDecimal.ROUND_HALF_UP));
+            targetDecomposeDetailsDTO1.setAmountTarget(amountTarget.setScale(2, BigDecimal.ROUND_HALF_UP));
+            targetDecomposeDetailsDTO1.setForecastYear(targetDecomposeDetailsDTOS.stream().map(TargetDecomposeDetailsDTO::getForecastYear).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, BigDecimal.ROUND_HALF_UP));
+            targetDecomposeDetailsDTO1.setActualTotal(actualTotal.setScale(2, BigDecimal.ROUND_HALF_UP));
             BigDecimal targetPercentageComplete = new BigDecimal("0");
             if (amountTarget.compareTo(new BigDecimal("0")) != 0 && actualTotal.compareTo(new BigDecimal("0")) != 0) {
                 targetPercentageComplete = actualTotal.divide(amountTarget, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
             }
             //目标完成率
-            targetDecomposeDetailsDTO1.setTargetPercentageComplete(targetPercentageComplete.setScale(2,BigDecimal.ROUND_HALF_UP));
+            targetDecomposeDetailsDTO1.setTargetPercentageComplete(targetPercentageComplete.setScale(2, BigDecimal.ROUND_HALF_UP));
             if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOAllList)) {
                 //根据周期数(顺序递增)分组
                 Map<Integer, List<DecomposeDetailCyclesDTO>> decomposeDetailCyclesDataMap = decomposeDetailCyclesDTOAllList.parallelStream().filter(f -> null != f.getCycleNumber()).collect(Collectors.groupingBy(DecomposeDetailCyclesDTO::getCycleNumber));
@@ -1812,21 +2569,21 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         BigDecimal cycleForecast = decomposeDetailCyclesDTOList.stream().map(DecomposeDetailCyclesDTO::getCycleForecast).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                         BigDecimal cycleForecastDeviation = new BigDecimal("0");
                         BigDecimal cyclePercentageComplete = new BigDecimal("0");
-                        if (cycleActual.subtract(cycleForecast).compareTo(new BigDecimal("0")) != 0 && cycleActual.compareTo(new BigDecimal("0")) != 0){
+                        if (cycleActual.subtract(cycleForecast).compareTo(new BigDecimal("0")) != 0 && cycleActual.compareTo(new BigDecimal("0")) != 0) {
                             //预测合计
-                             cycleForecastDeviation =cycleActual.subtract(cycleForecast).divide(cycleActual,10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                            cycleForecastDeviation = cycleActual.subtract(cycleForecast).divide(cycleActual, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                         }
-                        if (cycleActual.subtract(cycleForecast).compareTo(new BigDecimal("0")) != 0 && cycleActual.compareTo(new BigDecimal("0")) != 0){
+                        if (cycleActual.subtract(cycleForecast).compareTo(new BigDecimal("0")) != 0 && cycleActual.compareTo(new BigDecimal("0")) != 0) {
                             //目标完成率
-                             cyclePercentageComplete = cycleActual.divide(cycleTarget,10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                            cyclePercentageComplete = cycleActual.divide(cycleTarget, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                         }
 
                         decomposeDetailCyclesDTO.setCycleNumber(key);
-                        decomposeDetailCyclesDTO.setCycleTarget(cycleTarget.setScale(2,BigDecimal.ROUND_HALF_UP));
-                        decomposeDetailCyclesDTO.setCycleActual(cycleActual.setScale(2,BigDecimal.ROUND_HALF_UP));
-                        decomposeDetailCyclesDTO.setCycleForecast(cycleForecast.setScale(2,BigDecimal.ROUND_HALF_UP));
-                        decomposeDetailCyclesDTO.setCycleForecastDeviation(cycleForecastDeviation.setScale(2,BigDecimal.ROUND_HALF_UP));
-                        decomposeDetailCyclesDTO.setCyclePercentageComplete(cyclePercentageComplete.setScale(2,BigDecimal.ROUND_HALF_UP));
+                        decomposeDetailCyclesDTO.setCycleTarget(cycleTarget.setScale(2, BigDecimal.ROUND_HALF_UP));
+                        decomposeDetailCyclesDTO.setCycleActual(cycleActual.setScale(2, BigDecimal.ROUND_HALF_UP));
+                        decomposeDetailCyclesDTO.setCycleForecast(cycleForecast.setScale(2, BigDecimal.ROUND_HALF_UP));
+                        decomposeDetailCyclesDTO.setCycleForecastDeviation(cycleForecastDeviation.setScale(2, BigDecimal.ROUND_HALF_UP));
+                        decomposeDetailCyclesDTO.setCyclePercentageComplete(cyclePercentageComplete.setScale(2, BigDecimal.ROUND_HALF_UP));
 
                         decomposeDetailCyclesDTOSizeList.add(decomposeDetailCyclesDTO);
 
@@ -1863,29 +2620,29 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 //滚动预测负责人
                 data.add(targetDecomposeDetailsDTO.getPrincipalEmployeeName());
                 //分解目标
-                data.add(targetDecomposeDetailsDTO.getAmountTarget().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                data.add(targetDecomposeDetailsDTO.getAmountTarget().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 //年度预测值
-                data.add(targetDecomposeDetailsDTO.getForecastYear().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                data.add(targetDecomposeDetailsDTO.getForecastYear().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 //累计实际值
-                data.add(targetDecomposeDetailsDTO.getActualTotal().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                data.add(targetDecomposeDetailsDTO.getActualTotal().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 //平均预测偏差率（%）
-                data.add(targetDecomposeDetailsDTO.getForecastDeviationRateAve().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                data.add(targetDecomposeDetailsDTO.getForecastDeviationRateAve().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 //目标完成率
-                data.add(targetDecomposeDetailsDTO.getTargetPercentageComplete().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                data.add(targetDecomposeDetailsDTO.getTargetPercentageComplete().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 //平均目标完成率（%）
-                data.add(targetDecomposeDetailsDTO.getTargetPercentageCompleteAve().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                data.add(targetDecomposeDetailsDTO.getTargetPercentageCompleteAve().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                         //周期目标值
-                        data.add(decomposeDetailCyclesDTO.getCycleTarget().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                        data.add(decomposeDetailCyclesDTO.getCycleTarget().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                         //周期预测值
-                        data.add(decomposeDetailCyclesDTO.getCycleForecast().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                        data.add(decomposeDetailCyclesDTO.getCycleForecast().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                         //周期实际值
-                        data.add(decomposeDetailCyclesDTO.getCycleActual().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                        data.add(decomposeDetailCyclesDTO.getCycleActual().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                         //预测偏差
-                        data.add(decomposeDetailCyclesDTO.getCycleForecastDeviation().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                        data.add(decomposeDetailCyclesDTO.getCycleForecastDeviation().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                         //目标完成率
-                        data.add(decomposeDetailCyclesDTO.getCyclePercentageComplete().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                        data.add(decomposeDetailCyclesDTO.getCyclePercentageComplete().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                     }
                 }
                 list.add(data);
@@ -1898,36 +2655,36 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 }
                 data.add("合计");
                 //分解目标
-                data.add(targetDecomposeDetailsDTO1.getAmountTarget().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                data.add(targetDecomposeDetailsDTO1.getAmountTarget().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 //年度预测值
-                data.add(targetDecomposeDetailsDTO1.getForecastYear().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                data.add(targetDecomposeDetailsDTO1.getForecastYear().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 //累计实际值
-                data.add(targetDecomposeDetailsDTO1.getActualTotal().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                data.add(targetDecomposeDetailsDTO1.getActualTotal().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     BigDecimal cycleForecastDeviationSum = new BigDecimal("0");
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
-                        cycleForecastDeviationSum=cycleForecastDeviationSum.add(decomposeDetailCyclesDTO.getCycleForecastDeviation().abs());
+                        cycleForecastDeviationSum = cycleForecastDeviationSum.add(decomposeDetailCyclesDTO.getCycleForecastDeviation().abs());
                     }
-                    if (cycleForecastDeviationSum.compareTo(new BigDecimal("0")) != 0){
+                    if (cycleForecastDeviationSum.compareTo(new BigDecimal("0")) != 0) {
                         //平均预测偏差率（%）
-                        data.add(cycleForecastDeviationSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOS.size())),10,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
-                    }else {
+                        data.add(cycleForecastDeviationSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOS.size())), 10, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                    } else {
                         //平均预测偏差率（%）
                         data.add("0.00");
                     }
                 }
 
                 //目标完成率
-                data.add(targetDecomposeDetailsDTO1.getTargetPercentageComplete().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                data.add(targetDecomposeDetailsDTO1.getTargetPercentageComplete().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     BigDecimal cyclePercentageCompleteSum = new BigDecimal("0");
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
-                        cyclePercentageCompleteSum=cyclePercentageCompleteSum.add(decomposeDetailCyclesDTO.getCyclePercentageComplete().abs());
+                        cyclePercentageCompleteSum = cyclePercentageCompleteSum.add(decomposeDetailCyclesDTO.getCyclePercentageComplete().abs());
                     }
-                    if (cyclePercentageCompleteSum.compareTo(new BigDecimal("0")) != 0){
+                    if (cyclePercentageCompleteSum.compareTo(new BigDecimal("0")) != 0) {
                         //平均预测偏差率（%）
-                        data.add(cyclePercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOS.size())),10,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
-                    }else {
+                        data.add(cyclePercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOS.size())), 10, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                    } else {
                         //平均预测偏差率（%）
                         data.add("0.00");
                     }
@@ -1936,15 +2693,15 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                         //周期目标值
-                        data.add(decomposeDetailCyclesDTO.getCycleTarget().setScale(2,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                        data.add(decomposeDetailCyclesDTO.getCycleTarget().setScale(2, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                         //周期预测值
-                        data.add(decomposeDetailCyclesDTO.getCycleForecast().setScale(2,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                        data.add(decomposeDetailCyclesDTO.getCycleForecast().setScale(2, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                         //周期实际值
-                        data.add(decomposeDetailCyclesDTO.getCycleActual().setScale(2,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                        data.add(decomposeDetailCyclesDTO.getCycleActual().setScale(2, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                         //预测偏差
-                        data.add(decomposeDetailCyclesDTO.getCycleForecastDeviation().setScale(2,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                        data.add(decomposeDetailCyclesDTO.getCycleForecastDeviation().setScale(2, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                         //目标完成率
-                        data.add(decomposeDetailCyclesDTO.getCyclePercentageComplete().setScale(2,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                        data.add(decomposeDetailCyclesDTO.getCyclePercentageComplete().setScale(2, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                     }
                 }
                 list.add(data);

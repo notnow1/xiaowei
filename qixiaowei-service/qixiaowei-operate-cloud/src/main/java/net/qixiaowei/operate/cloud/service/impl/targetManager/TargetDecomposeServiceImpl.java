@@ -53,6 +53,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -2690,7 +2691,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 //分解维度数据集合
                 targetDecomposeDetailsExcel.setDecompositionDimensions(decompositionDimensions);
                 //汇总金额
-                targetDecomposeDetailsExcel.setAmountTarget(targetDecomposeDetailsDTO.getAmountTarget().toString());
+                targetDecomposeDetailsExcel.setAmountTarget(targetDecomposeDetailsDTO.getAmountTarget().setScale(2, RoundingMode.HALF_UP).toString());
                 //负责人名称
                 targetDecomposeDetailsExcel.setPrincipalEmployeeName(targetDecomposeDetailsDTO.getPrincipalEmployeeName());
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesMap)) {
@@ -2703,16 +2704,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList1) {
                             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList2 = cycleNumberMap.get(decomposeDetailCyclesDTO.getCycleNumber());
                             if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList2)) {
-                                cycleTargetSum.add(decomposeDetailCyclesDTOList2.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
+                                cycleTargetSum.add(decomposeDetailCyclesDTOList2.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toString());
                             }
-                            cycleTargets.add(decomposeDetailCyclesDTO.getCycleTarget().toString());
+                            cycleTargets.add(decomposeDetailCyclesDTO.getCycleTarget().setScale(2, RoundingMode.HALF_UP).toString());
                         }
                         targetDecomposeDetailsExcel.setCycleTargets(cycleTargets);
                         targetDecomposeDetailsExcel.setCycleTargetSum(cycleTargetSum);
                     }
                 }
                 //汇总金额合计
-                targetDecomposeDetailsExcel.setAmountTargetSum(targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getAmountTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
+                targetDecomposeDetailsExcel.setAmountTargetSum(targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getAmountTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toString());
                 targetDecomposeDetailsExcelList.add(targetDecomposeDetailsExcel);
             }
 
