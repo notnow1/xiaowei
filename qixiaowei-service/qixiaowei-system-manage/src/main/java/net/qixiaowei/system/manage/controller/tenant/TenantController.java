@@ -1,55 +1,42 @@
 package net.qixiaowei.system.manage.controller.tenant;
 
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
-
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
-import com.alibaba.excel.write.handler.AbstractRowWriteHandler;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
-import com.alibaba.excel.write.metadata.holder.WriteTableHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
-import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
-import com.alibaba.excel.write.style.row.SimpleRowHeightStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.text.CharsetKit;
+import net.qixiaowei.integration.common.web.controller.BaseController;
+import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
-import org.apache.poi.hssf.usermodel.HSSFPalette;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
+import net.qixiaowei.system.manage.service.tenant.ITenantService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
-import net.qixiaowei.system.manage.service.tenant.ITenantService;
-import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -159,7 +146,6 @@ public class TenantController extends BaseController {
                         // 3.0 设置单元格为文本
                         WriteCellData<?> cellData = context.getFirstCellData();
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
-
                         //设置文本
                         DataFormatData dataFormatData = new DataFormatData();
                         dataFormatData.setIndex((short) 49);
@@ -177,8 +163,6 @@ public class TenantController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            //设置 自动换行
-                            writeCellStyle.setWrapped(true);
                             //设置边框
                             writeCellStyle.setBorderLeft(BorderStyle.THIN);
                             writeCellStyle.setBorderTop(BorderStyle.THIN);
@@ -195,7 +179,7 @@ public class TenantController extends BaseController {
                             xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
                             // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
                             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                            // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                            // 由于这里没有指定data format 最后展示的数据 格式可能会不太正确
                             // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
                             // cell里面去 会导致自己设置的不一样（很关键）
                             cellData.setWriteCellStyle(writeCellStyle);
@@ -212,8 +196,6 @@ public class TenantController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            //设置 自动换行
-                            writeCellStyle.setWrapped(true);
                             headWriteFont.setColor(IndexedColors.BLACK.getIndex());
                             headWriteFont.setFontHeightInPoints((short) 11);
                             headWriteFont.setFontName("微软雅黑");
