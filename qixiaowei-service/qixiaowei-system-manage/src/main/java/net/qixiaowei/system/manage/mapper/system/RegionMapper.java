@@ -142,4 +142,11 @@ public interface RegionMapper {
      * @return
      */
     List<RegionDTO> selectRegionByProvinceNameAndCityNameAndDistrictName();
+
+    /**
+     * 远程查询excel省份下拉框
+     * @param region
+     * @return
+     */
+    List<RegionDTO> getDropList(@Param("region") Region region);
 }

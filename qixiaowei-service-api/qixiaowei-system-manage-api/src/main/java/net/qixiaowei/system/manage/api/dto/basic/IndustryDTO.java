@@ -56,6 +56,11 @@ public class IndustryDTO extends BaseDTO {
      */
     private String parentIndustryName;
     /**
+     * excel行业下拉框名称
+     */
+    private String parentIndustryExcelName;
+
+    /**
      * 祖级列表ID，按层级用英文逗号隔开
      */
     private String ancestors;
@@ -87,6 +92,9 @@ public class IndustryDTO extends BaseDTO {
      * 是否需要所有的(1-需要所有的行业)
      */
     private Integer isAll;
-
+    /**
+     * 组织子节点信息
+     */
+    private List<IndustryDTO> children;
 }
 

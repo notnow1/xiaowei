@@ -1,8 +1,7 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
-import java.io.IOException;
-import java.util.*;
-
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
@@ -10,49 +9,64 @@ import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
+import com.alibaba.excel.write.handler.WriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
+import com.alibaba.excel.write.merge.AbstractMergeStrategy;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
-import com.alibaba.excel.write.metadata.holder.WriteTableHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.AbstractVerticalCellStyleStrategy;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.text.CharsetKit;
+import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
+import net.qixiaowei.integration.common.web.controller.BaseController;
+import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeImportListener;
+import net.qixiaowei.operate.cloud.service.product.IProductService;
+import net.qixiaowei.operate.cloud.service.targetManager.IAreaService;
+import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
+import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import com.alibaba.excel.EasyExcel;
-import lombok.SneakyThrows;
-import net.qixiaowei.integration.common.text.CharsetKit;
-import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
-import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
-import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeImportListener;
-import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
-import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -67,7 +81,18 @@ public class TargetDecomposeController extends BaseController {
 
     @Autowired
     private ITargetDecomposeService targetDecomposeService;
-
+    @Autowired
+    private RemoteDepartmentService remoteDepartmentService;
+    @Autowired
+    private RemoteEmployeeService remoteEmployeeService;
+    @Autowired
+    private RemoteIndustryService remoteIndustryService;
+    @Autowired
+    private IProductService productService;
+    @Autowired
+    private IAreaService areaService;
+    @Autowired
+    private RemoteRegionService remoteRegionService;
 
     //==============================销售订单目标分解==================================//
 
@@ -1057,13 +1082,77 @@ public class TargetDecomposeController extends BaseController {
     }
 
     /**
-     * 目标分解导出列表模板Excel
+     * 目标分解导出详情模板Excel
      */
     @SneakyThrows
     @PostMapping("/export-template")
     public void exportTargetDecomposeTemplate(@RequestBody TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
+        Department departmentDTO = new Department();
+        departmentDTO.setStatus(1);
+        R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(departmentDTO, SecurityConstants.INNER);
+        //部门名称集合
+        List<DepartmentDTO>  parentDepartmentExcelNamesData = departmentExcelList.getData();
+        List<String>  parentDepartmentExcelNames = new ArrayList<>();
+        if (StringUtils.isNotEmpty(parentDepartmentExcelNamesData)){
+            for (DepartmentDTO parentDepartmentExcelNamesDatum : parentDepartmentExcelNamesData) {
+                parentDepartmentExcelNames.add(parentDepartmentExcelNamesDatum.getParentDepartmentExcelName());
+            }
+
+        }
+        //销售员下拉框
+        R<List<EmployeeDTO>> employeeExcelList = remoteEmployeeService.selectDropEmployeeList(new EmployeeDTO(), SecurityConstants.INNER);
+        List<EmployeeDTO> employeeExcelListData = employeeExcelList.getData();
+        List<String> employeeExcelExcelNames = new ArrayList<>();
+        if (StringUtils.isNotEmpty(employeeExcelListData)){
+            for (EmployeeDTO employeeExcelListDatum : employeeExcelListData) {
+                employeeExcelExcelNames.add(employeeExcelListDatum.getEmployeeName()+"("+employeeExcelListDatum.getEmployeeCode()+")");
+            }
+        }
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setEmployeeFlag("user");
+        //滚动预测负责人下拉框
+        R<List<EmployeeDTO>> principalEmployeeExcelList = remoteEmployeeService.selectDropEmployeeList(employeeDTO, SecurityConstants.INNER);
+        List<EmployeeDTO> principalEmployeeListData = principalEmployeeExcelList.getData();
+        List<String> principalEmployeeExcelNames = new ArrayList<>();
+        if (StringUtils.isNotEmpty(principalEmployeeListData)){
+            for (EmployeeDTO employeeExcelListDatum : principalEmployeeListData) {
+                principalEmployeeExcelNames.add(employeeExcelListDatum.getEmployeeName()+"("+employeeExcelListDatum.getEmployeeCode()+")");
+            }
+        }
+        //行业下拉框
+        R<List<IndustryDTO>> industryExcelList = remoteIndustryService.selectListByIndustry(new IndustryDTO(), SecurityConstants.INNER);
+        List<String> parentIndustryExcelNames = new ArrayList<>();
+        List<IndustryDTO> industryExcelListData = industryExcelList.getData();
+        if (StringUtils.isNotEmpty(industryExcelListData)){
+            parentIndustryExcelNames = industryExcelListData.stream().filter(f -> StringUtils.isNotBlank(f.getParentIndustryExcelName())).map(IndustryDTO::getParentIndustryExcelName).collect(Collectors.toList());
+
+        }
+
+        //产品下拉框
+        List<ProductDTO> productDTOList = productService.selectDropList(new ProductDTO());
+        List<String> parentProductExcelNames = new ArrayList<>();
+        if (StringUtils.isNotEmpty(productDTOList)){
+            parentProductExcelNames = productDTOList.stream().filter(f -> StringUtils.isNotBlank(f.getParentProductExcelName())).map(ProductDTO::getParentProductExcelName).collect(Collectors.toList());
+        }
+        //区域下拉框
+        List<AreaDTO> areaDTOList = areaService.selectAreaList(new AreaDTO());
+        List<String> areaExcelNames = new ArrayList<>();
+        if (StringUtils.isNotEmpty(areaDTOList)){
+            areaExcelNames = areaDTOList.stream().filter(f -> StringUtils.isNotBlank(f.getAreaName())).map(AreaDTO::getAreaName).collect(Collectors.toList());
+        }
+        //省份下拉框
+        R<List<RegionDTO>> regionExcelList = remoteRegionService.getDropList(new RegionDTO(), SecurityConstants.INNER);
+        List<String> provinceExcelNames = new ArrayList<>();
+        List<RegionDTO> regionExcelListData = regionExcelList.getData();
+        if (StringUtils.isNotEmpty(regionExcelListData)){
+            provinceExcelNames = regionExcelListData.stream().filter(f -> StringUtils.isNotBlank(f.getProvinceName())).map(RegionDTO::getProvinceName).collect(Collectors.toList());
+        }
+        Map<Integer, List<String>> selectMap = new HashMap<>();
+
+
         //自定义表头
-        List<List<String>> head = TargetDecomposeImportListener.headTemplate(targetDecomposeDTO);
+        List<List<String>> head = TargetDecomposeImportListener.headTemplate(selectMap,targetDecomposeDTO,parentDepartmentExcelNames,employeeExcelExcelNames,principalEmployeeExcelNames,parentIndustryExcelNames,parentProductExcelNames,areaExcelNames,provinceExcelNames);
+
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         String fileName = URLEncoder.encode("自定义目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
@@ -1071,10 +1160,195 @@ public class TargetDecomposeController extends BaseController {
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
                 .head(head)// 设置表头
-                .sheet("自定义目标分解详情")// 设置 sheet 的名字
-                // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .doWrite(TargetDecomposeImportListener.excelParseObject(targetDecomposeDTO));
+                .inMemory(true)
+                .useDefaultStyle(false)
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .sheet(targetDecomposeDTO.getIndicatorName() + "目标分解详情")// 设置 sheet 的名字
+
+                .registerWriteHandler(new SheetWriteHandler() {
+                    @Override
+                    public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
+                        for (int i = 0; i < 100; i++) {
+                            // 设置为文本格式
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            CellStyle cellStyle = writeWorkbookHolder.getCachedWorkbook().createCellStyle();
+                            // 49为文本格式
+                            cellStyle.setDataFormat((short) 49);
+                            // i为列，一整列设置为文本格式
+                            sheet.setDefaultColumnStyle(i, cellStyle);
+
+                        }
+                    }
+                })
+                //设置文本
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        //设置文本
+                        DataFormatData dataFormatData = new DataFormatData();
+                        dataFormatData.setIndex((short) 49);
+                        writeCellStyle.setDataFormatData(dataFormatData);
+                        // 设置字体
+                        WriteFont headWriteFont = new WriteFont();
+                        if (context.getRowIndex() < 5) {
+                            if (context.getColumnIndex() < 2) {
+                                headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                headWriteFont.setFontHeightInPoints((short) 11);
+                                if (context.getRowIndex() == 0) {
+                                    headWriteFont.setBold(true);
+                                }//加粗
+                                else if (context.getRowIndex() > 0 && context.getColumnIndex() == 0) {
+                                    headWriteFont.setBold(true);
+                                }
+
+                                headWriteFont.setFontName("微软雅黑");
+                                writeCellStyle.setWriteFont(headWriteFont);
+                                //靠左
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                //垂直居中
+                                writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                                //设置边框
+                                writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                                // 拿到poi的workbook
+                                Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                                // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                                // 不同单元格尽量传同一个 cellStyle
+                                //设置rgb颜色
+                                byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                                CellStyle cellStyle = workbook.createCellStyle();
+                                XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                                // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                                // cell里面去 会导致自己设置的不一样（很关键）
+                                cellData.setOriginCellStyle(xssfCellColorStyle);
+                                cell.setCellStyle(cellStyle);
+                            }
+                        } else {
+
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            if (context.getRowIndex() == 6 || context.getRowIndex() == 7 || context.getRowIndex() == 10 || context.getRowIndex() == 11) {
+                                headWriteFont.setBold(true);
+                            }
+                            headWriteFont.setFontName("微软雅黑");
+
+                            //靠左
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            if (context.getRowIndex() == 8 && context.getColumnIndex() > 0) {
+                                //靠右
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+
+                            }
+                            if (context.getRowIndex() > 11 && context.getColumnIndex() > (targetDecomposeDTO.getFileNameList().size())) {
+                                //靠右
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                            }
+                            //垂直居中
+                            writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                            if (context.getRowIndex() > 6) {
+                                //设置边框
+                                writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                            }
+                            if (context.getRowIndex() == 7) {
+                                if (context.getColumnIndex() < 7) {
+                                    // 拿到poi的workbook
+                                    Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                                    // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                                    // 不同单元格尽量传同一个 cellStyle
+                                    //设置rgb颜色
+                                    byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                                    CellStyle cellStyle = workbook.createCellStyle();
+                                    XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                    xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                    // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                    cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                    // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                                    // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                                    // cell里面去 会导致自己设置的不一样（很关键）
+                                    cellData.setOriginCellStyle(xssfCellColorStyle);
+                                    cell.setCellStyle(cellStyle);
+                                }
+
+                            }
+                            if (context.getRowIndex() == 8) {
+                                if (context.getColumnIndex() < 7) {
+                                    // 拿到poi的workbook
+                                    Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                                    // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                                    // 不同单元格尽量传同一个 cellStyle
+                                    //设置rgb颜色
+                                    byte[] rgb = new byte[]{(byte) 217, (byte) 217, (byte) 217};
+                                    CellStyle cellStyle = workbook.createCellStyle();
+                                    XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                    xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                    // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                    cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                    // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                                    // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                                    // cell里面去 会导致自己设置的不一样（很关键）
+                                    cellData.setOriginCellStyle(xssfCellColorStyle);
+                                    cell.setCellStyle(cellStyle);
+                                }
+
+                            }
+                            if (context.getRowIndex() == 11) {
+
+                                int num = 0;
+                                if (StringUtils.isNotEmpty(targetDecomposeDTO.getTargetDecomposeDetailsDTOS())) {
+                                    num = targetDecomposeDTO.getTargetDecomposeDetailsDTOS().get(0).getDecomposeDetailCyclesDTOS().size();
+                                }
+                                if (context.getColumnIndex() <(targetDecomposeDTO.getFileNameList().size() + 1)){
+                                    headWriteFont.setColor(IndexedColors.RED.getIndex());
+                                }
+                                if (context.getColumnIndex() < (targetDecomposeDTO.getFileNameList().size() + 2 + num)) {
+                                    // 拿到poi的workbook
+                                    Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                                    // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                                    // 不同单元格尽量传同一个 cellStyle
+                                    //设置rgb颜色
+                                    byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                                    CellStyle cellStyle = workbook.createCellStyle();
+                                    XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                    xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                    // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                    cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                    // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                                    // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                                    // cell里面去 会导致自己设置的不一样（很关键）
+                                    cellData.setOriginCellStyle(xssfCellColorStyle);
+                                    cell.setCellStyle(cellStyle);
+                                }
+                            }
+                            writeCellStyle.setWriteFont(headWriteFont);
+                        }
+                        cellData.setWriteCellStyle(writeCellStyle);
+                    }
+                })
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                        Sheet sheet = writeSheetHolder.getSheet();
+                        int columnIndex = cell.getColumnIndex();
+                        // 列宽16
+                        sheet.setColumnWidth(columnIndex, (270 * 16));
+                        // 行高7
+                        sheet.setDefaultRowHeight((short) (20 * 15));
+                    }
+                })
+                .doWrite(new ArrayList<>());
     }
 
     /**

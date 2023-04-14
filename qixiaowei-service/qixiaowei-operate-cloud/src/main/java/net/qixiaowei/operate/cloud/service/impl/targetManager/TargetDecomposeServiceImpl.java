@@ -128,7 +128,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
-        this.packRemote(targetDecomposeDetailsDTOList);
+        this.packRemote(targetDecomposeDetailsDTOList,false);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //年度预测值
@@ -274,7 +274,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //根据目标分解主表id分组
         Map<Long, List<TargetDecomposeDetailsDTO>> targetDecomposeDetailsMapList = targetDecomposeDetailsDTOList.stream().collect(Collectors.groupingBy(TargetDecomposeDetailsDTO::getTargetDecomposeId));
 
-        this.packRemote(targetDecomposeDetailsDTOList);
+        this.packRemote(targetDecomposeDetailsDTOList,false);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsIds(targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getTargetDecomposeDetailsId).collect(Collectors.toList()));
             for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOList) {
@@ -449,7 +449,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByPowerTargetDecomposeId(targetDecomposeId, SecurityUtils.getEmployeeId());
         }
 
-        this.packRemote(targetDecomposeDetailsDTOList);
+        this.packRemote(targetDecomposeDetailsDTOList,false);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //年度预测值
@@ -887,7 +887,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         this.packDecompositionDimension(targetDecomposeDTO);
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
-        this.packRemote(targetDecomposeDetailsDTOList);
+        this.packRemote(targetDecomposeDetailsDTOList,false);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //目标分解周欺数据集合
@@ -2528,7 +2528,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Override
     public List<TargetDecomposeDetailsDTO> selectTargetDecomposeDetailsByTargetDecomposeId(Long targetDecomposeId) {
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
-        this.packRemote(targetDecomposeDetailsDTOList);
+        this.packRemote(targetDecomposeDetailsDTOList,false);
         return targetDecomposeDetailsDTOList;
     }
 
@@ -2638,7 +2638,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //详情表
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
-            this.packRemote(targetDecomposeDetailsDTOList);
+            this.packRemote(targetDecomposeDetailsDTOList,true);
             List<Long> targetDecomposeDetailsIds = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getTargetDecomposeDetailsId).collect(Collectors.toList());
             //周期表
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsIds(targetDecomposeDetailsIds);
@@ -2861,7 +2861,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      *
      * @param targetDecomposeDetailsDTOList 目标分解详情DTO列表
      */
-    public void packRemote(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList) {
+    public void packRemote(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList,boolean excelFlag) {
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             //人员id集合
             List<Long> employeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
@@ -2888,7 +2888,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             for (EmployeeDTO datum : data) {
                                 if (targetDecomposeDetailsDTO.getEmployeeId().equals(datum.getEmployeeId())) {
                                     targetDecomposeDetailsDTO.setEmployeeId(datum.getEmployeeId());
-                                    targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName());
+                                    if (excelFlag){
+                                        targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName()+"("+datum.getEmployeeCode()+")");
+                                    }else {
+                                        targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName());
+                                    }
+
                                     break;
                                 }
                             }
@@ -2908,7 +2913,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             for (EmployeeDTO datum : data) {
                                 if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(datum.getEmployeeId())) {
                                     targetDecomposeDetailsDTO.setPrincipalEmployeeId(datum.getEmployeeId());
-                                    targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName());
+                                    if (excelFlag){
+                                        targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName()+"("+datum.getEmployeeCode()+")");
+                                    }else {
+                                        targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName());
+                                    }
                                     break;
                                 }
                             }
@@ -3241,23 +3250,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             //详情周期数据
             for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
-/*                int dime = 0;
-                if (targetDecomposeDTO.getTargetYear() <= DateUtils.getYear()) {
-                    dime = this.packDecomposeDetailCycles(targetDecomposeDTO);
-                }*/
+
                 List<String> list = cyclesExcelData.get(i);
                 for (int i1 = 0; i1 < list.size(); i1++) {
- /*                   if (i1 >= dime - 1) {
-                    } else {
-                        DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
-                        //周期
-                        decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
-                        if (StringUtils.isNotBlank(list.get(i1))) {
-                            //周期目标值
-                            decomposeDetailCyclesDTO.setCycleTarget(new BigDecimal("0"));
-                        }
-                        decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
-                    }*/
                         DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
                         //周期
                         decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);

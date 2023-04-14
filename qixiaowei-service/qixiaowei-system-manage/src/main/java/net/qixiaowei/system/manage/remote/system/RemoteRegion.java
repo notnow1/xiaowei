@@ -38,8 +38,21 @@ public class RemoteRegion implements RemoteRegionService {
     @Override
     @InnerAuth
     @PostMapping("/codeList")
-    public R<List<RegionDTO>> selectCodeList(List<String> regionNames, String source) {
+    public R<List<RegionDTO>> selectCodeList(@RequestBody List<String> regionNames, String source) {
         return R.ok(regionService.selectCodeList(regionNames));
+    }
+
+    /**
+     * 远程查询excel省份下拉框
+     * @param regionDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/getDropList")
+    public R<List<RegionDTO>> getDropList(@RequestBody RegionDTO regionDTO, String source) {
+        return R.ok(regionService.getDropList(regionDTO));
     }
 
 }

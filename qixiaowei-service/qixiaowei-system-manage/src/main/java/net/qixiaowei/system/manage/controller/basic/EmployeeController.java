@@ -186,7 +186,7 @@ public class EmployeeController extends BaseController {
     @GetMapping("export")
     public void exportEmployee(@RequestParam Map<String, Object> employee, EmployeeDTO employeeDTO, HttpServletResponse response) {
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName(new DepartmentDTO());
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(new DepartmentDTO());
         //岗位名称
         List<String> postNames = new ArrayList<>();
         PostDTO postDTO = new PostDTO();
@@ -315,7 +315,7 @@ public class EmployeeController extends BaseController {
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName(departmentDTO);
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
         //岗位名称
         List<String> postNames = new ArrayList<>();
         PostDTO postDTO = new PostDTO();

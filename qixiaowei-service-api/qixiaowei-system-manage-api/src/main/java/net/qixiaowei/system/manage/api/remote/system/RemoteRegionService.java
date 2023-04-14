@@ -36,4 +36,13 @@ public interface RemoteRegionService {
      */
     @PostMapping(API_PREFIX_REGION + "/codeList")
     R<List<RegionDTO>> selectCodeList(@RequestBody List<String> regionNames, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 远程查询excel省份下拉框
+     *
+     * @param regionDTO
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_REGION + "/getDropList")
+    R<List<RegionDTO>> getDropList(@RequestBody RegionDTO regionDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

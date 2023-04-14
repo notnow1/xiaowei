@@ -31,6 +31,11 @@ public class RemoteRegionFallbackFactory implements FallbackFactory<RemoteRegion
             public R<List<RegionDTO>> selectCodeList(List<String> regionNames, String source) {
                 return R.fail("根据省份名称集合获取省份失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<RegionDTO>> getDropList(RegionDTO regionDTO, String source) {
+                return R.fail("远程查询excel省份下拉框失败:" + throwable.getMessage());
+            }
         };
     }
 }

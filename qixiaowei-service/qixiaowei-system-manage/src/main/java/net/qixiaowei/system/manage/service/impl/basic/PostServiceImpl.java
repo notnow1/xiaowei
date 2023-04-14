@@ -539,7 +539,7 @@ public class PostServiceImpl implements IPostService {
         //查询部门已有数据
         Department departmentExcel = new Department();
         departmentExcel.setStatus(1);
-        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(departmentExcel);
+        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentExcelListName(departmentExcel);
         //职级体系集合
         List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(new OfficialRankSystemDTO());
         //岗位名称集合

@@ -23,13 +23,11 @@ import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
-import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.integration.common.utils.excel.CustomVerticalCellStyleStrategy;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.log.annotation.Log;
@@ -38,15 +36,11 @@ import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
-import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
-import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
 import net.qixiaowei.system.manage.excel.post.PostExcel;
 import net.qixiaowei.system.manage.excel.post.PostImportListener;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankSystemService;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -180,7 +174,7 @@ public class PostController extends BaseController {
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName(departmentDTO);
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
         if (StringUtils.isNull(parentDepartmentExcelNames)){
             throw new ServiceException("请先创建部门数据！");
         }
