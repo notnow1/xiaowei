@@ -494,6 +494,8 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                 this.updateOfficialRankEmoluments(officialRankEmolumentDTOList);//批量更新
             }
             return 1;
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ServiceException("导入绩效考核表Excel失败");
         }
