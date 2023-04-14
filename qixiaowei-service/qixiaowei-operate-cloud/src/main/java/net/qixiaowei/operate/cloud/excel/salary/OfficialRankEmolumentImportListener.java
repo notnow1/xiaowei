@@ -6,11 +6,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
+
 import net.qixiaowei.operate.cloud.service.salary.IOfficialRankEmolumentService;
 
 /**
