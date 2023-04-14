@@ -90,7 +90,7 @@ public class OfficialRankEmolumentController extends BaseController {
     /**
      * 导入个人绩效归档表
      */
-    @RequiresPermissions("operate:cloud:performanceAppraisal:perArchive:import")
+    @RequiresPermissions("operate:cloud:officialRankEmolument:import")
     @PostMapping("import")
     public AjaxResult importOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO, MultipartFile file) {
         return toAjax(officialRankEmolumentService.importOfficialRankEmolument(officialRankEmolumentDTO, file));
