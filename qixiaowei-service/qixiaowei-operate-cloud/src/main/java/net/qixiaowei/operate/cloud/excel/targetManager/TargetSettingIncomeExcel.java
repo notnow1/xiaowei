@@ -21,7 +21,6 @@ import static com.alibaba.excel.enums.BooleanEnum.TRUE;
 @Data
 @HeadRowHeight(16)
 @HeadStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT, wrapped = TRUE)
-@ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
 @HeadFontStyle(fontName = "微软雅黑", bold = TRUE, fontHeightInPoints = 11)
 @ContentFontStyle(fontName = "微软雅黑")
 @ContentRowHeight(15)

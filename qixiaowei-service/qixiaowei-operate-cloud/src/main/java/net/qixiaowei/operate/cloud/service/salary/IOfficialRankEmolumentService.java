@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.salary;
 import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
 import net.qixiaowei.operate.cloud.excel.salary.OfficialRankEmolumentExcel;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -106,9 +107,10 @@ public interface IOfficialRankEmolumentService {
     /**
      * 导入Excel
      *
-     * @param list
+     * @param officialRankEmolumentDTO 职级DTO
+     * @param file                     文件
      */
-    void importOfficialRankEmolument(List<OfficialRankEmolumentExcel> list);
+    int importOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO, MultipartFile file);
 
     /**
      * 导出Excel

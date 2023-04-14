@@ -362,8 +362,7 @@ public class SalaryPayController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("operate:cloud:salaryPay:import")
     @GetMapping("/export-template")
-    public void exportTemplate(@RequestParam Map<String, Object> salaryPay, SalaryPayExcel
-            salaryPayExcel, HttpServletResponse response) {
+    public void exportTemplate(SalaryPayExcel salaryPayExcel, HttpServletResponse response) {
         try {
             List<SalaryItemDTO> salaryItemDTOS1 = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
             List<List<String>> headTemplate = SalaryPayImportListener.headTemplate(salaryItemDTOS1);
