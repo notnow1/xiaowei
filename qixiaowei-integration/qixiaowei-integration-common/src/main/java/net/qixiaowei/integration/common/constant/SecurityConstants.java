@@ -67,7 +67,7 @@ public interface SecurityConstants {
     /**
      * 销售云-签名
      */
-    String SALES_SIGN = "sales_sign";
+    String SALES_SIGN = "Sales-Sign";
 
     /**
      * 销售云-token key
