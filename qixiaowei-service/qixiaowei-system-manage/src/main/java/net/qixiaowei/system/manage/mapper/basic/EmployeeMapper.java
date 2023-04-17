@@ -47,7 +47,21 @@ public interface EmployeeMapper {
      */
     EmployeeDTO selectEmployeeByEmployeeCode(@Param("employeeCode") String employeeCode);
 
+    /**
+     * 根据手机号查询员工表
+     *
+     * @param employeeMobile 员工手机号 注:后面新加需求因有脏数据 防止报错用list接收
+     * @return 员工表
+     */
+    List<EmployeeDTO> selectEmployeeByEmployeeMobile(@Param("employeeMobile") String employeeMobile);
 
+    /**
+     * 根据邮箱号查询员工表
+     *
+     * @param employeeEmail 邮箱号 注:后面新加需求因有脏数据 防止报错用list接收
+     * @return 员工表
+     */
+    List<EmployeeDTO> selectEmployeeByEmployeeEmail(@Param("employeeEmail") String employeeEmail);
     /**
      * 查询员工表列表
      *

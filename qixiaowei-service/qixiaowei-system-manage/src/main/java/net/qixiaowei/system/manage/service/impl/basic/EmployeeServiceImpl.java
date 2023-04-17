@@ -408,11 +408,33 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Transactional
     @Override
     public EmployeeDTO insertEmployee(EmployeeDTO employeeDTO) {
+        //员工手机号
+        String employeeMobile = employeeDTO.getEmployeeMobile();
+        //员工邮箱号
+        String employeeEmail = employeeDTO.getEmployeeEmail();
+
         //查询是否已经存在员工
         EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeCode(employeeDTO.getEmployeeCode());
         if (null != employeeDTO1) {
             throw new ServiceException("工号已存在");
         }
+        //查询是否已经存在员工
+        if (StringUtils.isNotBlank(employeeMobile)) {
+            List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeMobile(employeeMobile);
+            if (StringUtils.isNotEmpty(employeeDTOList)) {
+                throw new ServiceException("工号已存在");
+            }
+        }
+        //查询是否已经存在员工
+        if (StringUtils.isNotBlank(employeeEmail)) {
+            List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeMobile(employeeEmail);
+            if (StringUtils.isNotEmpty(employeeDTOList)) {
+                throw new ServiceException("工号已存在");
+            }
+        }
+
+        employeeMapper.selectEmployeeByEmployeeEmail(employeeDTO.getEmployeeCode());
+
         //员工表
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
@@ -454,6 +476,40 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Transactional
     @Override
     public int updateEmployee(EmployeeDTO employeeDTO) {
+        //查询是否已经存在员工
+        EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeCode(employeeDTO.getEmployeeCode());
+        if (null != employeeDTO1) {
+            //前台传入员工手机号
+            String employeeMobile = employeeDTO.getEmployeeMobile();
+            //前台传入员工邮箱号
+            String employeeEmail = employeeDTO.getEmployeeEmail();
+            //已存在的邮箱
+            String employeeEmailExist = employeeDTO1.getEmployeeEmail();
+            //已存在的手机号
+            String employeeMobileExist = employeeDTO1.getEmployeeMobile();
+
+            //查询是否已经存在员工
+            if (StringUtils.isNotBlank(employeeMobile)) {
+                if (!StringUtils.equals(employeeMobile, employeeMobileExist)) {
+                    List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeMobile(employeeMobile);
+                    if (StringUtils.isNotEmpty(employeeDTOList)) {
+                        throw new ServiceException("工号已存在");
+                    }
+                }
+            }
+            //查询是否已经存在员工
+            if (StringUtils.isNotBlank(employeeEmail)) {
+                if (!StringUtils.equals(employeeEmail, employeeEmailExist)) {
+                    List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeMobile(employeeEmail);
+                    if (StringUtils.isNotEmpty(employeeDTOList)) {
+                        throw new ServiceException("工号已存在");
+                    }
+                }
+
+            }
+        }
+
+
         int i = 0;
         //员工表
         Employee employee = new Employee();
