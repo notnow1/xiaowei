@@ -422,14 +422,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (StringUtils.isNotBlank(employeeMobile)) {
             List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeMobile(employeeMobile);
             if (StringUtils.isNotEmpty(employeeDTOList)) {
-                throw new ServiceException("工号已存在");
+                throw new ServiceException("手机号已存在");
             }
         }
         //查询是否已经存在员工
         if (StringUtils.isNotBlank(employeeEmail)) {
             List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeMobile(employeeEmail);
             if (StringUtils.isNotEmpty(employeeDTOList)) {
-                throw new ServiceException("工号已存在");
+                throw new ServiceException("邮箱已存在");
             }
         }
 
@@ -493,7 +493,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 if (!StringUtils.equals(employeeMobile, employeeMobileExist)) {
                     List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeMobile(employeeMobile);
                     if (StringUtils.isNotEmpty(employeeDTOList)) {
-                        throw new ServiceException("工号已存在");
+                        throw new ServiceException("手机号已存在");
                     }
                 }
             }
@@ -502,7 +502,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 if (!StringUtils.equals(employeeEmail, employeeEmailExist)) {
                     List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeMobile(employeeEmail);
                     if (StringUtils.isNotEmpty(employeeDTOList)) {
-                        throw new ServiceException("工号已存在");
+                        throw new ServiceException("邮箱已存在");
                     }
                 }
 
