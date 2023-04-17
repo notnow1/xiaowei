@@ -1105,7 +1105,7 @@ public class TargetDecomposeController extends BaseController {
         List<String> employeeExcelExcelNames = new ArrayList<>();
         if (StringUtils.isNotEmpty(employeeExcelListData)){
             for (EmployeeDTO employeeExcelListDatum : employeeExcelListData) {
-                employeeExcelExcelNames.add(employeeExcelListDatum.getEmployeeName()+"("+employeeExcelListDatum.getEmployeeCode()+")");
+                employeeExcelExcelNames.add(employeeExcelListDatum.getEmployeeName()+"（"+employeeExcelListDatum.getEmployeeCode()+"）");
             }
         }
         EmployeeDTO employeeDTO = new EmployeeDTO();
@@ -1116,7 +1116,7 @@ public class TargetDecomposeController extends BaseController {
         List<String> principalEmployeeExcelNames = new ArrayList<>();
         if (StringUtils.isNotEmpty(principalEmployeeListData)){
             for (EmployeeDTO employeeExcelListDatum : principalEmployeeListData) {
-                principalEmployeeExcelNames.add(employeeExcelListDatum.getEmployeeName()+"("+employeeExcelListDatum.getEmployeeCode()+")");
+                principalEmployeeExcelNames.add(employeeExcelListDatum.getEmployeeName()+"（"+employeeExcelListDatum.getEmployeeCode()+"）");
             }
         }
         //行业下拉框
@@ -1237,7 +1237,7 @@ public class TargetDecomposeController extends BaseController {
 
                             headWriteFont.setColor(IndexedColors.BLACK.getIndex());
                             headWriteFont.setFontHeightInPoints((short) 11);
-                            if (context.getRowIndex() == 6 || context.getRowIndex() == 7 || context.getRowIndex() == 10 || context.getRowIndex() == 11) {
+                            if (context.getRowIndex() == 6 || context.getRowIndex() == 7 || context.getRowIndex() == 10) {
                                 headWriteFont.setBold(true);
                             }
                             headWriteFont.setFontName("微软雅黑");
@@ -1263,7 +1263,7 @@ public class TargetDecomposeController extends BaseController {
                                 writeCellStyle.setBorderBottom(BorderStyle.THIN);
                             }
                             if (context.getRowIndex() == 7) {
-                                if (context.getColumnIndex() < 7) {
+                                if (context.getColumnIndex() < 5) {
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -1284,7 +1284,7 @@ public class TargetDecomposeController extends BaseController {
 
                             }
                             if (context.getRowIndex() == 8) {
-                                if (context.getColumnIndex() < 7) {
+                                if (context.getColumnIndex() < 5) {
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -1310,10 +1310,10 @@ public class TargetDecomposeController extends BaseController {
                                 if (StringUtils.isNotEmpty(targetDecomposeDTO.getTargetDecomposeDetailsDTOS())) {
                                     num = targetDecomposeDTO.getTargetDecomposeDetailsDTOS().get(0).getDecomposeDetailCyclesDTOS().size();
                                 }
-                                if (context.getColumnIndex() <(targetDecomposeDTO.getFileNameList().size() + 1)){
+                                if (context.getColumnIndex() <(targetDecomposeDTO.getFileNameList().size()+1)){
                                     headWriteFont.setColor(IndexedColors.RED.getIndex());
                                 }
-                                if (context.getColumnIndex() < (targetDecomposeDTO.getFileNameList().size() + 2 + num)) {
+                                if (context.getColumnIndex() < (targetDecomposeDTO.getFileNameList().size() + 1 + num)) {
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -1363,7 +1363,13 @@ public class TargetDecomposeController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-        return AjaxResult.success(targetDecomposeService.excelParseObject(targetDecomposeDTO, file));
+        //产品下拉框
+        List<ProductDTO> productDTOList = productService.selectDropList(new ProductDTO());
+
+        //区域下拉框
+        List<AreaDTO> areaDTOList = areaService.selectAreaList(new AreaDTO());
+
+        return AjaxResult.success(targetDecomposeService.excelParseObject(targetDecomposeDTO, file,productDTOList,areaDTOList));
     }
 
 

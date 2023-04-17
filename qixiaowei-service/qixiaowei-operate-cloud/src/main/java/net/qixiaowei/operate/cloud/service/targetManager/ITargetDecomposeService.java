@@ -1,13 +1,13 @@
 package net.qixiaowei.operate.cloud.service.targetManager;
 
-import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -313,12 +313,16 @@ public interface ITargetDecomposeService {
      */
     void importTargetDecompose(List<TargetDecomposeExcel> list);
 
+
     /**
      * 解析Excel
-     *
+     * @param targetDecomposeDTO
      * @param file
+     * @param productDTOList
+     * @param areaDTOList
+     * @return
      */
-    TargetDecomposeDTO excelParseObject(TargetDecomposeDTO targetDecomposeDTO, MultipartFile file);
+    TargetDecomposeDTO excelParseObject(TargetDecomposeDTO targetDecomposeDTO, MultipartFile file, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList);
 
     /**
      * 目标分解(销售订单)导出列表Excel

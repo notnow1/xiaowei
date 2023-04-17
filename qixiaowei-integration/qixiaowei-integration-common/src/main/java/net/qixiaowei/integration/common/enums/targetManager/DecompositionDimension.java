@@ -6,6 +6,7 @@ package net.qixiaowei.integration.common.enums.targetManager;
 public enum DecompositionDimension {
 
     EMPLOYEE("销售员"),
+    PRINCIPALEMPLOYEE("滚动预测负责人"),
 
     AREA( "区域"),
 
