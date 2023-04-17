@@ -1147,7 +1147,7 @@ public class TenantServiceImpl implements ITenantService {
                 }
             }
         }
-        return endTime;
+        return DateUtil.endOfDay(endTime);
     }
 }
 
