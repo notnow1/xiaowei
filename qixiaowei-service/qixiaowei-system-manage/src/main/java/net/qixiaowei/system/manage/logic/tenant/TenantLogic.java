@@ -458,6 +458,7 @@ public class TenantLogic {
             Date nowDate = DateUtils.getNowDate();
             String time = DateUtil.formatDateTime(nowDate);
             String saleSign = SalesSignUtils.buildSaleSign(userAccount, time);
+            // todo 会挤掉其他用户
             R<SalesLoginVO> r = remoteSyncAdminService.syncLogin(userAccount, tenantId, time, saleSign);
             if (0 != r.getCode()) {
                 throw new ServiceException("系统异常");
