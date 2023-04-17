@@ -191,6 +191,32 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
     }
 
     /**
+     * 获取所有的战略指标维度根节点
+     *
+     * @return List
+     */
+    @Override
+    public List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionAllRootList(StrategyIndexDimensionDTO indexDimensionDTO) {
+        StrategyIndexDimension strategyIndexDimension = new StrategyIndexDimension();
+        BeanUtils.copyProperties(indexDimensionDTO, strategyIndexDimension);
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(strategyIndexDimension);
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOTree = this.createTree(strategyIndexDimensionDTOS, 0L);
+        List<StrategyIndexDimensionDTO> rootList = new ArrayList<>();
+        for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOTree) {
+            List<StrategyIndexDimensionDTO> children = strategyIndexDimensionDTO.getChildren();
+            strategyIndexDimensionDTO.setRootIndexDimensionName(strategyIndexDimensionDTO.getIndexDimensionName());
+            if (StringUtils.isNotEmpty(children)) {
+                setAllRootNameValue(children, strategyIndexDimensionDTO, rootList);
+            }
+            rootList.add(strategyIndexDimensionDTO);
+        }
+        for (int i = 0; i < rootList.size(); i++) {
+            rootList.get(i).setSort(i);
+        }
+        return rootList;
+    }
+
+    /**
      * 规划业务单元列表-不带本身
      *
      * @param strategyIndexDimensionId 主键
@@ -306,6 +332,25 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
                 rootList.add(strategyIndexDimensionDTO);
         }
     }
+
+    /**
+     * 树形结构
+     *
+     * @param children                  子级列表
+     * @param strategyIndexDimensionDTO 父级DTO
+     * @param rootList                  根目录list
+     */
+    private void setAllRootNameValue(List<StrategyIndexDimensionDTO> children, StrategyIndexDimensionDTO strategyIndexDimensionDTO, List<StrategyIndexDimensionDTO> rootList) {
+        for (StrategyIndexDimensionDTO child : children) {
+            List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = child.getChildren();
+            child.setRootIndexDimensionName(strategyIndexDimensionDTO.getRootIndexDimensionName() + "-" + child.getIndexDimensionName());
+            if (StringUtils.isNotEmpty(strategyIndexDimensionDTOS)) {
+                setAllRootNameValue(strategyIndexDimensionDTOS, child, rootList);
+            }
+            rootList.add(child);
+        }
+    }
+
 
     /**
      * 树形结构

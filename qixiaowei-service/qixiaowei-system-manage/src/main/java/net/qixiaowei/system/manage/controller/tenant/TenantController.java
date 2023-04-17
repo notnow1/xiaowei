@@ -146,7 +146,6 @@ public class TenantController extends BaseController {
                         // 3.0 设置单元格为文本
                         WriteCellData<?> cellData = context.getFirstCellData();
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
-
                         //设置文本
                         DataFormatData dataFormatData = new DataFormatData();
                         dataFormatData.setIndex((short) 49);
@@ -180,7 +179,7 @@ public class TenantController extends BaseController {
                             xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
                             // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
                             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                            // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                            // 由于这里没有指定data format 最后展示的数据 格式可能会不太正确
                             // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
                             // cell里面去 会导致自己设置的不一样（很关键）
                             cellData.setWriteCellStyle(writeCellStyle);

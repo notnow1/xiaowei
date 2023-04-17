@@ -20,10 +20,10 @@ import static com.alibaba.excel.enums.BooleanEnum.TRUE;
  */
 @Data
 @HeadRowHeight(16)
-@HeadStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT, wrapped = TRUE)
+@HeadStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
+@ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
 @HeadFontStyle(fontName = "微软雅黑", bold = TRUE, fontHeightInPoints = 11)
 @ContentFontStyle(fontName = "微软雅黑")
-@ContentRowHeight(15)
 public class TargetSettingIncomeExcel {
 
     private static final long serialVersionUID = 1L;

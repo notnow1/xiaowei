@@ -175,7 +175,7 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
                 "3、户口所在地、参保地应按照XX省XX市录入\n" +
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
-        head11.add("入职日期*");
+        head11.add("入职时间*");
         // 第十二列
         List<String> head25 = new ArrayList<String>();
         head25.add("说明：\n" +
@@ -184,7 +184,7 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
                 "3、户口所在地、参保地应按照XX省XX市录入\n" +
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
-        head25.add("离职日期");
+        head25.add("离职时间");
         // 第十三列
         List<String> head12 = new ArrayList<String>();
         head12.add("说明：\n" +
@@ -370,10 +370,10 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
         head10.add("常住地");
         // 第十二列
         List<String> head11 = new ArrayList<String>();
-        head11.add("入职日期");
+        head11.add("入职时间");
         // 第十二列
         List<String> head23 = new ArrayList<String>();
-        head23.add("离职日期");
+        head23.add("离职时间");
         // 第十三列
         List<String> head12 = new ArrayList<String>();
         head12.add("部门");

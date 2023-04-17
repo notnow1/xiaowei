@@ -383,7 +383,7 @@ public class IndustryServiceImpl implements IIndustryService {
         }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
-        String ancestors = "";//仅在非一级指标时有用
+        String ancestors ;//仅在非一级指标时有用
         int parentLevel = 1;
         Integer status = industryDTO.getStatus();
         Long parentIndustryId = industryDTO.getParentIndustryId();
@@ -399,13 +399,11 @@ public class IndustryServiceImpl implements IIndustryService {
             // 等级
             parentLevel = parentIndustry.getLevel() + 1;
             // 路径修改
-            if (!industryById.getParentIndustryId().equals(parentIndustryId)) {
-                ancestors = parentIndustry.getAncestors();
-                if (StringUtils.isNotEmpty(ancestors)) {
-                    ancestors = ancestors + ",";
-                }
-                ancestors = ancestors + parentIndustryId;
+            ancestors = parentIndustry.getAncestors();
+            if (StringUtils.isNotEmpty(ancestors)) {
+                ancestors = ancestors + ",";
             }
+            ancestors = ancestors + parentIndustryId;
         } else {
             ancestors = "";
             industry.setParentIndustryId(Constants.TOP_PARENT_ID);
