@@ -182,6 +182,10 @@ public class UserDTO extends BaseDTO {
      * 租户logo图片URL
      */
     private String tenantLogo;
+    /**
+     * 销售云标记
+     */
+    private Boolean salesCloudFlag;
 
 
 }

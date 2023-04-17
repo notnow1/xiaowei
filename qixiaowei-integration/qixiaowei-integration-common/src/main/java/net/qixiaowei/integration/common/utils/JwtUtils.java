@@ -100,6 +100,16 @@ public class JwtUtils {
     }
 
     /**
+     * 根据身份信息获取用户销售云的token
+     *
+     * @param claims 身份信息
+     * @return 销售云token
+     */
+    public static String getUserSalesToken(Claims claims) {
+        return getValue(claims, SecurityConstants.SALES_TOKEN_NAME);
+    }
+
+    /**
      * 根据身份信息获取租户ID
      *
      * @param claims 身份信息

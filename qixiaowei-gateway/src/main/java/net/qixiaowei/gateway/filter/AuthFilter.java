@@ -61,6 +61,7 @@ public class AuthFilter implements GlobalFilter, Ordered {
         }
         String userid = JwtUtils.getUserId(claims);
         String userAccount = JwtUtils.getUserAccount(claims);
+        String salesToken = JwtUtils.getUserSalesToken(claims);
         String tenantId = JwtUtils.getTenantId(claims);
         String employeeId = JwtUtils.getEmployeeId(claims);
         if (StringUtils.isEmpty(userid) || StringUtils.isEmpty(userAccount)) {
@@ -73,6 +74,8 @@ public class AuthFilter implements GlobalFilter, Ordered {
         addHeader(mutate, SecurityConstants.DETAILS_USER_ACCOUNT, userAccount);
         addHeader(mutate, SecurityConstants.DETAILS_TENANT_ID, tenantId);
         addHeader(mutate, SecurityConstants.DETAILS_EMPLOYEE_ID, employeeId);
+        addHeader(mutate, SecurityConstants.SALES_TOKEN_NAME, salesToken);
+
         // 内部请求来源参数清除
         removeHeader(mutate, SecurityConstants.FROM_SOURCE);
         return chain.filter(exchange.mutate().request(mutate.build()).build());

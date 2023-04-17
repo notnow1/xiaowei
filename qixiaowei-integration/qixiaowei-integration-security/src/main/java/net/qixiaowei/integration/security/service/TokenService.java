@@ -43,6 +43,7 @@ public class TokenService {
     public Map<String, Object> createToken(LoginUserVO loginUserVO) {
         String token = IdUtils.fastUUID();
         UserDTO userDTO = loginUserVO.getUserDTO();
+        String salesCloudToken = loginUserVO.getSalesCloudToken();
         Long userId = userDTO.getUserId();
         String userAccount = userDTO.getUserAccount();
         String userName = userDTO.getUserName();
@@ -62,10 +63,12 @@ public class TokenService {
         claimsMap.put(SecurityConstants.DETAILS_USER_ACCOUNT, userAccount);
         claimsMap.put(SecurityConstants.DETAILS_TENANT_ID, tenantId);
         claimsMap.put(SecurityConstants.DETAILS_EMPLOYEE_ID, employeeId);
+        claimsMap.put(SecurityConstants.SALES_TOKEN_NAME,salesCloudToken);
 
         // 接口返回信息
         Map<String, Object> rspMap = new HashMap<String, Object>();
         rspMap.put("access_token", JwtUtils.createToken(claimsMap));
+        rspMap.put("sales_token", salesCloudToken);
         rspMap.put("expires_in", expireTime);
         return rspMap;
     }

@@ -2,8 +2,17 @@ package net.qixiaowei.auth.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.hutool.core.date.DateUtil;
+import io.jsonwebtoken.Claims;
 import net.qixiaowei.auth.form.RegisterBody;
 import net.qixiaowei.auth.form.ResetPasswordBody;
+import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.sign.SalesSignUtils;
+import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
+import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAuthorizationService;
+import net.qixiaowei.sales.cloud.api.vo.sync.SalesLoginVO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +26,9 @@ import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 
+import java.util.Date;
+import java.util.Map;
+
 /**
  * token 控制
  */
@@ -28,22 +40,57 @@ public class TokenController {
     @Autowired
     private SysLoginService sysLoginService;
 
+    @Autowired
+    private RemoteSyncAdminService remoteSyncAdminService;
+
+    @Autowired
+    private RemoteSyncAuthorizationService remoteSyncAuthorizationService;
+
     @PostMapping("/login")
     public R<?> login(HttpServletRequest request, @RequestBody LoginBody loginBody) {
         // 用户登录
         LoginUserVO userInfo = sysLoginService.login(request, loginBody.getUserAccount(), loginBody.getPassword());
+        UserDTO userDTO = userInfo.getUserDTO();
+        Boolean salesCloudFlag = userDTO.getSalesCloudFlag();
+        String sales_token = "";
+        if (salesCloudFlag) {
+            String userAccount = userDTO.getUserAccount();
+            Long tenantId = userDTO.getTenantId();
+            Date nowDate = DateUtils.getNowDate();
+            String time = DateUtil.formatDateTime(nowDate);
+            String saleSign = SalesSignUtils.buildSaleSign(userAccount, time);
+            R<SalesLoginVO> r = remoteSyncAdminService.syncLogin(userAccount, tenantId, time, saleSign);
+            if (0 != r.getCode()) {
+                throw new ServiceException("系统异常");
+            }
+            SalesLoginVO salesLoginVO = r.getData();
+            if (StringUtils.isNotNull(salesLoginVO)) {
+                sales_token = salesLoginVO.getAdminToken();
+            }
+        }
+        userInfo.setSalesCloudToken(sales_token);
         // 获取登录token
-        return R.ok(tokenService.createToken(userInfo));
+        Map<String, Object> token = tokenService.createToken(userInfo);
+        return R.ok(token);
     }
 
     @DeleteMapping("/logout")
     public R<?> logout(HttpServletRequest request) {
         String token = SecurityUtils.getToken(request);
         if (StringUtils.isNotEmpty(token)) {
-            String userAccount = JwtUtils.getUserAccount(token);
+            Claims claims = JwtUtils.parseToken(token);
+            String userSalesToken = JwtUtils.getUserSalesToken(claims);
+            //如果销售云token不为空，做销售云的退出
+            if (StringUtils.isNotEmpty(userSalesToken)) {
+                R<?> r = remoteSyncAuthorizationService.syncUserLogout(userSalesToken);
+                if (0 != r.getCode()) {
+                    throw new ServiceException("退出异常");
+                }
+            }
             // 删除用户缓存记录
             AuthUtil.logoutByToken(token);
-            // 记录用户退出日志
+            // 记录用户退出日志 String
+//             userAccount = JwtUtils.getUserAccount(token);
 //            sysLoginService.logout(userAccount);
         }
         return R.ok();

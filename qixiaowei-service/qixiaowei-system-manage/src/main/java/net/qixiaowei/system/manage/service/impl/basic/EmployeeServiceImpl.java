@@ -1,8 +1,12 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import cn.hutool.core.util.StrUtil;
+import groovy.lang.Lazy;
+import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.constant.UserConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -25,6 +29,9 @@ import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppra
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
+import net.qixiaowei.sales.cloud.api.dto.sync.SyncDeptDTO;
+import net.qixiaowei.sales.cloud.api.dto.sync.SyncUserDTO;
+import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisPerformanceDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO;
@@ -38,15 +45,18 @@ import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailV
 import net.qixiaowei.system.manage.api.domain.basic.*;
 import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
+import net.qixiaowei.system.manage.logic.user.UserLogic;
 import net.qixiaowei.system.manage.mapper.basic.*;
 import net.qixiaowei.system.manage.mapper.system.RegionMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.basic.ICountryService;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
+import net.qixiaowei.system.manage.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +77,7 @@ import java.util.stream.Collectors;
  * @since 2022-09-30
  */
 @Service
+@Slf4j
 public class EmployeeServiceImpl implements IEmployeeService {
     @Autowired
     private EmployeeMapper employeeMapper;
@@ -113,6 +124,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Autowired
     private RemoteMarketInsightMacroService remoteMarketInsightMacroService;
+    @Autowired
+    private RemoteSyncAdminService remoteSyncAdminService;
+
+    @Autowired
+    private UserLogic userLogic;
 
     /**
      * 查询员工表
@@ -423,6 +439,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
         } catch (Exception e) {
             throw new ServiceException("新增员工信息失败");
         }
+        //同步销售云
+        this.addUser(employee);
         employeeDTO.setEmployeeId(employee.getEmployeeId());
         return employeeDTO;
     }
@@ -459,13 +477,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
         employeeInfo.setUpdateTime(DateUtils.getNowDate());
         employeeInfo.setUpdateBy(SecurityUtils.getUserId());
         employeeInfo.setEmployeeInfoId(employeeInfoDTO.getEmployeeInfoId());
-
-
         try {
             employeeInfoMapper.updateEmployeeInfo(employeeInfo);
         } catch (Exception e) {
             throw new ServiceException("修改员工信息失败");
         }
+        //销售云同步
+        this.syncSaleEditUser(employee);
         return i;
     }
 
@@ -532,7 +550,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Post post = new Post();
         post.setStatus(1);
         List<PostDTO> postDTOS = postMapper.selectPostList(post);
-        Department departmentExcel =new Department();
+        Department departmentExcel = new Department();
         departmentExcel.setStatus(1);
         //查询部门名称附加父级名称
         List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(departmentExcel);
@@ -603,8 +621,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
                 for (EmployeeExcel employeeExcel : list) {
                     distinctEmployeeExcelDeleteList.removeAll(distinctEmployeeExcelList);
-                    if (StringUtils.isNotEmpty(distinctEmployeeExcelDeleteList)){
-                        employeeError.append(employeeExcel.getEmployeeName()+"数据重复");
+                    if (StringUtils.isNotEmpty(distinctEmployeeExcelDeleteList)) {
+                        employeeError.append(employeeExcel.getEmployeeName() + "数据重复");
                         errorExcelList.add(employeeExcel);
                         continue;
                     }
@@ -631,8 +649,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
         }
         for (EmployeeExcel employeeExcel : list) {
             distinctEmployeeExcelDeleteList.removeAll(distinctEmployeeExcelList);
-            if (StringUtils.isNotEmpty(distinctEmployeeExcelDeleteList)){
-                employeeError.append(employeeExcel.getEmployeeName()+"数据重复");
+            if (StringUtils.isNotEmpty(distinctEmployeeExcelDeleteList)) {
+                employeeError.append(employeeExcel.getEmployeeName() + "数据重复");
                 errorExcelList.add(employeeExcel);
                 continue;
             }
@@ -663,6 +681,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
         if (StringUtils.isNotEmpty(employeeAddList)) {
             employeeMapper.batchEmployee(employeeAddList);
+            for (Employee employee1 : employeeAddList) {
+                //同步销售云
+                this.addUser(employee1);
+            }
             successExcelList.addAll(employeeAddList);
         }
         if (StringUtils.isNotEmpty(employeeUpdateList)) {
@@ -1935,8 +1957,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
             return 1;
         }
         setAdjustValue(employeeSalarySnapVO, adjustmentTypeList, employeeById, employee);
+        this.syncSaleEditUser(employee);
         return employeeMapper.updateEmployee(employee);
     }
+
 
     /**
      * 批量根据调整策略进行更新人员薪资，岗位，职级
@@ -1989,6 +2013,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public List<EmployeeDTO> selectByNames(List<String> employeeNames) {
         return employeeMapper.selectByNames(employeeNames);
+    }
+
+    @Override
+    public void initSalesEmployee() {
+//        employeeMapper.selectEmployeeList()
     }
 
     /**
@@ -2123,6 +2152,119 @@ public class EmployeeServiceImpl implements IEmployeeService {
             throw new ServiceException("远程获取绩效信息失败 请联系管理员");
         }
         return listR.getData();
+    }
+
+    /**
+     * @description: 新增用户
+     * @Author: hzk
+     * @date: 2023/4/12 18:13
+     * @param: [employee]
+     * @return: void
+     **/
+    private void addUser(Employee employee) {
+        Integer status = employee.getStatus();
+        //正常状态才初始化帐号
+        if (BusinessConstants.NORMAL.equals(status)) {
+            String employeeMobile = employee.getEmployeeMobile();
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserAccount(employeeMobile);
+            userDTO.setEmployeeId(employee.getEmployeeId());
+            String password = UserConstants.DEFAULT_PASSWORD;
+            userDTO.setPassword(password);
+            userDTO.setUserName(employee.getEmployeeName());
+            userDTO.setMobilePhone(employeeMobile);
+            userDTO.setEmail(employee.getEmployeeEmail());
+            userLogic.insertUser(userDTO);
+            //销售云帐号同步
+            this.syncSalesAddUser(userDTO.getUserId(), password, employee);
+        }
+    }
+
+    /**
+     * @description: 同步销售云用户
+     * @Author: hzk
+     * @date: 2023/4/12 18:13
+     * @param: [userId, password, employee]
+     * @return: void
+     **/
+    private void syncSalesAddUser(Long userId, String password, Employee employee) {
+        String salesToken = SecurityUtils.getSalesToken();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            SyncUserDTO syncUserDTO = new SyncUserDTO();
+            String userName = employee.getEmployeeName() + "（" + employee.getEmployeeCode() + "）";
+            syncUserDTO.setUserId(userId);
+            syncUserDTO.setRealname(userName);
+            syncUserDTO.setUsername(employee.getEmployeeMobile());
+            syncUserDTO.setSex(employee.getEmployeeGender());
+            syncUserDTO.setMobile(employee.getEmergencyMobile());
+            syncUserDTO.setPassword(password);
+            syncUserDTO.setEmail(employee.getEmployeeEmail());
+            syncUserDTO.setDeptId(employee.getEmployeeDepartmentId());
+            syncUserDTO.setStatus(2);
+            syncUserDTO.setNum(employee.getEmployeeCode());
+            Long employeePostId = employee.getEmployeePostId();
+            //处理岗位
+            if (StringUtils.isNotNull(employeePostId)) {
+                PostDTO postDTO = postMapper.selectPostByPostId(employeePostId);
+                if (StringUtils.isNotNull(postDTO)) {
+                    syncUserDTO.setPost(postDTO.getPostName());
+                }
+            }
+            R<?> r = remoteSyncAdminService.syncUserAdd(syncUserDTO, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云用户新增失败:{}", r.getMsg());
+                throw new ServiceException("人员新增失败");
+            }
+        }
+    }
+
+    /**
+     * @description: 销售云同步编辑用户
+     * @Author: hzk
+     * @date: 2023/4/12 18:14
+     * @param: [employee]
+     * @return: void
+     **/
+    private void syncSaleEditUser(Employee employee) {
+        Long employeeId = employee.getEmployeeId();
+        if (StringUtils.isNotNull(employeeId)) {
+            UserDTO userDTO = userMapper.selectUserByEmployeeId(employeeId);
+            if (StringUtils.isNull(userDTO)) {
+                this.addUser(employee);
+                return;
+            }
+            this.syncSaleEditUser(userDTO.getUserId(), employee);
+        }
+    }
+
+    /**
+     * @description: 销售云同步编辑用户
+     * @Author: hzk
+     * @date: 2023/4/12 18:14
+     * @param: [userId, employee]
+     * @return: void
+     **/
+    private void syncSaleEditUser(Long userId, Employee employee) {
+        String salesToken = SecurityUtils.getSalesToken();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            SyncUserDTO syncUserDTO = new SyncUserDTO();
+            syncUserDTO.setUserId(userId);
+            syncUserDTO.setSex(employee.getEmployeeGender());
+            syncUserDTO.setDeptId(employee.getEmployeeDepartmentId());
+            Long employeePostId = employee.getEmployeePostId();
+            //处理岗位
+            if (StringUtils.isNotNull(employeePostId)) {
+                PostDTO postDTO = postMapper.selectPostByPostId(employeePostId);
+                if (StringUtils.isNotNull(postDTO)) {
+                    syncUserDTO.setPost(postDTO.getPostName());
+                }
+            }
+            R<?> r = remoteSyncAdminService.syncUserEdit(syncUserDTO, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云用户编辑失败:{}", r.getMsg());
+                throw new ServiceException("人员编辑失败");
+            }
+        }
     }
 }
 

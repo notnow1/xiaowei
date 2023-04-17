@@ -99,6 +99,14 @@ public interface MenuMapper {
     Set<Long> selectMenuListByRoleId(@Param("roleId") Long roleId);
 
     /**
+     * 根据角色ID集合查询菜单树信息
+     *
+     * @param roleIds 角色ID集合
+     * @return 选中菜单列表
+     */
+    Set<Long> selectMenuListByRoleIds(@Param("roleIds") List<Long> roleIds);
+
+    /**
      * 根据租户合同ID查询菜单树信息
      *
      * @param tenantContractId 租户合同ID

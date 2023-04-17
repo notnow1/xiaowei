@@ -3,14 +3,20 @@ package net.qixiaowei.system.manage.service.impl.system;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.Constants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
+import net.qixiaowei.integration.common.enums.system.RoleDataScope;
 import net.qixiaowei.integration.common.enums.system.RoleType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.UserUtils;
+import net.qixiaowei.sales.cloud.api.dto.sync.SyncRoleDTO;
+import net.qixiaowei.sales.cloud.api.dto.sync.SyncRoleUserDTO;
+import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.domain.user.User;
@@ -18,6 +24,7 @@ import net.qixiaowei.system.manage.api.dto.system.RoleAuthUsersDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleMenuDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.logic.tenant.TenantLogic;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
@@ -41,6 +48,7 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
  * @since 2022-10-07
  */
 @Service
+@Slf4j
 public class RoleServiceImpl implements IRoleService {
     @Autowired
     private RoleMapper roleMapper;
@@ -56,6 +64,9 @@ public class RoleServiceImpl implements IRoleService {
 
     @Autowired
     private UserRoleMapper userRoleMapper;
+
+    @Autowired
+    private RemoteSyncAdminService remoteSyncAdminService;
 
     /**
      * 根据用户ID查询角色列表
@@ -172,6 +183,8 @@ public class RoleServiceImpl implements IRoleService {
         roleMapper.insertRole(role);
         this.insertRoleMenu(role.getRoleId(), menuIds);
         roleDTO.setRoleId(role.getRoleId());
+        //销售云菜单同步
+        this.syncSalesAddRole(roleDTO);
         return roleDTO;
     }
 
@@ -211,6 +224,8 @@ public class RoleServiceImpl implements IRoleService {
         BeanUtils.copyProperties(roleDTO, role);
         role.setUpdateTime(DateUtils.getNowDate());
         role.setUpdateBy(SecurityUtils.getUserId());
+        //同步编辑销售云角色
+        this.syncSalesEditRole(roleDTO);
         return roleMapper.updateRole(role);
     }
 
@@ -246,6 +261,8 @@ public class RoleServiceImpl implements IRoleService {
         }
         //批量新增用户角色
         if (StringUtils.isNotEmpty(userRoles)) {
+            //销售云同步
+            this.handleSalesRoleUser(userRoles);
             userRoleMapper.batchUserRole(userRoles);
         }
     }
@@ -303,6 +320,10 @@ public class RoleServiceImpl implements IRoleService {
                 roleMenuMapper.logicDeleteRoleMenuByRoleMenuIds(delList, userId, nowDate);
             }
         }
+        //销售云角色删除
+        for (Long roleId : roleIds) {
+            this.syncSalesDeleteRole(roleId);
+        }
         return roleMapper.logicDeleteRoleByRoleIds(roleIds, userId, nowDate);
     }
 
@@ -343,6 +364,7 @@ public class RoleServiceImpl implements IRoleService {
             List<Long> delRoleMenuIds = roleMenuDTOS.stream().map(RoleMenuDTO::getRoleMenuId).collect(Collectors.toList());
             roleMenuMapper.logicDeleteRoleMenuByRoleMenuIds(delRoleMenuIds, userId, nowDate);
         }
+        this.syncSalesDeleteRole(roleId);
         return roleMapper.logicDeleteRoleByRoleId(roleId, userId, nowDate);
     }
 
@@ -435,6 +457,137 @@ public class RoleServiceImpl implements IRoleService {
                 roleMenuMapper.logicDeleteRoleMenuByRoleMenuIds(new ArrayList<>(removeRoleMenuIds), userId, nowDate);
             }
         }
+    }
+
+    /**
+     * @description: 同步销售云新增角色
+     * @Author: hzk
+     * @date: 2023/4/10 18:43
+     * @param: [roleDTO]
+     * @return: void
+     **/
+    private void syncSalesAddRole(RoleDTO roleDTO) {
+        String salesToken = SecurityUtils.getSalesToken();
+        Set<Long> menuIds = roleDTO.getMenuIds();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            SyncRoleDTO syncRoleDTO = new SyncRoleDTO();
+            syncRoleDTO.setRoleId(roleDTO.getRoleId());
+            syncRoleDTO.setRoleName(roleDTO.getRoleName());
+            syncRoleDTO.setRoleType(2);
+            syncRoleDTO.setDataType(RoleDataScope.convertSalesCode(roleDTO.getDataScope()));
+            Set<Long> salesMenuIds = this.getSalesMenuIds(menuIds);
+            syncRoleDTO.setMenuIds(salesMenuIds);
+            R<?> r = remoteSyncAdminService.syncRoleAdd(syncRoleDTO, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云角色新增失败:{}", r.getMsg());
+                throw new ServiceException("角色新增失败");
+            }
+        }
+    }
+
+    /**
+     * @description: 同步销售云编辑角色
+     * @Author: hzk
+     * @date: 2023/4/10 18:42
+     * @param: [roleDTO]
+     * @return: void
+     **/
+    private void syncSalesEditRole(RoleDTO roleDTO) {
+        String salesToken = SecurityUtils.getSalesToken();
+        Set<Long> menuIds = roleDTO.getMenuIds();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            SyncRoleDTO syncRoleDTO = new SyncRoleDTO();
+            syncRoleDTO.setRoleId(roleDTO.getRoleId());
+            syncRoleDTO.setRoleName(roleDTO.getRoleName());
+            syncRoleDTO.setRoleType(2);
+            Set<Long> salesMenuIds = this.getSalesMenuIds(menuIds);
+            syncRoleDTO.setDataType(RoleDataScope.convertSalesCode(roleDTO.getDataScope()));
+            syncRoleDTO.setMenuIds(salesMenuIds);
+            R<?> r = remoteSyncAdminService.syncRoleEdit(syncRoleDTO, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云角色编辑失败:{}", r.getMsg());
+                throw new ServiceException("角色编辑失败");
+            }
+        }
+    }
+
+    /**
+     * @description: 同步销售云删除角色
+     * @Author: hzk
+     * @date: 2023/4/11 15:40
+     * @param: [roleId]
+     * @return: void
+     **/
+    private void syncSalesDeleteRole(Long roleId) {
+        String salesToken = SecurityUtils.getSalesToken();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            R<?> r = remoteSyncAdminService.syncRoleDelete(roleId, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云角色删除失败:{}", r.getMsg());
+                throw new ServiceException("角色删除失败");
+            }
+        }
+    }
+
+    /**
+     * @description: 同步销售云
+     * @Author: hzk
+     * @date: 2023/4/11 17:42
+     * @param: [userIds, roleIds]
+     * @return: void
+     **/
+    private void syncSalesRoleRelatedUser(Set<Long> userIds, Set<Long> roleIds) {
+        if (StringUtils.isEmpty(userIds) || StringUtils.isEmpty(roleIds)) {
+            return;
+        }
+        String salesToken = SecurityUtils.getSalesToken();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            SyncRoleUserDTO syncRoleUserDTO = new SyncRoleUserDTO();
+            syncRoleUserDTO.setRoleIds(roleIds);
+            syncRoleUserDTO.setUserIds(userIds);
+            R<?> r = remoteSyncAdminService.syncRoleRelatedUser(syncRoleUserDTO, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云角色用户失败:{}", r.getMsg());
+                throw new ServiceException("角色授权失败");
+            }
+        }
+    }
+
+    /**
+     * @description: 处理销售云角色用户
+     * @Author: hzk
+     * @date: 2023/4/11 17:53
+     * @param: [userRoles]
+     * @return: void
+     **/
+    public void handleSalesRoleUser(List<UserRole> userRoles) {
+        Set<Long> userIdList = new HashSet<>();
+        Set<Long> roleIdList = new HashSet<>();
+        for (UserRole userRole : userRoles) {
+            userIdList.add(userRole.getUserId());
+            roleIdList.add(userRole.getRoleId());
+        }
+        this.syncSalesRoleRelatedUser(userIdList, roleIdList);
+    }
+
+    /**
+     * @description: 获取销售云菜单ID集合
+     * @Author: hzk
+     * @date: 2023/4/10 18:42
+     * @param: [menuIds]
+     * @return: java.util.Set<java.lang.Long>
+     **/
+    private Set<Long> getSalesMenuIds(Set<Long> menuIds) {
+        Set<Long> salesMenuIds = new HashSet<>();
+        if (StringUtils.isNotEmpty(menuIds)) {
+            for (Long menuId : menuIds) {
+                if (TenantLogic.SALES_MENUS_MAPPING.containsKey(menuId)) {
+                    List<Long> list = TenantLogic.SALES_MENUS_MAPPING.get(menuId);
+                    salesMenuIds.addAll(list);
+                }
+            }
+        }
+        return salesMenuIds;
     }
 
 }

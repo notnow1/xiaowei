@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.system;
 
 import java.util.List;
 
+import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.dto.system.RoleAuthUsersDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
@@ -123,4 +124,6 @@ public interface IRoleService {
      * @return 结果
      */
     int deleteRoleByRoleId(Long roleId);
+
+    void handleSalesRoleUser(List<UserRole> userRoles);
 }

@@ -16,12 +16,16 @@ import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.sign.SalesSignUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.integration.tenant.utils.TenantUtils;
 import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.operate.cloud.api.remote.RemoteOperateCloudInitDataService;
+import net.qixiaowei.sales.cloud.api.dto.sync.SyncResisterDTO;
+import net.qixiaowei.sales.cloud.api.dto.sync.SyncTenantUpdateDTO;
+import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
 import net.qixiaowei.strategy.cloud.api.remote.RemoteStrategyCloudInitDataService;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
 import net.qixiaowei.system.manage.api.domain.system.Role;
@@ -56,7 +60,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class TenantLogic {
 
-    private static final List<Long> SALES_MENUS = Arrays.asList(55L,
+    public static final List<Long> SALES_MENUS = Arrays.asList(55L,
             //应用管理-查看应用,停用/启用应用
             56L, 86L, 175L,
             //办公管理-办公审批流,业务参数设置,日志模板设置,日志打印模板设置,办公审批打印模板设置
@@ -96,7 +100,7 @@ public class TenantLogic {
             //数据分析-办公分析, 业绩目标完成情况, 销售漏斗, 员工客户分析, 员工业绩分析, 产品分析, 客户画像分析, 排行榜
             480L, 481L, 482L, 483L, 484L, 485L, 486L, 487L, 488L);
 
-    private static final Map<Long, List<Long>> SALES_MENUS_MAPPING = new HashMap<>();
+    public static final Map<Long, List<Long>> SALES_MENUS_MAPPING = new HashMap<>();
 
     static {
         //应用管理-查看应用,停用/启用应用
@@ -218,7 +222,7 @@ public class TenantLogic {
         SALES_MENUS_MAPPING.put(435L, Arrays.asList(503L));
         SALES_MENUS_MAPPING.put(447L, Arrays.asList(934L));
         //产品配置-产品新增, 产品编辑, 产品详情, 导入, 导出, 删除
-        SALES_MENUS_MAPPING.put(450L, Arrays.asList(15L));
+        SALES_MENUS_MAPPING.put(450L, Arrays.asList(67L));
         SALES_MENUS_MAPPING.put(451L, Arrays.asList(65L, 69L));
         SALES_MENUS_MAPPING.put(452L, Arrays.asList(66L, 69L, 70L));
         SALES_MENUS_MAPPING.put(453L, Arrays.asList(68L));
@@ -302,6 +306,9 @@ public class TenantLogic {
     @Autowired
     private IUserConfigService userConfigService;
 
+    @Autowired
+    private RemoteSyncAdminService remoteSyncAdminService;
+
     /**
      * @description: 初始化租户数据
      * @Author: hzk
@@ -310,14 +317,14 @@ public class TenantLogic {
      * @return: java.lang.Boolean
      **/
     @IgnoreTenant
-    public Boolean initTenantData(Tenant tenant, Set<Long> initMenuIds) {
+    public Boolean initTenantData(Tenant tenant, Date endTime, Set<Long> initMenuIds) {
         AtomicReference<Boolean> initSuccess = new AtomicReference<>(true);
         Long tenantId = tenant.getTenantId();
         TenantUtils.execute(tenantId, () -> {
             //1、初始化用户、用户配置---user
             //2、初始化用户角色+用户关联角色---role、user_role
             //3、角色赋权---role_menu
-            Long userId = this.initUserInfo(tenant, initMenuIds);
+            Long userId = this.initUserInfo(tenant, endTime, initMenuIds);
             //4、配置，如启用行业配置---config
             boolean initConfig = this.initConfig(userId);
             //5、初始化枚举值---dictionary_type、dictionary_data
@@ -342,10 +349,10 @@ public class TenantLogic {
      * @return: void
      **/
     @IgnoreTenant
-    public void updateTenantAuth(Long tenantId, Set<Long> initMenuIds) {
+    public void updateTenantAuth(Long tenantId, Set<Long> initMenuIds, Date endTime) {
         TenantUtils.execute(tenantId, () -> {
             //更新租户用户授权
-            this.updateTenantAuth(initMenuIds);
+            this.updateTenantAuthOfTenantId(tenantId, initMenuIds, endTime);
         });
     }
 
@@ -356,7 +363,7 @@ public class TenantLogic {
      * @param: [initMenuIds]
      * @return: void
      **/
-    public void updateTenantAuth(Set<Long> initMenuIds) {
+    public void updateTenantAuthOfTenantId(Long tenantId, Set<Long> initMenuIds, Date endTime) {
         //更新租户用户授权
         //找到租户管理员目前的权限。
         Long userId = 0L;
@@ -368,6 +375,8 @@ public class TenantLogic {
         //新增权限。只给管理员角色。
         if (StringUtils.isEmpty(nowMenuIds)) {
             this.initRoleMenu(initMenuIds, roleIdOfAdmin, userId);
+            //处理销售云
+            this.updateSalesAuth(tenantId, endTime, roleIdOfAdmin, nowMenuIds, null);
             return;
         }
         Set<Long> addMenuIds = new HashSet<>();
@@ -384,6 +393,7 @@ public class TenantLogic {
         this.initRoleMenu(addMenuIds, roleIdOfAdmin, userId);
         //取消权限。改租户所有角色。
         this.cancelRoleMenu(nowMenuIds);
+        this.updateSalesAuth(tenantId, endTime, roleIdOfAdmin, addMenuIds, nowMenuIds);
     }
 
 
@@ -394,7 +404,7 @@ public class TenantLogic {
      * @param: [tenant, initMenuIds]
      * @return: boolean
      **/
-    public Long initUserInfo(Tenant tenant, Set<Long> initMenuIds) {
+    public Long initUserInfo(Tenant tenant, Date endTime, Set<Long> initMenuIds) {
         Date nowDate = DateUtils.getNowDate();
         //新增用户
         User user = new User();
@@ -434,6 +444,9 @@ public class TenantLogic {
         boolean initRoleMenuSuccess = this.initRoleMenu(initMenuIds, roleId, userIdOfInit);
         //新增用户角色关联
         boolean userRoleSuccess = this.initUserRole(userIdOfInit, nowDate, userIdOfInit, roleId);
+        //初始化销售云-企业信息、用户、角色菜单
+        Set<Long> salesInitMenuIds = this.getSalesInitMenuIds(initMenuIds);
+        this.syncSales(tenant, userIdOfInit, roleId, endTime, salesInitMenuIds);
         if (!roleSuccess || !initRoleMenuSuccess || !userRoleSuccess) {
             throw new ServiceException("用户角色初始化异常，请联系管理员");
         }
@@ -650,6 +663,76 @@ public class TenantLogic {
                 }
             }
         });
+    }
+
+    /**
+     * @description: 同步销售云
+     * @Author: hzk
+     * @date: 2023/4/4 11:29
+     * @param: [tenant, userId, roleId, endTime, salesInitMenuIds]
+     * @return: void
+     **/
+    private void syncSales(Tenant tenant, Long userId, Long roleId, Date endTime, Set<Long> salesInitMenuIds) {
+        String adminAccount = tenant.getAdminAccount();
+        String adminPassword = tenant.getAdminPassword();
+        SyncResisterDTO syncResisterDTO = new SyncResisterDTO();
+        syncResisterDTO.setCompanyName(tenant.getTenantName());
+        syncResisterDTO.setCompanyId(tenant.getTenantId());
+        syncResisterDTO.setEndTime(endTime);
+        syncResisterDTO.setPhone(adminAccount);
+        syncResisterDTO.setPassword(adminPassword);
+        syncResisterDTO.setInitMenuIds(salesInitMenuIds);
+        syncResisterDTO.setRoleId(roleId);
+        syncResisterDTO.setUserId(userId);
+        String salesSign = SalesSignUtils.buildSaleSign(adminAccount, endTime);
+        R<?> r = remoteSyncAdminService.syncRegister(syncResisterDTO, salesSign);
+        if (0 != r.getCode()) {
+            log.error("同步销售云注册失败:{}", r.getMsg());
+        }
+    }
+
+    /**
+     * @description: 根据需要初始化的菜单ID集合，获取到销售云的菜单ID集合
+     * @Author: hzk
+     * @date: 2023/4/3 10:07
+     * @param: [initMenuIds]
+     * @return: java.util.Set<java.lang.Long>
+     **/
+    private Set<Long> getSalesInitMenuIds(Set<Long> initMenuIds) {
+        Set<Long> salesInitMenuIds = new HashSet<>();
+        if (StringUtils.isNotEmpty(initMenuIds)) {
+            for (Long initMenuId : initMenuIds) {
+                if (SALES_MENUS_MAPPING.containsKey(initMenuId)) {
+                    List<Long> list = SALES_MENUS_MAPPING.get(initMenuId);
+                    salesInitMenuIds.addAll(list);
+                }
+            }
+        }
+        return salesInitMenuIds;
+    }
+
+    /**
+     * @description: 更新销售云授权信息
+     * @Author: hzk
+     * @date: 2023/4/6 20:29
+     * @param: [tenantId, endTime, roleIdOfAdmin, addMenuIds, removeMenuIds]
+     * @return: void
+     **/
+    private void updateSalesAuth(Long tenantId, Date endTime, Long roleIdOfAdmin, Set<Long> addMenuIds, Set<Long> removeMenuIds) {
+        //处理销售云
+        Set<Long> salesAddMenuIds = this.getSalesInitMenuIds(addMenuIds);
+        Set<Long> salesRemoveMenuIds = this.getSalesInitMenuIds(removeMenuIds);
+        //调用销售云接口
+        SyncTenantUpdateDTO syncTenantUpdateDTO = new SyncTenantUpdateDTO();
+        syncTenantUpdateDTO.setCompanyId(tenantId);
+        syncTenantUpdateDTO.setAddMenuIds(salesAddMenuIds);
+        syncTenantUpdateDTO.setRemoveMenuIds(salesRemoveMenuIds);
+        syncTenantUpdateDTO.setRoleId(roleIdOfAdmin);
+        String salesSign = SalesSignUtils.buildSaleSign(tenantId.toString(), endTime);
+        R<?> r = remoteSyncAdminService.syncUpdate(syncTenantUpdateDTO, salesSign);
+        if (0 != r.getCode()) {
+            log.error("同步销售云更新租户失败:{}", r.getMsg());
+        }
     }
 
 }

@@ -63,4 +63,14 @@ public interface SecurityConstants {
      * 角色权限-所有
      */
     String ADMIN_FLAG = "admin_flag";
+
+    /**
+     * 销售云-签名
+     */
+    String SALES_SIGN = "sales_sign";
+
+    /**
+     * 销售云-token key
+     */
+    String SALES_TOKEN_NAME = "Admin-Token";
 }

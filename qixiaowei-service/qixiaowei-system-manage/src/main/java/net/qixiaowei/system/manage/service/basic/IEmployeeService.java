@@ -310,4 +310,6 @@ public interface IEmployeeService {
      * @return 结果
      */
     List<EmployeeDTO> selectByNames(List<String> employeeNames);
+
+    void initSalesEmployee();
 }

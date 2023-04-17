@@ -213,7 +213,7 @@ public class TenantServiceImpl implements ITenantService {
      * @param tenantDTO 租户表
      * @return 结果
      */
-    @GlobalTransactional(name = "system:manage:tenant:add", rollbackFor = Exception.class)
+//    @GlobalTransactional(name = "system:manage:tenant:add", rollbackFor = Exception.class)
     @Transactional(rollbackFor = Exception.class)
     @Override
     public TenantDTO insertTenant(TenantDTO tenantDTO) {
@@ -244,9 +244,11 @@ public class TenantServiceImpl implements ITenantService {
         this.saveTenantContacts(tenantContactsDTOList, tenantId, userId, nowDate);
         //保存租户合同
         List<TenantContractDTO> tenantContractDTOList = tenantDTO.getTenantContractDTOList();
+
         Set<Long> initMenuIds = this.saveTenantContract(tenantContractDTOList, tenantId, userId, nowDate);
+        Date endTime = this.getSalesEndTime(tenantContractDTOList, nowDate);
         //初始化租户数据
-        Boolean initSuccess = tenantLogic.initTenantData(tenant, initMenuIds);
+        Boolean initSuccess = tenantLogic.initTenantData(tenant, endTime, initMenuIds);
         if (!initSuccess) {
             throw new ServiceException("初始化数据异常，请联系管理员");
         }
@@ -293,8 +295,9 @@ public class TenantServiceImpl implements ITenantService {
         //构建试用合同
         List<TenantContractDTO> tenantContractDTOList = this.getTenantContractS(nowDate);
         Set<Long> initMenuIds = this.saveTenantContract(tenantContractDTOList, tenantId, userId, nowDate);
+        Date endTime = this.getSalesEndTime(tenantContractDTOList, nowDate);
         //初始化租户数据
-        Boolean initSuccess = tenantLogic.initTenantData(tenant, initMenuIds);
+        Boolean initSuccess = tenantLogic.initTenantData(tenant, endTime, initMenuIds);
         if (initSuccess) {
             tenant.setTenantStatus(BusinessConstants.NORMAL);
             tenantMapper.updateTenant(tenant);
@@ -339,7 +342,7 @@ public class TenantServiceImpl implements ITenantService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateTenant(TenantDTO tenantDTO) {
-        String domain = getDomain(tenantDTO);;
+        String domain = getDomain(tenantDTO);
         Long tenantId = tenantDTO.getTenantId();
         TenantDTO tenantOfDB = tenantMapper.selectTenantByTenantId(tenantId);
         if (StringUtils.isNull(tenantOfDB)) {
@@ -362,9 +365,11 @@ public class TenantServiceImpl implements ITenantService {
         this.handleEditTenantContacts(tenantDTO, userId, nowDate);
         //编辑合同
         Set<Long> initMenuIds = this.handleEditTenantContract(tenantDTO, userId, nowDate);
+        List<TenantContractDTO> tenantContractDTOList = tenantDTO.getTenantContractDTOList();
+        Date endTime = this.getSalesEndTime(tenantContractDTOList, nowDate);
         //权限变更，需要处理
         if (!TenantStatus.DISABLE.getCode().equals(tenantStatus)) {
-            tenantLogic.updateTenantAuth(tenantId, initMenuIds);
+            tenantLogic.updateTenantAuth(tenantId, initMenuIds, endTime);
         }
         int i;
         //更新租户信息
@@ -687,7 +692,8 @@ public class TenantServiceImpl implements ITenantService {
         if (!BusinessConstants.NORMAL.equals(tenantByDB.getTenantStatus())) {
             throw new ServiceException("修改企业信息失败:企业状态异常");
         }
-        String domain = getDomain(tenantDTO);;
+        String domain = getDomain(tenantDTO);
+        ;
         Long userId = SecurityUtils.getUserId();
         String userAccount = SecurityUtils.getUserAccount();
         Date nowDate = DateUtils.getNowDate();
@@ -795,8 +801,9 @@ public class TenantServiceImpl implements ITenantService {
                 updateTenant.setUpdateTime(nowDate);
                 tenantMapper.updateTenant(updateTenant);
             }
+            Date endTime = this.getSalesEndTime(tenantContractDTOS, nowDate);
             //处理租户合同授权
-            tenantLogic.updateTenantAuth(tenantId, initMenuIds);
+            tenantLogic.updateTenantAuth(tenantId, initMenuIds, endTime);
         }
     }
 
@@ -1108,6 +1115,39 @@ public class TenantServiceImpl implements ITenantService {
             domain = domain.toLowerCase();
         }
         return domain;
+    }
+
+    /**
+     * @description: 获取销售云结束时间
+     * @Author: hzk
+     * @date: 2023/4/4 11:50
+     * @param: [tenantContractDTOList, nowDate]
+     * @return: java.util.Date
+     **/
+    private Date getSalesEndTime(List<TenantContractDTO> tenantContractDTOList, Date nowDate) {
+        Date endTime = DateUtils.getNowDate();
+        //租户合同
+        if (StringUtils.isNotEmpty(tenantContractDTOList)) {
+            for (TenantContractDTO tenantContractDTO : tenantContractDTOList) {
+                //保存合同授权
+                Set<Long> menuIds = tenantContractDTO.getMenuIds();
+                if (StringUtils.isNotEmpty(menuIds)) {
+                    for (Long menuId : menuIds) {
+                        if (TenantLogic.SALES_MENUS.contains(menuId)) {
+                            Date contractStartTime = tenantContractDTO.getContractStartTime();
+                            Date contractEndTime = tenantContractDTO.getContractEndTime();
+                            //合同结束时间大于现在且合同开始时间小于现在的，才初始化菜单
+                            if (this.containContractTime(nowDate, contractStartTime, contractEndTime)) {
+                                if (endTime.before(contractEndTime)) {
+                                    endTime = contractEndTime;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return endTime;
     }
 }
 

@@ -150,6 +150,19 @@
         order by m.parent_menu_id, m.sort
     </select>
 
+    <select id="selectMenuListByRoleIds" resultType="Long">
+        SELECT  distinct m.menu_id FROM menu m
+        LEFT JOIN role_menu rm on m.menu_id = rm.menu_id AND rm.delete_flag = 0
+        WHERE m.delete_flag = 0
+        AND rm.role_id IN
+        <foreach item="item"
+                 collection="roleIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by m.parent_menu_id, m.sort
+    </select>
+
     <select id="selectMenuListByTenantContractId" resultType="Long">
         SELECT m.menu_id
         FROM menu m
