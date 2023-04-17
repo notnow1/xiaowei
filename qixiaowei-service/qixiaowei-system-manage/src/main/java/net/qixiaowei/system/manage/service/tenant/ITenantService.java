@@ -184,4 +184,18 @@ public interface ITenantService {
      **/
     TenantRegisterResponseVO registerUserInfo(TenantDTO tenantDTO);
 
+    /**
+     * 初始化租户-销售云
+     *
+     * @return
+     */
+    void initTenantSales(Long tenantId);
+
+    /**
+     * 初始化租户-销售云基础信息（人员、部门）
+     *
+     * @return
+     */
+    void initTenantSalesBase(Long tenantId);
+
 }

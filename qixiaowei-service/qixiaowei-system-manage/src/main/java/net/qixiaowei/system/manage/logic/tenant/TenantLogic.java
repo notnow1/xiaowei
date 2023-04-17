@@ -1,12 +1,14 @@
 package net.qixiaowei.system.manage.logic.tenant;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.context.SecurityContextHolder;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
 import net.qixiaowei.integration.common.enums.system.RoleCode;
@@ -15,6 +17,7 @@ import net.qixiaowei.integration.common.enums.system.RoleType;
 import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.ServletUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.sign.SalesSignUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
@@ -26,6 +29,7 @@ import net.qixiaowei.operate.cloud.api.remote.RemoteOperateCloudInitDataService;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncResisterDTO;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncTenantUpdateDTO;
 import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
+import net.qixiaowei.sales.cloud.api.vo.sync.SalesLoginVO;
 import net.qixiaowei.strategy.cloud.api.remote.RemoteStrategyCloudInitDataService;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
 import net.qixiaowei.system.manage.api.domain.system.Role;
@@ -35,6 +39,7 @@ import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.domain.user.User;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.mapper.basic.ConfigMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMapper;
@@ -42,7 +47,9 @@ import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
+import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IDictionaryTypeService;
+import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.system.manage.service.basic.IIndicatorService;
 import net.qixiaowei.system.manage.service.user.IUserConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -298,7 +305,10 @@ public class TenantLogic {
     private RemoteBacklogService remoteBacklogService;
 
     @Autowired
-    private TenantMapper tenantMapper;
+    private IDepartmentService departmentService;
+
+    @Autowired
+    private IEmployeeService employeeService;
 
     @Autowired
     private RemoteEmployeeService remoteEmployeeService;
@@ -396,6 +406,69 @@ public class TenantLogic {
         this.updateSalesAuth(tenantId, endTime, roleIdOfAdmin, addMenuIds, nowMenuIds);
     }
 
+    /**
+     * @description: 首次初始化租户到销售云
+     * @Author: hzk
+     * @date: 2023/4/17 16:27
+     * @param: [tenant, endTime]
+     * @return: void
+     **/
+    public void initTenantSales(Tenant tenant, Date endTime) {
+        TenantUtils.execute(tenant.getTenantId(), () -> {
+            UserDTO userDTO = userMapper.selectUserOfAdmin();
+            if (StringUtils.isNotNull(userDTO)) {
+                Long roleIdOfAdmin = roleMapper.selectRoleIdOfAdmin();
+                this.syncSales(tenant, userDTO.getUserId(), roleIdOfAdmin, endTime, null);
+            }
+        });
+
+    }
+
+    /**
+     * @description: 初始化租户销售云基础部门-部门、人员
+     * @Author: hzk
+     * @date: 2023/4/17 16:35
+     * @param: [tenantId]
+     * @return: void
+     **/
+    public void initTenantSalesBase(Long tenantId) {
+        TenantUtils.execute(tenantId, () -> {
+            String salesToken = this.getAdminSalesToken(tenantId);
+            SecurityContextHolder.setSalesToken(salesToken);
+            //初始化部门
+            departmentService.initSalesDepartment();
+            //初始化人员
+            employeeService.initSalesEmployee();
+
+        });
+    }
+
+    /**
+     * @description: 获取管理员用户的token
+     * @Author: hzk
+     * @date: 2023/4/17 17:07
+     * @param: [tenantId]
+     * @return: java.lang.String
+     **/
+    public String getAdminSalesToken(Long tenantId) {
+        String salesToken = "";
+        UserDTO userDTO = userMapper.selectUserOfAdmin();
+        if (StringUtils.isNotNull(userDTO)) {
+            String userAccount = userDTO.getUserAccount();
+            Date nowDate = DateUtils.getNowDate();
+            String time = DateUtil.formatDateTime(nowDate);
+            String saleSign = SalesSignUtils.buildSaleSign(userAccount, time);
+            R<SalesLoginVO> r = remoteSyncAdminService.syncLogin(userAccount, tenantId, time, saleSign);
+            if (0 != r.getCode()) {
+                throw new ServiceException("系统异常");
+            }
+            SalesLoginVO salesLoginVO = r.getData();
+            if (StringUtils.isNotNull(salesLoginVO)) {
+                salesToken = salesLoginVO.getAdminToken();
+            }
+        }
+        return salesToken;
+    }
 
     /**
      * @description: 初始化租户用户相关信息

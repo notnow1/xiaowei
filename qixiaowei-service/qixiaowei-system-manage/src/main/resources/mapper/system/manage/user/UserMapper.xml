@@ -547,6 +547,13 @@
         </foreach>
     </insert>
 
+    <select id="selectUserOfAdmin"
+            resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
+        SELECT user_id, user_type, employee_id, user_account, mobile_phone, email
+        FROM user
+        WHERE user_type = 1 AND delete_flag=0 ORDER BY  create_time ASC LIMIT 1
+    </select>
+
     <!--物理删除用户表-->
     <delete id="deleteUserByUserId">
         DELETE FROM user

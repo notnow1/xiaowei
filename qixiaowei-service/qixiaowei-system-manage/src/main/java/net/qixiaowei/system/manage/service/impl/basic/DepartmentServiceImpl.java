@@ -1085,7 +1085,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             //处理销售云同步
             this.syncSalesDeleteDepartment(departmentDTO.getDepartmentId());
             try {
-                if (StringUtils.isNotEmpty(departmentIds)){
+                if (StringUtils.isNotEmpty(departmentIds)) {
                     i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
                 }
             } catch (Exception e) {
@@ -1093,7 +1093,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             }
             //这段逻辑已删除 打开也不影响
             try {
-                if (StringUtils.isNotEmpty(departmentIds)){
+                if (StringUtils.isNotEmpty(departmentIds)) {
                     departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
                 }
             } catch (Exception e) {
@@ -1101,6 +1101,19 @@ public class DepartmentServiceImpl implements IDepartmentService {
             }
         }
         return i;
+    }
+
+    @Override
+    public void initSalesDepartment() {
+        List<DepartmentDTO> all = departmentMapper.getAll();
+        if (StringUtils.isNotEmpty(all)) {
+            for (DepartmentDTO departmentDTO : all) {
+                //同步销售云
+                Department department = new Department();
+                BeanUtils.copyProperties(departmentDTO, department);
+                this.syncSalesAddDepartment(department);
+            }
+        }
     }
 
     /**

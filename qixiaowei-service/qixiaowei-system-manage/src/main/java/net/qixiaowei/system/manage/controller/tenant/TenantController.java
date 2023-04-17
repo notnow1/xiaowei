@@ -253,4 +253,23 @@ public class TenantController extends BaseController {
         return AjaxResult.success(tenantService.updateMyTenant(tenantDTO));
     }
 
+    /**
+     * 初始化租户-销售云
+     */
+    @RequiresPermissions("system:manage:tenant:initTenantSales")
+    @PostMapping("/initTenantSales")
+    public AjaxResult initTenantSales(@RequestParam("tenantId") Long tenantId) {
+        tenantService.initTenantSales(tenantId);
+        return AjaxResult.success();
+    }
+
+    /**
+     * 初始化租户-销售云基础信息（人员、部门）
+     */
+    @RequiresPermissions("system:manage:tenant:initTenantSalesBase")
+    @PostMapping("/initTenantSalesBase")
+    public AjaxResult initTenantSalesBase(@RequestParam("tenantId") Long tenantId) {
+        tenantService.initTenantSalesBase(tenantId);
+        return AjaxResult.success();
+    }
 }

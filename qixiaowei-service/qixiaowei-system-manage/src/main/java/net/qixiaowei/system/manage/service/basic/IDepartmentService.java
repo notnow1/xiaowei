@@ -232,4 +232,6 @@ public interface IDepartmentService {
      * @return
      */
     List<DepartmentDTO> selectDepartmentByLevel(Integer level);
+
+    void initSalesDepartment();
 }

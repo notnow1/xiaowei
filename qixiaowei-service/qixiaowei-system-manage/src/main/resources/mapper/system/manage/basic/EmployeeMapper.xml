@@ -2054,6 +2054,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2121,6 +2122,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2188,6 +2190,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2252,6 +2255,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,

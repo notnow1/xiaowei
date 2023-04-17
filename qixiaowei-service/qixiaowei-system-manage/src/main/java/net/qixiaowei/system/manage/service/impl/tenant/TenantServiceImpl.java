@@ -18,6 +18,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
+import net.qixiaowei.integration.tenant.utils.TenantUtils;
 import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
@@ -388,6 +389,40 @@ public class TenantServiceImpl implements ITenantService {
         i = tenantMapper.updateTenant(updateTenant);
         this.setTenantIdsCache();
         return i;
+    }
+
+    /**
+     * 初始化租户-销售云
+     *
+     * @return
+     */
+    @Override
+    public void initTenantSales(Long tenantId) {
+        //找到租户
+        TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
+        if (StringUtils.isNull(tenantDTO)) {
+            throw new ServiceException("初始化失败，租户不存在");
+        }
+        //租户授权
+        List<TenantContractDTO> tenantContractDTOS = tenantContractMapper.selectTenantContractByTenantId(tenantId);
+        this.handleResponseOfTenantContract(tenantContractDTOS);
+        Date nowDate = DateUtils.getNowDate();
+        Date endTime = this.getSalesEndTime(tenantContractDTOS, nowDate);
+        //初始化租户数据
+        Tenant tenant = new Tenant();
+        BeanUtils.copyProperties(tenantDTO, tenant);
+        //走初始化
+        tenantLogic.initTenantSales(tenant, endTime);
+    }
+
+    /**
+     * 初始化租户-销售云基础信息（人员、部门）
+     *
+     * @return
+     */
+    @Override
+    public void initTenantSalesBase(Long tenantId) {
+        tenantLogic.initTenantSalesBase(tenantId);
     }
 
     /**

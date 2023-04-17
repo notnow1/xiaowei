@@ -2073,7 +2073,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Override
     public void initSalesEmployee() {
-//        employeeMapper.selectEmployeeList()
+        List<EmployeeDTO> allUseEmployee = employeeMapper.getAllUseEmployee();
+        if (StringUtils.isNotEmpty(allUseEmployee)) {
+            for (EmployeeDTO employeeDTO : allUseEmployee) {
+                Long userId = employeeDTO.getUserId();
+                Employee employee = new Employee();
+                BeanUtils.copyProperties(employeeDTO, employee);
+                if (StringUtils.isNull(userId)) {
+                    //初始化帐号+销售云同步
+                    addUser(employee);
+                } else {
+                    //销售云同步
+                    syncSalesAddUser(userId, UserConstants.DEFAULT_PASSWORD, employee);
+                }
+            }
+        }
     }
 
     /**
@@ -2252,7 +2266,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             syncUserDTO.setRealname(userName);
             syncUserDTO.setUsername(employee.getEmployeeMobile());
             syncUserDTO.setSex(employee.getEmployeeGender());
-            syncUserDTO.setMobile(employee.getEmergencyMobile());
+            syncUserDTO.setMobile(employee.getEmployeeMobile());
             syncUserDTO.setPassword(password);
             syncUserDTO.setEmail(employee.getEmployeeEmail());
             syncUserDTO.setDeptId(employee.getEmployeeDepartmentId());
