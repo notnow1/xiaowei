@@ -762,6 +762,7 @@ public class TenantLogic {
         R<?> r = remoteSyncAdminService.syncRegister(syncResisterDTO, salesSign);
         if (0 != r.getCode()) {
             log.error("同步销售云注册失败:{}", r.getMsg());
+            throw new ServiceException("销售云初始化失败");
         }
     }
 
