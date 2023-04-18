@@ -267,12 +267,15 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         //战略指标维度主表
         List<StrategyIndexDimension> strategyIndexDimensions = new ArrayList<>();
         for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_PAR) {
-            strategyIndexDimension.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            strategyIndexDimension.setCreateBy(userId);
-            strategyIndexDimension.setUpdateBy(userId);
-            strategyIndexDimension.setCreateTime(nowDate);
-            strategyIndexDimension.setUpdateTime(nowDate);
-            strategyIndexDimensions.add(strategyIndexDimension);
+            StrategyIndexDimension strategyIndexDimension1 = new StrategyIndexDimension();
+            BeanUtils.copyProperties(strategyIndexDimension, strategyIndexDimension1);
+            strategyIndexDimension1.setStrategyIndexDimensionId(null);
+            strategyIndexDimension1.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            strategyIndexDimension1.setCreateBy(userId);
+            strategyIndexDimension1.setUpdateBy(userId);
+            strategyIndexDimension1.setCreateTime(nowDate);
+            strategyIndexDimension1.setUpdateTime(nowDate);
+            strategyIndexDimensions.add(strategyIndexDimension1);
         }
         try {
             strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensions);
@@ -287,24 +290,30 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         }
         List<StrategyIndexDimension> strategyIndexDimensionSon = new ArrayList<>();
         for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_SON_1) {
-            strategyIndexDimension.setParentIndexDimensionId(strategyIndexDimension1.getStrategyIndexDimensionId());
-            strategyIndexDimension.setAncestors(strategyIndexDimension1.getStrategyIndexDimensionId().toString());
-            strategyIndexDimension.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            strategyIndexDimension.setCreateBy(userId);
-            strategyIndexDimension.setUpdateBy(userId);
-            strategyIndexDimension.setCreateTime(nowDate);
-            strategyIndexDimension.setUpdateTime(nowDate);
-            strategyIndexDimensionSon.add(strategyIndexDimension);
+            StrategyIndexDimension strategyIndexDimension3 = new StrategyIndexDimension();
+            BeanUtils.copyProperties(strategyIndexDimension, strategyIndexDimension3);
+            strategyIndexDimension3.setStrategyIndexDimensionId(null);
+            strategyIndexDimension3.setParentIndexDimensionId(strategyIndexDimension1.getStrategyIndexDimensionId());
+            strategyIndexDimension3.setAncestors(strategyIndexDimension1.getStrategyIndexDimensionId().toString());
+            strategyIndexDimension3.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            strategyIndexDimension3.setCreateBy(userId);
+            strategyIndexDimension3.setUpdateBy(userId);
+            strategyIndexDimension3.setCreateTime(nowDate);
+            strategyIndexDimension3.setUpdateTime(nowDate);
+            strategyIndexDimensionSon.add(strategyIndexDimension3);
         }
         for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_SON_2) {
-            strategyIndexDimension.setParentIndexDimensionId(strategyIndexDimension2.getStrategyIndexDimensionId());
-            strategyIndexDimension.setAncestors(strategyIndexDimension2.getStrategyIndexDimensionId().toString());
-            strategyIndexDimension.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            strategyIndexDimension.setCreateBy(userId);
-            strategyIndexDimension.setUpdateBy(userId);
-            strategyIndexDimension.setCreateTime(nowDate);
-            strategyIndexDimension.setUpdateTime(nowDate);
-            strategyIndexDimensionSon.add(strategyIndexDimension);
+            StrategyIndexDimension strategyIndexDimension3 = new StrategyIndexDimension();
+            BeanUtils.copyProperties(strategyIndexDimension, strategyIndexDimension3);
+            strategyIndexDimension3.setStrategyIndexDimensionId(null);
+            strategyIndexDimension3.setParentIndexDimensionId(strategyIndexDimension2.getStrategyIndexDimensionId());
+            strategyIndexDimension3.setAncestors(strategyIndexDimension2.getStrategyIndexDimensionId().toString());
+            strategyIndexDimension3.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            strategyIndexDimension3.setCreateBy(userId);
+            strategyIndexDimension3.setUpdateBy(userId);
+            strategyIndexDimension3.setCreateTime(nowDate);
+            strategyIndexDimension3.setUpdateTime(nowDate);
+            strategyIndexDimensionSon.add(strategyIndexDimension3);
         }
         try {
             strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensionSon);
