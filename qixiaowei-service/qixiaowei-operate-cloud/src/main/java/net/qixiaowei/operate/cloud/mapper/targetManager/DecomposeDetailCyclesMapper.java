@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.domain.targetManager.DecomposeDetailCycles;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
+import net.qixiaowei.operate.cloud.api.vo.target.DecomposeDetailCyclesVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -135,5 +136,5 @@ public interface DecomposeDetailCyclesMapper {
      * @param targetDecomposeIds 目标分解列表
      * @return 结果
      */
-    List<DecomposeDetailCyclesDTO> selectTargetDecomposeCyclesByTargetDecomposeIds(@Param("targetDecomposeIds") List<Long> targetDecomposeIds);
+    List<DecomposeDetailCyclesVO> selectTargetDecomposeCyclesByTargetDecomposeIds(@Param("targetDecomposeIds") List<Long> targetDecomposeIds);
 }

@@ -24,9 +24,9 @@ import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalIt
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDimension;
 import net.qixiaowei.operate.cloud.api.dto.performance.*;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
+import net.qixiaowei.operate.cloud.api.vo.target.DecomposeDetailCyclesVO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.DecomposeDetailCyclesMapper;
@@ -964,6 +964,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Integer appraisalYear = performanceAppraisalObjectsDTO.getAppraisalYear();
         Integer cycleType = performanceAppraisalObjectsDTO.getCycleType();
         Integer cycleNumber = performanceAppraisalObjectsDTO.getCycleNumber();
+        Long objectId = performanceAppraisalObjectsDTO.getAppraisalObjectId();
         int timeDimension;
         switch (cycleType) {
             case 1:
@@ -1006,32 +1007,49 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             return new ArrayList<>();
         }
         List<Long> targetDecomposeIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList());
-        List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = decomposeDetailCyclesMapper.selectTargetDecomposeCyclesByTargetDecomposeIds(targetDecomposeIds);
-        List<Long> indicatorIds = decomposeDetailCyclesDTOS.stream().map(DecomposeDetailCyclesDTO::getIndicatorId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
+        List<DecomposeDetailCyclesVO> decomposeDetailCyclesVOS = decomposeDetailCyclesMapper.selectTargetDecomposeCyclesByTargetDecomposeIds(targetDecomposeIds);
+        List<Long> indicatorIds = decomposeDetailCyclesVOS.stream().map(DecomposeDetailCyclesVO::getIndicatorId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
         List<IndicatorDTO> indicatorDTOS = getIndicator(indicatorIds);
-        LinkedHashMap<Long, Map<Long, List<DecomposeDetailCyclesDTO>>> groupDecomposeDetailCyclesDTOS = decomposeDetailCyclesDTOS.stream().collect(
-                Collectors.groupingBy(DecomposeDetailCyclesDTO::getTargetDecomposeId, LinkedHashMap::new,
-                        Collectors.groupingBy(DecomposeDetailCyclesDTO::getTargetDecomposeDetailsId)));
+        LinkedHashMap<Long, Map<Long, List<DecomposeDetailCyclesVO>>> groupDecomposeDetailCyclesVOS = decomposeDetailCyclesVOS.stream().collect(
+                Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeId, LinkedHashMap::new,
+                        Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeDetailsId)));
         List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS = new ArrayList<>();
-        for (Long targetDecomposeId : groupDecomposeDetailCyclesDTOS.keySet()) {
+        for (Long targetDecomposeId : groupDecomposeDetailCyclesVOS.keySet()) {
+            Map<Long, List<DecomposeDetailCyclesVO>> groupDetailCyclesVOS = groupDecomposeDetailCyclesVOS.get(targetDecomposeId);
+            List<Long> objectIds = new ArrayList<>();
+            for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
+                List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
+                DecomposeDetailCyclesVO detailCyclesVO = detailCyclesVOS.get(0);
+                objectIds.add(appraisalObject == 1 ? detailCyclesVO.getDepartmentId() : detailCyclesVO.getEmployeeId());
+            }
+            if (!objectIds.contains(objectId)) {
+                continue;
+            }
             PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO = new PerformanceAppraisalItemsDTO();
-            Map<Long, List<DecomposeDetailCyclesDTO>> groupDetailCyclesDTOS = groupDecomposeDetailCyclesDTOS.get(targetDecomposeId);
-            BigDecimal cycleTargetSum = BigDecimal.ZERO;
-            for (Long targetDecomposeDetailsId : groupDetailCyclesDTOS.keySet()) {
-                List<DecomposeDetailCyclesDTO> detailCyclesDTOS = groupDetailCyclesDTOS.get(targetDecomposeDetailsId);
-                for (DecomposeDetailCyclesDTO detailCyclesDTO : detailCyclesDTOS) {
-//                    if (decomposeDetailCyclesDTO.getCycleNumber().equals(cycleNumber)) {
-//                        Long indicatorId = decomposeDetailCyclesDTO.getIndicatorId();
-//                        cycleTargetSum = cycleTargetSum.add(decomposeDetailCyclesDTO.getCycleTarget());
-//                        String indicatorName = indicatorDTOS.stream().filter(indicatorDTO ->
-//                                indicatorDTO.getIndicatorId().equals(indicatorId)).collect(Collectors.toList()).get(0).getIndicatorName();
-//                        performanceAppraisalItemsDTO.setIndicatorId(indicatorId);
-//                        performanceAppraisalItemsDTO.setIndicatorName(indicatorName);
-//                        break;
-//                    }
+            for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
+                List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
+                DecomposeDetailCyclesVO decomposeDetailCyclesVO = detailCyclesVOS.get(0);
+                if (!Objects.equals(appraisalObject == 1 ? decomposeDetailCyclesVO.getDepartmentId() : decomposeDetailCyclesVO.getEmployeeId(), objectId)) {
+                    continue;
+                }
+                boolean isTure = false;
+                for (DecomposeDetailCyclesVO detailCyclesVO : detailCyclesVOS) {
+                    if (detailCyclesVO.getCycleNumber().equals(cycleNumber)) {
+                        isTure = true;
+                        Long indicatorId = detailCyclesVO.getIndicatorId();
+                        BigDecimal cycleTarget = detailCyclesVO.getCycleTarget();
+                        String indicatorName = indicatorDTOS.stream().filter(indicatorDTO ->
+                                indicatorDTO.getIndicatorId().equals(indicatorId)).collect(Collectors.toList()).get(0).getIndicatorName();
+                        performanceAppraisalItemsDTO.setIndicatorId(indicatorId);
+                        performanceAppraisalItemsDTO.setIndicatorName(indicatorName);
+                        performanceAppraisalItemsDTO.setTargetValue(cycleTarget);
+                        break;
+                    }
+                }
+                if (isTure) {
+                    break;
                 }
             }
-            performanceAppraisalItemsDTO.setTargetValue(cycleTargetSum);
             performanceAppraisalItemsDTOS.add(performanceAppraisalItemsDTO);
         }
         return performanceAppraisalItemsDTOS;

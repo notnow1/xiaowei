@@ -43,10 +43,6 @@ public class DecomposeDetailCyclesDTO {
     */
     private  Long targetDecomposeDetailsId;
     /**
-    * 目标分解ID
-    */
-    private  Long targetDecomposeId;
-    /**
     * 周期数(顺序递增)
     */
     private  Integer cycleNumber;
@@ -97,10 +93,6 @@ public class DecomposeDetailCyclesDTO {
     */
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
-    /**
-     * 指标id
-     */
-    private  Long indicatorId;
 
 }
 

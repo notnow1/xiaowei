@@ -98,12 +98,15 @@
     </select>
     <!--根据目标分解id集合查找周期列表-->
     <select id="selectTargetDecomposeCyclesByTargetDecomposeIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO">
+            resultType="net.qixiaowei.operate.cloud.api.vo.target.DecomposeDetailCyclesVO">
         SELECT
         td.target_year,
         td.target_decompose_id,
         td.decomposition_dimension,
         td.indicator_id,
+        tdd.target_decompose_details_id,
+        tdd.department_id,
+        tdd.employee_id,
         tdd.target_decompose_details_id,
         ddc.decompose_detail_cycles_id,
         ddc.cycle_target,
