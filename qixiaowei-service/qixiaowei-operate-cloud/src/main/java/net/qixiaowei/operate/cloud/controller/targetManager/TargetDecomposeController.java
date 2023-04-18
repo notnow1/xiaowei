@@ -1109,7 +1109,7 @@ public class TargetDecomposeController extends BaseController {
         List<Map<Integer, String>> listMap = sheet.doReadSync();
 
         //导入解析滚动预测
-        TargetDecomposeImportListener.mapToListModel(3, 0, listMap, list, targetDecomposeDTO);
+        TargetDecomposeImportListener.mapToListModel(6, 0, listMap, list, targetDecomposeDTO);
         // 调用importer方法
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeService.importProduct(list, targetDecomposeDTO);
 

@@ -3225,7 +3225,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             if (i == row) {
                 Map<Integer, String> map = maps.get(i);
                 map.forEach((key, value) -> {
-                    if (StringUtils.equals(map.get(key), "目标完成率（%）")) {
+                    if (StringUtils.equals(map.get(key), "滚动预测负责人")) {
                         index.set(key + 1);
                     }
                 });
