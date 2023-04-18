@@ -1004,17 +1004,17 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
             for (int i = 2; i < listMap.size(); i++) {
                 Map<Integer, String> map = listMap.get(i);
                 int timer = 0;
-                IndicatorDTO indicator = new IndicatorDTO();
-                if (StringUtils.isNotNull(map.get(0))) {
-                    indicator = indicatorByNames.stream().filter(indicatorDTO -> StringUtils.equals(indicatorDTO.getIndicatorName(), map.get(0))).collect(Collectors.toList()).get(0);
+                if (StringUtils.isNull(map.get(0))) {
+                    continue;
                 }
+                IndicatorDTO indicator = indicatorByNames.stream().filter(indicatorDTO -> StringUtils.equals(indicatorDTO.getIndicatorName(), map.get(0))).collect(Collectors.toList()).get(0);
                 GapAnalysisOperateDTO gapAnalysisOperateDTO = new GapAnalysisOperateDTO();
                 gapAnalysisOperateDTO.setIndicatorId(indicator.getIndicatorId());
                 gapAnalysisOperateDTO.setIndicatorName(indicator.getIndicatorName());
                 gapAnalysisOperateDTO.setSort(i - 2);
                 List<GapAnalysisOperateDTO> gapAnalysisOperateDTOList = new ArrayList<>();
                 GapAnalysisOperateDTO analysisOperateDTO = new GapAnalysisOperateDTO();
-                for (int j = 1; j < map.keySet().size(); j++) {
+                for (int j = 1; j < operateHistoryYear * 2 + 1; j++) {
                     String value = map.get(j);
                     if (timer == 0) {
                         analysisOperateDTO = new GapAnalysisOperateDTO();

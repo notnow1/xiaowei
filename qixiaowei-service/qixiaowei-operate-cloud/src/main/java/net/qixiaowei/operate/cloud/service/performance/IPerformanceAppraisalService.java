@@ -2,10 +2,7 @@ package net.qixiaowei.operate.cloud.service.performance;
 
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.*;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -429,7 +426,17 @@ public interface IPerformanceAppraisalService {
 
     /**
      * 获取人员信息
+     *
      * @return 结果
      */
     List<EmployeeDTO> getEmployeeData();
+
+    /**
+     * 同步数据-制定
+     *
+     * @param performAppraisalObjectsId 对象ID
+     * @param appraisalObject           对象
+     * @return 结果
+     */
+    List<PerformanceAppraisalItemsDTO> migrationDevelopData(Long performAppraisalObjectsId, Integer appraisalObject);
 }

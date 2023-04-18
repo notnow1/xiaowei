@@ -369,4 +369,13 @@ public class TargetOutcomeController extends BaseController {
         return AjaxResult.success(targetOutcomeService.getResultIndicator(strategyIntentOperateVOS));
     }
 
+    /**
+     * 迁移数据
+     */
+    @RequiresPermissions("operate:cloud:targetOutcome:edit")
+    @GetMapping("/migrationData")
+    public AjaxResult migrationData(@RequestParam("targetYear") Integer targetYear) {
+        return AjaxResult.success(targetOutcomeService.migrationData(targetYear));
+    }
+
 }

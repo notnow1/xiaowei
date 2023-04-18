@@ -16,7 +16,8 @@
     <select id="selectTargetDecomposeDimensionList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO">
         SELECT
-        tdd.target_decompose_dimension_id, tdd.decomposition_dimension, tdd.sort, tdd.delete_flag, tdd.create_by, tdd.create_time, tdd.update_by,
+        tdd.target_decompose_dimension_id, tdd.decomposition_dimension, tdd.sort, tdd.delete_flag, tdd.create_by,
+        tdd.create_time, tdd.update_by,
         tdd.update_time
         FROM target_decompose_dimension tdd
         WHERE tdd.delete_flag=0
@@ -44,9 +45,10 @@
         <if test="targetDecomposeDimension.updateTime != null">
             and tdd.update_time=#{targetDecomposeDimension.updateTime}
         </if>
-        <!-- 数据范围过滤 -->
-        ${targetDecomposeDimension.params.dataScope}
-        ORDER BY tdd.sort DESC
+        <if test="targetDecomposeDimension.params.decompositionDimension != null and targetDecomposeDimension.params.decompositionDimension != ''">
+            and tdd.decomposition_dimension = #{targetDecomposeDimension.params.decompositionDimension}
+        </if>
+        ORDER BY tdd.sort
     </select>
     <!--新增目标分解维度配置-->
     <insert id="insertTargetDecomposeDimension" useGeneratedKeys="true" keyProperty="targetDecomposeDimensionId">

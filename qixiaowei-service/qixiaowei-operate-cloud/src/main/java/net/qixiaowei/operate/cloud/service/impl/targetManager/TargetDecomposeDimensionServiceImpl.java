@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDimensionService {
     @Autowired
     private TargetDecomposeDimensionMapper targetDecomposeDimensionMapper;
+
     @Autowired
     private RemoteDecomposeService targetDecomposeService;
     @Autowired
@@ -57,11 +58,23 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
      * @param targetDecomposeDimensionDTO 目标分解维度配置
      * @return 目标分解维度配置
      */
-    @DataScope(businessAlias = "tdd")
     @Override
     public List<TargetDecomposeDimensionDTO> selectTargetDecomposeDimensionList(TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
+        String decompositionDimensionName = targetDecomposeDimensionDTO.getDecompositionDimensionName();
+        String decompositionDimensionNameReplace = null;
+        if (StringUtils.isNotNull(decompositionDimensionName)) {
+            decompositionDimensionNameReplace = decompositionDimensionName
+                    .replace("销售员", "salesman")
+                    .replace("区域", "region")
+                    .replace("部门", "department")
+                    .replace("产品", "product")
+                    .replace("省份", "province")
+                    .replace("行业", "industry")
+                    .replace("+", ",");
+        }
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
         BeanUtils.copyProperties(targetDecomposeDimensionDTO, targetDecomposeDimension);
+        targetDecomposeDimension.setDecompositionDimension(decompositionDimensionNameReplace);
         List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTOS = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionList(targetDecomposeDimension);
         StringBuilder targetDecomposeDimensionName;
 

@@ -5,9 +5,10 @@
     <select id="selectDecomposeDetailCyclesByDecomposeDetailCyclesId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO">
         SELECT
-        decompose_detail_cycles_id, target_decompose_details_id, cycle_number, cycle_target, cycle_forecast, cycle_actual, delete_flag, create_by, create_time, update_by, update_time
+        decompose_detail_cycles_id, target_decompose_details_id, cycle_number, cycle_target, cycle_forecast,
+        cycle_actual, delete_flag, create_by, create_time, update_by, update_time
         FROM decompose_detail_cycles
-        WHERE  decompose_detail_cycles_id=#{decomposeDetailCyclesId}
+        WHERE decompose_detail_cycles_id=#{decomposeDetailCyclesId}
         and delete_flag=0
     </select>
 
@@ -15,74 +16,79 @@
     <select id="selectDecomposeDetailCyclesByDecomposeDetailCyclesIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO">
         SELECT
-        decompose_detail_cycles_id, target_decompose_details_id, cycle_number, cycle_target, cycle_forecast, cycle_actual, delete_flag, create_by, create_time, update_by, update_time
+        decompose_detail_cycles_id, target_decompose_details_id, cycle_number, cycle_target, cycle_forecast,
+        cycle_actual, delete_flag, create_by, create_time, update_by, update_time
         FROM decompose_detail_cycles
-        WHERE  decompose_detail_cycles_id in
-            <foreach item="item"
-                     collection="decomposeDetailCyclesIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE decompose_detail_cycles_id in
+        <foreach item="item"
+                 collection="decomposeDetailCyclesIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询目标分解详情周期表列表-->
-    <select id="selectDecomposeDetailCyclesList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO">
+    <select id="selectDecomposeDetailCyclesList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO">
         SELECT
-        decompose_detail_cycles_id, target_decompose_details_id, cycle_number, cycle_target, cycle_forecast, cycle_actual, delete_flag, create_by, create_time, update_by, update_time
+        decompose_detail_cycles_id, target_decompose_details_id, cycle_number, cycle_target, cycle_forecast,
+        cycle_actual, delete_flag, create_by, create_time, update_by, update_time
         FROM decompose_detail_cycles
         WHERE delete_flag=0
-                <if test="decomposeDetailCycles.decomposeDetailCyclesId != null">
-                    and decompose_detail_cycles_id=#{decomposeDetailCycles.decomposeDetailCyclesId}
-                </if>
-                <if test="decomposeDetailCycles.targetDecomposeDetailsId != null">
-                    and target_decompose_details_id=#{decomposeDetailCycles.targetDecomposeDetailsId}
-                </if>
-                <if test="decomposeDetailCycles.cycleNumber != null">
-                    and cycle_number=#{decomposeDetailCycles.cycleNumber}
-                </if>
-                <if test="decomposeDetailCycles.cycleTarget != null">
-                    and cycle_target=#{decomposeDetailCycles.cycleTarget}
-                </if>
-                <if test="decomposeDetailCycles.cycleForecast != null">
-                    and cycle_forecast=#{decomposeDetailCycles.cycleForecast}
-                </if>
-                <if test="decomposeDetailCycles.cycleActual != null">
-                    and cycle_actual=#{decomposeDetailCycles.cycleActual}
-                </if>
-                <if test="decomposeDetailCycles.deleteFlag != null">
-                    and delete_flag=#{decomposeDetailCycles.deleteFlag}
-                </if>
-                <if test="decomposeDetailCycles.createBy != null">
-                    and create_by=#{decomposeDetailCycles.createBy}
-                </if>
-                <if test="decomposeDetailCycles.createTime != null">
-                    and create_time=#{decomposeDetailCycles.createTime}
-                </if>
-                <if test="decomposeDetailCycles.updateBy != null">
-                    and update_by=#{decomposeDetailCycles.updateBy}
-                </if>
-                <if test="decomposeDetailCycles.updateTime != null">
-                    and update_time=#{decomposeDetailCycles.updateTime}
-                </if>
+        <if test="decomposeDetailCycles.decomposeDetailCyclesId != null">
+            and decompose_detail_cycles_id=#{decomposeDetailCycles.decomposeDetailCyclesId}
+        </if>
+        <if test="decomposeDetailCycles.targetDecomposeDetailsId != null">
+            and target_decompose_details_id=#{decomposeDetailCycles.targetDecomposeDetailsId}
+        </if>
+        <if test="decomposeDetailCycles.cycleNumber != null">
+            and cycle_number=#{decomposeDetailCycles.cycleNumber}
+        </if>
+        <if test="decomposeDetailCycles.cycleTarget != null">
+            and cycle_target=#{decomposeDetailCycles.cycleTarget}
+        </if>
+        <if test="decomposeDetailCycles.cycleForecast != null">
+            and cycle_forecast=#{decomposeDetailCycles.cycleForecast}
+        </if>
+        <if test="decomposeDetailCycles.cycleActual != null">
+            and cycle_actual=#{decomposeDetailCycles.cycleActual}
+        </if>
+        <if test="decomposeDetailCycles.deleteFlag != null">
+            and delete_flag=#{decomposeDetailCycles.deleteFlag}
+        </if>
+        <if test="decomposeDetailCycles.createBy != null">
+            and create_by=#{decomposeDetailCycles.createBy}
+        </if>
+        <if test="decomposeDetailCycles.createTime != null">
+            and create_time=#{decomposeDetailCycles.createTime}
+        </if>
+        <if test="decomposeDetailCycles.updateBy != null">
+            and update_by=#{decomposeDetailCycles.updateBy}
+        </if>
+        <if test="decomposeDetailCycles.updateTime != null">
+            and update_time=#{decomposeDetailCycles.updateTime}
+        </if>
     </select>
-<!--    根据分解id查询目标分解详情周期表-->
+    <!--    根据分解id查询目标分解详情周期表-->
     <select id="selectDecomposeDetailCyclesByTargetDecomposeDetailsId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO">
         SELECT
-            decompose_detail_cycles_id, target_decompose_details_id, cycle_number, cycle_target, cycle_forecast, cycle_actual, delete_flag, create_by, create_time, update_by, update_time
+        decompose_detail_cycles_id, target_decompose_details_id, cycle_number, cycle_target, cycle_forecast,
+        cycle_actual, delete_flag, create_by, create_time, update_by, update_time
         FROM decompose_detail_cycles
-        WHERE  target_decompose_details_id=#{targetDecomposeDetailsId}
-          and delete_flag=0
+        WHERE target_decompose_details_id=#{targetDecomposeDetailsId}
+        and delete_flag=0
         order by cycle_number
     </select>
-<!--    根据详情分解id批量查询目标分解详情周期表-->
+    <!--    根据详情分解id批量查询目标分解详情周期表-->
     <select id="selectDecomposeDetailCyclesByTargetDecomposeDetailsIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO">
         SELECT
-        decompose_detail_cycles_id, target_decompose_details_id, cycle_number, cycle_target, cycle_forecast, cycle_actual, delete_flag, create_by, create_time, update_by, update_time
+        decompose_detail_cycles_id, target_decompose_details_id, cycle_number, cycle_target, cycle_forecast,
+        cycle_actual, delete_flag, create_by, create_time, update_by, update_time
         FROM decompose_detail_cycles
-        WHERE  target_decompose_details_id in
+        WHERE target_decompose_details_id in
         <foreach item="item"
                  collection="targetDecomposeDetailsIds"
                  index="index" open="(" separator="," close=")">
@@ -90,9 +96,35 @@
         </foreach>
         and delete_flag=0
     </select>
+    <!--根据目标分解id集合查找周期列表-->
+    <select id="selectTargetDecomposeCyclesByTargetDecomposeIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO">
+        SELECT
+        td.target_year,
+        td.target_decompose_id,
+        td.decomposition_dimension,
+        td.indicator_id,
+        tdd.target_decompose_details_id,
+        ddc.decompose_detail_cycles_id,
+        ddc.cycle_target,
+        ddc.cycle_number
+        FROM target_decompose td
+        LEFT JOIN target_decompose_details tdd ON td.target_decompose_id = tdd.target_decompose_id
+        AND tdd.delete_flag = 0
+        LEFT JOIN decompose_detail_cycles ddc ON tdd.target_decompose_details_id = ddc.target_decompose_details_id
+        AND ddc.delete_flag = 0
+        WHERE td.delete_flag = 0
+        AND td.target_decompose_id IN
+        <foreach item="item"
+                 collection="targetDecomposeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--新增目标分解详情周期表-->
     <insert id="insertDecomposeDetailCycles" useGeneratedKeys="true" keyProperty="decomposeDetailCyclesId">
-        INSERT INTO decompose_detail_cycles (target_decompose_details_id,cycle_number,cycle_target,cycle_forecast,cycle_actual,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO decompose_detail_cycles
+        (target_decompose_details_id,cycle_number,cycle_target,cycle_forecast,cycle_actual,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{decomposeDetailCycles.targetDecomposeDetailsId},#{decomposeDetailCycles.cycleNumber},#{decomposeDetailCycles.cycleTarget},#{decomposeDetailCycles.cycleForecast},#{decomposeDetailCycles.cycleActual},#{decomposeDetailCycles.deleteFlag},#{decomposeDetailCycles.createBy},#{decomposeDetailCycles.createTime},#{decomposeDetailCycles.updateBy},#{decomposeDetailCycles.updateTime})
     </insert>
@@ -100,65 +132,66 @@
     <update id="updateDecomposeDetailCycles">
         UPDATE decompose_detail_cycles
         SET
-                    <if test="decomposeDetailCycles.targetDecomposeDetailsId != null">
-                        target_decompose_details_id=#{decomposeDetailCycles.targetDecomposeDetailsId},
-                    </if>
-                    <if test="decomposeDetailCycles.cycleNumber != null">
-                        cycle_number=#{decomposeDetailCycles.cycleNumber},
-                    </if>
-                    <if test="decomposeDetailCycles.cycleTarget != null">
-                        cycle_target=#{decomposeDetailCycles.cycleTarget},
-                    </if>
-                    <if test="decomposeDetailCycles.cycleForecast != null">
-                        cycle_forecast=#{decomposeDetailCycles.cycleForecast},
-                    </if>
-                    <if test="decomposeDetailCycles.cycleActual != null">
-                        cycle_actual=#{decomposeDetailCycles.cycleActual},
-                    </if>
-                    <if test="decomposeDetailCycles.deleteFlag != null">
-                        delete_flag=#{decomposeDetailCycles.deleteFlag},
-                    </if>
-                    <if test="decomposeDetailCycles.createBy != null">
-                        create_by=#{decomposeDetailCycles.createBy},
-                    </if>
-                    <if test="decomposeDetailCycles.createTime != null">
-                        create_time=#{decomposeDetailCycles.createTime},
-                    </if>
-                    <if test="decomposeDetailCycles.updateBy != null">
-                        update_by=#{decomposeDetailCycles.updateBy},
-                    </if>
-                    <if test="decomposeDetailCycles.updateTime != null">
-                        update_time=#{decomposeDetailCycles.updateTime}
-                    </if>
+        <if test="decomposeDetailCycles.targetDecomposeDetailsId != null">
+            target_decompose_details_id=#{decomposeDetailCycles.targetDecomposeDetailsId},
+        </if>
+        <if test="decomposeDetailCycles.cycleNumber != null">
+            cycle_number=#{decomposeDetailCycles.cycleNumber},
+        </if>
+        <if test="decomposeDetailCycles.cycleTarget != null">
+            cycle_target=#{decomposeDetailCycles.cycleTarget},
+        </if>
+        <if test="decomposeDetailCycles.cycleForecast != null">
+            cycle_forecast=#{decomposeDetailCycles.cycleForecast},
+        </if>
+        <if test="decomposeDetailCycles.cycleActual != null">
+            cycle_actual=#{decomposeDetailCycles.cycleActual},
+        </if>
+        <if test="decomposeDetailCycles.deleteFlag != null">
+            delete_flag=#{decomposeDetailCycles.deleteFlag},
+        </if>
+        <if test="decomposeDetailCycles.createBy != null">
+            create_by=#{decomposeDetailCycles.createBy},
+        </if>
+        <if test="decomposeDetailCycles.createTime != null">
+            create_time=#{decomposeDetailCycles.createTime},
+        </if>
+        <if test="decomposeDetailCycles.updateBy != null">
+            update_by=#{decomposeDetailCycles.updateBy},
+        </if>
+        <if test="decomposeDetailCycles.updateTime != null">
+            update_time=#{decomposeDetailCycles.updateTime}
+        </if>
         WHERE
-                 decompose_detail_cycles_id=#{decomposeDetailCycles.decomposeDetailCyclesId}
+        decompose_detail_cycles_id=#{decomposeDetailCycles.decomposeDetailCyclesId}
     </update>
     <!--逻辑删除目标分解详情周期表-->
     <update id="logicDeleteDecomposeDetailCyclesByDecomposeDetailCyclesId">
         UPDATE decompose_detail_cycles
-        SET     delete_flag= 1,
-                update_by=#{decomposeDetailCycles.updateBy},
-                update_time=#{decomposeDetailCycles.updateTime}
+        SET delete_flag= 1,
+        update_by=#{decomposeDetailCycles.updateBy},
+        update_time=#{decomposeDetailCycles.updateTime}
         WHERE
-                decompose_detail_cycles_id=#{decomposeDetailCycles.decomposeDetailCyclesId}
+        decompose_detail_cycles_id=#{decomposeDetailCycles.decomposeDetailCyclesId}
     </update>
     <!--逻辑批量删除目标分解详情周期表-->
     <update id="logicDeleteDecomposeDetailCyclesByDecomposeDetailCyclesIds">
         UPDATE decompose_detail_cycles
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         decompose_detail_cycles_id IN
-            <foreach item="item"
-                     collection="decomposeDetailCyclesIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        decompose_detail_cycles_id IN
+        <foreach item="item"
+                 collection="decomposeDetailCyclesIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增目标分解详情周期表-->
     <insert id="batchDecomposeDetailCycles">
-        INSERT INTO decompose_detail_cycles (target_decompose_details_id,cycle_number,cycle_target,cycle_forecast,cycle_actual,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO decompose_detail_cycles
+        (target_decompose_details_id,cycle_number,cycle_target,cycle_forecast,cycle_actual,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="decomposeDetailCycless"
@@ -170,103 +203,104 @@
     <!--物理删除目标分解详情周期表-->
     <delete id="deleteDecomposeDetailCyclesByDecomposeDetailCyclesId">
         DELETE FROM decompose_detail_cycles
-        WHERE  decompose_detail_cycles_id=#{decomposeDetailCycles}
+        WHERE decompose_detail_cycles_id=#{decomposeDetailCycles}
 
     </delete>
     <!--物理批量删除目标分解详情周期表-->
     <delete id="deleteDecomposeDetailCyclesByDecomposeDetailCyclesIds">
         DELETE FROM decompose_detail_cycles
-        WHERE  decompose_detail_cycles_id IN
-            <foreach item="item"
-                     collection="decomposeDetailCyclesIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE decompose_detail_cycles_id IN
+        <foreach item="item"
+                 collection="decomposeDetailCyclesIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改目标分解详情周期表-->
     <update id="updateDecomposeDetailCycless">
         update decompose_detail_cycles
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="target_decompose_details_id=case" suffix="end,">
-                        <foreach collection="decomposeDetailCyclesList" item="item" index="index">
-                                <if test="item.targetDecomposeDetailsId != null">
-                                    when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.targetDecomposeDetailsId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="cycle_number=case" suffix="end,">
-                        <foreach collection="decomposeDetailCyclesList" item="item" index="index">
-                                <if test="item.cycleNumber != null">
-                                    when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.cycleNumber}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="cycle_target=case" suffix="end,">
-                        <foreach collection="decomposeDetailCyclesList" item="item" index="index">
-                                <if test="item.cycleTarget != null">
-                                    when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.cycleTarget}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="cycle_forecast=case" suffix="end,">
-                        <foreach collection="decomposeDetailCyclesList" item="item" index="index">
-                                <if test="item.cycleForecast != null">
-                                    when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.cycleForecast}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="cycle_actual=case" suffix="end,">
-                        <foreach collection="decomposeDetailCyclesList" item="item" index="index">
-                                <if test="item.cycleActual != null">
-                                    when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.cycleActual}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="decomposeDetailCyclesList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="decomposeDetailCyclesList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="decomposeDetailCyclesList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="decomposeDetailCyclesList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="decomposeDetailCyclesList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="target_decompose_details_id=case" suffix="end,">
+                <foreach collection="decomposeDetailCyclesList" item="item" index="index">
+                    <if test="item.targetDecomposeDetailsId != null">
+                        when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then
+                        #{item.targetDecomposeDetailsId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="cycle_number=case" suffix="end,">
+                <foreach collection="decomposeDetailCyclesList" item="item" index="index">
+                    <if test="item.cycleNumber != null">
+                        when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.cycleNumber}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="cycle_target=case" suffix="end,">
+                <foreach collection="decomposeDetailCyclesList" item="item" index="index">
+                    <if test="item.cycleTarget != null">
+                        when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.cycleTarget}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="cycle_forecast=case" suffix="end,">
+                <foreach collection="decomposeDetailCyclesList" item="item" index="index">
+                    <if test="item.cycleForecast != null">
+                        when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.cycleForecast}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="cycle_actual=case" suffix="end,">
+                <foreach collection="decomposeDetailCyclesList" item="item" index="index">
+                    <if test="item.cycleActual != null">
+                        when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.cycleActual}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="decomposeDetailCyclesList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="decomposeDetailCyclesList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="decomposeDetailCyclesList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="decomposeDetailCyclesList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="decomposeDetailCyclesList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when decompose_detail_cycles_id=#{item.decomposeDetailCyclesId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="decomposeDetailCyclesList" separator="or" item="item" index="index">
-                    decompose_detail_cycles_id=#{item.decomposeDetailCyclesId}
+            decompose_detail_cycles_id=#{item.decomposeDetailCyclesId}
         </foreach>
     </update>
-<!--    根据目标分解详情id逻辑批量删除目标分解详情周期表-->
+    <!--    根据目标分解详情id逻辑批量删除目标分解详情周期表-->
     <update id="logicDeleteDecomposeDetailCyclesByTargetDecomposeDetailsIds">
         UPDATE decompose_detail_cycles
-        SET     delete_flag= 1,
+        SET delete_flag= 1,
         update_by=#{updateBy},
         update_time=#{updateTime}
         WHERE

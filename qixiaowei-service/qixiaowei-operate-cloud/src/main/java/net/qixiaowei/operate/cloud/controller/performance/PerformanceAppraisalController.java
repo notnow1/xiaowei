@@ -875,7 +875,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .doWrite(list);
     }
 
-    //==============================组织绩效管理-个人绩效管理-归档、撤回==================================//
+    //==============================组织绩效管理-个人绩效管理-归档、撤回、同步数据==================================//
 
     /**
      * 归档
@@ -893,6 +893,15 @@ public class PerformanceAppraisalController extends BaseController {
     @GetMapping("/withdraw/{performAppraisalObjectsId}")
     public AjaxResult withdraw(@PathVariable Long performAppraisalObjectsId) {
         return AjaxResult.success("撤回成功", performanceAppraisalService.withdraw(performAppraisalObjectsId));
+    }
+
+    /**
+     * 同步数据-制定
+     */
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:perDevelop:edit", "operate:cloud:performanceAppraisal:orgDevelop:edit"}, logical = Logical.OR)
+    @GetMapping("/migrationDevelopData")
+    public AjaxResult migrationDevelopData(@RequestParam("performAppraisalObjectsId") Long performAppraisalObjectsId, @RequestParam("appraisalObject") Integer appraisalObject) {
+        return AjaxResult.success("同步成功", performanceAppraisalService.migrationDevelopData(performAppraisalObjectsId, appraisalObject));
     }
 
     //==============================其他==================================//

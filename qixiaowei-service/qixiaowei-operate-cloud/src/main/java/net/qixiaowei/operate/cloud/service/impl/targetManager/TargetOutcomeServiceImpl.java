@@ -10,20 +10,18 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.api.vo.strategyIntent.StrategyIntentOperateMapVO;
 import net.qixiaowei.operate.cloud.api.vo.strategyIntent.StrategyIntentOperateVO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
-import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
-import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingMapper;
+import net.qixiaowei.operate.cloud.mapper.targetManager.*;
+import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeDimensionService;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeService;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
-import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
@@ -63,6 +61,18 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     @Autowired
     private RemoteEmployeeService employeeService;
 
+    @Autowired
+    private TargetDecomposeMapper targetDecomposeMapper;
+
+    @Autowired
+    private TargetDecomposeDetailsMapper targetDecomposeDetailsMapper;
+
+    @Autowired
+    private ITargetDecomposeDimensionService targetDecomposeDimensionService;
+
+    @Autowired
+    private DecomposeDetailCyclesMapper decomposeDetailCyclesMapper;
+
     /**
      * 查询目标结果表
      *
@@ -80,11 +90,10 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         int year = DateUtils.getYear();
         int month = DateUtils.getMonth();
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS = new ArrayList<>();
-        List<BigDecimal> monthValue = new ArrayList<>();
         if (targetYear < year) {
-            setAllMonth(targetOutcomeDetailsDTOList, monthValue, targetOutcomeDetailsDTOS);// 存放所有月份
+            setAllMonth(targetOutcomeDetailsDTOList, targetOutcomeDetailsDTOS);// 存放所有月份
         } else if (targetYear == year) {
-            setSomeMonth(targetOutcomeDetailsDTOList, month, monthValue, targetOutcomeDetailsDTOS);//存放部分月份
+            setSomeMonth(targetOutcomeDetailsDTOList, month, targetOutcomeDetailsDTOS);//存放部分月份
         } else {
             setOtherValue(targetOutcomeDetailsDTOList, targetOutcomeDetailsDTOS);//不存放月份
         }
@@ -145,7 +154,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         List<Long> indicatorIds = new ArrayList<>();
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
             Long indicatorId = targetOutcomeDetailsDTO.getIndicatorId();
-            Long createBy = targetOutcomeDetailsDTO.getCreateBy();
             indicatorIds.add(indicatorId);
         }
         R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
@@ -175,14 +183,13 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     /**
      * 存放部分月份
      *
-     * @param targetOutcomeDetailsDTOList
-     * @param month
-     * @param monthValue
-     * @param targetOutcomeDetailsDTOS
+     * @param targetOutcomeDetailsDTOList 列表
+     * @param month                       月
+     * @param targetOutcomeDetailsDTOS    详情列表
      */
-    private void setSomeMonth(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList, int month, List<BigDecimal> monthValue, List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS) {
+    private void setSomeMonth(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList, int month, List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS) {
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
-            monthValue = new ArrayList<>();
+            List<BigDecimal> monthValue = new ArrayList<>();
             TargetOutcomeDetailsDTO targetOutcomeDetails = setTargetOutcomeValue(targetOutcomeDetailsDTO);
             int i = 1;
             while (i < month) {
@@ -231,13 +238,12 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     /**
      * 存放所有月份
      *
-     * @param targetOutcomeDetailsDTOList
-     * @param monthValue
-     * @param targetOutcomeDetailsDTOS
+     * @param targetOutcomeDetailsDTOList 列表
+     * @param targetOutcomeDetailsDTOS    结果详情列表
      */
-    private void setAllMonth(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList, List<BigDecimal> monthValue, List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS) {
+    private void setAllMonth(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList, List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS) {
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
-            monthValue = new ArrayList<>();
+            List<BigDecimal> monthValue = new ArrayList<>();
             TargetOutcomeDetailsDTO targetOutcomeDetails = setTargetOutcomeValue(targetOutcomeDetailsDTO);
             monthValue.add(targetOutcomeDetailsDTO.getActualJanuary());
             monthValue.add(targetOutcomeDetailsDTO.getActualFebruary());
@@ -259,8 +265,8 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     /**
      * 目标结果赋值
      *
-     * @param targetOutcomeDetailsDTO
-     * @return
+     * @param targetOutcomeDetailsDTO 结果dto
+     * @return 结果
      */
     private static TargetOutcomeDetailsDTO setTargetOutcomeValue(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO) {
         TargetOutcomeDetailsDTO targetOutcomeDetails = new TargetOutcomeDetailsDTO();
@@ -345,21 +351,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             throw new ServiceException("远程获取用户信息失败");
         }
         return employeeDTOS;
-    }
-
-    /**
-     * 根据ID集合获取用户用户信息
-     *
-     * @param createBys 创建人ID集合
-     * @return
-     */
-    private List<UserDTO> getUserDTOS(Set<Long> createBys) {
-        R<List<UserDTO>> usersByUserIds = userService.getUsersByUserIds(createBys, SecurityConstants.INNER);
-        List<UserDTO> userDTOS = usersByUserIds.getData();
-        if (usersByUserIds.getCode() != 200) {
-            throw new ServiceException("远程获取用户信息失败");
-        }
-        return userDTOS;
     }
 
     /**
@@ -628,7 +619,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             indicatorNames.add(data.get(0));
         }
         List<IndicatorDTO> indicatorDTOS = getIndicatorDTOS(dataList, indicatorNames);
-        List<BigDecimal> monthValue = new ArrayList<>();
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsAfter = new ArrayList<>();
         for (Map<Integer, String> data : dataList) {
             TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
@@ -676,9 +666,9 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS = new ArrayList<>();
         int year = DateUtils.getYear();
         if (targetYear < year) {
-            setAllMonth(targetOutcomeDetailsAfter, monthValue, targetOutcomeDetailsDTOS);// 存放所有月份
+            setAllMonth(targetOutcomeDetailsAfter, targetOutcomeDetailsDTOS);// 存放所有月份
         } else if (targetYear == year) {
-            setSomeMonth(targetOutcomeDetailsAfter, month, monthValue, targetOutcomeDetailsDTOS);// 存放部分月份
+            setSomeMonth(targetOutcomeDetailsAfter, month, targetOutcomeDetailsDTOS);// 存放部分月份
         } else {
             setOtherValue(targetOutcomeDetailsAfter, targetOutcomeDetailsDTOS);// 不存放月份
         }
@@ -803,27 +793,11 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     }
 
     /**
-     * 通过targetSetting列表更新目标结果表
-     *
-     * @param updateTargetSetting
-     * @param targetYear
-     * @return
-     */
-    @Override
-    public int changeTargetOutcome(List<TargetSettingDTO> updateTargetSetting, Integer targetYear) {
-        TargetOutcomeDTO targetOutcomeDTO = selectTargetOutcomeByTargetYear(targetYear);
-        updateTargetOutcome(targetOutcomeDTO);
-        Long targetOutcomeId = targetOutcomeDTO.getTargetOutcomeId();
-        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
-        return 0;
-    }
-
-    /**
      * 通过targetYear列表查找Target Outcome DTO
      *
      * @param targetYears 目标年度列表
-     * @param indicatorId
-     * @return
+     * @param indicatorId 指标id
+     * @return 结果
      */
     @Override
     public List<TargetOutcomeDetailsDTO> selectTargetOutcomeByTargetYears(List<Integer> targetYears, Long indicatorId) {
@@ -833,8 +807,8 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     /**
      * 战略云获取指标实际值
      *
-     * @param strategyIntentOperateVOS
-     * @return
+     * @param strategyIntentOperateVOS vos
+     * @return 结果
      */
     @Override
     public List<StrategyIntentOperateVO> getResultIndicator(List<StrategyIntentOperateVO> strategyIntentOperateVOS) {
@@ -881,7 +855,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                                 if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList1)) {
                                     for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
                                         Integer targetYear = targetOutcomeDetailsDTO.getTargetYear();
-                                        if (null != operateYear && (targetYear.equals(operateYear))) {
+                                        if ((targetYear.equals(operateYear))) {
                                             yearValues1.put(targetYear, targetOutcomeDetailsDTO.getActualTotal());
                                         }
                                     }
@@ -895,6 +869,89 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             }
         }
         return strategyIntentOperateVOS;
+    }
+
+    /**
+     * 同步数据
+     *
+     * @param targetYear 目标年度
+     * @return 结果
+     */
+    @Override
+    public List<TargetDecomposeDTO> migrationData(Integer targetYear) {
+        int year = DateUtils.getYear();
+        int month = DateUtils.getMonth();
+        TargetDecompose targetDecompose = new TargetDecompose();
+        targetDecompose.setTimeDimension(4);
+        targetDecompose.setTargetYear(targetYear);
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectRollPageList(targetDecompose);
+        if (StringUtils.isEmpty(targetDecomposeDTOS) || targetYear > year) {
+            return targetDecomposeDTOS;
+        }
+        List<Long> targetDecomposeIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList());
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeIds(targetDecomposeIds);
+        if (StringUtils.isEmpty(targetDecomposeDetailsDTOList)) {
+            throw new ServiceException("数据异常 请联系管理员");
+        }
+        List<Long> targetDecomposeDetailsIds = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getTargetDecomposeDetailsId).collect(Collectors.toList());
+        List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsIds(targetDecomposeDetailsIds);
+        for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
+            Map<Integer, BigDecimal> valueMap = new HashMap<>();
+            Long targetDecomposeId = targetDecomposeDTO.getTargetDecomposeId();
+            List<Long> targetDecomposeDetailsIdList = targetDecomposeDetailsDTOList.stream().filter(t -> targetDecomposeId.equals(t.getTargetDecomposeId())).map(TargetDecomposeDetailsDTO::getTargetDecomposeDetailsId).collect(Collectors.toList());
+            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = decomposeDetailCyclesDTOList.stream().filter(d -> targetDecomposeDetailsIdList.contains(d.getTargetDecomposeDetailsId())).collect(Collectors.toList());
+            for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
+                Integer cycleNumber = decomposeDetailCyclesDTO.getCycleNumber();
+                BigDecimal cycleTarget = decomposeDetailCyclesDTO.getCycleTarget();
+                if (valueMap.containsKey(cycleNumber)) {
+                    valueMap.put(cycleNumber, valueMap.get(cycleNumber).add(cycleTarget));
+                } else {
+                    valueMap.put(cycleNumber, cycleTarget);
+                }
+            }
+            List<BigDecimal> monthValue = new ArrayList<>();
+            Map<Integer, BigDecimal> treeMap;
+            if (targetYear < year) {
+                treeMap = new TreeMap<>(valueMap);
+                monthValue = new ArrayList<>(treeMap.values());
+            } else {
+                int i = 1;
+                while (i < month) {
+                    monthValue.add(valueMap.get(i));
+                    i++;
+                }
+            }
+            targetDecomposeDTO.setMonthValue(monthValue);
+        }
+        List<Long> indicatorIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getIndicatorId).collect(Collectors.toList());
+        //远程获取指标名称
+        R<List<IndicatorDTO>> listR1 = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+        List<IndicatorDTO> data = listR1.getData();
+        if (StringUtils.isNotEmpty(data)) {
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                for (IndicatorDTO datum : data) {
+                    if (decomposeDTO.getIndicatorId().equals(datum.getIndicatorId())) {
+                        decomposeDTO.setIndicatorName(datum.getIndicatorName());
+                    }
+                }
+            }
+        }
+        List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTOS = targetDecomposeDimensionService.selectTargetDecomposeDimensionList(new TargetDecomposeDimensionDTO());
+        targetDecomposeDTOS.sort(Comparator.comparing(TargetDecomposeDTO::getIndicatorId).thenComparing(TargetDecomposeDTO::getTargetDecomposeDimensionId));
+        List<TargetDecomposeDTO> targetDecomposeDTOList = new ArrayList<>();
+        Map<Long, List<TargetDecomposeDTO>> groupTargetDecomposeDTOS = targetDecomposeDTOS.stream().collect(Collectors.groupingBy(TargetDecomposeDTO::getIndicatorId));
+        for (Long indicatorId : groupTargetDecomposeDTOS.keySet()) {
+            List<TargetDecomposeDTO> decomposeDTOS = groupTargetDecomposeDTOS.get(indicatorId);
+            for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDTOS) {
+                for (TargetDecomposeDTO decomposeDTO : decomposeDTOS) {
+                    if (targetDecomposeDimensionDTO.getDecompositionDimensionName().equals(decomposeDTO.getDecompositionDimension())) {
+                        targetDecomposeDTOList.add(decomposeDTO);
+                        break;
+                    }
+                }
+            }
+        }
+        return targetDecomposeDTOList;
     }
 
 }

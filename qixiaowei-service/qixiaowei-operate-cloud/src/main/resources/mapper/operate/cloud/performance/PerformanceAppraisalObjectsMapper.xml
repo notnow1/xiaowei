@@ -5,14 +5,16 @@
     <select id="selectPerformanceAppraisalObjectsByPerformAppraisalObjectsId"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
         SELECT
+        pa.appraisal_year,
+        pa.cycle_type,
+        pa.evaluation_type,
+        pa.cycle_number,
         pao.perform_appraisal_objects_id,
         pao.performance_appraisal_id,
         pao.appraisal_object_id,
         pao.appraisal_principal_id,
         pao.appraisal_principal_name,
         pao.evaluation_score,
-        pa.cycle_type,
-        pa.evaluation_type,
         pao.appraisal_result_id,
         pao.appraisal_result,
         pao.appraisal_object_status,
