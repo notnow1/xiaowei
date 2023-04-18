@@ -386,6 +386,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
             industryAttraction.setUpdateBy(userId);
             industryAttraction.setCreateTime(nowDate);
             industryAttraction.setUpdateTime(nowDate);
+            industryAttraction.setIndustryAttractionId(null);
             industryAttractions.add(industryAttraction);
         }
         try {
@@ -400,6 +401,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
             industryAttractionElement.setUpdateBy(userId);
             industryAttractionElement.setCreateTime(nowDate);
             industryAttractionElement.setUpdateTime(nowDate);
+            industryAttractionElement.setIndustryAttractionElementId(null);
             industryAttractionElements.add(industryAttractionElement);
         }
         for (IndustryAttractionElement industryAttractionElement : INIT_INDUSTRY_ATTRACTION_ELEMENT_TWO) {
@@ -409,6 +411,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
             industryAttractionElement.setUpdateBy(userId);
             industryAttractionElement.setCreateTime(nowDate);
             industryAttractionElement.setUpdateTime(nowDate);
+            industryAttractionElement.setIndustryAttractionElementId(null);
             industryAttractionElements.add(industryAttractionElement);
         }
         for (IndustryAttractionElement industryAttractionElement : INIT_INDUSTRY_ATTRACTION_ELEMENT_Three) {
@@ -418,6 +421,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
             industryAttractionElement.setUpdateBy(userId);
             industryAttractionElement.setCreateTime(nowDate);
             industryAttractionElement.setUpdateTime(nowDate);
+            industryAttractionElement.setIndustryAttractionElementId(null);
             industryAttractionElements.add(industryAttractionElement);
         }
         i = industryAttractionElementMapper.batchIndustryAttractionElement(industryAttractionElements);
