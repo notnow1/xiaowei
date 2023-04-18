@@ -874,7 +874,7 @@ public class TargetDecomposeController extends BaseController {
         }
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
         //自定义表头
-        List<List<String>> head = TargetDecomposeImportListener.headRollDetails(targetDecomposeDTO);
+        List<List<String>> head = TargetDecomposeImportListener.headRollDetailsTemplate(targetDecomposeDTO);
 
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
@@ -1021,6 +1021,51 @@ public class TargetDecomposeController extends BaseController {
                                 // cell里面去 会导致自己设置的不一样（很关键）
                                 cellData.setOriginCellStyle(xssfCellColorStyle);
                                 cell.setCellStyle(cellStyle);
+                            }
+                            if ( context.getRowIndex() > 8 ) {
+                                //时间维度:1年度;2半年度;3季度;4月度;5周
+                                Integer timeDimension = targetDecomposeDTO.getTimeDimension();
+                                //需要置灰列的集合
+                                List<Integer> columnIndexList = new ArrayList<>();
+                                List<Map<String, String>> fileNameList = targetDecomposeDTO.getFileNameList();
+                                int size = fileNameList.size()+1;
+                                 if (timeDimension ==2){
+                                    columnIndexList.add(size+3);
+                                }else if (timeDimension ==3){
+                                    for (int i = 0; i < 3; i++) {
+                                        size= size+3;
+                                        columnIndexList.add(size);
+                                    }
+
+                                }else if (timeDimension ==4){
+                                    for (int i = 0; i < 11; i++) {
+                                        size= size+3;
+                                        columnIndexList.add(size);
+                                    }
+                                }else if (timeDimension ==5){
+                                    for (int i = 0; i < 51; i++) {
+                                        size= size+3;
+                                        columnIndexList.add(size);
+                                    }
+                                }
+                              if (context.getColumnIndex() < (fileNameList.size()+2) || columnIndexList.contains(context.getColumnIndex())){
+                                  // 拿到poi的workbook
+                                  Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                                  // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                                  // 不同单元格尽量传同一个 cellStyle
+                                  //设置rgb颜色
+                                  byte[] rgb = new byte[]{(byte) 217, (byte) 217, (byte) 217};
+                                  CellStyle cellStyle = workbook.createCellStyle();
+                                  XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                  xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                  // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                  cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                  // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                                  // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                                  // cell里面去 会导致自己设置的不一样（很关键）
+                                  cellData.setOriginCellStyle(xssfCellColorStyle);
+                                  cell.setCellStyle(cellStyle);
+                              }
                             }
 
                         }
@@ -1710,7 +1755,7 @@ public class TargetDecomposeController extends BaseController {
                                 writeCellStyle.setBorderRight(BorderStyle.THIN);
                                 writeCellStyle.setBorderBottom(BorderStyle.THIN);
                             }
-                            if (context.getRowIndex() == 7 || context.getRowIndex() == 8) {
+                            if (context.getRowIndex() == 7) {
                                 if (context.getColumnIndex() < 7) {
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
@@ -1718,6 +1763,27 @@ public class TargetDecomposeController extends BaseController {
                                     // 不同单元格尽量传同一个 cellStyle
                                     //设置rgb颜色
                                     byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                                    CellStyle cellStyle = workbook.createCellStyle();
+                                    XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                    xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                    // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                    cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                    // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                                    // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                                    // cell里面去 会导致自己设置的不一样（很关键）
+                                    cellData.setOriginCellStyle(xssfCellColorStyle);
+                                    cell.setCellStyle(cellStyle);
+                                }
+
+                            }
+                            if (context.getRowIndex() == 8) {
+                                if (context.getColumnIndex() < 7) {
+                                    // 拿到poi的workbook
+                                    Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                                    // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                                    // 不同单元格尽量传同一个 cellStyle
+                                    //设置rgb颜色
+                                    byte[] rgb = new byte[]{(byte) 217, (byte) 217, (byte) 217};
                                     CellStyle cellStyle = workbook.createCellStyle();
                                     XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
                                     xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));

@@ -1993,141 +1993,233 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
      * @return
      */
     public static List<List<String>> headRollDetailsTemplate(TargetDecomposeDTO targetDecomposeDTO) {
+        if (StringUtils.isNull(targetDecomposeDTO)) {
+            throw new ServiceException("数据不存在 请刷新页面重试！");
+        }
         List<List<String>> list = new ArrayList<List<String>>();
         List<Map<String, String>> fileNameList = targetDecomposeDTO.getFileNameList();
-        for (Map<String, String> stringStringMap : fileNameList) {
-            // 动态列
-            List<String> head1 = new ArrayList<String>();
-            head1.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-            head1.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-            head1.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-            head1.add("管理维度");
-            head1.add(stringStringMap.get("label"));
-            list.add(head1);
+        String timeDimensionName = null;
+        Integer timeDimension = targetDecomposeDTO.getTimeDimension();
+
+        if (timeDimension == 1) {
+            timeDimensionName = "年度";
+        } else if (timeDimension == 2) {
+            timeDimensionName = "半年度";
+        } else if (timeDimension == 3) {
+            timeDimensionName = "季度";
+        } else if (timeDimension == 4) {
+            timeDimensionName = "月度";
+        } else if (timeDimension == 5) {
+            timeDimensionName = "周";
         }
-        List<String> head2 = new ArrayList<String>();
-        head2.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-        head2.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-        head2.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-        head2.add("滚动预测负责人");
-        head2.add("滚动预测负责人");
-        list.add(head2);
-
-        List<String> head3 = new ArrayList<String>();
-        head3.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-        head3.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-        head3.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-        head3.add("年度");
-        head3.add("分解目标");
-        List<String> head4 = new ArrayList<String>();
-        head4.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-        head4.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-        head4.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-        head4.add("整年度");
-        head4.add("年度预测");
-        List<String> head5 = new ArrayList<String>();
-        head5.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-        head5.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-        head5.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-        head5.add("整年度");
-        head5.add("累计实际值");
-        List<String> head6 = new ArrayList<String>();
-        head6.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-        head6.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-        head6.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-        head6.add("整年度");
-        head6.add("目标完成率（%）");
-        list.add(head3);
-        list.add(head4);
-        list.add(head5);
-        list.add(head6);
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i1 = 0; i1 < targetDecomposeDTO.getFileNameList().size(); i1++) {
+            if (i1 != 0) {
+                stringBuffer.append("+").append(targetDecomposeDTO.getFileNameList().get(i1).get("label"));
+            } else {
+                stringBuffer.append(targetDecomposeDTO.getFileNameList().get(i1).get("label"));
+            }
+        }
+        // 动态列
+        List<String> head0 = new ArrayList<String>();
+        head0.add("币种：人民币   单位：万元");
+        head0.add("目标年度");
+        head0.add("指标名称");
+        head0.add("分解维度");
+        head0.add("时间维度");
+        head0.add("");
+        head0.add("分解详细信息：");
 
 
+        List<String> head1 = new ArrayList<String>();
+        head1.add("币种：人民币   单位：万元");
+        head1.add(StringUtils.isNotBlank(targetDecomposeDTO.getTargetYear().toString()) ? targetDecomposeDTO.getTargetYear().toString() : "");
+        head1.add(StringUtils.isNotBlank(targetDecomposeDTO.getIndicatorName()) ? targetDecomposeDTO.getIndicatorName() : "");
+        head1.add(StringUtils.isNotBlank(stringBuffer.toString()) ? stringBuffer.toString() : "");
+        head1.add(StringUtils.isNotBlank(timeDimensionName) ? timeDimensionName : "");
+        head1.add("");
+        // 动态列
+        for (int i = 0; i < fileNameList.size(); i++) {
+            if (i == 0) {
+                head0.add(fileNameList.get(i).get("label"));
+                head0.add(fileNameList.get(i).get("label"));
+                list.add(head0);
+                if (fileNameList.size() < 2) {
+                    head1.add("");
+                    head1.add("滚动预测负责人");
+                    head1.add("滚动预测负责人");
+                    list.add(head1);
+                }
+            } else if (i == 1) {
+                head1.add("");
+                head1.add(fileNameList.get(i).get("label"));
+                head1.add(fileNameList.get(i).get("label"));
+                list.add(head1);
+            } else {
+                // 动态列
+                List<String> head2 = new ArrayList<String>();
+                head2.add("");
+                head2.add("");
+                head2.add("");
+                head2.add("");
+                head2.add("");
+                head2.add("");
+                head2.add("");
+                head2.add(fileNameList.get(i).get("label"));
+                head2.add(fileNameList.get(i).get("label"));
+                list.add(head2);
+            }
+        }
+        if (fileNameList.size() > 1) {
+            List<String> head3 = new ArrayList<String>();
+            head3.add("");
+            head3.add("");
+            head3.add("");
+            head3.add("");
+            head3.add("");
+            head3.add("");
+            head3.add("");
+            head3.add("滚动预测负责人");
+            head3.add("滚动预测负责人");
+            list.add(head3);
+        }
         if (1 == targetDecomposeDTO.getTimeDimension()) {
             // 动态列
-            List<String> head7 = new ArrayList<String>();
-            head7.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-            head7.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-            head7.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-            head7.add("年度");
-            head7.add("目标值");
-            List<String> head8 = new ArrayList<String>();
-            head8.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-            head8.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-            head8.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-            head8.add("年度");
-            head8.add("预测值");
-            List<String> head9 = new ArrayList<String>();
-            head9.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-            head9.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-            head9.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-            head9.add("年度");
-            head9.add("实际值");
-            list.add(head7);
-            list.add(head8);
-            list.add(head9);
-
-        } else if (2 == targetDecomposeDTO.getTimeDimension()) {
-            // 动态列
-            List<String> head7 = new ArrayList<String>();
-            head7.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-            head7.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-            head7.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-            head7.add("上半年");
-            head7.add("目标值");
-            List<String> head8 = new ArrayList<String>();
-            head8.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-            head8.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-            head8.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-            head8.add("上半年");
-            head8.add("预测值");
-            List<String> head9 = new ArrayList<String>();
-            head9.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-            head9.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-            head9.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-            head9.add("上半年");
-            head9.add("实际值");
-
-            // 动态列
             List<String> head10 = new ArrayList<String>();
-            head10.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-            head10.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-            head10.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-            head10.add("下半年");
+            head10.add("");
+            head10.add("");
+            head10.add("");
+            head10.add("");
+            head10.add("");
+            head10.add("");
+            head10.add("");
+            head10.add("整年度");
             head10.add("目标值");
             List<String> head11 = new ArrayList<String>();
-            head11.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-            head11.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-            head11.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-            head11.add("下半年");
+            head11.add("");
+            head11.add("");
+            head11.add("");
+            head11.add("");
+            head11.add("");
+            head11.add("");
+            head11.add("");
+            head11.add("整年度");
             head11.add("预测值");
             List<String> head12 = new ArrayList<String>();
-            head12.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-            head12.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-            head12.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-            head12.add("下半年");
+            head12.add("");
+            head12.add("");
+            head12.add("");
+            head12.add("");
+            head12.add("");
+            head12.add("");
+            head12.add("");
+            head12.add("整年度");
             head12.add("实际值");
-            list.add(head7);
-            list.add(head8);
-            list.add(head9);
             list.add(head10);
             list.add(head11);
             list.add(head12);
+
+        } else if (2 == targetDecomposeDTO.getTimeDimension()) {
+            // 动态列
+            List<String> head10 = new ArrayList<String>();
+            head10.add("");
+            head10.add("");
+            head10.add("");
+            head10.add("");
+            head10.add("");
+            head10.add("");
+            head10.add("");
+            head10.add("上半年");
+            head10.add("目标值");
+            List<String> head11 = new ArrayList<String>();
+            head11.add("");
+            head11.add("");
+            head11.add("");
+            head11.add("");
+            head11.add("");
+            head11.add("");
+            head11.add("");
+            head11.add("上半年");
+            head11.add("预测值");
+            List<String> head12 = new ArrayList<String>();
+            head12.add("");
+            head12.add("");
+            head12.add("");
+            head12.add("");
+            head12.add("");
+            head12.add("");
+            head12.add("");
+            head12.add("上半年");
+            head12.add("实际值");
+
+
+            // 动态列
+            List<String> head13 = new ArrayList<String>();
+            head13.add("");
+            head13.add("");
+            head13.add("");
+            head13.add("");
+            head13.add("");
+            head13.add("");
+            head13.add("");
+            head13.add("下半年");
+            head13.add("目标值");
+            List<String> head14 = new ArrayList<String>();
+            head14.add("");
+            head14.add("");
+            head14.add("");
+            head14.add("");
+            head14.add("");
+            head14.add("");
+            head14.add("");
+            head14.add("下半年");
+            head14.add("预测值");
+            List<String> head15 = new ArrayList<String>();
+            head15.add("");
+            head15.add("");
+            head15.add("");
+            head15.add("");
+            head15.add("");
+            head15.add("");
+            head15.add("");
+            head15.add("下半年");
+            head15.add("实际值");
+
+            list.add(head10);
+            list.add(head11);
+            list.add(head12);
+            list.add(head13);
+            list.add(head14);
+            list.add(head15);
         } else if (3 == targetDecomposeDTO.getTimeDimension()) {
             for (int i = 1; i <= 4; i++) {
                 // 动态列
                 List<String> head13 = new ArrayList<String>();
                 List<String> head14 = new ArrayList<String>();
                 List<String> head15 = new ArrayList<String>();
-                head13.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-                head13.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-                head13.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-                head14.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-                head14.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-                head14.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-                head15.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-                head15.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-                head15.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
+
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+
                 head13.add(Convert.int2chineseNum(i) + "季度");
                 head14.add(Convert.int2chineseNum(i) + "季度");
                 head15.add(Convert.int2chineseNum(i) + "季度");
@@ -2145,18 +2237,32 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 List<String> head13 = new ArrayList<String>();
                 List<String> head14 = new ArrayList<String>();
                 List<String> head15 = new ArrayList<String>();
-                head13.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-                head13.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-                head13.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-                head14.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-                head14.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-                head14.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-                head15.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-                head15.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-                head15.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+
                 head13.add(i + "月");
                 head14.add(i + "月");
                 head15.add(i + "月");
+
                 head13.add("目标值");
                 head14.add("预测值");
                 head15.add("实际值");
@@ -2170,18 +2276,32 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 List<String> head13 = new ArrayList<String>();
                 List<String> head14 = new ArrayList<String>();
                 List<String> head15 = new ArrayList<String>();
-                head13.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-                head13.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-                head13.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-                head14.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-                head14.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-                head14.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-                head15.add("本模板请勿调整行与列的内容，仅需填充预测值与实际值即可，如需调整行/列内容，请在系统中调整后，重新下载导入模板进行填充。");
-                head15.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
-                head15.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head13.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head14.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
+                head15.add("");
                 head13.add(i + "周");
                 head14.add(i + "周");
                 head15.add(i + "周");
+
+
                 head13.add("目标值");
                 head14.add("预测值");
                 head15.add("实际值");
@@ -3590,14 +3710,14 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 }
                 //滚动预测负责人
                 data.add(targetDecomposeDetailsDTO.getPrincipalEmployeeName());
-                //分解目标
+/*                //分解目标
                 data.add(targetDecomposeDetailsDTO.getAmountTarget().setScale(2,BigDecimal.ROUND_HALF_UP));
                 //年度预测值
                 data.add(targetDecomposeDetailsDTO.getForecastYear().setScale(2,BigDecimal.ROUND_HALF_UP));
                 //累计实际值
                 data.add(targetDecomposeDetailsDTO.getActualTotal().setScale(2,BigDecimal.ROUND_HALF_UP));
                 //目标完成率
-                data.add(targetDecomposeDetailsDTO.getTargetPercentageComplete().setScale(2,BigDecimal.ROUND_HALF_UP));
+                data.add(targetDecomposeDetailsDTO.getTargetPercentageComplete().setScale(2,BigDecimal.ROUND_HALF_UP));*/
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                         //周期目标值
