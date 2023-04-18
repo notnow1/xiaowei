@@ -2270,7 +2270,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             syncUserDTO.setPassword(password);
             syncUserDTO.setEmail(employee.getEmployeeEmail());
             syncUserDTO.setDeptId(employee.getEmployeeDepartmentId());
-            syncUserDTO.setStatus(2);
+            syncUserDTO.setStatus(1);
             syncUserDTO.setNum(employee.getEmployeeCode());
             Long employeePostId = employee.getEmployeePostId();
             //处理岗位
