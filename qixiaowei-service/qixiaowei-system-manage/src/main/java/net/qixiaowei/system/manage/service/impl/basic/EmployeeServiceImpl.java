@@ -2083,8 +2083,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     //初始化帐号+销售云同步
                     addUser(employee);
                 } else {
+                    String userAccount = null;
+                    UserDTO userDTO = userMapper.selectUserByUserId(userId);
+                    if (StringUtils.isNotNull(userDTO)) {
+                        userAccount = userDTO.getUserAccount();
+                    }
                     //销售云同步
-                    syncSalesAddUser(userId, UserConstants.DEFAULT_PASSWORD, employee);
+                    syncSalesAddUser(userId, userAccount, UserConstants.DEFAULT_PASSWORD, employee);
                 }
             }
         }
@@ -2246,7 +2251,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             userDTO.setEmail(employee.getEmployeeEmail());
             userLogic.insertUser(userDTO);
             //销售云帐号同步
-            this.syncSalesAddUser(userDTO.getUserId(), password, employee);
+            this.syncSalesAddUser(userDTO.getUserId(), employeeMobile, password, employee);
         }
     }
 
@@ -2254,17 +2259,17 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @description: 同步销售云用户
      * @Author: hzk
      * @date: 2023/4/12 18:13
-     * @param: [userId, password, employee]
+     * @param: [userId, userAccount, password, employee]
      * @return: void
      **/
-    private void syncSalesAddUser(Long userId, String password, Employee employee) {
+    private void syncSalesAddUser(Long userId, String userAccount, String password, Employee employee) {
         String salesToken = SecurityUtils.getSalesToken();
         if (StringUtils.isNotEmpty(salesToken)) {
             SyncUserDTO syncUserDTO = new SyncUserDTO();
             String userName = employee.getEmployeeName() + "（" + employee.getEmployeeCode() + "）";
             syncUserDTO.setUserId(userId);
             syncUserDTO.setRealname(userName);
-            syncUserDTO.setUsername(employee.getEmployeeMobile());
+            syncUserDTO.setUsername(Optional.ofNullable(userAccount).orElse(employee.getEmployeeMobile()));
             syncUserDTO.setSex(employee.getEmployeeGender());
             syncUserDTO.setMobile(employee.getEmployeeMobile());
             syncUserDTO.setPassword(password);
