@@ -368,14 +368,14 @@ public class TenantServiceImpl implements ITenantService {
         Set<Long> initMenuIds = this.handleEditTenantContract(tenantDTO, userId, nowDate);
         List<TenantContractDTO> tenantContractDTOList = tenantDTO.getTenantContractDTOList();
         Date endTime = this.getSalesEndTime(tenantContractDTOList, nowDate);
-        //权限变更，需要处理
-        if (!TenantStatus.DISABLE.getCode().equals(tenantStatus)) {
-            tenantLogic.updateTenantAuth(tenantId, initMenuIds, endTime);
-        }
-        int i;
         //更新租户信息
         Tenant updateTenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, updateTenant);
+        //权限变更，需要处理
+        if (!TenantStatus.DISABLE.getCode().equals(tenantStatus)) {
+            tenantLogic.updateTenantAuth(updateTenant, initMenuIds, endTime);
+        }
+        int i;
         //如果当前租户状态是过期。新增加目前能使用的合同，则将租户的状态修改为正常
         if (TenantStatus.OVERDUE.getCode().equals(tenantOfDB.getTenantStatus()) && null != initMenuIds) {
             updateTenant.setTenantStatus(TenantStatus.NORMAL.getCode());
@@ -827,10 +827,10 @@ public class TenantServiceImpl implements ITenantService {
                     }
                 }
             }
+            Tenant updateTenant = new Tenant();
+            updateTenant.setTenantId(tenantId);
             //处理租户状态
             if (handleTenantStatus) {
-                Tenant updateTenant = new Tenant();
-                updateTenant.setTenantId(tenantId);
                 updateTenant.setTenantStatus(TenantStatus.OVERDUE.getCode());
                 updateTenant.setUpdateBy(userId);
                 updateTenant.setUpdateTime(nowDate);
@@ -838,7 +838,7 @@ public class TenantServiceImpl implements ITenantService {
             }
             Date endTime = this.getSalesEndTime(tenantContractDTOS, nowDate);
             //处理租户合同授权
-            tenantLogic.updateTenantAuth(tenantId, initMenuIds, endTime);
+            tenantLogic.updateTenantAuth(updateTenant, initMenuIds, endTime);
         }
     }
 

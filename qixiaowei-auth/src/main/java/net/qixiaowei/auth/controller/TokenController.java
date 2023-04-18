@@ -61,7 +61,7 @@ public class TokenController {
             String saleSign = SalesSignUtils.buildSaleSign(userAccount, time);
             R<SalesLoginVO> r = remoteSyncAdminService.syncLogin(userAccount, tenantId, time, saleSign);
             if (0 != r.getCode()) {
-                throw new ServiceException("系统异常");
+                throw new ServiceException("您输入的账号或密码有误，请重新输入。");
             }
             SalesLoginVO salesLoginVO = r.getData();
             if (StringUtils.isNotNull(salesLoginVO)) {

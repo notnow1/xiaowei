@@ -359,10 +359,10 @@ public class TenantLogic {
      * @return: void
      **/
     @IgnoreTenant
-    public void updateTenantAuth(Long tenantId, Set<Long> initMenuIds, Date endTime) {
-        TenantUtils.execute(tenantId, () -> {
+    public void updateTenantAuth(Tenant updateTenant, Set<Long> initMenuIds, Date endTime) {
+        TenantUtils.execute(updateTenant.getTenantId(), () -> {
             //更新租户用户授权
-            this.updateTenantAuthOfTenantId(tenantId, initMenuIds, endTime);
+            this.updateTenantAuthOfTenantId(updateTenant, initMenuIds, endTime);
         });
     }
 
@@ -373,7 +373,7 @@ public class TenantLogic {
      * @param: [initMenuIds]
      * @return: void
      **/
-    public void updateTenantAuthOfTenantId(Long tenantId, Set<Long> initMenuIds, Date endTime) {
+    public void updateTenantAuthOfTenantId(Tenant updateTenant, Set<Long> initMenuIds, Date endTime) {
         //更新租户用户授权
         //找到租户管理员目前的权限。
         Long userId = 0L;
@@ -386,7 +386,7 @@ public class TenantLogic {
         if (StringUtils.isEmpty(nowMenuIds)) {
             this.initRoleMenu(initMenuIds, roleIdOfAdmin, userId);
             //处理销售云
-            this.updateSalesAuth(tenantId, endTime, roleIdOfAdmin, nowMenuIds, null);
+            this.updateSalesAuth(updateTenant, endTime, roleIdOfAdmin, nowMenuIds, null);
             return;
         }
         Set<Long> addMenuIds = new HashSet<>();
@@ -403,7 +403,7 @@ public class TenantLogic {
         this.initRoleMenu(addMenuIds, roleIdOfAdmin, userId);
         //取消权限。改租户所有角色。
         this.cancelRoleMenu(nowMenuIds);
-        this.updateSalesAuth(tenantId, endTime, roleIdOfAdmin, addMenuIds, nowMenuIds);
+        this.updateSalesAuth(updateTenant, endTime, roleIdOfAdmin, addMenuIds, nowMenuIds);
     }
 
     /**
@@ -790,23 +790,28 @@ public class TenantLogic {
      * @description: 更新销售云授权信息
      * @Author: hzk
      * @date: 2023/4/6 20:29
-     * @param: [tenantId, endTime, roleIdOfAdmin, addMenuIds, removeMenuIds]
+     * @param: [updateTenant, endTime, roleIdOfAdmin, addMenuIds, removeMenuIds]
      * @return: void
      **/
-    private void updateSalesAuth(Long tenantId, Date endTime, Long roleIdOfAdmin, Set<Long> addMenuIds, Set<Long> removeMenuIds) {
+    private void updateSalesAuth(Tenant updateTenant, Date endTime, Long roleIdOfAdmin, Set<Long> addMenuIds, Set<Long> removeMenuIds) {
+        Long tenantId = updateTenant.getTenantId();
+        String tenantName = updateTenant.getTenantName();
         //处理销售云
         Set<Long> salesAddMenuIds = this.getSalesInitMenuIds(addMenuIds);
         Set<Long> salesRemoveMenuIds = this.getSalesInitMenuIds(removeMenuIds);
         //调用销售云接口
         SyncTenantUpdateDTO syncTenantUpdateDTO = new SyncTenantUpdateDTO();
         syncTenantUpdateDTO.setCompanyId(tenantId);
+        syncTenantUpdateDTO.setCompanyName(tenantName);
         syncTenantUpdateDTO.setAddMenuIds(salesAddMenuIds);
         syncTenantUpdateDTO.setRemoveMenuIds(salesRemoveMenuIds);
         syncTenantUpdateDTO.setRoleId(roleIdOfAdmin);
+        syncTenantUpdateDTO.setEndTime(endTime);
         String salesSign = SalesSignUtils.buildSaleSign(tenantId.toString(), endTime);
         R<?> r = remoteSyncAdminService.syncUpdate(syncTenantUpdateDTO, salesSign);
         if (0 != r.getCode()) {
             log.error("同步销售云更新租户失败:{}", r.getMsg());
+            throw new ServiceException("编辑租户失败，销售云同步异常");
         }
     }
 

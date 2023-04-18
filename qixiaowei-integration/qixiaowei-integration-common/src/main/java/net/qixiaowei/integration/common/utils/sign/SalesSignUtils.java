@@ -39,6 +39,6 @@ public class SalesSignUtils {
     }
 
     public static void main(String[] args) {
-        System.out.printf(SalesSignUtils.buildSaleSign("admin", "2099-12-31 23:59:59"));
+        System.out.printf(SalesSignUtils.buildSaleSign("admin", "2024-12-31 23:59:59"));
     }
 }
