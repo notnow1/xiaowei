@@ -626,7 +626,7 @@ public class PostServiceImpl implements IPostService {
                                 post.setUpdateTime(DateUtils.getNowDate());
                                 post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                                 //不包含就是新增数据
-                                if (StringUtils.isNotEmpty(postExcelUpdates) && !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                if ((StringUtils.isNotEmpty(postExcelUpdates) && !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode()))|| StringUtils.isEmpty(updateCodes)) {
                                     post.setCreateBy(SecurityUtils.getUserId());
                                     post.setCreateTime(DateUtils.getNowDate());
                                     try {
