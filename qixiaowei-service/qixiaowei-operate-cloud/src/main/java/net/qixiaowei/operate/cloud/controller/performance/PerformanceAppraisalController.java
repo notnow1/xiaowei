@@ -87,7 +87,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 查询绩效考核表详情
      */
-    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:info", "operate:cloud:performanceAppraisal:edit"}, logical = Logical.OR)
+    @RequiresPermissions("operate:cloud:performanceAppraisal:info")
     @GetMapping("/info/{performanceAppraisalId}")
     public AjaxResult info(@PathVariable Long performanceAppraisalId) {
         PerformanceAppraisalDTO performanceAppraisalDTO = performanceAppraisalService.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
