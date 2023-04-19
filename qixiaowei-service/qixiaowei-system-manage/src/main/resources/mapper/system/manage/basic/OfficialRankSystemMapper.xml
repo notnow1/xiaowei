@@ -243,7 +243,7 @@
         SELECT official_rank_system_id
         FROM official_rank_system
         WHERE delete_flag=0
-        ORDER BY create_time ASC
+        ORDER BY create_time DESC
         limit 1
     </select>
     <select id="selectOfficialRankSystemByPostId"
