@@ -33,7 +33,7 @@ public class StrategyMetricsController extends BaseController {
     /**
      * 查询战略衡量指标表详情
      */
-    @RequiresPermissions(value = {"operate:cloud:strategyMetrics:info", "operate:cloud:strategyMetrics:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"strategy:cloud:strategyMetrics:info", "strategy:cloud:strategyMetrics:edit"}, logical = Logical.OR)
     @GetMapping("/info/{strategyMetricsId}")
     public AjaxResult info(@PathVariable Long strategyMetricsId) {
         StrategyMetricsDTO strategyMetricsDTO = strategyMetricsService.selectStrategyMetricsByStrategyMetricsId(strategyMetricsId);

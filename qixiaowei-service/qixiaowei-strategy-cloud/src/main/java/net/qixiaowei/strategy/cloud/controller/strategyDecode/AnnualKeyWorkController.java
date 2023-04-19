@@ -33,7 +33,7 @@ public class AnnualKeyWorkController extends BaseController {
     /**
      * 查询年度重点工作表详情
      */
-    @RequiresPermissions(value = {"operate:cloud:annualKeyWork:info", "operate:cloud:annualKeyWork:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"strategy:cloud:annualKeyWork:info", "strategy:cloud:annualKeyWork:edit"}, logical = Logical.OR)
     @GetMapping("/info/{annualKeyWorkId}")
     public AjaxResult info(@PathVariable Long annualKeyWorkId) {
         AnnualKeyWorkDTO annualKeyWorkDTO = annualKeyWorkService.selectAnnualKeyWorkByAnnualKeyWorkId(annualKeyWorkId);

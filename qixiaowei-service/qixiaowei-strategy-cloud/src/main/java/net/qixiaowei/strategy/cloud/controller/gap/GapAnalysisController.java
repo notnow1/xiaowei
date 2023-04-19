@@ -51,7 +51,7 @@ public class GapAnalysisController extends BaseController {
     /**
      * 查询差距分析表详情
      */
-    @RequiresPermissions(value = {"operate:cloud:gapAnalysis:info", "operate:cloud:gapAnalysis:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"strategy:cloud:gapAnalysis:info", "strategy:cloud:gapAnalysis:edit"}, logical = Logical.OR)
     @GetMapping("/info/{gapAnalysisId}")
     public AjaxResult info(@PathVariable Long gapAnalysisId) {
         GapAnalysisDTO gapAnalysisDTO = gapAnalysisService.selectGapAnalysisByGapAnalysisId(gapAnalysisId);

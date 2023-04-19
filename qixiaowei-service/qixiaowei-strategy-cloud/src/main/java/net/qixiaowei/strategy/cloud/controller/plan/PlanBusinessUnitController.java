@@ -41,7 +41,7 @@ public class PlanBusinessUnitController extends BaseController {
     /**
      * 查询规划业务单元详情
      */
-    @RequiresPermissions(value = {"operate:cloud:planBusinessUnit:info", "operate:cloud:planBusinessUnit:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"strategy:cloud:planBusinessUnit:info", "strategy:cloud:planBusinessUnit:edit"}, logical = Logical.OR)
     @GetMapping("/info/{planBusinessUnitId}")
     public AjaxResult info(@PathVariable Long planBusinessUnitId) {
         PlanBusinessUnitDTO planBusinessUnitDTO = planBusinessUnitService.selectPlanBusinessUnitByPlanBusinessUnitId(planBusinessUnitId);

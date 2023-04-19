@@ -35,7 +35,7 @@ public class BusinessDesignController extends BaseController {
     /**
      * 查询业务设计表详情
      */
-    @RequiresPermissions(value = {"operate:cloud:businessDesign:info", "operate:cloud:businessDesign:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"strategy:cloud:businessDesign:info", "strategy:cloud:businessDesign:edit"}, logical = Logical.OR)
     @GetMapping("/info/{businessDesignId}")
     public AjaxResult info(@PathVariable Long businessDesignId) {
         BusinessDesignDTO businessDesignDTO = businessDesignService.selectBusinessDesignByBusinessDesignId(businessDesignId);
