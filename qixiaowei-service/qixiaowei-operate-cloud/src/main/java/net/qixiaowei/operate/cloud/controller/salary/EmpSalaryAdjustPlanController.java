@@ -12,6 +12,7 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.domain.salary.EmpSalaryAdjustPlan;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
@@ -80,7 +81,7 @@ public class EmpSalaryAdjustPlanController extends BaseController {
     /**
      * 查询个人调薪计划表详情
      */
-    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:info")
+    @RequiresPermissions(value = {"operate:cloud:empSalaryAdjustPlan:info", "operate:cloud:empSalaryAdjustPlan:edit"}, logical = Logical.OR)
     @GetMapping("/info/{empSalaryAdjustPlanId}")
     public AjaxResult info(@PathVariable Long empSalaryAdjustPlanId) {
         EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO = empSalaryAdjustPlanService.selectEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
@@ -118,7 +119,7 @@ public class EmpSalaryAdjustPlanController extends BaseController {
     /**
      * 职级确定薪酬详情
      */
-    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:info")
+    @RequiresPermissions(value = {"operate:cloud:empSalaryAdjustPlan:info", "operate:cloud:empSalaryAdjustPlan:edit"}, logical = Logical.OR)
     @GetMapping("/officialRank/info")
     public AjaxResult officialRankInfo(Long postId, Integer officialRank) {
         String officialRankInfo = empSalaryAdjustPlanService.officialRankInfo(postId, officialRank);

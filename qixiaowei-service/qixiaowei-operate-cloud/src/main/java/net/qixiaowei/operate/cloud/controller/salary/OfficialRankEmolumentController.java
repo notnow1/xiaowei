@@ -5,6 +5,7 @@ import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
 import net.qixiaowei.operate.cloud.service.salary.IOfficialRankEmolumentService;
@@ -28,7 +29,7 @@ public class OfficialRankEmolumentController extends BaseController {
     /**
      * 查询职级薪酬表详情
      */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:info")
+    @RequiresPermissions(value = {"operate:cloud:officialRankEmolument:info", "operate:cloud:officialRankEmolument:edit"}, logical = Logical.OR)
     @GetMapping("/info")
     public AjaxResult info(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
         return AjaxResult.success(officialRankEmolumentService.selectOfficialRankEmolumentByOfficialRankEmolumentId(officialRankEmolumentDTO));
@@ -37,7 +38,7 @@ public class OfficialRankEmolumentController extends BaseController {
     /**
      * 查看该职级的分解信息
      */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:info")
+    @RequiresPermissions(value = {"operate:cloud:officialRankEmolument:info", "operate:cloud:officialRankEmolument:edit"}, logical = Logical.OR)
     @GetMapping("/decomposeInfo")
     public AjaxResult list(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
         return AjaxResult.success(officialRankEmolumentService.selectOfficialDecomposeList(officialRankEmolumentDTO));
@@ -56,7 +57,7 @@ public class OfficialRankEmolumentController extends BaseController {
     /**
      * 根据岗位ID获取职级确定薪酬提示
      */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:info")
+    @RequiresPermissions(value = {"operate:cloud:officialRankEmolument:info", "operate:cloud:officialRankEmolument:edit"}, logical = Logical.OR)
     @GetMapping("/selectByPostId/{postId}")
     public AjaxResult selectByPostId(@PathVariable Long postId) {
         return AjaxResult.success(officialRankEmolumentService.selectByPostId(postId));

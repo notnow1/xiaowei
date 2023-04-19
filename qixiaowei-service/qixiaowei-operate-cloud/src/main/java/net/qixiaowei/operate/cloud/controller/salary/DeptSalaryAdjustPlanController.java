@@ -12,6 +12,7 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.excel.salary.DeptSalaryAdjustPlanExcel;
@@ -79,7 +80,7 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     /**
      * 查询部门调薪计划表详情
      */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
+    @RequiresPermissions(value = {"operate:cloud:deptSalaryAdjustPlan:info", "operate:cloud:deptSalaryAdjustPlan:edit"}, logical = Logical.OR)
     @GetMapping("/info/{deptSalaryAdjustPlanId}")
     public AjaxResult info(@PathVariable Long deptSalaryAdjustPlanId) {
         DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO = deptSalaryAdjustPlanService.selectDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);

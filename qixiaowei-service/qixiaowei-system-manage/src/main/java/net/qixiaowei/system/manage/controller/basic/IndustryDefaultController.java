@@ -103,7 +103,7 @@ public class IndustryDefaultController extends BaseController {
     /**
      * 行业配置详情
      */
-    @RequiresPermissions("system:manage:industryDefault:info")
+    @RequiresPermissions(value = {"operate:cloud:industryDefault:info", "operate:cloud:industryDefault:edit"}, logical = Logical.OR)
     @GetMapping("/info/{industryId}")
     public AjaxResult info(@PathVariable Long industryId) {
         return AjaxResult.success(industryDefaultService.detailIndustryDefault(industryId));

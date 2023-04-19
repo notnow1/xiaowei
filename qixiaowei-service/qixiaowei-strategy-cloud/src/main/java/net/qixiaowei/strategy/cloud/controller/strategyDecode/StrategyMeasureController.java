@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMeasureDTO;
 import net.qixiaowei.strategy.cloud.service.strategyDecode.IStrategyMeasureService;
@@ -32,7 +33,7 @@ public class StrategyMeasureController extends BaseController {
     /**
      * 查询战略举措清单表详情
      */
-    @RequiresPermissions("strategy:cloud:strategyMeasure:info")
+    @RequiresPermissions(value = {"operate:cloud:strategyMeasure:info", "operate:cloud:strategyMeasure:edit"}, logical = Logical.OR)
     @GetMapping("/info/{strategyMeasureId}")
     public AjaxResult info(@PathVariable Long strategyMeasureId) {
         StrategyMeasureDTO strategyMeasureDTO = strategyMeasureService.selectStrategyMeasureByStrategyMeasureId(strategyMeasureId);
