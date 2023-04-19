@@ -1125,45 +1125,58 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeId, LinkedHashMap::new,
                         Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeDetailsId)));
         List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS = new ArrayList<>();
-        for (Long targetDecomposeId : groupDecomposeDetailCyclesVOS.keySet()) {
-            Map<Long, List<DecomposeDetailCyclesVO>> groupDetailCyclesVOS = groupDecomposeDetailCyclesVOS.get(targetDecomposeId);
-            List<Long> objectIds = new ArrayList<>();
-            for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
-                List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
-                DecomposeDetailCyclesVO detailCyclesVO = detailCyclesVOS.get(0);
-                objectIds.add(appraisalObject == 1 ? detailCyclesVO.getDepartmentId() : detailCyclesVO.getEmployeeId());
-            }
-            if (!objectIds.contains(objectId)) {
-                continue;
-            }
-            PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO = new PerformanceAppraisalItemsDTO();
-            for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
-                List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
-                DecomposeDetailCyclesVO decomposeDetailCyclesVO = detailCyclesVOS.get(0);
-                Long cyclesIndicatorId = decomposeDetailCyclesVO.getIndicatorId();
-                if (!Objects.equals(appraisalObject == 1 ? decomposeDetailCyclesVO.getDepartmentId() : decomposeDetailCyclesVO.getEmployeeId(), objectId)) {
+        for (Long performAppraisalItemsId : evaluateMap.keySet()) {
+            List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOList = evaluateMap.get(performAppraisalItemsId);
+            List<Integer> evaluateNumbers = performAppraisalEvaluateDTOList.stream().map(PerformAppraisalEvaluateDTO::getEvaluateNumber).collect(Collectors.toList());
+            PerformAppraisalEvaluateDTO appraisalEvaluateDTO = performAppraisalEvaluateDTOList.get(0);
+            Long indicatorId = appraisalEvaluateDTO.getIndicatorId();
+            for (Long targetDecomposeId : groupDecomposeDetailCyclesVOS.keySet()) {
+                Map<Long, List<DecomposeDetailCyclesVO>> groupDetailCyclesVOS = groupDecomposeDetailCyclesVOS.get(targetDecomposeId);
+                List<Long> objectIds = new ArrayList<>();
+                boolean isContinue = false;
+                for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
+                    List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
+                    DecomposeDetailCyclesVO detailCyclesVO = detailCyclesVOS.get(0);
+                    Long cyclesIndicatorId = detailCyclesVO.getIndicatorId();
+                    if (!Objects.equals(cyclesIndicatorId, indicatorId)) {
+                        isContinue = true;
+                    }
+                    objectIds.add(appraisalObject == 1 ? detailCyclesVO.getDepartmentId() : detailCyclesVO.getEmployeeId());
+                }
+                if (isContinue) {
                     continue;
                 }
-                boolean isTure = false;
-                for (DecomposeDetailCyclesVO detailCyclesVO : detailCyclesVOS) {
-                    if (detailCyclesVO.getCycleNumber().equals(cycleNumber)) {
-                        isTure = true;
-                        Long indicatorId = detailCyclesVO.getIndicatorId();
-                        BigDecimal cycleActual = detailCyclesVO.getCycleActual();
-                        String indicatorName = indicatorDTOS.stream().filter(indicatorDTO ->
-                                indicatorDTO.getIndicatorId().equals(indicatorId)).collect(Collectors.toList()).get(0).getIndicatorName();
-                        performanceAppraisalItemsDTO.setIndicatorId(indicatorId);
-                        performanceAppraisalItemsDTO.setIndicatorName(indicatorName);
-                        performanceAppraisalItemsDTO.setTargetValue(cycleActual);
+                if (!objectIds.contains(objectId)) {
+                    continue;
+                }
+                PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO = new PerformanceAppraisalItemsDTO();
+                for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
+                    List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
+                    DecomposeDetailCyclesVO decomposeDetailCyclesVO = detailCyclesVOS.get(0);
+                    Long cyclesIndicatorId = decomposeDetailCyclesVO.getIndicatorId();
+                    if (!Objects.equals(appraisalObject == 1 ? decomposeDetailCyclesVO.getDepartmentId() : decomposeDetailCyclesVO.getEmployeeId(), objectId)) {
+                        continue;
+                    }
+                    boolean isTure = false;
+                    for (DecomposeDetailCyclesVO detailCyclesVO : detailCyclesVOS) {
+                        if (evaluateNumbers.contains(detailCyclesVO.getCycleNumber())) {
+                            BigDecimal cycleActual = detailCyclesVO.getCycleActual();
+                            String indicatorName = indicatorDTOS.stream().filter(indicatorDTO ->
+                                    indicatorDTO.getIndicatorId().equals(indicatorId)).collect(Collectors.toList()).get(0).getIndicatorName();
+                            performanceAppraisalItemsDTO.setIndicatorId(indicatorId);
+                            performanceAppraisalItemsDTO.setIndicatorName(indicatorName);
+                            performanceAppraisalItemsDTO.setTargetValue(cycleActual);
+                            isTure = true;
+                        }
+                    }
+                    if (isTure) {
                         break;
                     }
                 }
-                if (isTure) {
-                    break;
-                }
+                performanceAppraisalItemsDTOS.add(performanceAppraisalItemsDTO);
             }
-            performanceAppraisalItemsDTOS.add(performanceAppraisalItemsDTO);
         }
+
         return performanceAppraisalItemsDTOS;
     }
 
