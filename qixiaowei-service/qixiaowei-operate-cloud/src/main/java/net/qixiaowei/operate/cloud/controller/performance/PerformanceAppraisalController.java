@@ -904,6 +904,15 @@ public class PerformanceAppraisalController extends BaseController {
         return AjaxResult.success("同步成功", performanceAppraisalService.migrationDevelopData(performAppraisalObjectsId, appraisalObject));
     }
 
+    /**
+     * 同步数据-评议
+     */
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:perDevelop:edit", "operate:cloud:performanceAppraisal:orgDevelop:edit"}, logical = Logical.OR)
+    @GetMapping("/migrationReviewData")
+    public AjaxResult migrationReviewData(@RequestParam("performAppraisalObjectsId") Long performAppraisalObjectsId, @RequestParam("appraisalObject") Integer appraisalObject) {
+        return AjaxResult.success("同步成功", performanceAppraisalService.migrationReviewData(performAppraisalObjectsId, appraisalObject));
+    }
+
     //==============================其他==================================//
 
     /**

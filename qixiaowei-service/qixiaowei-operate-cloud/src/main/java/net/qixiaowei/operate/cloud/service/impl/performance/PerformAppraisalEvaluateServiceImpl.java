@@ -119,6 +119,17 @@ public class PerformAppraisalEvaluateServiceImpl implements IPerformAppraisalEva
     }
 
     /**
+     * 根据对象id获取评议周期列表
+     *
+     * @param performAppraisalObjectsId 对象id
+     * @return 结果
+     */
+    @Override
+    public List<PerformAppraisalEvaluateDTO> selectPerformAppraisalEvaluateByPerformAppraisalObjectId(Long performAppraisalObjectsId) {
+        return performAppraisalEvaluateMapper.selectPerformAppraisalEvaluateByPerformAppraisalObjectId(performAppraisalObjectsId);
+    }
+
+    /**
      * 逻辑删除绩效考核评议表信息
      *
      * @param performAppraisalEvaluateDTO 绩效考核评议表

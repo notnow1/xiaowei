@@ -439,4 +439,13 @@ public interface IPerformanceAppraisalService {
      * @return 结果
      */
     List<PerformanceAppraisalItemsDTO> migrationDevelopData(Long performAppraisalObjectsId, Integer appraisalObject);
+
+    /**
+     * 同步数据-评议
+     *
+     * @param performAppraisalObjectsId 对象ID
+     * @param appraisalObject           对象
+     * @return 结果
+     */
+    List<PerformanceAppraisalItemsDTO> migrationReviewData(Long performAppraisalObjectsId, Integer appraisalObject);
 }

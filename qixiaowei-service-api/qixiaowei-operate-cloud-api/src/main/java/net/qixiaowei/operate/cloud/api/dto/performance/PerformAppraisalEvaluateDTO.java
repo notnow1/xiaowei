@@ -58,6 +58,14 @@ public class PerformAppraisalEvaluateDTO extends BaseDTO {
      */
     private BigDecimal actualValue;
     /**
+     * 指标ID
+     */
+    private Long indicatorId;
+    /**
+     * 指标名称
+     */
+    private String indicatorName;
+    /**
      * 删除标记:0未删除;1已删除
      */
     private Integer delete_flag;
