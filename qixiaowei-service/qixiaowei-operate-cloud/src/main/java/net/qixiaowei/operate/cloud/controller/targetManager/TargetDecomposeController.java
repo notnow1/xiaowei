@@ -7,12 +7,15 @@ import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
+import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
 import com.alibaba.excel.write.handler.CellWriteHandler;
+import com.alibaba.excel.write.handler.RowWriteHandler;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.handler.WriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.merge.AbstractMergeStrategy;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
+import com.alibaba.excel.write.metadata.holder.WriteTableHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
@@ -55,6 +58,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1561,6 +1565,7 @@ public class TargetDecomposeController extends BaseController {
                                     // cell里面去 会导致自己设置的不一样（很关键）
                                     cellData.setOriginCellStyle(xssfCellColorStyle);
                                     cell.setCellStyle(cellStyle);
+
                                 }
 
                             }
@@ -1595,6 +1600,7 @@ public class TargetDecomposeController extends BaseController {
                             writeCellStyle.setWriteFont(headWriteFont);
                         }
                         cellData.setWriteCellStyle(writeCellStyle);
+
                     }
                 })
                 .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
@@ -1606,6 +1612,12 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高7
                         sheet.setDefaultRowHeight((short) (20 * 15));
+                        if (relativeRowIndex == 8){
+                            if (cell.getColumnIndex()>0 && cell.getColumnIndex()<5){
+                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
+                            }
+                        }
+
                     }
                 })
                 .doWrite(new ArrayList<>());
