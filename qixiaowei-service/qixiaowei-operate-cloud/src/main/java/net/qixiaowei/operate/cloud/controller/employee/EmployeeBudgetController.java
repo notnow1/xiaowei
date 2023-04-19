@@ -1,7 +1,11 @@
 package net.qixiaowei.operate.cloud.controller.employee;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.write.handler.CellWriteHandler;
+import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -20,6 +24,9 @@ import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetExcel;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetImportListener;
 import net.qixiaowei.operate.cloud.service.employee.IEmployeeBudgetService;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -134,7 +141,50 @@ public class EmployeeBudgetController extends BaseController {
         String fileName = URLEncoder.encode("增人减人工资包列表" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), EmployeeBudgetDetailsExcel.class).sheet("增人减人工资包列表").doWrite(employeeBudgetDetailsExcelList);
+        EasyExcel.write(response.getOutputStream(), EmployeeBudgetDetailsExcel.class)
+                .inMemory(true)
+                .useDefaultStyle(false)
+                .sheet("增人减人工资包列表")
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        //靠左
+                        writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                        if (context.getRowIndex() == 0) {
+                            //设置边框
+                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                            writeCellStyle.setBorderTop(BorderStyle.THIN);
+                            writeCellStyle.setBorderRight(BorderStyle.THIN);
+                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                            // 拿到poi的workbook
+                            Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                            // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                            // 不同单元格尽量传同一个 cellStyle
+                            //设置rgb颜色
+                            byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
+                            CellStyle cellStyle = workbook.createCellStyle();
+                            XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                            xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                            // 由于这里没有指定dataformat 最后展示的数据 格式可能会不太正确
+                            // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
+                            // cell里面去 会导致自己设置的不一样（很关键）
+                            cellData.setWriteCellStyle(writeCellStyle);
+                            cellData.setOriginCellStyle(xssfCellColorStyle);
+                            cell.setCellStyle(cellStyle);
+                        }
+                        if (context.getRowIndex() > 0 && context.getColumnIndex() > 2) {
+                            //靠右边
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                        }
+                    }
+                })
+                .doWrite(employeeBudgetDetailsExcelList);
     }
 
 
