@@ -78,7 +78,7 @@ public class BonusPayApplicationController extends BaseController {
     /**
      * 查询奖金发放申请表详情
      */
-    @RequiresPermissions("operate:cloud:bonusPayApplication:info")
+    @RequiresPermissions(value = {"operate:cloud:bonusPayApplication:info","operate:cloud:bonusPayApplication:edit"},logical = Logical.OR)
     @GetMapping("/info/{bonusPayApplicationId}")
     public AjaxResult info(@PathVariable Long bonusPayApplicationId) {
         BonusPayApplicationDTO bonusPayApplicationDTO = bonusPayApplicationService.selectBonusPayApplicationByBonusPayApplicationId(bonusPayApplicationId);

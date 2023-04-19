@@ -89,7 +89,7 @@ public class ProductController extends BaseController {
     /**
      * 查询产品表详情
      */
-    @RequiresPermissions("operate:cloud:product:info")
+    @RequiresPermissions(value = {"operate:cloud:product:info","operate:cloud:product:edit"},logical = Logical.OR)
     @GetMapping("/info/{productId}")
     public AjaxResult info(@PathVariable Long productId) {
         ProductDTO productDTO = productService.selectProductByProductId(productId);
