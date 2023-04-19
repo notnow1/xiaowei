@@ -54,7 +54,7 @@ public class DictionaryTypeController extends BaseController {
     /**
      * 查询字典类型表详情
      */
-    @RequiresPermissions(value = {"system:manage:dictionaryType:pageList","system:manage:dictionaryType:edit"},logical = Logical.OR)
+    //@RequiresPermissions(value = {"system:manage:dictionaryType:pageList","system:manage:dictionaryType:edit"},logical = Logical.OR)
     @GetMapping("/infoType/{dictionaryType}")
     public AjaxResult info(@PathVariable String dictionaryType) {
         return AjaxResult.success(dictionaryTypeService.selectDictionaryTypeByDictionaryType(dictionaryType));
