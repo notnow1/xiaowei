@@ -860,6 +860,12 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高20
                         sheet.setDefaultRowHeight((short) (20 * 15));
+                        //取消自动合并
+                        if (relativeRowIndex <5){
+                            if (cell.getColumnIndex()>2){
+                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
+                            }
+                        }
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, true));
@@ -1085,6 +1091,12 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高20
                         sheet.setDefaultRowHeight((short) (20 * 15));
+                        //取消自动合并
+                        if (relativeRowIndex <5){
+                            if (cell.getColumnIndex()>2){
+                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
+                            }
+                        }
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, false));
@@ -1298,6 +1310,12 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高20
                         sheet.setDefaultRowHeight((short) (20 * 15));
+                        //取消自动合并
+                        if (relativeRowIndex <5){
+                            if (cell.getColumnIndex()>2){
+                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
+                            }
+                        }
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsResultDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, true));
@@ -1430,7 +1448,7 @@ public class TargetDecomposeController extends BaseController {
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,12,65533))
                 .sheet(targetDecomposeDTO.getIndicatorName() + "目标分解详情")// 设置 sheet 的名字
 
                 .registerWriteHandler(new SheetWriteHandler() {
@@ -1612,6 +1630,7 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高7
                         sheet.setDefaultRowHeight((short) (20 * 15));
+                        //取消自动合并
                         if (relativeRowIndex == 8){
                             if (cell.getColumnIndex()>0 && cell.getColumnIndex()<5){
                                 sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
@@ -1846,6 +1865,12 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高7
                         sheet.setDefaultRowHeight((short) (20 * 15));
+                        //取消自动合并
+                        if (relativeRowIndex == 8){
+                            if (cell.getColumnIndex()>0 && cell.getColumnIndex()<5){
+                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
+                            }
+                        }
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsDataList(targetDecomposeDetailsExcels, targetDecomposeDTO));

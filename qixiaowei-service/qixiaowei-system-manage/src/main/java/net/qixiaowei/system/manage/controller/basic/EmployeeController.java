@@ -336,7 +336,7 @@ public class EmployeeController extends BaseController {
                 .excelType(ExcelTypeEnum.XLSX)
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
                 .head(head)
                 .sheet("人员信息配置")// 设置 sheet 的名字
                 .registerWriteHandler(new SheetWriteHandler() {

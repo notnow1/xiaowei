@@ -139,7 +139,7 @@ public class GapAnalysisController extends BaseController {
         EasyExcel.write(response.getOutputStream())
                 .head(head)
                 .sheet("Sheet1")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
                 .registerWriteHandler(levelStrategy)
                 .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
                     @Override

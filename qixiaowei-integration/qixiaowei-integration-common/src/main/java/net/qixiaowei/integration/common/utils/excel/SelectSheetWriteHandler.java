@@ -16,14 +16,18 @@ import java.util.Map;
  */
 public class SelectSheetWriteHandler implements SheetWriteHandler {
     private Map<Integer, List<String>> selectMap;
- 
+    private int firstRow;
+    private int lastRow;
+
     private char[] alphabet = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
             'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
  
-    public SelectSheetWriteHandler(Map<Integer, List<String>> selectMap) {
+    public SelectSheetWriteHandler(Map<Integer, List<String>> selectMap,int firstRow,int lastRow) {
         this.selectMap = selectMap;
+        this.firstRow = firstRow;
+        this.lastRow = lastRow;
     }
- 
+
     @Override
     public void beforeSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
     }
@@ -42,7 +46,7 @@ public class SelectSheetWriteHandler implements SheetWriteHandler {
         Sheet dictSheet = workbook.createSheet(dictSheetName);
         for (Map.Entry<Integer, List<String>> entry : selectMap.entrySet()) {
             // 设置下拉单元格的首行、末行、首列、末列
-            CellRangeAddressList rangeAddressList = new CellRangeAddressList(1, 65533, entry.getKey(), entry.getKey());
+            CellRangeAddressList rangeAddressList = new CellRangeAddressList(firstRow, lastRow, entry.getKey(), entry.getKey());
             int rowLen = entry.getValue().size();
             // 设置字典sheet页的值 每一列一个字典项
             for (int i = 0; i < rowLen; i++) {

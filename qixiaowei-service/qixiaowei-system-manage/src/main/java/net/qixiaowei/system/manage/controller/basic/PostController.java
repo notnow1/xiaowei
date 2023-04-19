@@ -201,7 +201,7 @@ public class PostController extends BaseController {
 
         EasyExcel.write(response.getOutputStream())
                 .excelType(ExcelTypeEnum.XLSX)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
                 .head(head)
                 .inMemory(true)
                 .useDefaultStyle(false)
