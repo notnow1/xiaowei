@@ -884,7 +884,7 @@ public class PostServiceImpl implements IPostService {
         } else if (StringUtils.equals(postStatus, "失效")) {
             post.setStatus(0);
         } else {
-            post.setStatus(0);
+            post.setStatus(1);
         }
     }
 
