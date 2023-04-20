@@ -668,7 +668,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                     BigDecimal actualTotal = outcomeDetailsDTO.getActualTotal();
                     outcomeDetailsDTO.setTargetValue(targetValue);
                     //实际值合计/目标值
-                    outcomeDetailsDTO.setTargetCompletionRate(targetValue.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : actualTotal.divide(targetValue, 2, RoundingMode.HALF_UP));
+                    outcomeDetailsDTO.setTargetCompletionRate(targetValue.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : actualTotal.multiply(new BigDecimal(100)).divide(targetValue, 2, RoundingMode.HALF_UP));
                     break;
                 }
             }
