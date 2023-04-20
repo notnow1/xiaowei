@@ -19,7 +19,6 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
-import net.qixiaowei.operate.cloud.api.domain.performance.PerformAppraisalEvaluate;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalItems;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
@@ -446,6 +445,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 entity.setCreateByName(employeeNameMap.get(userId));
                 setObjectFieldName(entity);
             });
+            // 排序
+            result.sort(Comparator.comparing(PerformanceAppraisalObjectsDTO::getCreateTime).reversed()
+//                    .thenComparing(PerformanceAppraisalObjectsDTO::getCycleNumber)
+            );
         }
     }
 
@@ -1074,8 +1077,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Integer appraisalYear = performanceAppraisalObjectsDTO.getAppraisalYear();
         Integer evaluationType = performanceAppraisalObjectsDTO.getEvaluationType();
         Integer cycleNumber = performanceAppraisalObjectsDTO.getCycleNumber();
+        Integer cycleType = performanceAppraisalObjectsDTO.getCycleType();
         Long objectId = performanceAppraisalObjectsDTO.getAppraisalObjectId();
-
         int timeDimension;
         switch (evaluationType) {
             case 1:
@@ -1120,7 +1123,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         List<Long> targetDecomposeIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList());
         List<DecomposeDetailCyclesVO> decomposeDetailCyclesVOS = decomposeDetailCyclesMapper.selectTargetDecomposeCyclesByTargetDecomposeIds(targetDecomposeIds);
         List<Long> indicatorIds = decomposeDetailCyclesVOS.stream().map(DecomposeDetailCyclesVO::getIndicatorId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
-        List<IndicatorDTO> indicatorDTOS = getIndicator(indicatorIds);
         LinkedHashMap<Long, Map<Long, List<DecomposeDetailCyclesVO>>> groupDecomposeDetailCyclesVOS = decomposeDetailCyclesVOS.stream().collect(
                 Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeId, LinkedHashMap::new,
                         Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeDetailsId)));
@@ -1130,6 +1132,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             List<Integer> evaluateNumbers = performAppraisalEvaluateDTOList.stream().map(PerformAppraisalEvaluateDTO::getEvaluateNumber).collect(Collectors.toList());
             PerformAppraisalEvaluateDTO appraisalEvaluateDTO = performAppraisalEvaluateDTOList.get(0);
             Long indicatorId = appraisalEvaluateDTO.getIndicatorId();
+            String indicatorName = appraisalEvaluateDTO.getIndicatorName();
             for (Long targetDecomposeId : groupDecomposeDetailCyclesVOS.keySet()) {
                 Map<Long, List<DecomposeDetailCyclesVO>> groupDetailCyclesVOS = groupDecomposeDetailCyclesVOS.get(targetDecomposeId);
                 List<Long> objectIds = new ArrayList<>();
@@ -1149,35 +1152,101 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 if (!objectIds.contains(objectId)) {
                     continue;
                 }
+                // 创建对象
+                boolean isTure = false;
                 PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO = new PerformanceAppraisalItemsDTO();
+                performanceAppraisalItemsDTO.setIndicatorId(indicatorId);
+                performanceAppraisalItemsDTO.setIndicatorName(indicatorName);
                 for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
                     List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
                     DecomposeDetailCyclesVO decomposeDetailCyclesVO = detailCyclesVOS.get(0);
-                    Long cyclesIndicatorId = decomposeDetailCyclesVO.getIndicatorId();
                     if (!Objects.equals(appraisalObject == 1 ? decomposeDetailCyclesVO.getDepartmentId() : decomposeDetailCyclesVO.getEmployeeId(), objectId)) {
                         continue;
                     }
-                    boolean isTure = false;
-                    for (DecomposeDetailCyclesVO detailCyclesVO : detailCyclesVOS) {
-                        if (evaluateNumbers.contains(detailCyclesVO.getCycleNumber())) {
-                            BigDecimal cycleActual = detailCyclesVO.getCycleActual();
-                            String indicatorName = indicatorDTOS.stream().filter(indicatorDTO ->
-                                    indicatorDTO.getIndicatorId().equals(indicatorId)).collect(Collectors.toList()).get(0).getIndicatorName();
-                            performanceAppraisalItemsDTO.setIndicatorId(indicatorId);
-                            performanceAppraisalItemsDTO.setIndicatorName(indicatorName);
-                            performanceAppraisalItemsDTO.setTargetValue(cycleActual);
-                            isTure = true;
+                    if (StringUtils.isEmpty(performAppraisalEvaluateDTOList) || evaluationType.equals(cycleType)) {
+                        for (DecomposeDetailCyclesVO detailCyclesVO : detailCyclesVOS) {
+                            if (Objects.equals(cycleNumber, detailCyclesVO.getCycleNumber())) {
+                                performanceAppraisalItemsDTO.setTargetValue(detailCyclesVO.getCycleActual());
+                                isTure = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        BigDecimal sum = new BigDecimal(0);
+                        List<Map<String, Object>> evaluateList = new ArrayList<>();
+                        for (PerformAppraisalEvaluateDTO performAppraisalEvaluateDTO : performAppraisalEvaluateDTOList) {
+                            Integer evaluateNumber = performAppraisalEvaluateDTO.getEvaluateNumber();
+                            Long performAppraisalEvaluateId = performAppraisalEvaluateDTO.getPerformAppraisalEvaluateId();
+                            for (DecomposeDetailCyclesVO detailCyclesVO : detailCyclesVOS) {
+                                if (Objects.equals(evaluateNumber, detailCyclesVO.getCycleNumber())) {
+                                    Map<String, Object> map = new HashMap<>();
+                                    String name = getName(evaluationType, evaluateNumber);
+                                    BigDecimal cycleActual = Optional.ofNullable(detailCyclesVO.getCycleActual()).orElse(BigDecimal.ZERO);
+                                    map.put("name", name);
+                                    map.put("value", cycleActual);
+                                    map.put("performAppraisalEvaluateId", performAppraisalEvaluateId);
+                                    sum = sum.add(cycleActual);
+                                    evaluateList.add(map);
+                                    isTure = true;
+                                }
+                            }
+                        }
+                        if (isTure) {
+                            performanceAppraisalItemsDTO.setTargetValue(sum);
+                            performanceAppraisalItemsDTO.setEvaluateList(evaluateList);
                         }
                     }
                     if (isTure) {
                         break;
                     }
                 }
-                performanceAppraisalItemsDTOS.add(performanceAppraisalItemsDTO);
+                if (isTure) {
+                    performanceAppraisalItemsDTOS.add(performanceAppraisalItemsDTO);
+                    break;
+                }
             }
         }
-
         return performanceAppraisalItemsDTOS;
+    }
+
+    /**
+     * 获取评议周期名称
+     *
+     * @param evaluationType 评议类型
+     * @param evaluateNumber 评议周期
+     * @return 结果
+     */
+    private static String getName(Integer evaluationType, Integer evaluateNumber) {
+        String name;
+        switch (evaluationType) {
+            case 1:
+                name = evaluateNumber + "月";
+                break;
+            case 2:
+                if (evaluateNumber == 1) {
+                    name = "一季度";
+                } else if (evaluateNumber == 2) {
+                    name = "二季度";
+                } else if (evaluateNumber == 3) {
+                    name = "三季度";
+                } else {
+                    name = "四季度";
+                }
+                break;
+            case 3:
+                if (evaluateNumber == 1) {
+                    name = "上半年";
+                } else {
+                    name = "下半年";
+                }
+                break;
+            case 4:
+                name = "整年度";
+                break;
+            default:
+                throw new ServiceException("当前数据异常 评议周期类型不匹配");
+        }
+        return name;
     }
 
     /**

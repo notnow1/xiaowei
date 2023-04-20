@@ -110,6 +110,8 @@
         tdd.target_decompose_details_id,
         ddc.decompose_detail_cycles_id,
         ddc.cycle_target,
+        ddc.cycle_actual,
+        ddc.cycle_forecast,
         ddc.cycle_number
         FROM target_decompose td
         LEFT JOIN target_decompose_details tdd ON td.target_decompose_id = tdd.target_decompose_id
