@@ -902,7 +902,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = decomposeDetailCyclesDTOList.stream().filter(d -> targetDecomposeDetailsIdList.contains(d.getTargetDecomposeDetailsId())).collect(Collectors.toList());
             for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                 Integer cycleNumber = decomposeDetailCyclesDTO.getCycleNumber();
-                BigDecimal cycleTarget = decomposeDetailCyclesDTO.getCycleTarget();
+                BigDecimal cycleTarget = Optional.ofNullable(decomposeDetailCyclesDTO.getCycleActual()).orElse(BigDecimal.ZERO);
                 if (valueMap.containsKey(cycleNumber)) {
                     valueMap.put(cycleNumber, valueMap.get(cycleNumber).add(cycleTarget));
                 } else {
