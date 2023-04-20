@@ -1591,56 +1591,86 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         List<DecomposeDetailCycles> decomposeDetailCyclesList = new ArrayList<>();
 
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
-        //插入目标分解详情表
-        for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
-            //目标分解详情表
-            TargetDecomposeDetails targetDecomposeDetails = new TargetDecomposeDetails();
-            BeanUtils.copyProperties(targetDecomposeDetailsDTOS.get(i), targetDecomposeDetails);
-            //目标分解id
-            targetDecomposeDetails.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
-            targetDecomposeDetails.setCreateBy(SecurityUtils.getUserId());
-            targetDecomposeDetails.setCreateTime(DateUtils.getNowDate());
-            targetDecomposeDetails.setUpdateTime(DateUtils.getNowDate());
-            targetDecomposeDetails.setUpdateBy(SecurityUtils.getUserId());
-            targetDecomposeDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            //目标分解详情表集合
-            targetDecomposeDetailsList.add(targetDecomposeDetails);
-        }
-        try {
-            if (StringUtils.isNotEmpty(targetDecomposeDetailsList)) {
-                targetDecomposeDetailsMapper.batchTargetDecomposeDetails(targetDecomposeDetailsList);
-            }
-        } catch (Exception e) {
-            throw new ServiceException("插入目标分解详情表失败");
-        }
-        //插入目标分解详细信息周期表
-        for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
-            int cycleNumber = 1;
-            //目标分解详细信息周期
-            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = targetDecomposeDetailsDTOS.get(i).getDecomposeDetailCyclesDTOS();
-            for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
-                //目标分解详细信息周期表
-                DecomposeDetailCycles decomposeDetailCycles = new DecomposeDetailCycles();
-                BeanUtils.copyProperties(decomposeDetailCyclesDTO, decomposeDetailCycles);
-                decomposeDetailCycles.setCycleNumber(cycleNumber);
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
+            //校检分解维度是否重复
+            this.validDecompositionDimension(targetDecomposeDTO, targetDecomposeDetailsDTOS);
+            //插入目标分解详情表
+            for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+                //目标分解详情表
+                TargetDecomposeDetails targetDecomposeDetails = new TargetDecomposeDetails();
+                BeanUtils.copyProperties(targetDecomposeDetailsDTOS.get(i), targetDecomposeDetails);
                 //目标分解id
-                decomposeDetailCycles.setTargetDecomposeDetailsId(targetDecomposeDetailsList.get(i).getTargetDecomposeDetailsId());
-                decomposeDetailCycles.setCreateBy(SecurityUtils.getUserId());
-                decomposeDetailCycles.setCreateTime(DateUtils.getNowDate());
-                decomposeDetailCycles.setUpdateTime(DateUtils.getNowDate());
-                decomposeDetailCycles.setUpdateBy(SecurityUtils.getUserId());
-                decomposeDetailCycles.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                cycleNumber++;
-                //目标分解详细信息周期表集合
-                decomposeDetailCyclesList.add(decomposeDetailCycles);
+                targetDecomposeDetails.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
+                targetDecomposeDetails.setCreateBy(SecurityUtils.getUserId());
+                targetDecomposeDetails.setCreateTime(DateUtils.getNowDate());
+                targetDecomposeDetails.setUpdateTime(DateUtils.getNowDate());
+                targetDecomposeDetails.setUpdateBy(SecurityUtils.getUserId());
+                targetDecomposeDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                //目标分解详情表集合
+                targetDecomposeDetailsList.add(targetDecomposeDetails);
+            }
+            try {
+                if (StringUtils.isNotEmpty(targetDecomposeDetailsList)) {
+                    targetDecomposeDetailsMapper.batchTargetDecomposeDetails(targetDecomposeDetailsList);
+                }
+            } catch (Exception e) {
+                throw new ServiceException("插入目标分解详情表失败");
+            }
+            //插入目标分解详细信息周期表
+            for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+                int cycleNumber = 1;
+                //目标分解详细信息周期
+                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = targetDecomposeDetailsDTOS.get(i).getDecomposeDetailCyclesDTOS();
+                for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
+                    //目标分解详细信息周期表
+                    DecomposeDetailCycles decomposeDetailCycles = new DecomposeDetailCycles();
+                    BeanUtils.copyProperties(decomposeDetailCyclesDTO, decomposeDetailCycles);
+                    decomposeDetailCycles.setCycleNumber(cycleNumber);
+                    //目标分解id
+                    decomposeDetailCycles.setTargetDecomposeDetailsId(targetDecomposeDetailsList.get(i).getTargetDecomposeDetailsId());
+                    decomposeDetailCycles.setCreateBy(SecurityUtils.getUserId());
+                    decomposeDetailCycles.setCreateTime(DateUtils.getNowDate());
+                    decomposeDetailCycles.setUpdateTime(DateUtils.getNowDate());
+                    decomposeDetailCycles.setUpdateBy(SecurityUtils.getUserId());
+                    decomposeDetailCycles.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    cycleNumber++;
+                    //目标分解详细信息周期表集合
+                    decomposeDetailCyclesList.add(decomposeDetailCycles);
+                }
+            }
+            try {
+                if (StringUtils.isNotEmpty(decomposeDetailCyclesList)) {
+                    decomposeDetailCyclesMapper.batchDecomposeDetailCycles(decomposeDetailCyclesList);
+                }
+            } catch (Exception e) {
+                throw new ServiceException("插入目标分解详细信息周期表失败");
             }
         }
-        try {
-            if (StringUtils.isNotEmpty(decomposeDetailCyclesList)) {
-                decomposeDetailCyclesMapper.batchDecomposeDetailCycles(decomposeDetailCyclesList);
+
+    }
+
+    /**
+     * 校检分解维度是否重复
+     * @param targetDecomposeDTO
+     * @param targetDecomposeDetailsDTOS
+     */
+    private void validDecompositionDimension(TargetDecomposeDTO targetDecomposeDTO, List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS) {
+        //分解维度集合
+        List<String> decompositionDimensionAllData = new ArrayList<>();
+        for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+            StringBuffer decompositionDimensionAll = new StringBuffer();
+            decompositionDimensionAll.append(targetDecomposeDetailsDTO.getProductId())
+                                     .append(targetDecomposeDetailsDTO.getDepartmentId())
+                                     .append(targetDecomposeDetailsDTO.getIndustryId())
+                                     .append(targetDecomposeDetailsDTO.getEmployeeId())
+                                     .append(targetDecomposeDetailsDTO.getAreaId())
+                                     .append(targetDecomposeDetailsDTO.getRegionId());
+            if (StringUtils.isNotBlank(decompositionDimensionAll.toString())) {
+                if (decompositionDimensionAllData.contains(decompositionDimensionAll.toString())){
+                    throw new ServiceException(targetDecomposeDTO.getDecompositionDimension()+"已存在");
+                }
+                decompositionDimensionAllData.add(decompositionDimensionAll.toString());
             }
-        } catch (Exception e) {
-            throw new ServiceException("插入目标分解详细信息周期表失败");
         }
     }
 
@@ -3360,6 +3390,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             }
         }
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
+/*            try {
+                this.validDecompositionDimension(targetDecomposeDTO,targetDecomposeDetailsDTOS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }*/
+
             //详情周期数据
             for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
