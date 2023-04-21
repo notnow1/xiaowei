@@ -2450,7 +2450,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
 
         } catch (IOException e) {
-            throw new ServiceException("导入人员信息配置Excel失败");
+            throw new ServiceException("解析Excel失败");
         }
     }
 
