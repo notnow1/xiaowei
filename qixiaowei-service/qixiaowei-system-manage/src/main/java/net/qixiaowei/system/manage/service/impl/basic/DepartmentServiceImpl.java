@@ -179,7 +179,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @return
      */
     @Override
-    public List<String> selectDepartmentListName(DepartmentDTO departmentDTO) {
+    public List<String> selectDepartmentExcelListName(DepartmentDTO departmentDTO) {
         List<String> parentDepartmentExcelNames = new ArrayList<>();
         Department department = new Department();
         //查询数据
@@ -199,7 +199,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @return
      */
     @Override
-    public List<DepartmentDTO> selectDepartmentListName(Department department) {
+    public List<DepartmentDTO> selectDepartmentExcelListName(Department department) {
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
         List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0);
