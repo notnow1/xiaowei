@@ -49,6 +49,11 @@ public class FeignRequestInterceptor implements RequestInterceptor {
                 requestTemplate.header(SecurityConstants.DETAILS_EMPLOYEE_ID, employeeId);
             }
 
+            String salesToken = headers.get(SecurityConstants.SALES_TOKEN_NAME);
+            if (StringUtils.isNotEmpty(salesToken)) {
+                requestTemplate.header(SecurityConstants.SALES_TOKEN_NAME, salesToken);
+            }
+
             // 配置客户端IP
             requestTemplate.header("X-Forwarded-For", IpUtils.getIpAddr(ServletUtils.getRequest()));
         }

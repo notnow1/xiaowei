@@ -91,6 +91,14 @@ public class SecurityContextHolder {
         set(SecurityConstants.ROLE_PERMISSION, permissions);
     }
 
+    public static void setSalesToken(String salesToken) {
+        set(SecurityConstants.SALES_TOKEN_NAME, salesToken);
+    }
+
+    public static String getSalesToken() {
+        return get(SecurityConstants.SALES_TOKEN_NAME);
+    }
+
     public static void remove() {
         THREAD_LOCAL.remove();
     }

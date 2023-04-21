@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDTO;
 import net.qixiaowei.strategy.cloud.service.strategyDecode.IAnnualKeyWorkService;
@@ -32,7 +33,7 @@ public class AnnualKeyWorkController extends BaseController {
     /**
      * 查询年度重点工作表详情
      */
-    @RequiresPermissions("strategy:cloud:annualKeyWork:info")
+    @RequiresPermissions(value = {"strategy:cloud:annualKeyWork:info", "strategy:cloud:annualKeyWork:edit"}, logical = Logical.OR)
     @GetMapping("/info/{annualKeyWorkId}")
     public AjaxResult info(@PathVariable Long annualKeyWorkId) {
         AnnualKeyWorkDTO annualKeyWorkDTO = annualKeyWorkService.selectAnnualKeyWorkByAnnualKeyWorkId(annualKeyWorkId);

@@ -138,7 +138,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 查询组织绩效考核表详情-制定
      */
-    @RequiresPermissions("operate:cloud:performanceAppraisal:orgDevelop:info")
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:orgDevelop:info", "operate:cloud:performanceAppraisal:orgDevelop:edit"}, logical = Logical.OR)
     @GetMapping("/orgDevelop/info/{performAppraisalObjectsId}")
     public AjaxResult infoOrgDevelop(@PathVariable Long performAppraisalObjectsId) {
         return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalDevelopById(performAppraisalObjectsId));
@@ -169,7 +169,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 查询组织绩效考核表详情-评议
      */
-    @RequiresPermissions("operate:cloud:performanceAppraisal:orgReview:info")
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:orgReview:info", "operate:cloud:performanceAppraisal:orgReview:edit"}, logical = Logical.OR)
     @GetMapping("/orgReview/info/{performAppraisalObjectsId}")
     public AjaxResult infoOrgReview(@PathVariable Long performAppraisalObjectsId) {
         return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalReviewById(performAppraisalObjectsId));
@@ -192,7 +192,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 查询绩效考核详情-组织-排名
      */
-    @RequiresPermissions("operate:cloud:performanceAppraisal:orgRanking:info")
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:orgRanking:info", "operate:cloud:performanceAppraisal:orgRanking:edit"}, logical = Logical.OR)
     @GetMapping("/orgRanking/info/{performanceAppraisalId}")
     public AjaxResult infoOrgRanking(@PathVariable Long performanceAppraisalId) {
         return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalRankingById(performanceAppraisalId));
@@ -225,7 +225,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 查询绩效考核表详情-组织-归档
      */
-    @RequiresPermissions("operate:cloud:performanceAppraisal:orgArchive:info")
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:orgArchive:info", "operate:cloud:performanceAppraisal:orgArchive:edit"}, logical = Logical.OR)
     @GetMapping("/orgArchive/info/{performanceAppraisalId}")
     public AjaxResult infoOrgArchive(@PathVariable Long performanceAppraisalId) {
         return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalArchiveById(performanceAppraisalId));
@@ -505,7 +505,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 查询个人绩效考核表详情-制定
      */
-    @RequiresPermissions("operate:cloud:performanceAppraisal:perDevelop:info")
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:perDevelop:info", "operate:cloud:performanceAppraisal:perDevelop:edit"}, logical = Logical.OR)
     @GetMapping("/perDevelop/info/{performAppraisalObjectsId}")
     public AjaxResult infoPerDevelop(@PathVariable Long performAppraisalObjectsId) {
         return AjaxResult.success(performanceAppraisalService.selectPerAppraisalDevelopById(performAppraisalObjectsId));
@@ -535,9 +535,9 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 查询个人绩效考核表详情-评议
      */
-    @RequiresPermissions("operate:cloud:performanceAppraisal:perReview:info")
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:perReview:info", "operate:cloud:performanceAppraisal:perReview:edit"}, logical = Logical.OR)
     @GetMapping("/perReview/info/{performAppraisalObjectsId}")
-    public AjaxResult infoOPerReview(@PathVariable Long performAppraisalObjectsId) {
+    public AjaxResult infoPerReview(@PathVariable Long performAppraisalObjectsId) {
         return AjaxResult.success(performanceAppraisalService.selectPerAppraisalReviewById(performAppraisalObjectsId));
     }
 
@@ -568,7 +568,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 查询绩效考核详情-人员-排名
      */
-    @RequiresPermissions("operate:cloud:performanceAppraisal:perRanking:info")
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:perRanking:info", "operate:cloud:performanceAppraisal:perRanking:edit"}, logical = Logical.OR)
     @GetMapping("/perRanking/info/{performanceAppraisalId}")
     public AjaxResult infoPerRanking(@PathVariable Long performanceAppraisalId) {
         return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankingById(performanceAppraisalId));
@@ -601,7 +601,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 查询绩效考核详情-归档-个人
      */
-    @RequiresPermissions("operate:cloud:performanceAppraisal:perArchive:info")
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:perArchive:info", "operate:cloud:performanceAppraisal:perArchive:edit"}, logical = Logical.OR)
     @GetMapping("/perArchive/info/{performanceAppraisalId}")
     public AjaxResult infoPerArchive(@PathVariable Long performanceAppraisalId) {
         return AjaxResult.success(performanceAppraisalService.selectPerAppraisalArchiveById(performanceAppraisalId));

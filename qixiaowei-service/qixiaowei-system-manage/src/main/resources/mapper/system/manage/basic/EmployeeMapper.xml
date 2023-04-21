@@ -2054,6 +2054,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2121,6 +2122,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2188,6 +2190,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2252,6 +2255,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2340,6 +2344,64 @@
                 #{item}
             </foreach>
         </if>
+    </select>
+<!--    根据手机号查询员工表-->
+    <select id="selectEmployeeByEmployeeMobile"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT employee_id,
+               employee_code,
+               employee_name,
+               employee_gender,
+               identity_type,
+               identity_card,
+               employee_birthday,
+               employee_mobile,
+               employee_email,
+               employee_department_id,
+               employee_post_id,
+               employee_rank,
+               employee_basic_wage,
+               employment_date,
+               departure_date,
+               employment_status,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM employee
+        WHERE  employee_mobile = #{employeeMobile}
+          and delete_flag = 0
+    </select>
+<!--    根据邮箱号查询员工表-->
+    <select id="selectEmployeeByEmployeeEmail"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT employee_id,
+               employee_code,
+               employee_name,
+               employee_gender,
+               identity_type,
+               identity_card,
+               employee_birthday,
+               employee_mobile,
+               employee_email,
+               employee_department_id,
+               employee_post_id,
+               employee_rank,
+               employee_basic_wage,
+               employment_date,
+               departure_date,
+               employment_status,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM employee
+        WHERE  employee_email = #{employeeEmail}
+          and delete_flag = 0
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">

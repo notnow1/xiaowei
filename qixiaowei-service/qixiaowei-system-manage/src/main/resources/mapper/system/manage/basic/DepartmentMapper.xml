@@ -975,7 +975,28 @@
     </select>
     <!--    远程查询所有部门-->
     <select id="getAll" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
-
+        SELECT
+        department_id,
+        parent_department_id,
+        ancestors,
+        department_code,
+        department_name,
+        `level`,
+        department_leader_id,
+        department_leader_post_id,
+        examination_leader_id,
+        department_importance_factor,
+        department_description,
+        sort,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM department
+        where delete_flag = 0
+        and status = 1
     </select>
 <!--    查询部门是否被人员引用！-->
     <select id="queryDeptEmployees" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">

@@ -42,7 +42,7 @@ public class IndustryDefaultController extends BaseController {
     /**
      * 查询默认行业列表
      */
-    @RequiresPermissions(value = {"system:manage:industryDefault:treeList", "system:manage:industryDefault:pageList", "system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"system:manage:industryDefault:treeList", "system:manage:industryDefault:pageList", "system:manage:industry:treeList", "system:manage:industry:pageList","system:manage:tenant:info:self", "system:manage:tenant:edit:self"}, logical = Logical.OR)
     @GetMapping("/treeList")
     public AjaxResult treeList(IndustryDefaultDTO industryDefaultDTO) {
         if (!CheckObjectIsNullUtils.isNull(industryDefaultDTO) || StringUtils.isNotEmpty(industryDefaultDTO.getParams())) {
@@ -103,7 +103,7 @@ public class IndustryDefaultController extends BaseController {
     /**
      * 行业配置详情
      */
-    @RequiresPermissions("system:manage:industryDefault:info")
+    @RequiresPermissions(value = {"system:manage:industryDefault:info", "system:manage:industryDefault:edit"}, logical = Logical.OR)
     @GetMapping("/info/{industryId}")
     public AjaxResult info(@PathVariable Long industryId) {
         return AjaxResult.success(industryDefaultService.detailIndustryDefault(industryId));

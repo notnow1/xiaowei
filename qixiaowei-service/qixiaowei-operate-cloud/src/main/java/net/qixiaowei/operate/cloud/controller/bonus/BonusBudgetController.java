@@ -67,7 +67,7 @@ public class BonusBudgetController extends BaseController {
     /**
      * 查询奖金预算表详情
      */
-    @RequiresPermissions("operate:cloud:bonusBudget:info")
+    @RequiresPermissions(value = {"operate:cloud:bonusBudget:info","operate:cloud:bonusBudget:edit"},logical = Logical.OR)
     @GetMapping("/info/{bonusBudgetId}")
     public AjaxResult info(@PathVariable Long bonusBudgetId) {
         BonusBudgetDTO bonusBudgetDTO = bonusBudgetService.selectBonusBudgetByBonusBudgetId(bonusBudgetId);

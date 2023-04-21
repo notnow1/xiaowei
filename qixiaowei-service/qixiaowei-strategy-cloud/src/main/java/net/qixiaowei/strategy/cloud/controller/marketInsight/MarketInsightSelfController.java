@@ -39,7 +39,7 @@ public class MarketInsightSelfController extends BaseController {
     /**
      * 查询市场洞察自身表详情
      */
-    @RequiresPermissions("strategy:cloud:marketInsightSelf:info")
+    @RequiresPermissions(value = {"strategy:cloud:marketInsightSelf:info","strategy:cloud:marketInsightSelf:edit"},logical = Logical.OR)
     @GetMapping("/info/{marketInsightSelfId}")
     public AjaxResult info(@PathVariable Long marketInsightSelfId) {
         MarketInsightSelfDTO marketInsightSelfDTO = marketInsightSelfService.selectMarketInsightSelfByMarketInsightSelfId(marketInsightSelfId);

@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.service.businessDesign.IBusinessDesignService;
@@ -34,7 +35,7 @@ public class BusinessDesignController extends BaseController {
     /**
      * 查询业务设计表详情
      */
-    @RequiresPermissions("strategy:cloud:businessDesign:info")
+    @RequiresPermissions(value = {"strategy:cloud:businessDesign:info", "strategy:cloud:businessDesign:edit"}, logical = Logical.OR)
     @GetMapping("/info/{businessDesignId}")
     public AjaxResult info(@PathVariable Long businessDesignId) {
         BusinessDesignDTO businessDesignDTO = businessDesignService.selectBusinessDesignByBusinessDesignId(businessDesignId);

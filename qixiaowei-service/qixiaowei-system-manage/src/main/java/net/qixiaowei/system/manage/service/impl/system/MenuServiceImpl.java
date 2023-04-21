@@ -81,7 +81,7 @@ public class MenuServiceImpl implements IMenuService {
         Set<Long> menuIds = menuMapper.selectMenuIdsAll();
         if (StringUtils.isNotEmpty(menuIds) && filterAdmin) {
             Set<Long> adminMenuIds = tenantConfig.getAdminMenuIds();
-            if(StringUtils.isNotEmpty(adminMenuIds)){
+            if (StringUtils.isNotEmpty(adminMenuIds)) {
                 menuIds.removeAll(adminMenuIds);
             }
         }
@@ -146,6 +146,17 @@ public class MenuServiceImpl implements IMenuService {
     @Override
     public Set<Long> selectMenuListByRoleId(Long roleId) {
         return menuMapper.selectMenuListByRoleId(roleId);
+    }
+
+    /**
+     * 根据角色ID集合查询菜单树信息
+     *
+     * @param roleIds 角色ID集合
+     * @return 选中菜单列表
+     */
+    @Override
+    public Set<Long> selectMenuListByRoleIds(List<Long> roleIds) {
+        return menuMapper.selectMenuListByRoleIds(roleIds);
     }
 
     /**

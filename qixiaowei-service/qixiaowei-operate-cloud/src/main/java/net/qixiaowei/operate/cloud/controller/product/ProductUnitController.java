@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.controller.product;
 
 import java.util.List;
 
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -32,7 +33,7 @@ public class ProductUnitController extends BaseController {
     /**
      * 查询产品单位表详情
      */
-    @RequiresPermissions("operate:cloud:productUnit:info")
+    @RequiresPermissions(value = {"operate:cloud:productUnit:info","operate:cloud:productUnit:edit"},logical = Logical.OR)
     @GetMapping("/info/{productUnitId}")
     public AjaxResult info(@PathVariable Long productUnitId) {
         ProductUnitDTO productUnitDTO = productUnitService.selectProductUnitByProductUnitId(productUnitId);

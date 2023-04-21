@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
@@ -75,7 +76,7 @@ public class SalaryItemController extends BaseController {
     /**
      * 工资项详情
      */
-    @RequiresPermissions("operate:cloud:salaryItem:info")
+    @RequiresPermissions(value = {"operate:cloud:salaryItem:info", "operate:cloud:salaryItem:edit"}, logical = Logical.OR)
     @GetMapping("/info/{salaryItemId}")
     public AjaxResult info(@PathVariable Long salaryItemId) {
         SalaryItemDTO salaryItemDTO = salaryItemService.detailSalaryItemBySalaryId(salaryItemId);

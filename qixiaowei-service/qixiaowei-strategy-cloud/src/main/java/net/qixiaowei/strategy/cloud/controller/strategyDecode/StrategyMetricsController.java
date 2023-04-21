@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
 import net.qixiaowei.strategy.cloud.service.strategyDecode.IStrategyMetricsService;
@@ -32,7 +33,7 @@ public class StrategyMetricsController extends BaseController {
     /**
      * 查询战略衡量指标表详情
      */
-    @RequiresPermissions("strategy:cloud:strategyMetrics:info")
+    @RequiresPermissions(value = {"strategy:cloud:strategyMetrics:info", "strategy:cloud:strategyMetrics:edit"}, logical = Logical.OR)
     @GetMapping("/info/{strategyMetricsId}")
     public AjaxResult info(@PathVariable Long strategyMetricsId) {
         StrategyMetricsDTO strategyMetricsDTO = strategyMetricsService.selectStrategyMetricsByStrategyMetricsId(strategyMetricsId);
