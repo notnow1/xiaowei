@@ -33,42 +33,51 @@ import java.util.Date;
 @HeadRowHeight(20)
 @ContentRowHeight(18)
 public class EmployeeExcel {
+
+    /**
+     * 错误数据
+     */
+    @ExcelIgnore
+    @ExcelProperty(index = 0)
+    private String errorData;
     /**
      * 工号
      */
     @ExcelIgnore
-    @ExcelProperty("工号")
+    @ExcelProperty(index = 1)
     private String employeeCode;
     /**
      * 姓名
      */
     @ExcelIgnore
-    @ExcelProperty("姓名")
+    @ExcelProperty(index = 2)
     private String employeeName;
     @ExcelIgnore
-    @ExcelProperty("用工关系状态")
+    @ExcelProperty(index = 3)
     private String employmentStatus;
     /**
      * 性别:1男;2女
      */
     @ExcelIgnore
-    @ExcelProperty("性别")
+    @ExcelProperty(index = 4)
     private String employeeGender;
     /**
      * 证件号码
      */
     @ExcelIgnore
-    @ExcelProperty("证件号码")
+    @ExcelProperty(index = 5)
     private String identityCard;
     /**
      * 婚姻状况:0未婚;1已婚
      */
     @ExcelIgnore
+    @ExcelProperty(index = 6)
     private  String maritalStatus;
     /**
      * 国籍
      */
     @ExcelIgnore
+    @ExcelProperty(index = 7)
     private  String nationalityName;
 
 
@@ -76,48 +85,57 @@ public class EmployeeExcel {
      * 民族
      */
     @ExcelIgnore
+    @ExcelProperty(index = 8)
     private  String nationName;
     /**
      * 户口所在地名称
      */
     @ExcelIgnore
+    @ExcelProperty(index = 9)
     private  String residentCityName;
 
     /**
      * 参保地名称
      */
     @ExcelIgnore
+    @ExcelProperty(index = 10)
     private  String insuredCityName;
     /**
      * 常住地名称
      */
     @ExcelIgnore
+    @ExcelProperty(index = 11)
     private  String permanentAddressName;
     /**
      * 入职日期
      */
     @ExcelIgnore
+    @ExcelProperty(index = 12)
     private  String employmentDate;
     /**
      * 离职日期
      */
     @ExcelIgnore
+    @ExcelProperty(index = 13)
     private  String departureDate;
     /**
      * 部门
      */
     @ExcelIgnore
+    @ExcelProperty(index = 14)
     private  String departmentName;
     /**
      * 岗位
      */
     @ExcelIgnore
+    @ExcelProperty(index = 15)
     private  String postName;
 
     /**
      * 个人职级
      */
     @ExcelIgnore
+    @ExcelProperty(index = 16)
     private  String employeeRankName;
 
     /**
@@ -125,42 +143,50 @@ public class EmployeeExcel {
      */
     @ExcelIgnore
     @JsonFormat(shape =JsonFormat.Shape.STRING)
+    @ExcelProperty(index = 17)
     private String employeeBasicWage;
     /**
      * 员工手机号
      */
     @ExcelIgnore
+    @ExcelProperty(index = 18)
     private  String employeeMobile;
 
     /**
      * 员工邮箱
      */
     @ExcelIgnore
+    @ExcelProperty(index = 19)
     private  String employeeEmail;
     /**
      * 微信号
      */
     @ExcelIgnore
+    @ExcelProperty(index = 20)
     private  String wechatCode;
     /**
      * 通信地址
      */
     @ExcelIgnore
+    @ExcelProperty(index = 21)
     private  String contactAddress;
     /**
      * 通信地址详情
      */
     @ExcelIgnore
+    @ExcelProperty(index = 22)
     private  String contactAddressDetail;
     /**
      * 紧急联系人
      */
     @ExcelIgnore
+    @ExcelProperty(index = 23)
     private  String emergencyContact;
     /**
      * 紧急联系人电话
      */
     @ExcelIgnore
+    @ExcelProperty(index = 24)
     private  String emergencyMobile;
 
 

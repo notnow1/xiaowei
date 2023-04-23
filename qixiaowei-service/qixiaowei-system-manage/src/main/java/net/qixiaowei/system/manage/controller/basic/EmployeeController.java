@@ -5,7 +5,7 @@ import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
-import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
+import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
@@ -16,8 +16,10 @@ import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
+import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
@@ -27,6 +29,7 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
@@ -49,6 +52,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.rmi.ServerException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -70,6 +74,7 @@ public class EmployeeController extends BaseController {
     private IDepartmentService departmentService;
     @Autowired
     private IPostService postService;
+    private RedisService redisService;
 
 
     /**
@@ -148,26 +153,39 @@ public class EmployeeController extends BaseController {
     @RequiresPermissions("system:manage:employee:import")
     @PostMapping("import")
     public AjaxResult importEmployee(MultipartFile file) throws IOException {
-        String filename = file.getOriginalFilename();
-        if (StringUtils.isBlank(filename)) {
+        String fileName = file.getOriginalFilename();
+
+        if (StringUtils.isBlank(fileName)) {
             throw new RuntimeException("请上传文件!");
         }
-        if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
+        if ((!StringUtils.endsWithIgnoreCase(fileName, ".xls") && !StringUtils.endsWithIgnoreCase(fileName, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
 
         List<EmployeeExcel> list = new ArrayList<>();
+        List<Map<Integer, String>> listMap = new ArrayList<>();
+        //List<EmployeeExcel> list1 = EasyExcel.read(fileName, EmployeeExcel.class, new EmployeeImportListener()).sheet("人员信息配置").doReadSync();
 
-        //构建读取器
-        ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-        ExcelReaderSheetBuilder sheet = read.sheet(0);
-        List<Map<Integer, String>> listMap = sheet.doReadSync();
-        if (listMap.size()>1000){
+        try {
+            String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
+            if (StringUtils.equals("人员信息配置", sheetName)) {
+                //构建读取器
+                ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+                list = read.sheet("人员信息配置").doReadSync();
+            } else if (StringUtils.equals("人员信息错误数据配置", sheetName)) {
+                //构建读取器
+                ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+                list = read.sheet("人员信息错误数据配置").doReadSync();
+            } else {
+                throw new ServerException("模板sheet名称不正确！");
+            }
+        } catch (IOException e) {
+            throw new ServerException("模板sheet名称不正确！");
+        }
+        if (listMap.size() > 1000) {
             throw new RuntimeException("数据量过大(峰值1000) 请重新导入");
         }
 
-        EmployeeExcel employeeExcel = new EmployeeExcel();
-        ExcelUtils.mapToListModel(1, 0, listMap, employeeExcel, list);
         // 调用importer方法
         try {
             employeeService.importEmployee(list);
@@ -299,7 +317,7 @@ public class EmployeeController extends BaseController {
                         sheet.setDefaultRowHeight((short) (20 * 15));
                     }
                 })
-                .doWrite(EmployeeImportListener.dataList(employeeExcelList));
+                .doWrite(EmployeeImportListener.dataList(employeeExcelList, null));
     }
 
     /**
@@ -308,7 +326,15 @@ public class EmployeeController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("system:manage:employee:import")
     @GetMapping("/export-template")
-    public void exportEmployeeTemplate(HttpServletResponse response) {
+    public void exportEmployeeTemplate(HttpServletResponse response, @RequestParam(required = false) String errorExcelId) {
+        List<EmployeeExcel> employeeExcelList = new ArrayList<>();
+        if (StringUtils.isNotBlank(errorExcelId)) {
+            try {
+                employeeExcelList = redisService.getCacheObject(errorExcelId);
+            } catch (Exception e) {
+                throw new ServiceException("转化错误数据异常 请联系管理员");
+            }
+        }
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
         //部门名称集合
@@ -323,7 +349,7 @@ public class EmployeeController extends BaseController {
         }
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = EmployeeImportListener.importHead(selectMap, parentDepartmentExcelNames, postNames);
+        List<List<String>> head = EmployeeImportListener.importHead(selectMap, parentDepartmentExcelNames, postNames, errorExcelId);
 
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
@@ -336,7 +362,7 @@ public class EmployeeController extends BaseController {
                 .excelType(ExcelTypeEnum.XLSX)
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .head(head)
                 .sheet("人员信息配置")// 设置 sheet 的名字
                 .registerWriteHandler(new SheetWriteHandler() {
@@ -421,21 +447,40 @@ public class EmployeeController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 4 || columnIndex == 11 || columnIndex == 13 || columnIndex == 14 || columnIndex == 15 || columnIndex == 17 || columnIndex == 23) {
-                                //设置 自动换行
-                                writeCellStyle.setWrapped(true);
-                                headWriteFont.setColor(IndexedColors.RED.getIndex());
-                                headWriteFont.setFontHeightInPoints((short) 11);
-                                headWriteFont.setFontName("微软雅黑");
-                                writeCellStyle.setWriteFont(headWriteFont);
+                            if (StringUtils.isNotBlank(errorExcelId)) {
+                                if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 5 || columnIndex == 12 || columnIndex == 14 || columnIndex == 15 || columnIndex == 16 || columnIndex == 18 || columnIndex == 24) {
+                                    //设置 自动换行
+                                    writeCellStyle.setWrapped(true);
+                                    headWriteFont.setColor(IndexedColors.RED.getIndex());
+                                    headWriteFont.setFontHeightInPoints((short) 11);
+                                    headWriteFont.setFontName("微软雅黑");
+                                    writeCellStyle.setWriteFont(headWriteFont);
+                                } else {
+                                    //设置 自动换行
+                                    writeCellStyle.setWrapped(true);
+                                    headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                    headWriteFont.setFontHeightInPoints((short) 11);
+                                    headWriteFont.setFontName("微软雅黑");
+                                    writeCellStyle.setWriteFont(headWriteFont);
+                                }
                             } else {
-                                //设置 自动换行
-                                writeCellStyle.setWrapped(true);
-                                headWriteFont.setColor(IndexedColors.BLACK.getIndex());
-                                headWriteFont.setFontHeightInPoints((short) 11);
-                                headWriteFont.setFontName("微软雅黑");
-                                writeCellStyle.setWriteFont(headWriteFont);
+                                if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 4 || columnIndex == 11 || columnIndex == 13 || columnIndex == 14 || columnIndex == 15 || columnIndex == 17 || columnIndex == 23) {
+                                    //设置 自动换行
+                                    writeCellStyle.setWrapped(true);
+                                    headWriteFont.setColor(IndexedColors.RED.getIndex());
+                                    headWriteFont.setFontHeightInPoints((short) 11);
+                                    headWriteFont.setFontName("微软雅黑");
+                                    writeCellStyle.setWriteFont(headWriteFont);
+                                } else {
+                                    //设置 自动换行
+                                    writeCellStyle.setWrapped(true);
+                                    headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                    headWriteFont.setFontHeightInPoints((short) 11);
+                                    headWriteFont.setFontName("微软雅黑");
+                                    writeCellStyle.setWriteFont(headWriteFont);
+                                }
                             }
+
                         }
                         cellData.setWriteCellStyle(writeCellStyle);
                     }
@@ -462,7 +507,7 @@ public class EmployeeController extends BaseController {
 
                     }
                 })
-                .doWrite(new ArrayList<>());
+                .doWrite(EmployeeImportListener.dataTemplateList(errorExcelId, employeeExcelList));
     }
 
 

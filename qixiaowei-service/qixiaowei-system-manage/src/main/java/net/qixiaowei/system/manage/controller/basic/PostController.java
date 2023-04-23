@@ -349,7 +349,7 @@ public class PostController extends BaseController {
 
 
         PostExcel postExcel = new PostExcel();
-        ExcelUtils.mapToListModel(1, 0, listMap, postExcel, list);
+        ExcelUtils.mapToListModel(1, 0, listMap, postExcel, list, true);
         // 调用importer方法
         try {
             postService.importPost(list);

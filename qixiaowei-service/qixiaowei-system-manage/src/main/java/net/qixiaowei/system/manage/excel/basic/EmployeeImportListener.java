@@ -22,7 +22,7 @@ import java.util.*;
 @Data
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, String>> {
+public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel> {
 
     /**
      * 默认每隔3000条存储数据库
@@ -32,7 +32,7 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
     /**
      * 用户service
      */
-    private final IEmployeeService employeeService;
+    private  IEmployeeService employeeService;
     /**
      * 缓存的数据列表
      */
@@ -51,16 +51,30 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
      * 日志
      */
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     /**
      * 下载模板 导入excel数据
+     *
      * @param selectMap
      * @param parentDepartmentExcelNames
      * @param postNames
+     * @param errorExcelId
      * @return
      */
-    public static List<List<String>> importHead(Map<Integer, List<String>> selectMap, List<String> parentDepartmentExcelNames, List<String> postNames) {
+    public static List<List<String>> importHead(Map<Integer, List<String>> selectMap, List<String> parentDepartmentExcelNames, List<String> postNames, String errorExcelId) {
         List<List<String>> list = new ArrayList<List<String>>();
+        //错误数据列
+        if (StringUtils.isNotBlank(errorExcelId)){
+            // 第一列
+            List<String> head0 = new ArrayList<String>();
+            head0.add("说明：\n" +
+                    "1、带*为必填项\n" +
+                    "2、员工工号、身份证号码不可重复\n" +
+                    "3、户口所在地、参保地应按照XX省XX市录入\n" +
+                    "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
+                    "5、个人职级应在岗位职级上下限范围内");
+            head0.add("工号*");
+            list.add(head0);
+        }
         // 第一列
         List<String> head0 = new ArrayList<String>();
         head0.add("说明：\n" +
@@ -285,6 +299,7 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
 
         // 第二十三列
         List<String> head22 = new ArrayList<String>();
+
         head22.add("说明：\n" +
                 "1、带*为必填项\n" +
                 "2、员工工号、身份证号码不可重复\n" +
@@ -292,7 +307,6 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
         head22.add("紧急联系人电话*");
-
 
         list.add(head0);
         list.add(head1);
@@ -320,13 +334,15 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
         list.add(head22);
         return list;
     }
+
     /**
      * 导出excel数据
+     *
      * @param parentDepartmentExcelNames
      * @param postNames
      * @return
      */
-    public static List<List<String>> exportHead( List<String> parentDepartmentExcelNames, List<String> postNames) {
+    public static List<List<String>> exportHead(List<String> parentDepartmentExcelNames, List<String> postNames) {
         List<List<String>> list = new ArrayList<List<String>>();
         // 第一列
         List<String> head0 = new ArrayList<String>();
@@ -448,24 +464,41 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
      * 封装导出数据
      *
      * @param employeeExcelList
+     * @param errorExcelId
      * @return
      */
-    public static List dataList(List<EmployeeExcel> employeeExcelList) {
+    public static List dataList(List<EmployeeExcel> employeeExcelList, String errorExcelId) {
         List<List<Object>> list = new ArrayList<List<Object>>();
         for (int i = 0; i < employeeExcelList.size(); i++) {
             List<Object> data = new ArrayList<Object>();
-            ExcelUtils.packList(employeeExcelList.get(i), data);
+            ExcelUtils.packList(employeeExcelList.get(i), data, errorExcelId);
             list.add(data);
         }
         return list;
     }
 
-
-    @Override
-    public void invoke(Map<Integer, String> map, AnalysisContext analysisContext) {
-        listMap.add(map);
+    /**
+     * 封装导出模板数据
+     *
+     * @param errorExcelId
+     * @param employeeExcelList
+     * @return
+     */
+    public static List dataTemplateList(String errorExcelId, List<EmployeeExcel> employeeExcelList) {
+        List<List<Object>> list = new ArrayList<List<Object>>();
+        if (StringUtils.isNotBlank(errorExcelId)){
+            for (int i = 0; i < employeeExcelList.size(); i++) {
+                List<Object> data = new ArrayList<Object>();
+                ExcelUtils.packList(employeeExcelList.get(i), data, errorExcelId);
+                list.add(data);
+            }
+        }
+        return list;
     }
+    @Override
+    public void invoke(EmployeeExcel excel, AnalysisContext analysisContext) {
 
+    }
 
     @SneakyThrows
     @Override
@@ -473,7 +506,7 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
         logger.info("Excel解析完成");
 
         EmployeeExcel employeeExcel = new EmployeeExcel();
-        ExcelUtils.mapToListModel(1, 0, listMap, employeeExcel, list);
+        ExcelUtils.mapToListModel(1, 0, listMap, employeeExcel, list, true);
 
 
         // 达到BATCH_COUNT，则调用importer方法入库，防止数据几万条数据在内存，容易OOM
