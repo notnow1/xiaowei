@@ -54,16 +54,15 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
     private final List<Map<Integer, String>> listMap = new ArrayList<>();
 
     /**
-     *
-     * @param selectMap 下拉框
-     * @param targetDecomposeDTO 目标分解详情数据
-     * @param parentDepartmentExcelNames 部门下拉框值
-     * @param employeeExcelExcelNames 人员下拉框值
+     * @param selectMap                   下拉框
+     * @param targetDecomposeDTO          目标分解详情数据
+     * @param parentDepartmentExcelNames  部门下拉框值
+     * @param employeeExcelExcelNames     人员下拉框值
      * @param principalEmployeeExcelNames 滚动预测负责人下拉框值
-     * @param parentIndustryExcelNames 行业下拉框值
-     * @param parentProductExcelNames 产品下拉框值
-     * @param areaExcelNames 区域下拉框值
-     * @param provinceExcelNames 省份下拉框值
+     * @param parentIndustryExcelNames    行业下拉框值
+     * @param parentProductExcelNames     产品下拉框值
+     * @param areaExcelNames              区域下拉框值
+     * @param provinceExcelNames          省份下拉框值
      * @return
      */
     public static List<List<String>> headTemplate(Map<Integer, List<String>> selectMap, TargetDecomposeDTO targetDecomposeDTO, List<String> parentDepartmentExcelNames, List<String> employeeExcelExcelNames, List<String> principalEmployeeExcelNames, List<String> parentIndustryExcelNames, List<String> parentProductExcelNames, List<String> areaExcelNames, List<String> provinceExcelNames) {
@@ -149,11 +148,9 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         head4.add("");
 
 
-
-
         for (int i = 0; i < fileNameList.size(); i++) {
             if (i == 0) {
-                head0.add(fileNameList.get(i).get("label")+"*");
+                head0.add(fileNameList.get(i).get("label") + "*");
 
                 dropListMap(selectMap, parentDepartmentExcelNames, employeeExcelExcelNames, parentIndustryExcelNames, parentProductExcelNames, areaExcelNames, provinceExcelNames, fileNameList, i, 0);
                 if (fileNameList.size() == 1) {
@@ -228,7 +225,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add((i1+4) + "月");
+                            head8.add((i1 + 4) + "月");
                             list.add(head8);
                         }
 
@@ -255,14 +252,14 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add("第"+(i1+4) + "周");
+                            head8.add("第" + (i1 + 4) + "周");
                             list.add(head8);
                         }
                     }
 
                 }
             } else if (i == 1) {
-                head1.add(fileNameList.get(i).get("label")+"*");
+                head1.add(fileNameList.get(i).get("label") + "*");
                 dropListMap(selectMap, parentDepartmentExcelNames, employeeExcelExcelNames, parentIndustryExcelNames, parentProductExcelNames, areaExcelNames, provinceExcelNames, fileNameList, i, 1);
                 if (fileNameList.size() == 2) {
                     head2.add("滚动预测负责人*");
@@ -349,7 +346,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add((i1+3) + "月");
+                            head8.add((i1 + 3) + "月");
                             list.add(head8);
                         }
 
@@ -376,14 +373,14 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add("第"+(i1+3) + "周");
+                            head8.add("第" + (i1 + 3) + "周");
                             list.add(head8);
                         }
                     }
                 }
 
             } else if (i == 2) {
-                head2.add(fileNameList.get(i).get("label")+"*");
+                head2.add(fileNameList.get(i).get("label") + "*");
                 dropListMap(selectMap, parentDepartmentExcelNames, employeeExcelExcelNames, parentIndustryExcelNames, parentProductExcelNames, areaExcelNames, provinceExcelNames, fileNameList, i, 2);
                 if (fileNameList.size() == 3) {
                     head3.add("滚动预测负责人*");
@@ -489,7 +486,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         list.add(head7);
 
 
-
                     } else if (4 == targetDecomposeDTO.getTimeDimension()) {
                         head4.add("1月");
 
@@ -498,7 +494,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         list.add(head2);
                         list.add(head3);
                         list.add(head4);
-
 
 
                         for (int i1 = 0; i1 < 11; i1++) {
@@ -515,7 +510,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add((i1+2) + "月");
+                            head8.add((i1 + 2) + "月");
                             list.add(head8);
                         }
 
@@ -540,13 +535,13 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add("第"+(i1+2) + "周");
+                            head8.add("第" + (i1 + 2) + "周");
                             list.add(head8);
                         }
                     }
                 }
             } else if (i == 3) {
-                head3.add(fileNameList.get(i).get("label")+"*");
+                head3.add(fileNameList.get(i).get("label") + "*");
                 dropListMap(selectMap, parentDepartmentExcelNames, employeeExcelExcelNames, parentIndustryExcelNames, parentProductExcelNames, areaExcelNames, provinceExcelNames, fileNameList, i, 3);
                 if (fileNameList.size() == 4) {
                     head4.add("滚动预测负责人*");
@@ -699,7 +694,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add((i1+1) + "月");
+                            head8.add((i1 + 1) + "月");
                             list.add(head8);
                         }
 
@@ -723,13 +718,13 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add("第"+(i1+1) + "周");
+                            head8.add("第" + (i1 + 1) + "周");
                             list.add(head8);
                         }
                     }
                 }
             } else if (i == 4) {
-                head4.add(fileNameList.get(i).get("label")+"*");
+                head4.add(fileNameList.get(i).get("label") + "*");
                 dropListMap(selectMap, parentDepartmentExcelNames, employeeExcelExcelNames, parentIndustryExcelNames, parentProductExcelNames, areaExcelNames, provinceExcelNames, fileNameList, i, 4);
                 if (fileNameList.size() == 5) {
                     // 第五列
@@ -898,7 +893,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add((i1+1) + "月");
+                            head8.add((i1 + 1) + "月");
                             list.add(head8);
                         }
 
@@ -924,7 +919,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add("第"+(i1+1) + "周");
+                            head8.add("第" + (i1 + 1) + "周");
                             list.add(head8);
                         }
                     }
@@ -943,7 +938,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 head5.add("");
                 head5.add("");
                 head5.add("");
-                head5.add(fileNameList.get(i).get("label")+"*");
+                head5.add(fileNameList.get(i).get("label") + "*");
                 dropListMap(selectMap, parentDepartmentExcelNames, employeeExcelExcelNames, parentIndustryExcelNames, parentProductExcelNames, areaExcelNames, provinceExcelNames, fileNameList, i, 5);
                 // 第五列
                 List<String> head6 = new ArrayList<String>();
@@ -1068,7 +1063,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         head8.add("");
                         head8.add("");
                         head8.add("");
-                        head8.add("第"+ i1 + "周");
+                        head8.add("第" + i1 + "周");
                         list.add(head8);
                     }
                 }
@@ -1077,23 +1072,21 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         }
 
 
-
-
         return list;
     }
 
     private static void dropListMap(Map<Integer, List<String>> selectMap, List<String> parentDepartmentExcelNames, List<String> employeeExcelExcelNames, List<String> parentIndustryExcelNames, List<String> parentProductExcelNames, List<String> areaExcelNames, List<String> provinceExcelNames, List<Map<String, String>> fileNameList, int i, int indexRow) {
-        if (StringUtils.equals(fileNameList.get(i).get("label"),"销售员")){
+        if (StringUtils.equals(fileNameList.get(i).get("label"), "销售员")) {
             selectMap.put(indexRow, employeeExcelExcelNames);
-        }else if (StringUtils.equals(fileNameList.get(i).get("label"),"产品")){
+        } else if (StringUtils.equals(fileNameList.get(i).get("label"), "产品")) {
             selectMap.put(indexRow, parentProductExcelNames);
-        }else if (StringUtils.equals(fileNameList.get(i).get("label"),"区域")){
+        } else if (StringUtils.equals(fileNameList.get(i).get("label"), "区域")) {
             selectMap.put(indexRow, areaExcelNames);
-        }else if (StringUtils.equals(fileNameList.get(i).get("label"),"部门")){
+        } else if (StringUtils.equals(fileNameList.get(i).get("label"), "部门")) {
             selectMap.put(indexRow, parentDepartmentExcelNames);
-        }else if (StringUtils.equals(fileNameList.get(i).get("label"),"省份")){
+        } else if (StringUtils.equals(fileNameList.get(i).get("label"), "省份")) {
             selectMap.put(indexRow, provinceExcelNames);
-        }else if (StringUtils.equals(fileNameList.get(i).get("label"),"行业")){
+        } else if (StringUtils.equals(fileNameList.get(i).get("label"), "行业")) {
             selectMap.put(indexRow, parentIndustryExcelNames);
         }
     }
@@ -1214,6 +1207,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         if (fileNameList.size() >= 6) {
             head6.add("滚动预测负责人");
         }
+
         // 第七列
         List<String> head7 = new ArrayList<String>();
         head7.add("");
@@ -1231,6 +1225,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             head7.add("汇总金额");
         }
 
+
         for (int i = 0; i < fileNameList.size(); i++) {
             if (i == 0) {
                 head0.add(fileNameList.get(i).get("label"));
@@ -1246,7 +1241,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         list.add(head4);
                         list.add(head5);
                         list.add(head6);
-                        list.add(head7);
                     } else if (2 == targetDecomposeDTO.getTimeDimension()) {
                         head3.add("上年度");
                         head4.add("下年度");
@@ -1257,7 +1251,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         list.add(head4);
                         list.add(head5);
                         list.add(head6);
-                        list.add(head7);
                     } else if (3 == targetDecomposeDTO.getTimeDimension()) {
                         head3.add("一季度");
                         head4.add("二季度");
@@ -1270,7 +1263,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         list.add(head4);
                         list.add(head5);
                         list.add(head6);
-                        list.add(head7);
+
 
                     } else if (4 == targetDecomposeDTO.getTimeDimension()) {
                         head3.add("1月");
@@ -1302,7 +1295,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add((i1+6) + "月");
+                            head8.add((i1 + 6) + "月");
                             list.add(head8);
                         }
 
@@ -1335,14 +1328,14 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add("第"+(i1+6) + "周");
+                            head8.add("第" + (i1 + 6) + "周");
                             list.add(head8);
                         }
                     }
 
                 }
             } else if (i == 1) {
-                    head1.add(fileNameList.get(i).get("label"));
+                head1.add(fileNameList.get(i).get("label"));
                 if (fileNameList.size() == 2) {
                     head2.add("滚动预测负责人");
                     head3.add("汇总金额");
@@ -1355,7 +1348,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         list.add(head4);
                         list.add(head5);
                         list.add(head6);
-                        list.add(head7);
                     } else if (2 == targetDecomposeDTO.getTimeDimension()) {
                         head4.add("上年度");
                         head5.add("下年度");
@@ -1366,7 +1358,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         list.add(head4);
                         list.add(head5);
                         list.add(head6);
-                        list.add(head7);
                     } else if (3 == targetDecomposeDTO.getTimeDimension()) {
                         head4.add("一季度");
                         head5.add("二季度");
@@ -1408,7 +1399,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add((i1+5) + "月");
+                            head8.add((i1 + 5) + "月");
                             list.add(head8);
                         }
 
@@ -1439,7 +1430,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add("第"+(i1+5) + "周");
+                            head8.add("第" + (i1 + 5) + "周");
                             list.add(head8);
                         }
                     }
@@ -1459,7 +1450,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         list.add(head4);
                         list.add(head5);
                         list.add(head6);
-                        list.add(head7);
                     } else if (2 == targetDecomposeDTO.getTimeDimension()) {
                         head5.add("上年度");
                         head6.add("下年度");
@@ -1470,7 +1460,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         list.add(head4);
                         list.add(head5);
                         list.add(head6);
-                        list.add(head7);
+
 
                     } else if (3 == targetDecomposeDTO.getTimeDimension()) {
                         head5.add("一季度");
@@ -1528,7 +1518,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add((i1+4) + "月");
+                            head8.add((i1 + 4) + "月");
                             list.add(head8);
                         }
 
@@ -1558,7 +1548,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add("第"+(i1+4) + "周");
+                            head8.add("第" + (i1 + 4) + "周");
                             list.add(head8);
                         }
                     }
@@ -1577,7 +1567,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         list.add(head4);
                         list.add(head5);
                         list.add(head6);
-                        list.add(head7);
                     } else if (2 == targetDecomposeDTO.getTimeDimension()) {
                         head6.add("上年度");
                         head7.add("下年度");
@@ -1657,7 +1646,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add((i1+3) + "月");
+                            head8.add((i1 + 3) + "月");
                             list.add(head8);
                         }
 
@@ -1686,7 +1675,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add("第"+(i1+3) + "周");
+                            head8.add("第" + (i1 + 3) + "周");
                             list.add(head8);
                         }
                     }
@@ -1827,7 +1816,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add((i1+2) + "月");
+                            head8.add((i1 + 2) + "月");
                             list.add(head8);
                         }
 
@@ -1855,7 +1844,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                             head8.add("");
                             head8.add("");
                             head8.add("");
-                            head8.add("第"+(i1+2) + "周");
+                            head8.add("第" + (i1 + 2) + "周");
                             list.add(head8);
                         }
                     }
@@ -1864,7 +1853,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 head5.add(fileNameList.get(i).get("label"));
             }
         }
-
 
 
         if (fileNameList.size() >= 6) {
@@ -1977,7 +1965,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                     head8.add("");
                     head8.add("");
                     head8.add("");
-                    head8.add("第"+i + "周");
+                    head8.add("第" + i + "周");
                     list.add(head8);
                 }
             }
@@ -3465,6 +3453,12 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
     public static List dataList(List<TargetDecomposeExcel> targetDecomposeExcelList) {
         List<List<Object>> list = new ArrayList<List<Object>>();
         for (TargetDecomposeExcel targetDecomposeExcel : targetDecomposeExcelList) {
+            if (StringUtils.isNull(targetDecomposeExcel.getTargetValue())){
+                targetDecomposeExcel.setTargetValue(new BigDecimal("0.00"));
+            }
+            if (StringUtils.isNull(targetDecomposeExcel.getDecomposeTarget())){
+                targetDecomposeExcel.setDecomposeTarget(new BigDecimal("0.00"));
+            }
             List<Object> data = new ArrayList<Object>();
             //目标年度
             data.add(targetDecomposeExcel.getTargetYear());
@@ -3667,11 +3661,11 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                     if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList)) {
                         DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
                         //周期目标值
-                        BigDecimal cycleTarget = decomposeDetailCyclesDTOList.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2,BigDecimal.ROUND_HALF_UP);
+                        BigDecimal cycleTarget = decomposeDetailCyclesDTOList.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, BigDecimal.ROUND_HALF_UP);
                         //周期实际值
-                        BigDecimal cycleActual = decomposeDetailCyclesDTOList.stream().map(DecomposeDetailCyclesDTO::getCycleActual).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2,BigDecimal.ROUND_HALF_UP);
+                        BigDecimal cycleActual = decomposeDetailCyclesDTOList.stream().map(DecomposeDetailCyclesDTO::getCycleActual).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, BigDecimal.ROUND_HALF_UP);
                         //周期预测值
-                        BigDecimal cycleForecast = decomposeDetailCyclesDTOList.stream().map(DecomposeDetailCyclesDTO::getCycleForecast).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2,BigDecimal.ROUND_HALF_UP);
+                        BigDecimal cycleForecast = decomposeDetailCyclesDTOList.stream().map(DecomposeDetailCyclesDTO::getCycleForecast).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, BigDecimal.ROUND_HALF_UP);
                         decomposeDetailCyclesDTO.setCycleNumber(key);
                         decomposeDetailCyclesDTO.setCycleTarget(cycleTarget);
                         decomposeDetailCyclesDTO.setCycleActual(cycleActual);
@@ -3721,40 +3715,40 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                         //周期目标值
-                        data.add(decomposeDetailCyclesDTO.getCycleTarget().setScale(2,BigDecimal.ROUND_HALF_UP));
+                        data.add(decomposeDetailCyclesDTO.getCycleTarget().setScale(2, BigDecimal.ROUND_HALF_UP));
                         //周期预测值
-                        data.add(decomposeDetailCyclesDTO.getCycleForecast().setScale(2,BigDecimal.ROUND_HALF_UP));
+                        data.add(decomposeDetailCyclesDTO.getCycleForecast().setScale(2, BigDecimal.ROUND_HALF_UP));
                         //周期实际值
-                        data.add(decomposeDetailCyclesDTO.getCycleActual().setScale(2,BigDecimal.ROUND_HALF_UP));
+                        data.add(decomposeDetailCyclesDTO.getCycleActual().setScale(2, BigDecimal.ROUND_HALF_UP));
                     }
                 }
                 list.add(data);
             }
             if (totalFlag) {
                 List<Object> data = new ArrayList<>();
-                if (StringUtils.isNotEmpty(fileNameList)){
+                if (StringUtils.isNotEmpty(fileNameList)) {
                     for (Map<String, String> stringStringMap : fileNameList) {
                         data.add("");
                     }
                 }
                 data.add("合计");
                 //分解目标
-                data.add(targetDecomposeDetailsDTO1.getAmountTarget().setScale(2,BigDecimal.ROUND_HALF_UP));
+                data.add(targetDecomposeDetailsDTO1.getAmountTarget().setScale(2, BigDecimal.ROUND_HALF_UP));
                 //年度预测值
-                data.add(targetDecomposeDetailsDTO1.getForecastYear().setScale(2,BigDecimal.ROUND_HALF_UP));
+                data.add(targetDecomposeDetailsDTO1.getForecastYear().setScale(2, BigDecimal.ROUND_HALF_UP));
                 //累计实际值
-                data.add(targetDecomposeDetailsDTO1.getActualTotal().setScale(2,BigDecimal.ROUND_HALF_UP));
+                data.add(targetDecomposeDetailsDTO1.getActualTotal().setScale(2, BigDecimal.ROUND_HALF_UP));
                 //目标完成率
-                data.add(targetDecomposeDetailsDTO1.getTargetPercentageComplete().setScale(2,BigDecimal.ROUND_HALF_UP));
+                data.add(targetDecomposeDetailsDTO1.getTargetPercentageComplete().setScale(2, BigDecimal.ROUND_HALF_UP));
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO1.getDecomposeDetailCyclesDTOS();
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                         //周期目标值
-                        data.add(decomposeDetailCyclesDTO.getCycleTarget().setScale(2,BigDecimal.ROUND_HALF_UP));
+                        data.add(decomposeDetailCyclesDTO.getCycleTarget().setScale(2, BigDecimal.ROUND_HALF_UP));
                         //周期预测值
-                        data.add(decomposeDetailCyclesDTO.getCycleForecast().setScale(2,BigDecimal.ROUND_HALF_UP));
+                        data.add(decomposeDetailCyclesDTO.getCycleForecast().setScale(2, BigDecimal.ROUND_HALF_UP));
                         //周期实际值
-                        data.add(decomposeDetailCyclesDTO.getCycleActual().setScale(2,BigDecimal.ROUND_HALF_UP));
+                        data.add(decomposeDetailCyclesDTO.getCycleActual().setScale(2, BigDecimal.ROUND_HALF_UP));
                     }
                 }
                 list.add(data);

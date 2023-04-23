@@ -297,7 +297,7 @@ public class TargetDecomposeController extends BaseController {
         EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .sheet("销售收入目标分解详情")
+                .sheet("销售收入目标分解列表")
                 .registerWriteHandler(new CellWriteHandler() {
                     @Override
                     public void afterCellDispose(CellWriteHandlerContext context) {
@@ -420,7 +420,7 @@ public class TargetDecomposeController extends BaseController {
         EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .sheet("销售回款目标分解详情")
+                .sheet("回款金额（含税）目标分解导入")
                 .registerWriteHandler(new CellWriteHandler() {
                     @Override
                     public void afterCellDispose(CellWriteHandlerContext context) {
@@ -860,12 +860,7 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高20
                         sheet.setDefaultRowHeight((short) (20 * 15));
-                        //取消自动合并
-                        if (relativeRowIndex <5){
-                            if (cell.getColumnIndex()>2){
-                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
-                            }
-                        }
+
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, true));
@@ -1091,12 +1086,7 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高20
                         sheet.setDefaultRowHeight((short) (20 * 15));
-                        //取消自动合并
-                        if (relativeRowIndex <5){
-                            if (cell.getColumnIndex()>2){
-                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
-                            }
-                        }
+
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, false));
@@ -1310,12 +1300,7 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高20
                         sheet.setDefaultRowHeight((short) (20 * 15));
-                        //取消自动合并
-                        if (relativeRowIndex <5){
-                            if (cell.getColumnIndex()>2){
-                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
-                            }
-                        }
+
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsResultDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, true));
@@ -1630,12 +1615,7 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高7
                         sheet.setDefaultRowHeight((short) (20 * 15));
-                        //取消自动合并
-                        if (relativeRowIndex == 8){
-                            if (cell.getColumnIndex()>0 && cell.getColumnIndex()<5){
-                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
-                            }
-                        }
+
 
                     }
                 })
@@ -1671,7 +1651,7 @@ public class TargetDecomposeController extends BaseController {
     @GetMapping("/export-details/info/{targetDecomposeId}")
     public void exportTargetDecomposeDetails(@PathVariable Long targetDecomposeId, HttpServletResponse response) {
         //查询详情
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectOrderTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在！ 请刷新重试！");
         }
@@ -1779,15 +1759,14 @@ public class TargetDecomposeController extends BaseController {
                             }
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            if (context.getRowIndex() > 6) {
-                                //设置边框
-                                writeCellStyle.setBorderLeft(BorderStyle.THIN);
-                                writeCellStyle.setBorderTop(BorderStyle.THIN);
-                                writeCellStyle.setBorderRight(BorderStyle.THIN);
-                                writeCellStyle.setBorderBottom(BorderStyle.THIN);
-                            }
+
                             if (context.getRowIndex() == 7) {
                                 if (context.getColumnIndex() < 7) {
+                                    //设置边框
+                                    writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                    writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                    writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                    writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -1809,6 +1788,11 @@ public class TargetDecomposeController extends BaseController {
                             }
                             if (context.getRowIndex() == 8) {
                                 if (context.getColumnIndex() < 7) {
+                                    //设置边框
+                                    writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                    writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                    writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                    writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -1825,6 +1809,20 @@ public class TargetDecomposeController extends BaseController {
                                     // cell里面去 会导致自己设置的不一样（很关键）
                                     cellData.setOriginCellStyle(xssfCellColorStyle);
                                     cell.setCellStyle(cellStyle);
+                                }
+
+                            }
+                            if (context.getRowIndex() > 10) {
+                                int num = 0;
+                                if (StringUtils.isNotEmpty(targetDecomposeDetailsExcels)) {
+                                    num = targetDecomposeDetailsExcels.get(0).getCycleTargets().size();
+                                }
+                                if (context.getColumnIndex() < (targetDecomposeDTO.getFileNameList().size() + 2 + num)){
+                                    //设置边框
+                                    writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                    writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                    writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                    writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                 }
 
                             }
@@ -1865,12 +1863,12 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高7
                         sheet.setDefaultRowHeight((short) (20 * 15));
-                        //取消自动合并
+    /*                    //取消自动合并
                         if (relativeRowIndex == 8){
                             if (cell.getColumnIndex()>0 && cell.getColumnIndex()<5){
                                 sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
                             }
-                        }
+                        }*/
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsDataList(targetDecomposeDetailsExcels, targetDecomposeDTO));
