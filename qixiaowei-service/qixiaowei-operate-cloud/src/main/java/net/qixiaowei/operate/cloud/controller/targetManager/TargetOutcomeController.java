@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -111,7 +112,8 @@ public class TargetOutcomeController extends BaseController {
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         List<Map<Integer, String>> targetSettingExcelList = read.doReadAllSync();
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeService.importTargetOutcome(targetSettingExcelList, targetOutSettingId);
-        return AjaxResult.successExcel(targetOutcomeDetailsDTOList, null, null,true,null);
+
+        return AjaxResult.successExcel(new HashMap<>(),null);
     }
 
     /**

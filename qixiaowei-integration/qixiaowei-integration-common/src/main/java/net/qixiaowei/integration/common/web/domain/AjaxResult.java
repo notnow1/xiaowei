@@ -98,26 +98,7 @@ public class AjaxResult extends HashMap<String, Object> {
      *
      * @return 成功消息
      */
-    public static <T> AjaxResult successExcel(List<T> successExcel, List<T> errorExcel, String msg,boolean excelFlag,String errorExcelId) {
-        Map<Object, Object> data = new HashMap<>();
-        if (StringUtils.isEmpty(successExcel)) {
-            data.put(SUCCESS_TOTAL, 0);
-        } else {
-            data.put(SUCCESS_TOTAL, successExcel.size());
-        }
-        if (StringUtils.isEmpty(errorExcel)) {
-            data.put(ERROR_TOTAL, 0);
-        } else {
-            data.put(ERROR_TOTAL, errorExcel.size());
-            if (StringUtils.isNotNull(errorExcelId)){
-                data.put(errorExcelId,12 );
-            }
-        }
-        if (excelFlag){
-            data.put(SUCCESS_LIST, successExcel);
-            data.put(ERROR_LIST, errorExcel);
-        }
-
+    public static <T> AjaxResult successExcel(Map<Object, Object> data, String msg) {
         return AjaxResult.success(Optional.ofNullable(msg).orElse("操作成功").length() > 1 ? msg : "操作成功", data);
     }
 

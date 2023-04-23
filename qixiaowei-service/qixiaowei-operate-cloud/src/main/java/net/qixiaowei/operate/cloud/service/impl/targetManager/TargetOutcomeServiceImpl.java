@@ -672,6 +672,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         } else {
             setOtherValue(targetOutcomeDetailsAfter, targetOutcomeDetailsDTOS);// 不存放月份
         }
+
         return targetOutcomeDetailsDTOS;
     }
 
