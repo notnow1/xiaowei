@@ -162,10 +162,14 @@ public class EmployeeController extends BaseController {
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         ExcelReaderSheetBuilder sheet = read.sheet(0);
         List<Map<Integer, String>> listMap = sheet.doReadSync();
-        if (listMap.size()>1000){
-            throw new RuntimeException("数据量过大(峰值1000) 请重新导入");
+        if (listMap.size()>10000){
+            throw new RuntimeException("数据量过大(峰值10000) 请重新导入");
         }
-
+        if (StringUtils.isNotEmpty(listMap)){
+            if (listMap.get(0).size() != 24){
+                throw new RuntimeException("导入模板被修改，请重新下载模板进行导入!");
+            }
+        }
         EmployeeExcel employeeExcel = new EmployeeExcel();
         ExcelUtils.mapToListModel(1, 0, listMap, employeeExcel, list);
         // 调用importer方法
