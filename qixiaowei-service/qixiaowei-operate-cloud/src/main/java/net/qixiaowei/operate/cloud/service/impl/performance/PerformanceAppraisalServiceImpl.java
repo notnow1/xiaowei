@@ -17,6 +17,7 @@ import net.qixiaowei.integration.common.utils.PageUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
@@ -103,6 +104,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
 
     @Autowired
     private IPerformAppraisalEvaluateService performAppraisalEvaluateService;
+
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 查询绩效考核表详情
@@ -1072,6 +1076,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isNull(performanceAppraisalObjectsDTO)) {
             throw new ServiceException("当前组织目标制定已不存在");
         }
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOList = performanceAppraisalItemsService.selectPerformanceAppraisalItemsByPerformAppraisalObjectId(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
+        if (StringUtils.isEmpty(performanceAppraisalItemsDTOList)) {
+            return new ArrayList<>();
+        }
         List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOS = performAppraisalEvaluateService.selectPerformAppraisalEvaluateByPerformAppraisalObjectId(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
         Map<Long, List<PerformAppraisalEvaluateDTO>> evaluateMap = performAppraisalEvaluateDTOS.stream().collect(Collectors.groupingBy(PerformAppraisalEvaluateDTO::getPerformAppraisalItemsId));
         Integer appraisalYear = performanceAppraisalObjectsDTO.getAppraisalYear();
@@ -1122,11 +1130,29 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         List<Long> targetDecomposeIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList());
         List<DecomposeDetailCyclesVO> decomposeDetailCyclesVOS = decomposeDetailCyclesMapper.selectTargetDecomposeCyclesByTargetDecomposeIds(targetDecomposeIds);
-        List<Long> indicatorIds = decomposeDetailCyclesVOS.stream().map(DecomposeDetailCyclesVO::getIndicatorId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS = new ArrayList<>();
+        if (StringUtils.isEmpty(evaluateMap)) {
+            for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsDTOList) {
+                Long indicatorId = performanceAppraisalItemsDTO.getIndicatorId();
+                String indicatorName = performanceAppraisalItemsDTO.getIndicatorName();
+                List<DecomposeDetailCyclesVO> decomposeDetailCyclesVOList = decomposeDetailCyclesVOS.stream()
+                        .filter(d -> d.getCycleNumber().equals(cycleNumber))
+                        .filter(d -> d.getIndicatorId().equals(indicatorId))
+                        .collect(Collectors.toList());
+                if (StringUtils.isEmpty(decomposeDetailCyclesVOList)) {
+                    break;
+                }
+                PerformanceAppraisalItemsDTO performanceAppraisalItems = new PerformanceAppraisalItemsDTO();
+                performanceAppraisalItems.setIndicatorId(indicatorId);
+                performanceAppraisalItems.setIndicatorName(indicatorName);
+                performanceAppraisalItems.setActualValue(Optional.ofNullable(decomposeDetailCyclesVOList.get(0).getCycleActual()).orElse(BigDecimal.ZERO));
+                performanceAppraisalItemsDTOS.add(performanceAppraisalItems);
+            }
+            return performanceAppraisalItemsDTOS;
+        }
         LinkedHashMap<Long, Map<Long, List<DecomposeDetailCyclesVO>>> groupDecomposeDetailCyclesVOS = decomposeDetailCyclesVOS.stream().collect(
                 Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeId, LinkedHashMap::new,
                         Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeDetailsId)));
-        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS = new ArrayList<>();
         for (Long performAppraisalItemsId : evaluateMap.keySet()) {
             List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOList = evaluateMap.get(performAppraisalItemsId);
             List<Integer> evaluateNumbers = performAppraisalEvaluateDTOList.stream().map(PerformAppraisalEvaluateDTO::getEvaluateNumber).collect(Collectors.toList());
@@ -1166,7 +1192,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     if (StringUtils.isEmpty(performAppraisalEvaluateDTOList) || evaluationType.equals(cycleType)) {
                         for (DecomposeDetailCyclesVO detailCyclesVO : detailCyclesVOS) {
                             if (Objects.equals(cycleNumber, detailCyclesVO.getCycleNumber())) {
-                                performanceAppraisalItemsDTO.setTargetValue(detailCyclesVO.getCycleActual());
+                                performanceAppraisalItemsDTO.setActualValue(detailCyclesVO.getCycleActual());
                                 isTure = true;
                                 break;
                             }
@@ -1192,7 +1218,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                             }
                         }
                         if (isTure) {
-                            performanceAppraisalItemsDTO.setTargetValue(sum);
+                            performanceAppraisalItemsDTO.setActualValue(sum);
                             performanceAppraisalItemsDTO.setEvaluateList(evaluateList);
                         }
                     }
@@ -1836,8 +1862,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             if (StringUtils.isEmpty(listMap)) {
                 throw new ServiceException("绩效考核Excel没有数据 请检查");
             }
-//        Map<Integer, String> head = listMap.get(0);
-//        judgmentSysTemplate(head);
+//          Map<Integer, String> head = listMap.get(0);
+//          judgmentSysTemplate(head);
             //2.更新绩效考核对象表
             List<EmployeeDTO> employeeListByCode = getEmployeeDTOS(listMap, 7);
             List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = new ArrayList<>();//需要更新的对象表lIst
