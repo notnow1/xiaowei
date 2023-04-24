@@ -110,10 +110,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * 查询经营结果分析报表详情
      *
      * @param targetDecomposeId 目标分解表主键
+     * @param flag
      * @return
      */
     @Override
-    public TargetDecomposeDTO selectResultTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
+    public TargetDecomposeDTO selectResultTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, boolean flag) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNull(targetDecomposeDTO)) {
@@ -128,7 +129,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
-        this.packRemote(targetDecomposeDetailsDTOList, false);
+        this.packRemote(targetDecomposeDetailsDTOList, flag);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //年度预测值
@@ -421,10 +422,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      *
      * @param targetDecomposeId 目标分解表主键
      * @param backlogId
+     * @param flag
      * @return
      */
     @Override
-    public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, Long backlogId) {
+    public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, Long backlogId, boolean flag) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNull(targetDecomposeDTO)) {
@@ -449,7 +451,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByPowerTargetDecomposeId(targetDecomposeId, SecurityUtils.getEmployeeId());
         }
 
-        this.packRemote(targetDecomposeDetailsDTOList, false);
+        this.packRemote(targetDecomposeDetailsDTOList, flag);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //年度预测值

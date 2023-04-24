@@ -114,6 +114,11 @@ public class ProductDTO extends BaseDTO {
     */
     @NotNull(message = "是否上下架不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  Integer listingFlag;
+
+    /**
+     * 上级产品上架标记：0下架;1上架
+     */
+    private  Integer parentListingFlag;
     /**
      * 状态是否生效失效
      */
