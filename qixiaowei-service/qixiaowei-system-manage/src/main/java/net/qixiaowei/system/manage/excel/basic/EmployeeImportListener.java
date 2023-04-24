@@ -72,7 +72,7 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
                     "3、户口所在地、参保地应按照XX省XX市录入\n" +
                     "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                     "5、个人职级应在岗位职级上下限范围内");
-            head0.add("工号*");
+            head0.add("错误信息");
             list.add(head0);
         }
         // 第一列
@@ -102,7 +102,12 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
         head2.add("用工关系状态*");
-        selectMap.put(2, Arrays.asList("在职", "离职"));
+        if (StringUtils.isNotBlank(errorExcelId)){
+            selectMap.put(3, Arrays.asList("在职", "离职"));
+        }else {
+            selectMap.put(2, Arrays.asList("在职", "离职"));
+        }
+
 
         // 第四列
         List<String> head3 = new ArrayList<String>();
@@ -113,7 +118,12 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
         head3.add("性别");
-        selectMap.put(3, Arrays.asList("男", "女"));
+        if (StringUtils.isNotBlank(errorExcelId)){
+            selectMap.put(4, Arrays.asList("男", "女"));
+        }else {
+            selectMap.put(3, Arrays.asList("男", "女"));
+        }
+
         // 第五列
         List<String> head4 = new ArrayList<String>();
         head4.add("说明：\n" +
@@ -132,7 +142,12 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
         head5.add("婚姻状况");
-        selectMap.put(5, Arrays.asList("未婚", "已婚"));
+        if (StringUtils.isNotBlank(errorExcelId)){
+            selectMap.put(6, Arrays.asList("未婚", "已婚"));
+        }else {
+            selectMap.put(5, Arrays.asList("未婚", "已婚"));
+        }
+
 
         // 第七列
         List<String> head6 = new ArrayList<String>();
@@ -208,7 +223,12 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
         head12.add("部门*");
-        selectMap.put(13, parentDepartmentExcelNames);
+        if (StringUtils.isNotBlank(errorExcelId)){
+            selectMap.put(14, parentDepartmentExcelNames);
+        }else {
+            selectMap.put(13, parentDepartmentExcelNames);
+        }
+
 
         // 第十四列
         List<String> head13 = new ArrayList<String>();
@@ -219,7 +239,12 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
         head13.add("岗位*");
-        selectMap.put(14, postNames);
+        if (StringUtils.isNotBlank(errorExcelId)){
+            selectMap.put(15, postNames);
+        }else {
+            selectMap.put(14, postNames);
+        }
+
         // 第十五列
         List<String> head14 = new ArrayList<String>();
         head14.add("说明：\n" +

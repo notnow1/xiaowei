@@ -5,7 +5,6 @@ import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
-import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
@@ -16,7 +15,6 @@ import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
-import com.alibaba.fastjson.JSON;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -74,6 +72,7 @@ public class EmployeeController extends BaseController {
     private IDepartmentService departmentService;
     @Autowired
     private IPostService postService;
+    @Autowired
     private RedisService redisService;
 
 
@@ -164,33 +163,36 @@ public class EmployeeController extends BaseController {
 
         List<EmployeeExcel> list = new ArrayList<>();
         List<Map<Integer, String>> listMap = new ArrayList<>();
-        //List<EmployeeExcel> list1 = EasyExcel.read(fileName, EmployeeExcel.class, new EmployeeImportListener()).sheet("人员信息配置").doReadSync();
-
         try {
             String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
             if (StringUtils.equals("人员信息配置", sheetName)) {
                 //构建读取器
                 ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
                 listMap = read.sheet("人员信息配置").doReadSync();
-                ExcelUtils.mapToListModel(1, 0, listMap, new EmployeeExcel(), list,true);
-            } else if (StringUtils.equals("人员信息错误数据配置", sheetName)) {
+                if (StringUtils.isNotEmpty(listMap)) {
+                    if (listMap.get(0).size() != 24) {
+                        throw new ServerException("导入模板被修改，请重新下载模板进行导入!");
+                    }
+                }
+                ExcelUtils.mapToListModel(1, 0, listMap, new EmployeeExcel(), list, true);
+            } else if (StringUtils.equals("人员信息错误报告", sheetName)) {
                 //构建读取器
                 ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-                listMap = read.sheet("人员信息错误数据配置").doReadSync();
-                ExcelUtils.mapToListModel(1, 0, listMap, new EmployeeExcel(), list,false);
+                listMap = read.sheet("人员信息错误报告").doReadSync();
+                if (StringUtils.isNotEmpty(listMap)) {
+                    if (listMap.get(0).size() == 25 && !listMap.get(0).get(0).equals("错误信息")) {
+                        throw new ServerException("导入模板被修改，请重新下载模板进行导入!");
+                    }
+                }
+                ExcelUtils.mapToListModel(1, 0, listMap, new EmployeeExcel(), list, false);
             } else {
                 throw new ServerException("模板sheet名称不正确！");
             }
         } catch (IOException e) {
             throw new ServerException("模板sheet名称不正确！");
         }
-        if (listMap.size()>10000){
-            throw new RuntimeException("数据量过大(峰值10000) 请重新导入");
-        }
-        if (StringUtils.isNotEmpty(listMap)){
-            if (listMap.get(0).size() != 24){
-                throw new RuntimeException("导入模板被修改，请重新下载模板进行导入!");
-            }
+        if (listMap.size() > 10000) {
+            throw new ServerException("数据量过大(峰值10000) 请重新导入");
         }
         // 调用importer方法
         try {
@@ -333,13 +335,18 @@ public class EmployeeController extends BaseController {
     @RequiresPermissions("system:manage:employee:import")
     @GetMapping("/export-template")
     public void exportEmployeeTemplate(HttpServletResponse response, @RequestParam(required = false) String errorExcelId) {
+        String sheetName = null;
         List<EmployeeExcel> employeeExcelList = new ArrayList<>();
         if (StringUtils.isNotBlank(errorExcelId)) {
+            sheetName = "人员信息错误报告";
             try {
                 employeeExcelList = redisService.getCacheObject(errorExcelId);
             } catch (Exception e) {
                 throw new ServiceException("转化错误数据异常 请联系管理员");
             }
+        } else {
+            sheetName = "人员信息配置";
+
         }
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
@@ -368,9 +375,9 @@ public class EmployeeController extends BaseController {
                 .excelType(ExcelTypeEnum.XLSX)
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 2, 65533))
                 .head(head)
-                .sheet("人员信息配置")// 设置 sheet 的名字
+                .sheet(sheetName)// 设置 sheet 的名字
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -454,20 +461,38 @@ public class EmployeeController extends BaseController {
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                             if (StringUtils.isNotBlank(errorExcelId)) {
-                                if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 5 || columnIndex == 12 || columnIndex == 14 || columnIndex == 15 || columnIndex == 16 || columnIndex == 18 || columnIndex == 24) {
-                                    //设置 自动换行
-                                    writeCellStyle.setWrapped(true);
-                                    headWriteFont.setColor(IndexedColors.RED.getIndex());
-                                    headWriteFont.setFontHeightInPoints((short) 11);
-                                    headWriteFont.setFontName("微软雅黑");
-                                    writeCellStyle.setWriteFont(headWriteFont);
-                                } else {
-                                    //设置 自动换行
-                                    writeCellStyle.setWrapped(true);
-                                    headWriteFont.setColor(IndexedColors.BLACK.getIndex());
-                                    headWriteFont.setFontHeightInPoints((short) 11);
-                                    headWriteFont.setFontName("微软雅黑");
-                                    writeCellStyle.setWriteFont(headWriteFont);
+                                if (context.getRowIndex() == 1) {
+                                    if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 5 || columnIndex == 12 || columnIndex == 14 || columnIndex == 15 || columnIndex == 16 || columnIndex == 18 || columnIndex == 24) {
+                                        //设置 自动换行
+                                        writeCellStyle.setWrapped(true);
+                                        headWriteFont.setColor(IndexedColors.RED.getIndex());
+                                        headWriteFont.setFontHeightInPoints((short) 11);
+                                        headWriteFont.setFontName("微软雅黑");
+                                        writeCellStyle.setWriteFont(headWriteFont);
+                                    } else {
+                                        //设置 自动换行
+                                        writeCellStyle.setWrapped(true);
+                                        headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                        headWriteFont.setFontHeightInPoints((short) 11);
+                                        headWriteFont.setFontName("微软雅黑");
+                                        writeCellStyle.setWriteFont(headWriteFont);
+                                    }
+                                } else if (context.getRowIndex() > 1) {
+                                    if (columnIndex == 0) {
+                                        //设置 自动换行
+                                        writeCellStyle.setWrapped(true);
+                                        headWriteFont.setColor(IndexedColors.RED.getIndex());
+                                        headWriteFont.setFontHeightInPoints((short) 11);
+                                        headWriteFont.setFontName("微软雅黑");
+                                        writeCellStyle.setWriteFont(headWriteFont);
+                                    } else {
+                                        //设置 自动换行
+                                        writeCellStyle.setWrapped(true);
+                                        headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                        headWriteFont.setFontHeightInPoints((short) 11);
+                                        headWriteFont.setFontName("微软雅黑");
+                                        writeCellStyle.setWriteFont(headWriteFont);
+                                    }
                                 }
                             } else {
                                 if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 4 || columnIndex == 11 || columnIndex == 13 || columnIndex == 14 || columnIndex == 15 || columnIndex == 17 || columnIndex == 23) {
