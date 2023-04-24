@@ -99,7 +99,7 @@ public class AjaxResult extends HashMap<String, Object> {
      * @return 成功消息
      */
     public static <T> AjaxResult successExcel(Map<Object, Object> data, String msg) {
-        return AjaxResult.success(Optional.ofNullable(msg).orElse("操作成功").length() > 1 ? msg : "操作成功", data);
+        return AjaxResult.success(Optional.ofNullable(msg).orElse("操作成功").length() > 0 ? msg : "操作成功", data);
     }
 
     /**

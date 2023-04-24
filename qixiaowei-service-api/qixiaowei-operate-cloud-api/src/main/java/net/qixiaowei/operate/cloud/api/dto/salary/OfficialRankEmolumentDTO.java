@@ -86,6 +86,10 @@ public class OfficialRankEmolumentDTO extends BaseDTO {
      */
     private BigDecimal increaseRate;
     /**
+     * uuid
+     */
+    private String uuid;
+    /**
      * 职级确定薪酬
      */
     private List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList;

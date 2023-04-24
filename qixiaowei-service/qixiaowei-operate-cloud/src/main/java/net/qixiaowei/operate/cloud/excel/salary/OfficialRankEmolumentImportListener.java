@@ -5,15 +5,13 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-
+import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
+import net.qixiaowei.operate.cloud.service.salary.IOfficialRankEmolumentService;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
-
-import net.qixiaowei.operate.cloud.service.salary.IOfficialRankEmolumentService;
 
 /**
  * OfficialRankEmolumentImportListener
@@ -53,6 +51,59 @@ public class OfficialRankEmolumentImportListener extends AnalysisEventListener<O
             data.add("");
             data.add("");
             list.add(data);
+        }
+        return list;
+    }
+
+    /**
+     * 表头
+     *
+     * @param officialRankSystemName 职级体系名称
+     * @param isError                是否导出错误
+     * @return 结果
+     */
+    public static List<List<String>> getHead(String officialRankSystemName, boolean isError) {
+        List<List<String>> list = new ArrayList<List<String>>();
+        if (isError) {
+            List<String> head0 = new ArrayList<String>();
+            head0.add("币种：人民币   单位：元");
+            head0.add("职级体系：" + officialRankSystemName);
+            head0.add("错误数据");
+            list.add(head0);
+        }
+        List<String> head1 = new ArrayList<String>();
+        head1.add("币种：人民币   单位：元");
+        head1.add("职级体系：" + officialRankSystemName);
+        head1.add("职级");
+        list.add(head1);
+        List<String> head2 = new ArrayList<String>();
+        head2.add("币种：人民币   单位：元");
+        head2.add("职级体系：" + officialRankSystemName);
+        head2.add("工资上限");
+        list.add(head2);
+        List<String> head3 = new ArrayList<String>();
+        head3.add("币种：人民币   单位：元");
+        head3.add("职级体系：" + officialRankSystemName);
+        head3.add("工资下限");
+        list.add(head3);
+        List<String> head4 = new ArrayList<String>();
+        head4.add("币种：人民币   单位：元");
+        head4.add("职级体系：" + officialRankSystemName);
+        head4.add("工资中位数");
+        list.add(head4);
+        return list;
+    }
+
+    /**
+     * 导出数据
+     *
+     * @param errorList 错误数据
+     * @return 结果
+     */
+    public static Collection<?> dataErrorList(List<List<String>> errorList) {
+        List<List<String>> list = new ArrayList<>();
+        if (StringUtils.isNotEmpty(errorList)) {
+            list = errorList;
         }
         return list;
     }

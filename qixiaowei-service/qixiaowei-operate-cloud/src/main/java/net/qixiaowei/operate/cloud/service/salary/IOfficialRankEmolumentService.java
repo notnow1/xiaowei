@@ -6,6 +6,7 @@ import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -110,7 +111,7 @@ public interface IOfficialRankEmolumentService {
      * @param officialRankEmolumentDTO 职级DTO
      * @param file                     文件
      */
-    int importOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO, MultipartFile file);
+    Map<Object, Object> importOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO, MultipartFile file);
 
     /**
      * 导出Excel

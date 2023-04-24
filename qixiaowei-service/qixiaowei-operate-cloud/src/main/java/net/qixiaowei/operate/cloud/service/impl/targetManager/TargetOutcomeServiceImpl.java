@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
@@ -600,14 +601,14 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      */
     @Override
     @Transactional
-    public List<TargetOutcomeDetailsDTO> importTargetOutcome(List<Map<Integer, String>> dataList, Long targetOutcomeId) {
+    public Map<Object, Object> importTargetOutcome(List<Map<Integer, String>> dataList, Long targetOutcomeId) {
         if (StringUtils.isNull(targetOutcomeId)) {
             throw new ServiceException("关键经营结果ID不能为空!");
         }
         TargetOutcomeDTO targetOutcomeDTO = targetOutcomeMapper.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
         Integer targetYear = targetOutcomeDTO.getTargetYear();
         if (DateUtils.getYear() < targetYear) {
-            return new ArrayList<>();
+            return ExcelUtils.parseExcelResult(null, null, true, null);
         }
         int month = DateUtils.getMonth();
         int size = dataList.get(0).size() + 1;
@@ -672,8 +673,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         } else {
             setOtherValue(targetOutcomeDetailsAfter, targetOutcomeDetailsDTOS);// 不存放月份
         }
-
-        return targetOutcomeDetailsDTOS;
+        return ExcelUtils.parseExcelResult(targetOutcomeDetailsDTOS, null, true, null);
     }
 
     /**

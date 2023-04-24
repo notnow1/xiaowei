@@ -17,6 +17,7 @@ import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -111,9 +112,8 @@ public class TargetOutcomeController extends BaseController {
         }
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         List<Map<Integer, String>> targetSettingExcelList = read.doReadAllSync();
-        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeService.importTargetOutcome(targetSettingExcelList, targetOutSettingId);
-
-        return AjaxResult.successExcel(new HashMap<>(),null);
+        Map<Object, Object> objectObjectMap = targetOutcomeService.importTargetOutcome(targetSettingExcelList, targetOutSettingId);
+        return AjaxResult.successExcel(objectObjectMap, null);
     }
 
     /**

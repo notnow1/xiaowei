@@ -127,10 +127,10 @@ public interface ITargetOutcomeService {
     /**
      * 导入Excel
      *
-     * @param dataList
-     * @param targetOutcomeId
+     * @param dataList        数据列表
+     * @param targetOutcomeId 结果ID
      */
-    List<TargetOutcomeDetailsDTO> importTargetOutcome(List<Map<Integer, String>> dataList, Long targetOutcomeId);
+    Map<Object, Object> importTargetOutcome(List<Map<Integer, String>> dataList, Long targetOutcomeId);
 
     /**
      * 导出Excel

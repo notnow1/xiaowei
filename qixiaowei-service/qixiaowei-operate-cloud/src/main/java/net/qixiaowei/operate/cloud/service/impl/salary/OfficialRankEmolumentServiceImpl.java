@@ -9,6 +9,9 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
+import net.qixiaowei.integration.common.utils.uuid.IdUtils;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.OfficialRankEmolument;
 import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
@@ -25,9 +28,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -46,6 +51,9 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
 
     @Autowired
     private RemotePostService postService;
+
+    @Autowired
+    private RedisService redisService;
 
 
     /**
@@ -423,7 +431,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
      * @param file                     文件
      */
     @Override
-    public int importOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO, MultipartFile file) {
+    public Map<Object, Object> importOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO, MultipartFile file) {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -437,68 +445,127 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         }
         OfficialRankSystemDTO officialRankSystemById = getOfficialRankSystemById(officialRankSystemId);
         try {
-            ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-            List<Map<Integer, String>> listMap = read.sheet(0).doReadSync();
-            if (StringUtils.isEmpty(listMap)) {
-                throw new ServiceException("职级确定薪酬Excel没有数据 请检查");
-            }
-            List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
-            Map<Integer, String> head = listMap.get(2);
-            if (head.size() != 4) {
-                throw new ServiceException("职级确定薪酬模板不正确 请检查");
-            }
-            listMap.remove(1);
-            listMap.remove(0);
-            for (int i = 0; i < listMap.size(); i++) {
-                Map<Integer, String> map = listMap.get(i);
-                String rankPrefixCode = officialRankSystemById.getRankPrefixCode();
-                if (!map.get(0).contains(rankPrefixCode)) {
-                    throw new ServiceException("第" + i + 4 + "行职级不正确 请检查");
+            List<Object> errorExcelList = new ArrayList<>();
+            List<Object> successExcelList = new ArrayList<>();
+            List<Map<Integer, String>> listMap = getMaps(file);
+            for (Map<Integer, String> map : listMap) {
+                StringBuilder errorNote = new StringBuilder();
+                // 判断小数点后2位的数字的正则表达式
+                if (ExcelUtils.isNumber(map.get(1)) || ExcelUtils.isNumber(map.get(2)) || ExcelUtils.isNumber(map.get(3))) {
+                    errorNote.append("字段格式不正确");
                 }
-                Integer rank = Integer.valueOf(map.get(0).replace(rankPrefixCode, ""));
-                OfficialRankEmolumentDTO emolumentDTO = new OfficialRankEmolumentDTO();
-                emolumentDTO.setOfficialRank(rank);
-                emolumentDTO.setOfficialRankSystemId(officialRankSystemById.getOfficialRankSystemId());
-                emolumentDTO.setSalaryCap(new BigDecimal(Optional.ofNullable(map.get(1)).orElse("0")));
-                emolumentDTO.setSalaryFloor(new BigDecimal(Optional.ofNullable(map.get(2)).orElse("0")));
-                emolumentDTO.setSalaryMedian(new BigDecimal(Optional.ofNullable(map.get(3)).orElse("0")));
-                officialRankEmolumentDTOList.add(emolumentDTO);
-            }
-            for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
-                if (Optional.ofNullable(emolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO)
-                        .compareTo(Optional.ofNullable(emolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO)) < 0) {
-                    throw new ServiceException("工资上限应大于等于工资下限");
+                if (errorNote.length() == 0) {
+                    BigDecimal salaryCap = new BigDecimal(Optional.ofNullable(map.get(1)).orElse("0"));
+                    BigDecimal salaryFloor = new BigDecimal(Optional.ofNullable(map.get(2)).orElse("0"));
+                    BigDecimal salaryMedian = new BigDecimal(Optional.ofNullable(map.get(3)).orElse("0"));
+                    String rankPrefixCode = officialRankSystemById.getRankPrefixCode();
+                    if (!map.get(0).contains(rankPrefixCode)) {
+                        errorNote.append("职级前缀不正确；");
+                    }
+                    if (salaryCap.compareTo(salaryFloor) < 0) {
+                        errorNote.append("工资上限应大于等于工资下限；");
+                    }
+                    if (salaryCap.compareTo(salaryMedian) < 0 || salaryFloor.compareTo(salaryMedian) > 0) {
+                        errorNote.append("工资中位值应在工资上下限范围内；");
+                    }
                 }
-                if (Optional.ofNullable(emolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO).compareTo(Optional.ofNullable(emolumentDTO.getSalaryMedian()).orElse(BigDecimal.ZERO)) < 0
-                        || Optional.ofNullable(emolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO).compareTo(Optional.ofNullable(emolumentDTO.getSalaryMedian()).orElse(BigDecimal.ZERO)) > 0) {
-                    throw new ServiceException("工资中位值应在工资上下限范围内");
+                if (errorNote.length() != 0) {
+                    List<String> errorList = new ArrayList<>();
+                    errorList.add(errorNote.substring(0, errorNote.length() - 1).toString());
+                    for (Integer integer : map.keySet()) {
+                        errorList.add(map.get(integer));
+                    }
+                    errorExcelList.add(errorList);
+                } else {
+                    successExcelList.add(map);
                 }
             }
-            List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
-            if (StringUtils.isEmpty(officialRankEmolumentDTOS)) {// 新增
-                return this.insertOfficialRankEmoluments(officialRankEmolumentDTOList);
-            }
-            if (officialRankEmolumentDTOList.size() != officialRankEmolumentDTOS.size()) {
-                throw new ServiceException("职级确定薪酬模板不正确 请检查");
-            }
-            // 更新
-            for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOS) {
-                for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
-                    if (rankEmolumentDTO.getOfficialRank().equals(emolumentDTO.getOfficialRank())) {
-                        emolumentDTO.setOfficialRankEmolumentId(rankEmolumentDTO.getOfficialRankEmolumentId());
-                        break;
+            if (StringUtils.isNotEmpty(successExcelList)) {
+                List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
+                for (int i = 0; i < successExcelList.size(); i++) {
+                    Map<Integer, String> map = listMap.get(i);
+                    String rankPrefixCode = officialRankSystemById.getRankPrefixCode();
+                    Integer rank = Integer.valueOf(map.get(0).replace(rankPrefixCode, ""));
+                    OfficialRankEmolumentDTO emolumentDTO = new OfficialRankEmolumentDTO();
+                    emolumentDTO.setOfficialRank(rank);
+                    emolumentDTO.setOfficialRankSystemId(officialRankSystemById.getOfficialRankSystemId());
+                    emolumentDTO.setSalaryCap(new BigDecimal(Optional.ofNullable(map.get(1)).orElse("0")));
+                    emolumentDTO.setSalaryFloor(new BigDecimal(Optional.ofNullable(map.get(2)).orElse("0")));
+                    emolumentDTO.setSalaryMedian(new BigDecimal(Optional.ofNullable(map.get(3)).orElse("0")));
+                    officialRankEmolumentDTOList.add(emolumentDTO);
+                }
+                List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
+                if (StringUtils.isEmpty(officialRankEmolumentDTOS)) {// 新增
+                    this.insertOfficialRankEmoluments(officialRankEmolumentDTOList);
+                } else {
+                    for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
+                        for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOS) {
+                            if (rankEmolumentDTO.getOfficialRank().equals(emolumentDTO.getOfficialRank())) {
+                                emolumentDTO.setOfficialRankEmolumentId(rankEmolumentDTO.getOfficialRankEmolumentId());
+                                break;
+                            }
+                        }
+                    }
+                    try {
+                        this.updateOfficialRankEmoluments(officialRankEmolumentDTOList);//批量更新
+                    } catch (Exception e) {
+                        throw new ServiceException("更新绩效考核表Excel失败");
                     }
                 }
             }
-            if (StringUtils.isNotEmpty(officialRankEmolumentDTOList)) {
-                this.updateOfficialRankEmoluments(officialRankEmolumentDTOList);//批量更新
+            String uuId = null;
+            String simpleUUID = IdUtils.simpleUUID();
+            if (StringUtils.isNotEmpty(errorExcelList)) {
+                uuId = "errorExeclId:" + simpleUUID;
+                redisService.setCacheObject(uuId, errorExcelList, 10L, TimeUnit.HOURS);
             }
-            return 1;
+            return ExcelUtils.parseExcelResult(successExcelList, errorExcelList, false, simpleUUID);
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
             throw new ServiceException("导入绩效考核表Excel失败");
         }
+    }
+
+    /**
+     * 获取list
+     *
+     * @param file 文件
+     * @return 结果
+     */
+    private static List<Map<Integer, String>> getMaps(MultipartFile file) throws IOException {
+        List<Map<Integer, String>> listMap;
+        ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+        listMap = read.sheet(0).doReadSync();
+        if (StringUtils.isEmpty(listMap)) {
+            throw new ServiceException("职级确定薪酬Excel没有数据 请检查");
+        }
+        String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
+        if (StringUtils.equals(sheetName, "职级确定薪酬错误信息导入")) {
+            Map<Integer, String> head = listMap.get(1);
+            if (head.size() != 5) {
+                throw new ServiceException("职级确定薪酬模板不正确 请检查");
+            }
+            List<Map<Integer, String>> objects = new ArrayList<>();
+            for (Map<Integer, String> map1 : listMap) {
+                Map<Integer, String> map2 = new TreeMap<>();
+                for (int i = 1; i < map1.size(); i++) {
+                    map2.put(i - 1, map1.get(i));
+                }
+                objects.add(map2);
+            }
+            listMap = objects;
+        } else if (StringUtils.equals(sheetName, "职级确定薪酬导入")) {
+            Map<Integer, String> head = listMap.get(1);
+            if (head.size() != 4) {
+                throw new ServiceException("职级确定薪酬模板不正确 请检查");
+            }
+        } else {
+            throw new ServiceException("模板错误");
+        }
+        listMap.remove(1);
+        listMap.remove(0);
+        return listMap;
     }
 
     /**
