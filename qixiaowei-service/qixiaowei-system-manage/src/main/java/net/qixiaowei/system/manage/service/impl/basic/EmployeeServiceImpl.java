@@ -603,9 +603,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //查询所有省市区
         List<RegionDTO> regionProvinceNameAndCityNameAndDistrictNames = regionMapper.selectRegionByProvinceNameAndCityNameAndDistrictName();
         //所有岗位
-        Post post = new Post();
-        post.setStatus(1);
-        List<PostDTO> postDTOS = postMapper.selectPostList(post);
+        List<PostDTO> postDTOS = postMapper.selectPostList(new Post());
         Department departmentExcel = new Department();
         departmentExcel.setStatus(1);
         //查询部门名称附加父级名称
