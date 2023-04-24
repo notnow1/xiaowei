@@ -1443,9 +1443,8 @@ public class TargetDecomposeController extends BaseController {
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,12,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
                 .sheet(targetDecomposeDTO.getIndicatorName() + "目标分解详情")// 设置 sheet 的名字
-
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {

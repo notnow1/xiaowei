@@ -3453,10 +3453,10 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
     public static List dataList(List<TargetDecomposeExcel> targetDecomposeExcelList) {
         List<List<Object>> list = new ArrayList<List<Object>>();
         for (TargetDecomposeExcel targetDecomposeExcel : targetDecomposeExcelList) {
-            if (StringUtils.isNull(targetDecomposeExcel.getTargetValue())){
+            if (StringUtils.isNull(targetDecomposeExcel.getTargetValue())) {
                 targetDecomposeExcel.setTargetValue(new BigDecimal("0.00"));
             }
-            if (StringUtils.isNull(targetDecomposeExcel.getDecomposeTarget())){
+            if (StringUtils.isNull(targetDecomposeExcel.getDecomposeTarget())) {
                 targetDecomposeExcel.setDecomposeTarget(new BigDecimal("0.00"));
             }
             List<Object> data = new ArrayList<Object>();
@@ -3608,33 +3608,33 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
                 //分解目标
-                if (null == targetDecomposeDetailsDTO.getAmountTarget() || targetDecomposeDetailsDTO.getAmountTarget().compareTo(new BigDecimal("0"))==0) {
+                if (null == targetDecomposeDetailsDTO.getAmountTarget() || targetDecomposeDetailsDTO.getAmountTarget().compareTo(new BigDecimal("0")) == 0) {
                     targetDecomposeDetailsDTO.setAmountTarget(new BigDecimal("0.00"));
                 }
                 //年度预测值
-                if (null == targetDecomposeDetailsDTO.getForecastYear() || targetDecomposeDetailsDTO.getForecastYear().compareTo(new BigDecimal("0"))==0) {
+                if (null == targetDecomposeDetailsDTO.getForecastYear() || targetDecomposeDetailsDTO.getForecastYear().compareTo(new BigDecimal("0")) == 0) {
                     targetDecomposeDetailsDTO.setForecastYear(new BigDecimal("0.00"));
                 }
                 //累计实际值
-                if (null == targetDecomposeDetailsDTO.getActualTotal() || targetDecomposeDetailsDTO.getActualTotal().compareTo(new BigDecimal("0"))==0) {
+                if (null == targetDecomposeDetailsDTO.getActualTotal() || targetDecomposeDetailsDTO.getActualTotal().compareTo(new BigDecimal("0")) == 0) {
                     targetDecomposeDetailsDTO.setActualTotal(new BigDecimal("0.00"));
                 }
                 //目标完成率
-                if (null == targetDecomposeDetailsDTO.getTargetPercentageComplete() || targetDecomposeDetailsDTO.getTargetPercentageComplete().compareTo(new BigDecimal("0"))==0) {
+                if (null == targetDecomposeDetailsDTO.getTargetPercentageComplete() || targetDecomposeDetailsDTO.getTargetPercentageComplete().compareTo(new BigDecimal("0")) == 0) {
                     targetDecomposeDetailsDTO.setTargetPercentageComplete(new BigDecimal("0.00"));
                 }
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                         //周期目标值
-                        if (null == decomposeDetailCyclesDTO.getCycleTarget() || decomposeDetailCyclesDTO.getCycleTarget().compareTo(new BigDecimal("0"))==0) {
+                        if (null == decomposeDetailCyclesDTO.getCycleTarget() || decomposeDetailCyclesDTO.getCycleTarget().compareTo(new BigDecimal("0")) == 0) {
                             decomposeDetailCyclesDTO.setCycleTarget(new BigDecimal("0.00"));
                         }
                         //周期预测值
-                        if (null == decomposeDetailCyclesDTO.getCycleForecast() || decomposeDetailCyclesDTO.getCycleForecast().compareTo(new BigDecimal("0"))==0) {
+                        if (null == decomposeDetailCyclesDTO.getCycleForecast() || decomposeDetailCyclesDTO.getCycleForecast().compareTo(new BigDecimal("0")) == 0) {
                             decomposeDetailCyclesDTO.setCycleForecast(new BigDecimal("0.00"));
                         }
                         //周期实际值
-                        if (null == decomposeDetailCyclesDTO.getCycleActual() || decomposeDetailCyclesDTO.getCycleActual().compareTo(new BigDecimal("0"))==0) {
+                        if (null == decomposeDetailCyclesDTO.getCycleActual() || decomposeDetailCyclesDTO.getCycleActual().compareTo(new BigDecimal("0")) == 0) {
                             decomposeDetailCyclesDTO.setCycleActual(new BigDecimal("0.00"));
                         }
                     }
@@ -3704,14 +3704,17 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 }
                 //滚动预测负责人
                 data.add(targetDecomposeDetailsDTO.getPrincipalEmployeeName());
-                //分解目标
-                data.add(targetDecomposeDetailsDTO.getAmountTarget().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
-                //年度预测值
-                data.add(targetDecomposeDetailsDTO.getForecastYear().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
-                //累计实际值
-                data.add(targetDecomposeDetailsDTO.getActualTotal().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
-                //目标完成率
-                data.add(targetDecomposeDetailsDTO.getTargetPercentageComplete().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                if (totalFlag) {
+                    //分解目标
+                    data.add(targetDecomposeDetailsDTO.getAmountTarget().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                    //年度预测值
+                    data.add(targetDecomposeDetailsDTO.getForecastYear().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                    //累计实际值
+                    data.add(targetDecomposeDetailsDTO.getActualTotal().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                    //目标完成率
+                    data.add(targetDecomposeDetailsDTO.getTargetPercentageComplete().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+                }
+
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                         //周期目标值
