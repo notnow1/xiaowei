@@ -6,6 +6,7 @@ import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
+import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
@@ -164,6 +165,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
+                .excelType(ExcelTypeEnum.XLSX)
                 .inMemory(true)
                 .useDefaultStyle(false)
                 .sheet("销售订单目标分解详情")
@@ -286,6 +288,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
+                .excelType(ExcelTypeEnum.XLSX)
                 .inMemory(true)
                 .useDefaultStyle(false)
                 .sheet("销售收入目标分解列表")
@@ -409,6 +412,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
+                        .excelType(ExcelTypeEnum.XLSX)
                 .inMemory(true)
                 .useDefaultStyle(false)
                 .sheet("回款金额（含税）目标分解导入")
@@ -531,6 +535,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
@@ -724,6 +729,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
@@ -1164,6 +1170,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
@@ -1432,6 +1439,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
@@ -1667,6 +1675,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
