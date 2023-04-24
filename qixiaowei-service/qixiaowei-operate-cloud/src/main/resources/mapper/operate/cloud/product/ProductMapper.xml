@@ -306,7 +306,7 @@
         </if>
         <!-- 数据范围过滤 -->
         ${product.params.dataScope}
-        ORDER BY p.create_time DESC
+        ORDER BY p.listing_flag DESC,p.create_time DESC
     </select>
 
     <select id="getProductCodes" resultType="java.lang.String">
