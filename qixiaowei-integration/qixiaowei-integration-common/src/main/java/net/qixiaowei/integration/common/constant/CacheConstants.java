@@ -83,4 +83,9 @@ public interface CacheConstants {
      * 用户 redis key
      */
     String USER_KEY = "user:";
+
+    /**
+     * excel 导入错误 uuid
+     */
+    String ERROR_EXCEL_ID = "errorExcelId:";
 }
