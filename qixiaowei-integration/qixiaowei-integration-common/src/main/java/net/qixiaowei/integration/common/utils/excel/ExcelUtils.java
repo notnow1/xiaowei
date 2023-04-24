@@ -308,7 +308,12 @@ public class ExcelUtils {
             if (method == null) {
                 return t1;
             }
-            method.invoke(t1, list.get(k));
+            if (flag){
+                method.invoke(t1, list.get(k-1));
+            }else {
+                method.invoke(t1, list.get(k));
+            }
+
         }
         return t1;
     }

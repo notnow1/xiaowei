@@ -602,10 +602,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<RegionDTO> regionProvinceNameAndCityNames = regionMapper.selectRegionByProvinceNameAndCityName();
         //查询所有省市区
         List<RegionDTO> regionProvinceNameAndCityNameAndDistrictNames = regionMapper.selectRegionByProvinceNameAndCityNameAndDistrictName();
-        //所有岗位
-        Post post = new Post();
-        post.setStatus(1);
-        List<PostDTO> postDTOS = postMapper.selectPostList(post);
+        List<PostDTO> postDTOS = postMapper.selectPostList( new Post());
         Department departmentExcel = new Department();
         departmentExcel.setStatus(1);
         //查询部门名称附加父级名称
@@ -704,7 +701,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
         }
         for (EmployeeExcel employeeExcel : list) {
-            distinctEmployeeExcelDeleteList.removeAll(distinctEmployeeExcelList);
+            for (EmployeeExcel excel : distinctEmployeeExcelList) {
+                distinctEmployeeExcelDeleteList.remove(excel);
+            }
             if (StringUtils.isNotEmpty(distinctEmployeeExcelDeleteList)) {
                 employeeError.append(employeeExcel.getEmployeeName() + "数据重复");
                 errorExcelList.add(employeeExcel);

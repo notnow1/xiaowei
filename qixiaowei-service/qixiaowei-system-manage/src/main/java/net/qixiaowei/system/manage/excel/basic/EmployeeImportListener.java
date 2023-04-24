@@ -497,7 +497,7 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
     }
     @Override
     public void invoke(EmployeeExcel excel, AnalysisContext analysisContext) {
-
+        list.add(excel);
     }
 
     @SneakyThrows
