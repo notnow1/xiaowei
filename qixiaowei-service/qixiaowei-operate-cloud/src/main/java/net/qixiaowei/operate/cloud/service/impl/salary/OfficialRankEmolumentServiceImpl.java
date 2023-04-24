@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.service.impl.salary;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -446,13 +447,19 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         OfficialRankSystemDTO officialRankSystemById = getOfficialRankSystemById(officialRankSystemId);
         try {
             List<Object> errorExcelList = new ArrayList<>();
-            List<Object> successExcelList = new ArrayList<>();
+            List<Map<Integer, String>> successExcels = new ArrayList<>();
             List<Map<Integer, String>> listMap = getMaps(file);
             for (Map<Integer, String> map : listMap) {
                 StringBuilder errorNote = new StringBuilder();
                 // 判断小数点后2位的数字的正则表达式
-                if (ExcelUtils.isNumber(map.get(1)) || ExcelUtils.isNumber(map.get(2)) || ExcelUtils.isNumber(map.get(3))) {
-                    errorNote.append("字段格式不正确");
+                if (!ExcelUtils.isNumber(map.get(1))) {
+                    errorNote.append("工资上限格式不正确；");
+                }
+                if (!ExcelUtils.isNumber(map.get(2))) {
+                    errorNote.append("工资下限格式不正确；");
+                }
+                if (!ExcelUtils.isNumber(map.get(3))) {
+                    errorNote.append("工资中位数格式不正确；");
                 }
                 if (errorNote.length() == 0) {
                     BigDecimal salaryCap = new BigDecimal(Optional.ofNullable(map.get(1)).orElse("0"));
@@ -471,19 +478,17 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                 }
                 if (errorNote.length() != 0) {
                     List<String> errorList = new ArrayList<>();
-                    errorList.add(errorNote.substring(0, errorNote.length() - 1).toString());
-                    for (Integer integer : map.keySet()) {
-                        errorList.add(map.get(integer));
-                    }
+                    errorList.add(errorNote.substring(0, errorNote.length() - 1));
+                    errorList.addAll(map.values());
                     errorExcelList.add(errorList);
                 } else {
-                    successExcelList.add(map);
+                    successExcels.add(map);
                 }
             }
-            if (StringUtils.isNotEmpty(successExcelList)) {
+            List<Object> successExcelList = new ArrayList<>();
+            if (StringUtils.isNotEmpty(successExcels)) {
                 List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
-                for (int i = 0; i < successExcelList.size(); i++) {
-                    Map<Integer, String> map = listMap.get(i);
+                for (Map<Integer, String> map : successExcels) {
                     String rankPrefixCode = officialRankSystemById.getRankPrefixCode();
                     Integer rank = Integer.valueOf(map.get(0).replace(rankPrefixCode, ""));
                     OfficialRankEmolumentDTO emolumentDTO = new OfficialRankEmolumentDTO();
@@ -493,6 +498,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                     emolumentDTO.setSalaryFloor(new BigDecimal(Optional.ofNullable(map.get(2)).orElse("0")));
                     emolumentDTO.setSalaryMedian(new BigDecimal(Optional.ofNullable(map.get(3)).orElse("0")));
                     officialRankEmolumentDTOList.add(emolumentDTO);
+                    successExcelList.add(map);
                 }
                 List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
                 if (StringUtils.isEmpty(officialRankEmolumentDTOS)) {// 新增
@@ -513,11 +519,11 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                     }
                 }
             }
-            String uuId = null;
+            String uuId;
             String simpleUUID = IdUtils.simpleUUID();
             if (StringUtils.isNotEmpty(errorExcelList)) {
-                uuId = "errorExeclId:" + simpleUUID;
-                redisService.setCacheObject(uuId, errorExcelList, 10L, TimeUnit.HOURS);
+                uuId = CacheConstants.ERROR_EXCEL_KEY + simpleUUID;
+                redisService.setCacheObject(uuId, errorExcelList, 12L, TimeUnit.HOURS);
             }
             return ExcelUtils.parseExcelResult(successExcelList, errorExcelList, false, simpleUUID);
         } catch (ServiceException e) {
@@ -541,7 +547,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             throw new ServiceException("职级确定薪酬Excel没有数据 请检查");
         }
         String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
-        if (StringUtils.equals(sheetName, "职级确定薪酬错误信息导入")) {
+        if (StringUtils.equals(sheetName, "职级确定薪酬导入错误报告")) {
             Map<Integer, String> head = listMap.get(1);
             if (head.size() != 5) {
                 throw new ServiceException("职级确定薪酬模板不正确 请检查");

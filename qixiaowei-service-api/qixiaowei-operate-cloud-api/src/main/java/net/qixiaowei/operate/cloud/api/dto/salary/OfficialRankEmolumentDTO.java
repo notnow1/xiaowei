@@ -88,7 +88,7 @@ public class OfficialRankEmolumentDTO extends BaseDTO {
     /**
      * uuid
      */
-    private String uuid;
+    private String errorExcelId;
     /**
      * 职级确定薪酬
      */

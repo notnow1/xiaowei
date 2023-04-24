@@ -294,32 +294,22 @@ public class SalaryPayController extends BaseController {
                             if (context.getRowIndex() < 1) {
                                 headWriteFont.setColor(IndexedColors.BLACK.getIndex());
                                 headWriteFont.setFontHeightInPoints((short) 11);
-                                //加粗
                                 headWriteFont.setBold(true);
                                 headWriteFont.setFontName("微软雅黑");
                                 writeCellStyle.setWriteFont(headWriteFont);
                                 writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                                //设置 自动换行
                                 writeCellStyle.setWrapped(true);
-                                //设置边框
                                 writeCellStyle.setBorderLeft(BorderStyle.THIN);
                                 writeCellStyle.setBorderTop(BorderStyle.THIN);
                                 writeCellStyle.setBorderRight(BorderStyle.THIN);
                                 writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                 // 拿到poi的workbook
                                 Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
-                                // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
-                                // 不同单元格尽量传同一个 cellStyle
-                                //设置rgb颜色
                                 byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
                                 CellStyle cellStyle = workbook.createCellStyle();
                                 XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
                                 xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
-                                // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
                                 cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                                // 由于这里没有指定data format 最后展示的数据 格式可能会不太正确
-                                // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
-                                // cell里面去 会导致自己设置的不一样（很关键）
                                 cellData.setWriteCellStyle(writeCellStyle);
                                 cellData.setOriginCellStyle(xssfCellColorStyle);
                                 cell.setCellStyle(cellStyle);
@@ -329,14 +319,11 @@ public class SalaryPayController extends BaseController {
                                 } else {
                                     writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                                 }
-                                //设置 自动换行
-                                writeCellStyle.setWrapped(true);
                                 headWriteFont.setColor(IndexedColors.BLACK.getIndex());
                                 headWriteFont.setFontHeightInPoints((short) 11);
                                 headWriteFont.setFontName("微软雅黑");
                                 writeCellStyle.setWriteFont(headWriteFont);
                             }
-                            //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                         }
                     })

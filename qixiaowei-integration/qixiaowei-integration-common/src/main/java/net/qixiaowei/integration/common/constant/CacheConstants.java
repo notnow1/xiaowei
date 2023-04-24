@@ -30,6 +30,11 @@ public interface CacheConstants {
     long PASSWORD_LOCK_TIME = 600;
 
     /**
+     * excel错误报告过期时间
+     */
+    long ERROR_EXCEL_LOCK_TIME = 12L;
+
+    /**
      * 权限缓存前缀
      */
     String LOGIN_TOKEN_KEY = "login_tokens:";
@@ -87,5 +92,5 @@ public interface CacheConstants {
     /**
      * excel 导入错误 uuid
      */
-    String ERROR_EXCEL_ID = "errorExcelId:";
+    String ERROR_EXCEL_KEY = "errorExcelId:";
 }

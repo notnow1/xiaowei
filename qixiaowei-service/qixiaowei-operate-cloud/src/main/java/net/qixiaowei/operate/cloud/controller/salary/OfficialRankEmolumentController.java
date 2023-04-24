@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.controller.salary;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
@@ -8,7 +9,10 @@ import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
+import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
@@ -108,19 +112,19 @@ public class OfficialRankEmolumentController extends BaseController {
     @GetMapping("export-error")
     public void exportErrorList(OfficialRankEmolumentDTO officialRankEmolumentDTO, HttpServletResponse response) {
         try {
-            String uuid = officialRankEmolumentDTO.getUuid();
+            String errorExcelId = officialRankEmolumentDTO.getErrorExcelId();
             OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentService.selectOfficialRankEmolumentByOfficialRankEmolumentId(officialRankEmolumentDTO);
             List<List<String>> head = OfficialRankEmolumentImportListener.getHead(emolumentDTO.getOfficialRankSystemName(), true);
-            List<List<String>> errorList = redisService.getCacheObject(uuid);
+            List<List<String>> errorList = redisService.getCacheObject(CacheConstants.ERROR_EXCEL_KEY + errorExcelId);
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding(CharsetKit.UTF_8);
-            String fileName = URLEncoder.encode("职级确定薪酬错误信息导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+            String fileName = URLEncoder.encode("职级确定薪酬导入错误报告" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
             EasyExcel.write(response.getOutputStream())
                     .head(head)
                     .inMemory(true)
                     .useDefaultStyle(false)
-                    .sheet("职级确定薪酬错误信息导入")
+                    .sheet("职级确定薪酬导入错误报告")
                     .registerWriteHandler(new SheetWriteHandler() {
                         @Override
                         public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -151,46 +155,56 @@ public class OfficialRankEmolumentController extends BaseController {
                             writeCellStyle.setBorderRight(BorderStyle.THIN);
                             writeCellStyle.setBorderBottom(BorderStyle.THIN);
                             cellData.setWriteCellStyle(writeCellStyle);
+                            // 设置字体
+                            WriteFont headWriteFont = new WriteFont();
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            headWriteFont.setFontName("微软雅黑");
                             if (context.getRowIndex() < 3) {
-                                // 拿到poi的workbook
+                                headWriteFont.setBold(true);
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                                 Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
-                                // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
-                                // 不同单元格尽量传同一个 cellStyle
-                                //设置rgb颜色
                                 byte[] rgb = new byte[]{(byte) 221, (byte) 235, (byte) 247};
                                 CellStyle cellStyle = workbook.createCellStyle();
                                 XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
                                 xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
-                                // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
                                 cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                                // 由于这里没有指定data format 最后展示的数据 格式可能会不太正确
-                                // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
-                                // cell里面去 会导致自己设置的不一样（很关键）
                                 cellData.setOriginCellStyle(xssfCellColorStyle);
                                 cell.setCellStyle(cellStyle);
                             } else if (context.getRowIndex() > 2 && context.getColumnIndex() < 2 && context.getColumnIndex() > 0) {
-                                // 拿到poi的workbook
                                 Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
-                                // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
-                                // 不同单元格尽量传同一个 cellStyle
-                                //设置rgb颜色
                                 byte[] rgb = new byte[]{(byte) 217, (byte) 217, (byte) 217};
                                 CellStyle cellStyle = workbook.createCellStyle();
                                 XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
                                 xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
-                                // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
                                 cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                                // 由于这里没有指定data format 最后展示的数据 格式可能会不太正确
-                                // 这里要把 WriteCellData的样式清空， 不然后面还有一个拦截器 FillStyleCellWriteHandler 默认会将 WriteCellStyle 设置到
-                                // cell里面去 会导致自己设置的不一样（很关键）
                                 cellData.setOriginCellStyle(xssfCellColorStyle);
                                 cell.setCellStyle(cellStyle);
                             } else if (context.getRowIndex() > 2 && context.getColumnIndex() > 1) {
                                 writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                             }
+                            if (context.getRowIndex() > 1 && context.getColumnIndex() == 0) {
+                                headWriteFont.setColor(IndexedColors.RED.getIndex());
+                            }
+                            writeCellStyle.setWriteFont(headWriteFont);
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                         }
-                    }).doWrite(OfficialRankEmolumentImportListener.dataErrorList(errorList));
+                    })
+                    .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                        @Override
+                        protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            int columnIndex = cell.getColumnIndex();
+                            // 列宽16
+                            sheet.setColumnWidth(columnIndex, (270 * 16));
+//                            if (columnIndex == 0) {
+//                                sheet.setColumnWidth(columnIndex, (270 * 22));
+//                            }
+                            // 行高7
+                            sheet.setDefaultRowHeight((short) (20 * 16));
+                        }
+                    })
+                    .doWrite(OfficialRankEmolumentImportListener.dataErrorList(errorList));
         } catch (IOException e) {
             throw new ServiceException("导出失败");
         }
@@ -246,7 +260,12 @@ public class OfficialRankEmolumentController extends BaseController {
                             writeCellStyle.setBorderRight(BorderStyle.THIN);
                             writeCellStyle.setBorderBottom(BorderStyle.THIN);
                             cellData.setWriteCellStyle(writeCellStyle);
+                            WriteFont headWriteFont = new WriteFont();
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            headWriteFont.setFontName("微软雅黑");
                             if (context.getRowIndex() < 3) {
+                                headWriteFont.setBold(true);
                                 // 拿到poi的workbook
                                 Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                 // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -283,9 +302,22 @@ public class OfficialRankEmolumentController extends BaseController {
                             } else if (context.getRowIndex() > 2 && context.getColumnIndex() > 0) {
                                 writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                             }
+                            writeCellStyle.setWriteFont(headWriteFont);
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                         }
-                    }).doWrite(OfficialRankEmolumentImportListener.dataList(officialRankEmolumentDTOList));
+                    })
+                    .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                        @Override
+                        protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            int columnIndex = cell.getColumnIndex();
+                            // 列宽16
+                            sheet.setColumnWidth(columnIndex, (270 * 16));
+                            // 行高7
+                            sheet.setDefaultRowHeight((short) (20 * 16));
+                        }
+                    })
+                    .doWrite(OfficialRankEmolumentImportListener.dataList(officialRankEmolumentDTOList));
         } catch (IOException e) {
             throw new ServiceException("导出失败");
         }

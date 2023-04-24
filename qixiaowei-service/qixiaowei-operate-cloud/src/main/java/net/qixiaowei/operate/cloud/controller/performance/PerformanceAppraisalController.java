@@ -239,11 +239,11 @@ public class PerformanceAppraisalController extends BaseController {
     public AjaxResult importOrgPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file) {
 //        Integer importType = performanceAppraisalDTO.getImportType();
 //        if (importType.equals(1)) {
-        performanceAppraisalService.importSysOrgPerformanceAppraisal(performanceAppraisalDTO, file);
+        Map<Object, Object> objectObjectMap = performanceAppraisalService.importSysOrgPerformanceAppraisal(performanceAppraisalDTO, file);
 //        } else {
 //            performanceAppraisalService.importCustomOrgPerformanceAppraisal(performanceAppraisalDTO, file);
 //        }
-        return AjaxResult.success("导入成功");
+        return AjaxResult.successExcel(objectObjectMap, "导入成功");
     }
 
     /**
@@ -398,7 +398,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("组织绩效归档导入")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -652,7 +652,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("个人绩效归档导入")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -778,7 +778,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("个人绩效归档导出")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
