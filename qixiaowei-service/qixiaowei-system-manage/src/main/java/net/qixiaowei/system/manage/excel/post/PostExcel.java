@@ -45,18 +45,17 @@ public class PostExcel{
      @ExcelProperty("职级体系ID")
      private  String  officialRankSystemName;
      /**
+      * 岗位职级上限
+      */
+     @ExcelIgnore
+     @ExcelProperty("岗位职级上限")
+     private  String  postRankUpperName;
+     /**
      * 岗位职级下限
      */
      @ExcelIgnore
      @ExcelProperty("岗位职级下限")
      private  String  postRankLowerName;
-
-     /**
-     * 岗位职级上限
-     */
-     @ExcelIgnore
-     @ExcelProperty("岗位职级上限")
-     private  String  postRankUpperName;
 
      /**
      * 状态:失效;生效

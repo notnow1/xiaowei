@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
@@ -39,7 +40,7 @@ public class StrategyIntentController extends BaseController {
     /**
      * 查询战略意图表详情
      */
-    @RequiresPermissions("strategy:cloud:strategyIntent:info")
+    @RequiresPermissions(value = {"strategy:cloud:strategyIntent:info","strategy:cloud:strategyIntent:edit"},logical = Logical.OR)
     @GetMapping("/info/{strategyIntentId}")
     public AjaxResult info(@PathVariable Long strategyIntentId) {
         StrategyIntentDTO strategyIntentDTO = strategyIntentService.selectStrategyIntentByStrategyIntentId(strategyIntentId);

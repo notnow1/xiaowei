@@ -93,7 +93,10 @@ public class BonusPayApplicationDTO extends BaseDTO {
      * 预算部门ID集合
      */
     private List<Long> budgetDepartmentIds;
-
+    /**
+     * 预算部门ID集合(数据库返回为字符串需转化)
+     */
+    private String budgetDepartmentIdData;
     /**
      * 预算部门名称
      */

@@ -186,7 +186,7 @@
             AND
             <foreach item="item"
                      collection="tenant.params.tenantCodeNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 t.tenant_code NOT LIKE CONCAT('%', #{item}, '%')
             </foreach>
         </if>
@@ -219,7 +219,7 @@
             AND
             <foreach item="item"
                      collection="tenant.params.tenantNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 t.tenant_name NOT LIKE CONCAT('%', #{item}, '%')
             </foreach>
         </if>
@@ -254,7 +254,7 @@
             AND (
             <foreach item="item"
                      collection="tenant.params.tenantIndustryNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 id.industry_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
             OR id.industry_name IS NULL
@@ -312,7 +312,7 @@
             AND
             <foreach item="item"
                      collection="tenant.params.supportStaffNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 e.employee_name NOT LIKE CONCAT('%', #{item}, '%')
             </foreach>
         </if>

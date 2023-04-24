@@ -170,6 +170,7 @@
         left join nation n
         on ei.nation = n.nation_id
         and n.delete_flag =0
+
         <if test="employee.residentCityName != null and employee.residentCityName != ''">
             left join region r
             on r.district_code=SUBSTRING_INDEX(ei.resident_city,',',-1)
@@ -471,6 +472,42 @@
         <if test="employee.params.employmentDateEnd != null and employee.params.employmentDateEnd != ''"><!-- 结束时间检索 -->
             AND e.employment_date &lt;= #{employee.params.employmentDateEnd}
         </if>
+        <!-- 离职日期过滤  -->
+        <if test="employee.params.departureDateEqual != null and employee.params.departureDateEqual.size() > 0">
+            AND e.departure_date IN
+            <foreach item="item"
+                     collection="employee.params.departureDateEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.departureDateNotEqual != null and employee.params.departureDateNotEqual.size() > 0">
+            AND (e.departure_date NOT IN
+            <foreach item="item"
+                     collection="employee.params.departureDateNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            or e.departure_date is null)
+        </if>
+        <if test="employee.params.departureDateBefore != null and employee.params.departureDateBefore != ''">
+            AND e.departure_date &lt; #{employee.params.departureDateBefore}
+        </if>
+        <if test="employee.params.departureDateNotBefore != null and employee.params.departureDateNotBefore != ''"><!-- 开始时间检索 -->
+            AND e.departure_date &gt;= #{employee.params.departureDateNotBefore}
+        </if>
+        <if test="employee.params.departureDateAfter != null and employee.params.departureDateAfter != ''"><!-- 开始时间检索 -->
+            AND e.departure_date &gt; #{employee.params.departureDateAfter}
+        </if>
+        <if test="employee.params.departureDateNotAfter != null and employee.params.departureDateNotAfter != ''"><!-- 结束时间检索 -->
+            AND e.departure_date &lt;= #{employee.params.departureDateNotAfter}
+        </if>
+        <if test="employee.params.departureDateStart != null and employee.params.departureDateStart != ''"><!-- 开始时间检索 -->
+            AND e.departure_date &gt;= #{employee.params.departureDateStart}
+        </if>
+        <if test="employee.params.departureDateEnd != null and employee.params.departureDateEnd != ''"><!-- 结束时间检索 -->
+            AND e.departure_date &lt;= #{employee.params.departureDateEnd}
+        </if>
         <!-- 员工状态过滤  -->
         <if test="employee.params.statusEqual != null and employee.params.statusEqual.size() > 0">
             AND e.status IN
@@ -491,60 +528,79 @@
             )
         </if>
         <!-- 员工部门过滤  -->
-        <if test="employee.params.employeeDepartmentNameEqual != null and employee.params.employeeDepartmentNameEqual.size() > 0">
-            AND d.department_name IN
+        <if test="employee.params.employeeDepartmentIdEqual != null and employee.params.employeeDepartmentIdEqual.size() > 0">
+            AND d.department_id IN
             <foreach item="item"
-                     collection="employee.params.employeeDepartmentNameEqual"
+                     collection="employee.params.employeeDepartmentIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="employee.params.employeeDepartmentNameNotEqual != null and employee.params.employeeDepartmentNameNotEqual.size() > 0">
-            AND (d.department_name NOT IN
+        <if test="employee.params.employeeDepartmentIdNotEqual != null and employee.params.employeeDepartmentIdNotEqual.size() > 0">
+            AND (d.department_id NOT IN
             <foreach item="item"
-                     collection="employee.params.employeeDepartmentNameNotEqual"
+                     collection="employee.params.employeeDepartmentIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR d.department_name IS NULL
+            OR d.department_id IS NULL
+            )
+        </if>
+        <!-- 员工一级部门过滤  -->
+        <if test="employee.params.topLevelDepartmentIdsEqual != null and employee.params.topLevelDepartmentIdsEqual.size() > 0">
+            AND d.department_id IN
+            <foreach item="item"
+                     collection="employee.params.topLevelDepartmentIdsEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.topLevelDepartmentIdsNotEqual != null and employee.params.topLevelDepartmentIdsNotEqual.size() > 0">
+            AND (d.department_id NOT IN
+            <foreach item="item"
+                     collection="employee.params.topLevelDepartmentIdsNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR d.department_id IS NULL
             )
         </if>
         <!-- 员工岗位过滤  -->
-        <if test="employee.params.employeePostNameEqual != null and employee.params.employeePostNameEqual.size() > 0">
-            AND p.post_name IN
+        <if test="employee.params.employeePostIdEqual != null and employee.params.employeePostIdEqual.size() > 0">
+            AND p.post_id IN
             <foreach item="item"
-                     collection="employee.params.employeePostNameEqual"
+                     collection="employee.params.employeePostIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="employee.params.employeePostNameNotEqual != null and employee.params.employeePostNameNotEqual.size() > 0">
-            AND (p.post_name NOT IN
+        <if test="employee.params.employeePostIdNotEqual != null and employee.params.employeePostIdNotEqual.size() > 0">
+            AND (p.post_id NOT IN
             <foreach item="item"
-                     collection="employee.params.employeePostNameNotEqual"
+                     collection="employee.params.employeePostIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR p.post_name IS NULL
+            OR p.post_id IS NULL
             )
         </if>
         <!-- 员工职级体系名称过滤  -->
-        <if test="employee.params.officialRankSystemNameEqual != null and employee.params.officialRankSystemNameEqual.size() > 0">
-            AND ors.official_rank_system_name IN
+        <if test="employee.params.officialRankSystemIdEqual != null and employee.params.officialRankSystemIdEqual.size() > 0">
+            AND ors.official_rank_system_id IN
             <foreach item="item"
-                     collection="employee.params.officialRankSystemNameEqual"
+                     collection="employee.params.officialRankSystemIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="employee.params.officialRankSystemNameNotEqual != null and employee.params.officialRankSystemNameNotEqual.size() > 0">
-            AND (ors.official_rank_system_name NOT IN
+        <if test="employee.params.officialRankSystemIdNotEqual != null and employee.params.officialRankSystemIdNotEqual.size() > 0">
+            AND (ors.official_rank_system_id NOT IN
             <foreach item="item"
-                     collection="employee.params.officialRankSystemNameNotEqual"
+                     collection="employee.params.officialRankSystemIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ors.official_rank_system_name IS NULL
+            OR ors.official_rank_system_id IS NULL
             )
         </if>
         <!-- 员工岗位职级过滤  -->
@@ -740,10 +796,10 @@
             )
         </if>
         <if test="employee.params.employeeEmailNull != null">
-            AND (e.employee_email = '' or e.employee_email is null)
+            AND e.employee_email = ''
         </if>
         <if test="employee.params.employeeEmailNotNull != null">
-            AND (e.employee_email != '' or e.employee_email is not null)
+            AND e.employee_email != ''
         </if>
         <!-- 员工微信过滤  -->
         <if test="employee.params.wechatCodeEqual != null and employee.params.wechatCodeEqual.size() > 0">
@@ -783,10 +839,10 @@
             )
         </if>
         <if test="employee.params.wechatCodeNull != null">
-            AND (ei.wechat_code = '' or ei.wechat_code is null)
+            AND ei.wechat_code = ''
         </if>
         <if test="employee.params.wechatCodeNotNull != null">
-            AND (ei.wechat_code != '' or ei.wechat_code is not null)
+            AND ei.wechat_code != ''
         </if>
 
         <if test="employee.residentCityName != null and employee.residentCityName != ''">
@@ -1583,10 +1639,17 @@
         tenant_id
         FROM employee
         where delete_flag= 0
-        and employment_status=1
-        <if test="employeeDepartmentId != null">
-            and employee_department_id=#{employeeDepartmentId}
+        <if test="employee.status != null">
+            and status = #{employee.status}
         </if>
+        <if test="employee.employmentStatus != null">
+            and employment_status=#{employee.employmentStatus}
+        </if>
+
+        <if test="employee.employeeDepartmentId != null">
+            and employee_department_id=#{employee.employeeDepartmentId}
+        </if>
+        order by create_time desc
     </select>
     <!--    查询员工表列表(下拉框)-->
     <select id="selectDropEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
@@ -1991,6 +2054,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2058,6 +2122,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2125,6 +2190,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2189,6 +2255,7 @@
                             when ors.rank_prefix_code is not null
                                 then concat(ors.rank_prefix_code, p.post_rank) end     as
                                                                                           post_rank_name,
+                        u.user_id,
                         e.employee_id,
                         e.employee_code,
                         e.employee_name,
@@ -2236,6 +2303,105 @@
             and ors.delete_flag = 0
         where e.delete_flag = 0
           and e.status = 1
+    </select>
+    <select id="selectByNames" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag,
+        e.create_by,
+        e.create_time,
+        e.update_by,
+        e.update_time
+        FROM employee e
+        left join post p
+        on e.employee_post_id = p.post_id
+        and p.delete_flag = 0
+        left JOIN official_rank_system ors
+        on ors.official_rank_system_id = p.official_rank_system_id
+        AND ors.delete_flag =0
+        WHERE e.delete_flag =0
+        <if test="employeeNames.size() > 0">
+            and e.employee_name in
+            <foreach item="item"
+                     collection="employeeNames"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+<!--    根据手机号查询员工表-->
+    <select id="selectEmployeeByEmployeeMobile"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT employee_id,
+               employee_code,
+               employee_name,
+               employee_gender,
+               identity_type,
+               identity_card,
+               employee_birthday,
+               employee_mobile,
+               employee_email,
+               employee_department_id,
+               employee_post_id,
+               employee_rank,
+               employee_basic_wage,
+               employment_date,
+               departure_date,
+               employment_status,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM employee
+        WHERE  employee_mobile = #{employeeMobile}
+          and delete_flag = 0
+    </select>
+<!--    根据邮箱号查询员工表-->
+    <select id="selectEmployeeByEmployeeEmail"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT employee_id,
+               employee_code,
+               employee_name,
+               employee_gender,
+               identity_type,
+               identity_card,
+               employee_birthday,
+               employee_mobile,
+               employee_email,
+               employee_department_id,
+               employee_post_id,
+               employee_rank,
+               employee_basic_wage,
+               employment_date,
+               departure_date,
+               employment_status,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM employee
+        WHERE  employee_email = #{employeeEmail}
+          and delete_flag = 0
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
@@ -2297,6 +2463,16 @@
         <if test="employee.departureDate != null">
             departure_date=#{employee.departureDate},
         </if>
+        <!--        <if test="employee.employmentStatus != null">
+        <if test="employee.employmentStatus == 1">
+            departure_date=null,
+        </if>
+        <if test="employee.employmentStatus == 0">
+            <if test="employee.departureDate != null">
+                departure_date=#{employee.departureDate},
+            </if>
+        </if>
+        </if>-->
         <if test="employee.employmentStatus != null">
             employment_status=#{employee.employmentStatus},
         </if>

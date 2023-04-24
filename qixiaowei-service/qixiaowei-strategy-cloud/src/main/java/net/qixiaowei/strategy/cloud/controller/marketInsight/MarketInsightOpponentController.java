@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MarketInsightOpponentDTO;
@@ -42,7 +43,7 @@ public class MarketInsightOpponentController extends BaseController
     /**
     * 查询市场洞察对手表详情
     */
-    @RequiresPermissions("strategy:cloud:marketInsightOpponent:info")
+    @RequiresPermissions(value = {"strategy:cloud:marketInsightOpponent:info","strategy:cloud:marketInsightOpponent:edit"},logical = Logical.OR)
     @GetMapping("/info/{marketInsightOpponentId}")
     public AjaxResult info(@PathVariable Long marketInsightOpponentId){
     MarketInsightOpponentDTO marketInsightOpponentDTO = marketInsightOpponentService.selectMarketInsightOpponentByMarketInsightOpponentId(marketInsightOpponentId);

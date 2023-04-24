@@ -19,6 +19,11 @@ public class LoginUserVO implements Serializable {
     private String token;
 
     /**
+     * 销售云token
+     */
+    private String salesCloudToken;
+
+    /**
      * 用户名id
      */
     private Long userid;

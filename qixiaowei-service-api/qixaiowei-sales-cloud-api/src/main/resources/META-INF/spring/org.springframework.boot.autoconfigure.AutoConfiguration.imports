@@ -1,1 +1,2 @@
-net.qixiaowei.job.cloud.api.RemoteFallbackFactory
+net.qixiaowei.sales.cloud.api.factory.sync.RemoteSyncAdminFallbackFactory
+net.qixiaowei.sales.cloud.api.factory.sync.RemoteSyncAuthorizationFallbackFactory

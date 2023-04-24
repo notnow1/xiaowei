@@ -67,7 +67,7 @@ public class DeptAnnualBonusController extends BaseController {
     /**
      * 查询部门年终奖表详情
      */
-    @RequiresPermissions("operate:cloud:deptAnnualBonus:info")
+    @RequiresPermissions(value = {"operate:cloud:deptAnnualBonus:info","operate:cloud:deptAnnualBonus:edit"},logical = Logical.OR)
     @GetMapping("/info/{deptAnnualBonusId}")
     public AjaxResult info(@PathVariable Long deptAnnualBonusId) {
         DeptAnnualBonusDTO deptAnnualBonusDTO = deptAnnualBonusService.selectDeptAnnualBonusByDeptAnnualBonusId(deptAnnualBonusId);

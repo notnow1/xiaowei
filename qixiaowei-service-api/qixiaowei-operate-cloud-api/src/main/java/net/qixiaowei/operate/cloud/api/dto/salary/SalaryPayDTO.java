@@ -82,6 +82,14 @@ public class SalaryPayDTO extends BaseDTO {
      */
     private String employeeDepartmentName;
     /**
+     * 一级部门名称
+     */
+    private String topLevelDepartmentName;
+    /**
+     * 一级部门id
+     */
+    private Long topLevelDepartmentId;
+    /**
      * 发薪年份
      */
     private Integer payYear;
@@ -185,6 +193,10 @@ public class SalaryPayDTO extends BaseDTO {
      * 是否勾选（0-仅勾选数据,1-所有符合条件数据）
      */
     private Integer isSelect;
+    /**
+     * 模板类型（1-工资条导出,2-月度工资数据导出）
+     */
+    private Integer templateType;
 
 }
 

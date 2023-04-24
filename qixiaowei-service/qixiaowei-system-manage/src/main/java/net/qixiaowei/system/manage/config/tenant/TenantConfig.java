@@ -54,4 +54,10 @@ public class TenantConfig {
      */
     @Value("${tenant.supportStaffMobile:17796337792}")
     private String supportStaffMobile;
+
+    /**
+     * 是否开启销售云访问
+     */
+    @Value("${tenant.enableSalesAccess:true}")
+    private Boolean enableSalesAccess;
 }

@@ -1,6 +1,7 @@
 package net.qixiaowei.integration.common.utils;
 
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.lang.management.ManagementFactory;
@@ -131,6 +132,26 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
             return parseDate(str.toString(), parsePatterns);
         } catch (ParseException e) {
             return null;
+        }
+    }
+
+    /**
+     * 将Excel中各种日期型字符串 转化为日期格式
+     */
+    public static Date parseAnalysisExcelDate(Object str) {
+        String replace = str.toString();
+        if (replace == null) {
+            return null;
+        }
+        if (str.toString().contains("\\-") && !str.toString().contains("日") && str.toString().contains("月")) {
+            replace = ExcelUtils.parseExcelTime(str.toString());
+        } else if (str.toString().contains("年") && str.toString().contains("月") && str.toString().contains("日")) {
+            replace = str.toString().replace("年", "/").replace("月", "/").replace("日", "");
+        }
+        try {
+            return parseDate(replace, parsePatterns);
+        } catch (ParseException e) {
+            throw new ServiceException("请输入正确的日期!" + str);
         }
     }
 

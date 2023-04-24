@@ -97,7 +97,6 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     public List<OfficialRankSystemDTO> selectOfficialRankSystemList(OfficialRankSystemDTO officialRankSystemDTO) {
         OfficialRankSystem officialRankSystem = new OfficialRankSystem();
         BeanUtils.copyProperties(officialRankSystemDTO, officialRankSystem);
-        officialRankSystem.setStatus(1);
         List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemMapper.selectOfficialRankSystemList(officialRankSystem);
         writeOfficialRank(officialRankSystemDTOS);
         return officialRankSystemDTOS;
@@ -137,20 +136,24 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     /**
      * 职级分解维度下拉框
      *
-     * @param rankDecomposeDimension 分解类型
+     * @param type   分解类型
+     * @param status 状态
      * @return dropList
      */
     @Override
-    public List<Map<String, String>> decomposeDrop(Integer rankDecomposeDimension) {
-        List<Map<String, String>> dropList = new ArrayList<>();
-        switch (rankDecomposeDimension) {
+    public List<Map<String, Object>> decomposeDrop(Integer type, Integer status) {
+        List<Map<String, Object>> dropList = new ArrayList<>();
+        switch (type) {
             case 1:// todo 1部门
-                List<DepartmentDTO> listDepartment = departmentService.dropList(new Department());
+                Department department1 = new Department();
+                department1.setStatus(status);
+                List<DepartmentDTO> listDepartment = departmentService.dropList(department1);
                 if (StringUtils.isNotEmpty(listDepartment)) {
                     for (DepartmentDTO department : listDepartment) {
-                        HashMap<String, String> departmentMap = new HashMap<>();
+                        HashMap<String, Object> departmentMap = new HashMap<>();
                         departmentMap.put("rankDecomposeDimension", department.getDepartmentId().toString());
                         departmentMap.put("rankDecomposeDimensionName", department.getDepartmentName());
+                        departmentMap.put("status", department.getStatus());
                         dropList.add(departmentMap);
                     }
                     return dropList;
@@ -162,9 +165,10 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 if (listArea.getCode() == 200 && StringUtils.isNotEmpty(listArea.getData())) {
                     List<AreaDTO> data = listArea.getData();
                     for (AreaDTO area : data) {
-                        HashMap<String, String> areaMap = new HashMap<>();
+                        HashMap<String, Object> areaMap = new HashMap<>();
                         areaMap.put("rankDecomposeDimension", area.getAreaId().toString());
                         areaMap.put("rankDecomposeDimensionName", area.getAreaName());
+                        areaMap.put("status", 1);
                         dropList.add(areaMap);
                     }
                     return dropList;
@@ -174,9 +178,10 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 List<RegionDTO> regionDTOS = regionService.selectRegionByLevel(1);
                 if (StringUtils.isNotEmpty(regionDTOS)) {
                     for (RegionDTO region : regionDTOS) {
-                        HashMap<String, String> regionMap = new HashMap<>();
+                        HashMap<String, Object> regionMap = new HashMap<>();
                         regionMap.put("rankDecomposeDimension", region.getRegionId().toString());
                         regionMap.put("rankDecomposeDimensionName", region.getRegionName());
+                        regionMap.put("status", 1);
                         dropList.add(regionMap);
                     }
                     return dropList;
@@ -184,13 +189,15 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 break;
             case 4:// todo 4产品
                 ProductDTO productDTO = new ProductDTO();
+                productDTO.setListingFlag(status);
                 R<List<ProductDTO>> listProduct = productService.dropList(productDTO, SecurityConstants.INNER);
                 if (listProduct.getCode() == 200 && StringUtils.isNotEmpty(listProduct.getData())) {
                     List<ProductDTO> data = listProduct.getData();
                     for (ProductDTO product : data) {
-                        HashMap<String, String> productMap = new HashMap<>();
+                        HashMap<String, Object> productMap = new HashMap<>();
                         productMap.put("rankDecomposeDimension", product.getProductId().toString());
                         productMap.put("rankDecomposeDimensionName", product.getProductName());
+                        productMap.put("status", 1);
                         dropList.add(productMap);
                     }
                     return dropList;
@@ -521,30 +528,18 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         officialRankSystem.setUpdateTime(DateUtils.getNowDate());
         officialRankSystem.setUpdateBy(SecurityUtils.getUserId());
         officialRankSystemMapper.updateOfficialRankSystem(officialRankSystem);
-//        if (StringUtils.isNotNull(officialRankByPrefixCode)) {
-//            if (!officialRankByPrefixCode.getOfficialRankSystemId().equals(officialRankSystemId))
-//                throw new ServiceException("职级体系级别前缀重复");
-//        }
         List<OfficialRankDecomposeDTO> officialRankDecomposeDTOAfter = officialRankSystemDTO.getOfficialRankDecomposeDTOS();
         if (StringUtils.isEmpty(officialRankDecomposeDTOAfter)) {
             return 1;
         }
         List<Long> decomposeDimensions = new ArrayList<>();
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOAfter) {
-            if (StringUtils.isNull(officialRankDecomposeDTO.getSalaryFactor())) {
-                throw new ServiceException("职级分解系数不可以为空");
-            }
             Long decomposeDimension = officialRankDecomposeDTO.getDecomposeDimension();
             if (decomposeDimensions.contains(decomposeDimension)) {
                 throw new ServiceException("分解维度不能重复");
             }
             decomposeDimensions.add(decomposeDimension);
         }
-        // ~先判断officialRankSystemDTO中的officialRankDecomposeDTOS是否为空，若是不为空则进行以下操作
-        // 1需要根据officialRankSystemId查询之前的数据
-        // 2判断分解rankDecomposeDimension有没有改动
-        // 3.1没有改动直接进行operate，operate需要进行跟获取到的BeforeDTO进行取system-manage和差集
-        // 3.2改动了进行新增，并根据officialRankSystemId和rankDecomposeDimension删除之前在official_rank_decompose中的数据
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOAfter) {
             if (StringUtils.isNull(officialRankDecomposeDTO.getDecomposeDimension())) {
                 throw new ServiceException("请选择分解维度");

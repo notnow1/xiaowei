@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.impl.user;
 
 import java.util.*;
 
+import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.file.api.RemoteFileService;
 import net.qixiaowei.file.api.dto.FileDTO;
 import net.qixiaowei.integration.common.config.FileConfig;
@@ -9,7 +10,6 @@ import net.qixiaowei.integration.common.constant.*;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.system.RoleDataScope;
 import net.qixiaowei.integration.common.enums.tenant.TenantStatus;
-import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -20,6 +20,7 @@ import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
+import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
@@ -33,13 +34,13 @@ import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
 import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
 import net.qixiaowei.system.manage.config.tenant.TenantConfig;
+import net.qixiaowei.system.manage.logic.user.UserLogic;
 import net.qixiaowei.system.manage.mapper.system.RoleMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
-import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.system.manage.service.system.IRoleMenuService;
+import net.qixiaowei.system.manage.service.system.IRoleService;
 import net.qixiaowei.system.manage.service.system.IUserRoleService;
-import net.qixiaowei.system.manage.service.user.IUserConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -62,12 +63,16 @@ import org.springframework.web.multipart.MultipartFile;
  * @since 2022-10-05
  */
 @Service
+@Slf4j
 public class UserServiceImpl implements IUserService {
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
     private RoleMapper roleMapper;
+
+    @Autowired
+    private IRoleService roleService;
 
     @Autowired
     private UserRoleMapper userRoleMapper;
@@ -79,7 +84,7 @@ public class UserServiceImpl implements IUserService {
     private IRoleMenuService roleMenuService;
 
     @Autowired
-    private IEmployeeService employeeService;
+    private UserLogic userLogic;
 
     @Autowired
     private TenantConfig tenantConfig;
@@ -97,10 +102,10 @@ public class UserServiceImpl implements IUserService {
     private RemoteFileService remoteFileService;
 
     @Autowired
-    private IUserConfigService userConfigService;
+    private RedisService redisService;
 
     @Autowired
-    private RedisService redisService;
+    private RemoteSyncAdminService remoteSyncAdminService;
 
 
     @Override
@@ -160,6 +165,9 @@ public class UserServiceImpl implements IUserService {
             }
         }
         userDTO.setUserIds(userIds);
+        //销售云访问控制
+        Boolean enableSalesAccess = tenantConfig.getEnableSalesAccess();
+        userDTO.setSalesCloudFlag(enableSalesAccess);
         //权限集合
         Set<String> permissions = roleMenuService.getMenuPermission(userDTO);
         LoginUserVO sysUserVo = new LoginUserVO();
@@ -283,7 +291,7 @@ public class UserServiceImpl implements IUserService {
             throw new ServiceException("当前用户不存在");
         }
         userDTO.setUserId(userId);
-        this.checkUserUnique(userDTO);
+        userLogic.checkUserUnique(userDTO);
         Date nowDate = DateUtils.getNowDate();
         String userName = userDTO.getUserName();
         String mobilePhone = userDTO.getMobilePhone();
@@ -300,6 +308,8 @@ public class UserServiceImpl implements IUserService {
         int i = userMapper.updateUser(user);
         // 更新缓存用户信息
         if (i > 0) {
+            //同步销售云
+            userLogic.syncSaleEditUser(userDTO);
             LoginUserVO loginUser = SecurityUtils.getLoginUser();
             loginUser.getUserDTO().setUserName(userName);
             if (StringUtils.isNotEmpty(avatar)) {
@@ -420,31 +430,7 @@ public class UserServiceImpl implements IUserService {
     @Transactional
     @Override
     public UserDTO insertUser(UserDTO userDTO) {
-        this.checkUserUnique(userDTO);
-        User user = new User();
-        BeanUtils.copyProperties(userDTO, user);
-        user.setUserType(UserType.OTHER.getCode());
-        user.setCreateBy(SecurityUtils.getUserId());
-        user.setCreateTime(DateUtils.getNowDate());
-        user.setUpdateTime(DateUtils.getNowDate());
-        user.setUpdateBy(SecurityUtils.getUserId());
-        user.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
-        Integer status = user.getStatus();
-        if (StringUtils.isNull(status)) {
-            user.setStatus(BusinessConstants.NORMAL);
-        }
-        //新增用户
-        int row = userMapper.insertUser(user);
-        Long userId = user.getUserId();
-        //初始化用户配置
-        userConfigService.initUserConfig(userId);
-        this.initUserCache(userId);
-        userDTO.setUserId(userId);
-        //新增用户角色
-        insertUserRole(userDTO);
-        userDTO.setUserId(userId);
-        return userDTO;
+        return userLogic.insertUser(userDTO);
     }
 
     /**
@@ -461,12 +447,12 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isNull(userByUserId)) {
             throw new ServiceException("修改失败，当前用户不存在");
         }
-        this.checkUserUnique(userDTO);
+        userLogic.checkUserUnique(userDTO);
         //数据权限 todo
         //查找当前用户角色
         List<UserRoleDTO> userRoleDTOS = userRoleMapper.selectUserRoleListByUserId(userId);
         if (StringUtils.isEmpty(userRoleDTOS)) {
-            this.insertUserRole(userDTO);
+            userLogic.insertUserRole(userDTO);
         } else { //更新用户角色
             Map<Long, Long> userRoleMap = new HashMap<>();
             userRoleDTOS.forEach(userRoleDTO -> userRoleMap.put(userRoleDTO.getRoleId(), userRoleDTO.getUserRoleId()));
@@ -480,6 +466,8 @@ public class UserServiceImpl implements IUserService {
         user.setUpdateBy(SecurityUtils.getUserId());
         int row = userMapper.updateUser(user);
         if (row > 0) {
+            //同步销售云
+            userLogic.syncSaleEditUser(userDTO);
             this.initUserCache(userId);
         }
         return row;
@@ -574,6 +562,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public int resetPwd(UserDTO userDTO) {
         Long userId = userDTO.getUserId();
+        String password = userDTO.getPassword();
         Date nowDate = DateUtils.getNowDate();
         Long operateUserId = SecurityUtils.getUserId();
         UserDTO userByUserId = userMapper.selectUserByUserId(userId);
@@ -582,9 +571,11 @@ public class UserServiceImpl implements IUserService {
         }
         User user = new User();
         user.setUserId(userId);
-        user.setPassword(SecurityUtils.encryptPassword(userDTO.getPassword()));
+        user.setPassword(SecurityUtils.encryptPassword(password));
         user.setUpdateTime(nowDate);
         user.setUpdateBy(operateUserId);
+        //同步销售云
+        userLogic.syncSaleResetUserPassword(userId, password);
         return userMapper.updateUser(user);
     }
 
@@ -622,6 +613,8 @@ public class UserServiceImpl implements IUserService {
             userIds = userDTOS.stream().map(UserDTO::getUserId).collect(Collectors.toSet());
         }
         Date nowDate = DateUtils.getNowDate();
+        //同步销售云
+        userLogic.syncSaleSetUserStatus(userIds, status);
         return userMapper.updateUserStatusByUserIds(userIds, status, userId, nowDate);
     }
 
@@ -665,6 +658,8 @@ public class UserServiceImpl implements IUserService {
         user.setPassword(newPassword);
         user.setUpdateBy(userId);
         user.setUpdateTime(DateUtils.getNowDate());
+        //同步销售云
+        userLogic.syncSaleResetUserPassword(userId, newPassword);
         int i = userMapper.updateUser(user);
         //更新成功则更新缓存用户密码
         if (i > 0) {
@@ -708,6 +703,7 @@ public class UserServiceImpl implements IUserService {
         }
         //批量新增用户角色
         if (StringUtils.isNotEmpty(userRoles)) {
+            roleService.handleSalesRoleUser(userRoles);
             userRoleMapper.batchUserRole(userRoles);
         }
     }
@@ -717,7 +713,7 @@ public class UserServiceImpl implements IUserService {
      */
     @Override
     public List<EmployeeDTO> unallocatedEmployees(Long userId) {
-        return employeeService.unallocatedUserList(userId);
+        return userLogic.unallocatedEmployees(userId);
     }
 
     /**
@@ -777,78 +773,6 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
-     * 校验用户是否唯一
-     *
-     * @param userDTO 用户
-     * @return 结果
-     */
-    public void checkUserUnique(UserDTO userDTO) {
-        List<UserDTO> userDTOS = userMapper.checkUserUnique(userDTO);
-        Long userId = userDTO.getUserId();
-        if (StringUtils.isNotEmpty(userDTOS)) {
-            if (StringUtils.isNotNull(userId)) {
-                userDTOS = userDTOS.stream().filter(user -> !userId.equals(user.getUserId())).collect(Collectors.toList());
-            }
-            if (StringUtils.isNotEmpty(userDTOS)) {
-                userDTOS.forEach(user -> {
-                    Long employeeId = user.getEmployeeId();
-                    String userAccount = user.getUserAccount();
-                    String mobilePhone = user.getMobilePhone();
-                    String email = user.getEmail();
-                    if (StringUtils.isNotNull(employeeId) && employeeId.equals(userDTO.getEmployeeId())) {
-                        throw new ServiceException("账号已存在");
-                    }
-                    if (StringUtils.isNotEmpty(userAccount) && userAccount.equals(userDTO.getUserAccount())) {
-                        throw new ServiceException("账号已存在");
-                    }
-                    if (StringUtils.isNotEmpty(mobilePhone) && mobilePhone.equals(userDTO.getMobilePhone())) {
-                        throw new ServiceException("手机号码已存在");
-                    }
-                    if (StringUtils.isNotEmpty(email) && email.equals(userDTO.getEmail())) {
-                        throw new ServiceException("邮箱已存在");
-                    }
-                });
-            }
-        }
-    }
-
-    /**
-     * 新增用户角色信息
-     *
-     * @param user 用户对象
-     */
-    public void insertUserRole(UserDTO user) {
-        this.insertUserRole(user.getUserId(), user.getRoleIds());
-    }
-
-    /**
-     * 新增用户角色信息
-     *
-     * @param userId  用户ID
-     * @param roleIds 角色组
-     */
-    public void insertUserRole(Long userId, Set<Long> roleIds) {
-        if (StringUtils.isNotEmpty(roleIds)) {
-            Date nowDate = DateUtils.getNowDate();
-            Long insertUserId = SecurityUtils.getUserId();
-            // 新增用户与角色管理
-            List<UserRole> list = new ArrayList<>();
-            for (Long roleId : roleIds) {
-                UserRole ur = new UserRole();
-                ur.setUserId(userId);
-                ur.setRoleId(roleId);
-                ur.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                ur.setCreateBy(insertUserId);
-                ur.setUpdateBy(insertUserId);
-                ur.setCreateTime(nowDate);
-                ur.setUpdateTime(nowDate);
-                list.add(ur);
-            }
-            userRoleMapper.batchUserRole(list);
-        }
-    }
-
-    /**
      * 更新用户角色信息
      *
      * @param user        用户对象
@@ -870,7 +794,7 @@ public class UserServiceImpl implements IUserService {
         }
         //新增
         if (StringUtils.isNotEmpty(insertRoleIds)) {
-            this.insertUserRole(user.getUserId(), insertRoleIds);
+            userLogic.insertUserRole(user.getUserId(), insertRoleIds);
         }
         if (StringUtils.isNotEmpty(userRoleMap)) {
             Set<Long> removeUserRoleIds = new HashSet<>(userRoleMap.values());

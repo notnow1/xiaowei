@@ -68,70 +68,43 @@
             AND eb.budget_year &lt;= #{employeeBudget.params.budgetYearEnd}
         </if>
         <!-- 预算部门过滤  -->
-        <if test="employeeBudget.params.departmentNameEqual != null">
-            <!-- 预算部门过滤  -->
-            <if test="employeeBudget.params.departmentIds != null and employeeBudget.params.departmentIds.size() > 0">
+        <if test="employeeBudget.params.departmentIdEqual != null and employeeBudget.params.departmentIdEqual.size() > 0">
                 AND eb.department_id IN
                 <foreach item="item"
-                         collection="employeeBudget.params.departmentIds"
+                         collection="employeeBudget.params.departmentIdEqual"
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-            </if>
-            <!-- 预算部门过滤  -->
-            <if test="employeeBudget.params.departmentIds == null">
-                AND (eb.department_id='' or eb.department_id is null)
-            </if>
         </if>
         <!-- 预算部门过滤  -->
-        <if test="employeeBudget.params.departmentNameNotEqual != null">
-            <!-- 预算部门过滤  -->
-            <if test="employeeBudget.params.departmentIds != null and employeeBudget.params.departmentIds.size() > 0">
-                AND (eb.department_id IN
+        <if test="employeeBudget.params.departmentIdNotEqual != null and employeeBudget.params.departmentIdNotEqual.size() > 0">
+                AND (eb.department_id NOT IN
                 <foreach item="item"
-                         collection="employeeBudget.params.departmentIds"
+                         collection="employeeBudget.params.departmentIdNotEqual"
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach> or (eb.department_id='' or eb.department_id is null))
-            </if>
-            <!-- 预算部门过滤  -->
-            <if test="employeeBudget.params.departmentIds == null">
-                AND (eb.department_id='' or eb.department_id is null)
-            </if>
         </if>
 
         <!-- 职级体系过滤  -->
-        <if test="employeeBudget.params.officialRankSystemNameEqual != null">
-            <!-- 职级体系过滤  -->
-            <if test="employeeBudget.params.officialRankSystemIds != null and employeeBudget.params.officialRankSystemIds.size() > 0">
+        <if test="employeeBudget.params.officialRankSystemIdEqual != null and employeeBudget.params.officialRankSystemIdEqual.size() > 0">
                 AND eb.official_rank_system_id IN
                 <foreach item="item"
-                         collection="employeeBudget.params.officialRankSystemIds"
+                         collection="employeeBudget.params.officialRankSystemIdEqual"
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-            </if>
-            <!-- 职级体系过滤  -->
-            <if test="employeeBudget.params.officialRankSystemIds == null">
-                AND (eb.official_rank_system_id ='' or eb.official_rank_system_id is null)
-            </if>
         </if>
         <!-- 职级体系过滤  -->
-        <if test="employeeBudget.params.officialRankSystemNameNotEqual != null">
-            <!-- 职级体系过滤  -->
-            <if test="employeeBudget.params.officialRankSystemIds != null and employeeBudget.params.officialRankSystemIds.size() > 0">
-                AND (eb.official_rank_system_id IN
+        <if test="employeeBudget.params.officialRankSystemIdNotEqual != null and employeeBudget.params.officialRankSystemIdNotEqual.size() > 0 ">
+                AND (eb.official_rank_system_id NOT IN
                 <foreach item="item"
-                         collection="employeeBudget.params.officialRankSystemIds"
+                         collection="employeeBudget.params.officialRankSystemIdNotEqual"
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach> or (eb.official_rank_system_id ='' or eb.official_rank_system_id is null))
-            </if>
-            <!-- 职级体系过滤  -->
-            <if test="employeeBudget.params.officialRankSystemIds == null">
-                AND (eb.official_rank_system_id ='' or eb.official_rank_system_id is null)
-            </if>
         </if>
+
         <!-- 预算周期过滤  -->
         <if test="employeeBudget.params.budgetCycleEqual != null and employeeBudget.params.budgetCycleEqual.size() > 0">
             AND eb.budget_cycle IN

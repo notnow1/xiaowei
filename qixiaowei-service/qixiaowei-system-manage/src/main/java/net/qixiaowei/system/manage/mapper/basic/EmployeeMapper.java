@@ -33,10 +33,11 @@ public interface EmployeeMapper {
 
     /**
      * 查询人员编码集合
+     *
      * @param prefixCodeRule 编码前缀
      * @return 人员编码集合
      */
-    List<String> getEmployeeCodes(@Param("prefixCodeRule")String prefixCodeRule);
+    List<String> getEmployeeCodes(@Param("prefixCodeRule") String prefixCodeRule);
 
     /**
      * 查询员工表
@@ -46,7 +47,21 @@ public interface EmployeeMapper {
      */
     EmployeeDTO selectEmployeeByEmployeeCode(@Param("employeeCode") String employeeCode);
 
+    /**
+     * 根据手机号查询员工表
+     *
+     * @param employeeMobile 员工手机号 注:后面新加需求因有脏数据 防止报错用list接收
+     * @return 员工表
+     */
+    List<EmployeeDTO> selectEmployeeByEmployeeMobile(@Param("employeeMobile") String employeeMobile);
 
+    /**
+     * 根据邮箱号查询员工表
+     *
+     * @param employeeEmail 邮箱号 注:后面新加需求因有脏数据 防止报错用list接收
+     * @return 员工表
+     */
+    List<EmployeeDTO> selectEmployeeByEmployeeEmail(@Param("employeeEmail") String employeeEmail);
     /**
      * 查询员工表列表
      *
@@ -244,10 +259,10 @@ public interface EmployeeMapper {
     /**
      * 根据部门id查询员工表列表
      *
-     * @param employeeDepartmentId
+     * @param employee
      * @return
      */
-    List<EmployeeDTO> queryEmployeeByDept(@Param("employeeDepartmentId") Long employeeDepartmentId);
+    List<EmployeeDTO> queryEmployeeByDept(@Param("employee") Employee employee);
 
     /**
      * 查询员工表列表(下拉框)
@@ -288,6 +303,7 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectEmployeeByDepartmentId(@Param("departmentId") Long departmentId);
+
     /**
      * 远程查询用户数据
      *
@@ -298,19 +314,30 @@ public interface EmployeeMapper {
 
     /**
      * 查询在职有账号的员工
+     *
      * @return
      */
     List<EmployeeDTO> getUseEmployeeUser();
 
     /**
      * 生效包含在职离职有账号的员工
+     *
      * @return
      */
     List<EmployeeDTO> getUseEmployeeStatus();
 
     /**
      * 生效包含在职离职的员工
+     *
      * @return
      */
     List<EmployeeDTO> getAllUseEmployee();
+
+    /**
+     * 根据name 查询
+     *
+     * @param employeeNames 人员名称
+     * @return 结果
+     */
+    List<EmployeeDTO> selectByNames(@Param("employeeNames") List<String> employeeNames);
 }

@@ -186,8 +186,14 @@ public class EmployeeDTO extends BaseDTO {
      */
     @NotNull(message = "员工部门不能为空", groups = {EmployeeDTO.AddEmployeeDTO.class, EmployeeDTO.UpdateEmployeeDTO.class})
     private Long employeeDepartmentId;
-
-
+    /**
+     * 一级部门id
+     */
+    private Long topLevelDepartmentId;
+    /**
+     * 一级部门名称
+     */
+    private String topLevelDepartmentName;
     /**
      * 员工部门名称
      */

@@ -192,4 +192,12 @@ public interface IIndustryService {
      * @return Tree
      */
     List<Tree<Long>> getSuperIndustry(Long industryId);
+
+    /**
+     * 查询行业树结构列表
+     *
+     * @param industryDTO 行业
+     * @return 结果
+     */
+    List<Tree<Long>> selectIndustryEffectiveTreeList(IndustryDTO industryDTO);
 }

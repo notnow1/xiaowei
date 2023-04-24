@@ -91,9 +91,9 @@ public class OfficialRankSystemController extends BaseController {
      * 职级分解维度下拉框
      */
     @RequiresPermissions(value = {"system:manage:officialRankSystem:info", "system:manage:officialRankSystem:edit"}, logical = Logical.OR)
-    @GetMapping("/decomposeDrop/{rankDecomposeDimension}")
-    public AjaxResult decomposeDrop(@PathVariable Integer rankDecomposeDimension) {
-        return AjaxResult.success(officialRankSystemService.decomposeDrop(rankDecomposeDimension));
+    @GetMapping("/decomposeDrop")
+    public AjaxResult decomposeDrop(@RequestParam(value = "type", required = false) Integer type, @RequestParam(value = "status", required = false) Integer status) {
+        return AjaxResult.success(officialRankSystemService.decomposeDrop(type, status));
     }
 
     /**

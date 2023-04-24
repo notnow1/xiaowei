@@ -2,10 +2,8 @@ package net.qixiaowei.integration.common.constant;
 
 /**
  * 用户常量信息
- *
  */
-public interface UserConstants
-{
+public interface UserConstants {
     /**
      * 平台内系统用户的唯一标志
      */
@@ -101,4 +99,9 @@ public interface UserConstants
     int PASSWORD_MIN_LENGTH = 6;
 
     int PASSWORD_MAX_LENGTH = 20;
+
+    /**
+     * 用户默认密码
+     */
+    String DEFAULT_PASSWORD = "888888";
 }

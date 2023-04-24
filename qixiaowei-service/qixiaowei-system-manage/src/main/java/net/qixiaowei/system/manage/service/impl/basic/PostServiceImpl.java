@@ -13,13 +13,8 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
-import net.qixiaowei.system.manage.api.domain.basic.Department;
-import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
-import net.qixiaowei.system.manage.api.domain.basic.Post;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
-import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
-import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import net.qixiaowei.system.manage.api.domain.basic.*;
+import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.excel.post.PostExcel;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper;
@@ -373,8 +368,8 @@ public class PostServiceImpl implements IPostService {
      * @return
      */
     @Override
-    public List<PostDTO> selectBydepartmentId(Long departmentId) {
-        return postMapper.selectBydepartmentId(departmentId);
+    public List<PostDTO> selectBydepartmentId(Long departmentId, Integer status) {
+        return postMapper.selectBydepartmentId(departmentId, status);
     }
 
     /**
@@ -538,9 +533,13 @@ public class PostServiceImpl implements IPostService {
     @Transactional
     public void importPost(List<PostExcel> postExcelList) {
         //查询岗位已有的数据
-        List<PostDTO> postDTOS = postMapper.selectPostList(new Post());
+        Post postExceExist = new Post();
+        postExceExist.setStatus(1);
+        List<PostDTO> postDTOS = postMapper.selectPostList(postExceExist);
         //查询部门已有数据
-        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(new Department());
+        Department departmentExcel = new Department();
+        departmentExcel.setStatus(1);
+        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(departmentExcel);
         //职级体系集合
         List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(new OfficialRankSystemDTO());
         //岗位名称集合
@@ -555,132 +554,264 @@ public class PostServiceImpl implements IPostService {
         List<String> parentDepartmentExcelNameList = new ArrayList<>();
         //返回报错信息
         StringBuffer postError = new StringBuffer();
+
+        //数据存在的数据集合
+        List<PostDTO> postExcelUpdates = new ArrayList<>();
+
         if (StringUtils.isNotEmpty(postExcelList)) {
+            //数据库已存在修改岗位数据
+            List<String> updateCodes = new ArrayList<>();
+            for (PostExcel postExcel : postExcelList) {
+                //数据库存在的岗位工号 修改数据
+                if (StringUtils.isNotBlank(postExcel.getPostCode())) {
+                    if (postCodes.contains(postExcel.getPostCode())) {
+                        updateCodes.add(postExcel.getPostCode());
+                    }
+                }
+            }
+            if (StringUtils.isNotEmpty(updateCodes)) {
+                List<String> codeList = updateCodes.stream().distinct().collect(Collectors.toList());
+                updateCodes.clear();
+                updateCodes.addAll(codeList);
+                postExcelUpdates = postMapper.selectPostCodes(updateCodes);
+            }
+
             Map<String, List<PostExcel>> postExcelMap = postExcelList.parallelStream().collect(Collectors.groupingBy(PostExcel::getPostCode));
             for (String key : postExcelMap.keySet()) {
+                List<DepartmentPostDTO> departmentPostDTOList = new ArrayList<>();
                 Long postId = null;
                 //新增关联表
                 List<DepartmentPost> departmentPostAddList = new ArrayList<>();
+                //修改关联表
+                List<DepartmentPost> departmentPostUpdateList = new ArrayList<>();
+                //岗位编码分组数据
                 List<PostExcel> postExcels = postExcelMap.get(key);
                 if (StringUtils.isNotEmpty(postExcels)) {
-                    //根据属性去重
-                    ArrayList<PostExcel> collect = postExcels.stream().collect(Collectors.collectingAndThen(
-                            Collectors.toCollection(() -> new TreeSet<>(
-                                    Comparator.comparing(
-                                            PostExcel::getParentDepartmentExcelName))), ArrayList::new));
-
                     //去重
                     List<PostExcel> postExcelDistinct = postExcels.stream().distinct().collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(postExcelDistinct)) {
-                        postExcels.removeAll(postExcelDistinct);
-                        errorExcelList.addAll(postExcels);
 
                         for (int i = 0; i < postExcelDistinct.size(); i++) {
+                            //重复数据(认为错误数据)
+                            if (StringUtils.isNotEmpty(postExcelDistinct)) {
+                                postExcels.removeAll(postExcelDistinct);
+                                if (StringUtils.isNotEmpty(postExcels)){
+                                    errorExcelList.add(postExcelDistinct.get(i));
+                                    postError.append("岗位" + postExcelDistinct.get(i).getPostName() + "数据重复");
+                                    continue;
+                                }
+                            }
                             DepartmentPost departmentPost = new DepartmentPost();
                             Post post = new Post();
                             StringBuffer stringBuffer = new StringBuffer();
                             //职级体系名称
                             String officialRankSystemName = postExcelDistinct.get(i).getOfficialRankSystemName();
-                            //岗位职级下限
-                            String postRankLowerName = postExcelDistinct.get(i).getPostRankLowerName();
                             //岗位职级上限
                             String postRankUpperName = postExcelDistinct.get(i).getPostRankUpperName();
+                            //岗位职级下限
+                            String postRankLowerName = postExcelDistinct.get(i).getPostRankLowerName();
+
                             //状态:失效;生效
                             String postStatus = postExcelDistinct.get(i).getStatus();
                             //适用组织 部门名称(excel用)
                             String parentDepartmentExcelName = postExcelDistinct.get(i).getParentDepartmentExcelName();
                             if (postExcelDistinct.size() == 1) {
-                                this.onlyOne(departmentDTOList,officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
-                                if (stringBuffer.length() > 1) {
-                                    postError.append(stringBuffer);
-                                    errorExcelList.addAll(postExcelDistinct);
-                                    break;
-                                }
-                                if (StringUtils.isNotEmpty(departmentDTOList)) {
-                                    List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
-                                    if (StringUtils.isNotEmpty(departmentDTO)) {
-                                        //组织id
-                                        departmentPost.setDepartmentId(departmentDTO.get(0).getDepartmentId());
-                                        //组织排序
-                                        departmentPost.setDepartmentSort(1);
-                                        departmentPost.setCreateBy(SecurityUtils.getUserId());
-                                        departmentPost.setCreateTime(DateUtils.getNowDate());
-                                        departmentPost.setUpdateBy(SecurityUtils.getUserId());
-                                        departmentPost.setUpdateTime(DateUtils.getNowDate());
-                                        departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-
-                                    }else {
-                                        parentDepartmentExcelNameList.add(parentDepartmentExcelName);
-                                    }
-                                } else {
-                                    throw new ServiceException("适用组织不存在! 请先配置组织数据");
-                                }
-                                post.setCreateBy(SecurityUtils.getUserId());
-                                post.setCreateTime(DateUtils.getNowDate());
-                                post.setUpdateBy(SecurityUtils.getUserId());
-                                post.setUpdateTime(DateUtils.getNowDate());
-                                post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                                try {
-                                    postMapper.insertPost(post);
-                                } catch (Exception e) {
-                                    throw new ServiceException("插入岗位表失败！");
-                                }
-                                departmentPost.setPostId(post.getPostId());
-                                try {
-                                    departmentPostMapper.insertDepartmentPost(departmentPost);
-                                } catch (Exception e) {
-                                    throw new ServiceException("插入岗位关联表失败！");
-                                }
-                                successExcelList.add(post);
-
-                            } else {
                                 this.onlyOne(departmentDTOList, officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
                                 if (stringBuffer.length() > 1) {
                                     postError.append(stringBuffer);
                                     errorExcelList.addAll(postExcelDistinct);
-                                    break;
+                                    continue;
                                 }
-                                if (i == 0) {
+                                post.setUpdateBy(SecurityUtils.getUserId());
+                                post.setUpdateTime(DateUtils.getNowDate());
+                                post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                                //不包含就是新增数据
+                                if ((StringUtils.isNotEmpty(postExcelUpdates) && !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) || StringUtils.isEmpty(postExcelUpdates)) {
                                     post.setCreateBy(SecurityUtils.getUserId());
                                     post.setCreateTime(DateUtils.getNowDate());
-                                    post.setUpdateBy(SecurityUtils.getUserId());
-                                    post.setUpdateTime(DateUtils.getNowDate());
-                                    post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                                     try {
                                         postMapper.insertPost(post);
                                     } catch (Exception e) {
                                         throw new ServiceException("插入岗位表失败！");
                                     }
-                                    postId = post.getPostId();
-                                }
 
-                                if (StringUtils.isNotEmpty(departmentDTOList)) {
-                                    List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
-                                    if (StringUtils.isNotEmpty(departmentDTO)) {
-                                        //组织id
-                                        departmentPost.setDepartmentId(departmentDTO.get(0).getDepartmentId());
-                                        //组织排序
-                                        departmentPost.setDepartmentSort(i + 1);
-                                        departmentPost.setPostId(postId);
-                                        departmentPost.setCreateBy(SecurityUtils.getUserId());
-                                        departmentPost.setCreateTime(DateUtils.getNowDate());
-                                        departmentPost.setUpdateBy(SecurityUtils.getUserId());
-                                        departmentPost.setUpdateTime(DateUtils.getNowDate());
-                                        departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                                        departmentPostAddList.add(departmentPost);
+                                    if (StringUtils.isNotEmpty(departmentDTOList)) {
+                                        List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
+                                        if (StringUtils.isNotEmpty(departmentDTO)) {
+                                            //组织id
+                                            departmentPost.setDepartmentId(departmentDTO.get(0).getDepartmentId());
+                                            //组织排序
+                                            departmentPost.setDepartmentSort(1);
+                                            departmentPost.setCreateBy(SecurityUtils.getUserId());
+                                            departmentPost.setCreateTime(DateUtils.getNowDate());
+                                            departmentPost.setUpdateBy(SecurityUtils.getUserId());
+                                            departmentPost.setUpdateTime(DateUtils.getNowDate());
+                                            departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+
+                                        } else {
+                                            parentDepartmentExcelNameList.add(parentDepartmentExcelName);
+                                        }
+                                    } else {
+                                        throw new ServiceException("适用组织不存在! 请先配置组织数据");
                                     }
-                                } else {
-                                    throw new ServiceException("适用组织不存在! 请先配置组织数据");
+                                    departmentPost.setPostId(post.getPostId());
+                                    try {
+                                        departmentPostMapper.insertDepartmentPost(departmentPost);
+                                    } catch (Exception e) {
+                                        throw new ServiceException("插入岗位关联表失败！");
+                                    }
+                                } else if (StringUtils.isNotEmpty(postExcelUpdates) && postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                    for (PostDTO postExcelUpdate : postExcelUpdates) {
+                                        if (StringUtils.equals(postExcelDistinct.get(i).getPostCode(), postExcelUpdate.getPostCode())) {
+                                            post.setPostId(postExcelUpdate.getPostId());
+                                            break;
+                                        }
+                                    }
+                                    //不可修改岗位名称
+                                    post.setPostName("");
+                                    try {
+                                        postMapper.updatePost(post);
+                                    } catch (Exception e) {
+                                        throw new ServiceException("修改岗位表失败！");
+                                    }
+                                    List<DepartmentPostDTO> departmentPostDTOList2 = departmentPostMapper.selectExcelDepartmentPostId(post.getPostId());
+                                    if (StringUtils.isNotEmpty(departmentPostDTOList2)) {
+                                        departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentPostDTOList2.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+                                    }
+                                    departmentPost.setPostId(post.getPostId());
+                                    if (StringUtils.isNotEmpty(departmentDTOList)) {
+                                        List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
+                                        if (StringUtils.isNotEmpty(departmentDTO)) {
+                                            //组织id
+                                            departmentPost.setDepartmentId(departmentDTO.get(0).getDepartmentId());
+                                            //组织排序
+                                            departmentPost.setDepartmentSort(1);
+                                            departmentPost.setUpdateBy(SecurityUtils.getUserId());
+                                            departmentPost.setUpdateTime(DateUtils.getNowDate());
+                                            departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+
+                                        } else {
+                                            parentDepartmentExcelNameList.add(parentDepartmentExcelName);
+                                        }
+                                    } else {
+                                        throw new ServiceException("适用组织不存在! 请先配置组织数据");
+                                    }
+                                    try {
+                                        departmentPostMapper.updateDepartmentPost(departmentPost);
+                                    } catch (Exception e) {
+                                        throw new ServiceException("插入岗位关联表失败！");
+                                    }
                                 }
-                                if (i == (postExcelDistinct.size() - 1)) {
-                                    if (StringUtils.isNotEmpty(departmentPostAddList)) {
+                                successExcelList.add(post);
+                            } else {
+
+                                this.onlyOne(departmentDTOList, officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
+                                if (stringBuffer.length() > 1) {
+                                    postError.append(stringBuffer);
+                                    errorExcelList.addAll(postExcelDistinct);
+                                    continue;
+                                }
+                                if (i == 0) {
+
+                                    //不包含就是新增数据
+                                    if (StringUtils.isNotEmpty(postExcelUpdates) && !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                        post.setCreateBy(SecurityUtils.getUserId());
+                                        post.setCreateTime(DateUtils.getNowDate());
+                                        post.setUpdateBy(SecurityUtils.getUserId());
+                                        post.setUpdateTime(DateUtils.getNowDate());
+                                        post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                                         try {
-                                            departmentPostMapper.batchDepartmentPost(departmentPostAddList);
+                                            postMapper.insertPost(post);
                                         } catch (Exception e) {
                                             throw new ServiceException("插入岗位表失败！");
                                         }
+                                    } else if (StringUtils.isNotEmpty(postExcelUpdates) && postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                        for (PostDTO postExcelUpdate : postExcelUpdates) {
+                                            if (postExcelUpdate.getPostCode().equals(postExcelDistinct.get(i).getPostCode())){
+                                                post.setPostId(postExcelUpdate.getPostId());
+                                                break;
+                                            }
+                                        }
+
+                                        post.setUpdateBy(SecurityUtils.getUserId());
+                                        post.setUpdateTime(DateUtils.getNowDate());
+                                        post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                                        //不可修改岗位名称
+                                        post.setPostName("");
+                                        try {
+                                            postMapper.updatePost(post);
+                                        } catch (Exception e) {
+                                            throw new ServiceException("插入岗位表失败！");
+                                        }
+
+                                    }
+                                    postId = post.getPostId();
+                                    departmentPostDTOList = departmentPostMapper.selectExcelDepartmentPostId(postId);
+                                }
+                                //不包含就是新增数据
+                                if (StringUtils.isNotEmpty(postExcelUpdates) && !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                    if (StringUtils.isNotEmpty(departmentDTOList)) {
+                                        List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
+                                        if (StringUtils.isNotEmpty(departmentDTO)) {
+                                            //组织id
+                                            departmentPost.setDepartmentId(departmentDTO.get(0).getDepartmentId());
+                                            //组织排序
+                                            departmentPost.setDepartmentSort(i + 1);
+                                            departmentPost.setPostId(postId);
+                                            departmentPost.setCreateBy(SecurityUtils.getUserId());
+                                            departmentPost.setCreateTime(DateUtils.getNowDate());
+                                            departmentPost.setUpdateBy(SecurityUtils.getUserId());
+                                            departmentPost.setUpdateTime(DateUtils.getNowDate());
+                                            departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                                            departmentPostAddList.add(departmentPost);
+                                        }
+                                    } else {
+                                        throw new ServiceException("适用组织不存在! 请先配置组织数据");
+                                    }
+                                    if (i == (postExcelDistinct.size() - 1)) {
+                                        if (StringUtils.isNotEmpty(departmentPostAddList)) {
+                                            try {
+                                                departmentPostMapper.batchDepartmentPost(departmentPostAddList);
+                                            } catch (Exception e) {
+                                                throw new ServiceException("插入岗位表失败！");
+                                            }
+                                        }
+                                    }
+                                } else if (StringUtils.isNotEmpty(postExcelUpdates) && postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                    if (StringUtils.isNotEmpty(departmentDTOList)) {
+                                        List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
+                                        if (StringUtils.isNotEmpty(departmentDTO)) {
+                                            if (StringUtils.isNotEmpty(departmentPostDTOList)){
+                                                departmentPost.setDepartmentPostId(departmentPostDTOList.get(0).getDepartmentPostId());
+                                            }
+                                            //组织id
+                                            departmentPost.setDepartmentId(departmentDTO.get(0).getDepartmentId());
+                                            //组织排序
+                                            departmentPost.setDepartmentSort(i + 1);
+                                            departmentPost.setPostId(postId);
+                                            departmentPost.setUpdateBy(SecurityUtils.getUserId());
+                                            departmentPost.setUpdateTime(DateUtils.getNowDate());
+                                            departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                                            departmentPostUpdateList.add(departmentPost);
+                                        }
+                                    } else {
+                                        throw new ServiceException("适用组织不存在! 请先配置组织数据");
+                                    }
+                                    if (i == (postExcelDistinct.size() - 1)) {
+
+                                        if (StringUtils.isNotEmpty(departmentPostDTOList)) {
+                                            departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+                                        }
+                                        if (StringUtils.isNotEmpty(departmentPostUpdateList)) {
+                                            try {
+                                                departmentPostMapper.updateDepartmentPosts(departmentPostUpdateList);
+                                            } catch (Exception e) {
+                                                throw new ServiceException("修改岗位表失败！");
+                                            }
+                                        }
                                     }
                                 }
+
                             }
                         }
                     }
@@ -688,9 +819,9 @@ public class PostServiceImpl implements IPostService {
                 }
             }
         }
-        if (StringUtils.isNotEmpty(parentDepartmentExcelNameList)){
+        if (StringUtils.isNotEmpty(parentDepartmentExcelNameList)) {
             List<String> collect = parentDepartmentExcelNameList.stream().distinct().collect(Collectors.toList());
-            postError.append(String.join(",",collect));
+            postError.append(String.join(",", collect));
         }
         if (postError.length() > 1) {
             throw new ServiceException(postError.toString());
@@ -714,26 +845,34 @@ public class PostServiceImpl implements IPostService {
      * @param postStatus
      */
     private void onlyOne(List<DepartmentDTO> departmentDTOList, List<OfficialRankSystemDTO> officialRankSystemDTOS, List<String> postNames, List<String> postCodes, List<PostExcel> postExcelDistinct, int i, Post post, StringBuffer stringBuffer, String officialRankSystemName, String postRankLowerName, String postRankUpperName, String postStatus) {
-        this.validPost(departmentDTOList,postNames, postCodes, stringBuffer, postExcelDistinct.get(i));
+        this.validPost(departmentDTOList, postNames, postCodes, stringBuffer, postExcelDistinct.get(i));
         BeanUtils.copyProperties(postExcelDistinct.get(i), post);
-        if (StringUtils.isNotNull(officialRankSystemName)) {
+        if (StringUtils.isNotBlank(officialRankSystemName)) {
             List<OfficialRankSystemDTO> OfficialRankSystemDTO = officialRankSystemDTOS.stream().filter(f -> StringUtils.equals(f.getOfficialRankSystemName(), officialRankSystemName)).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(OfficialRankSystemDTO)) {
                 post.setOfficialRankSystemId(OfficialRankSystemDTO.get(0).getOfficialRankSystemId());
-                if (StringUtils.isNotNull(postRankLowerName)) {
+                if (StringUtils.isNotBlank(postRankLowerName)) {
                     if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankLowerName) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankLowerName)) {
-                        stringBuffer.append("岗位职级下限不在" + officialRankSystemName + "职级体系的职级范围区间！");
+                        stringBuffer.append("职级下限不在" + officialRankSystemName + "职级体系的职级范围区间！");
                     } else {
-                        post.setPostRankLower(Integer.parseInt(postRankLowerName));
+                        try {
+                            post.setPostRankLower(Integer.parseInt(postRankLowerName));
+                        } catch (NumberFormatException e) {
+                            stringBuffer.append("职级下限请填入数字");
+                        }
                     }
                 }
 
 
-                if (StringUtils.isNotNull(postRankUpperName)) {
+                if (StringUtils.isNotBlank(postRankUpperName)) {
                     if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankUpperName) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankUpperName)) {
-                        stringBuffer.append("岗位职级上限不在" + officialRankSystemName + "职级体系的职级范围区间！");
+                        stringBuffer.append("职级上限不在" + officialRankSystemName + "职级体系的职级范围区间！");
                     } else {
-                        post.setPostRank(Integer.parseInt(postRankUpperName));
+                        try {
+                            post.setPostRank(Integer.parseInt(postRankUpperName));
+                        } catch (NumberFormatException e) {
+                            stringBuffer.append("职级上限请填入数字");
+                        }
                         post.setPostRankUpper(Integer.parseInt(postRankUpperName));
                     }
                 }
@@ -745,7 +884,7 @@ public class PostServiceImpl implements IPostService {
         } else if (StringUtils.equals(postStatus, "失效")) {
             post.setStatus(0);
         } else {
-            post.setStatus(0);
+            post.setStatus(1);
         }
     }
 
@@ -782,7 +921,7 @@ public class PostServiceImpl implements IPostService {
             stringBuffer.append("岗位职级上限岗位必须为数字类型！");
         }
 
-        if (StringUtils.isNull(postName)) {
+        if (StringUtils.isBlank(postName)) {
             stringBuffer.append("岗位名称为必填项！");
         } else {
             if (StringUtils.isNotEmpty(postNames)) {
@@ -791,24 +930,32 @@ public class PostServiceImpl implements IPostService {
                 }
             }
         }
-        if (StringUtils.isNull(postCode)) {
+        if (StringUtils.isBlank(postCode)) {
             stringBuffer.append("岗位编码为必填项！");
-        } else {
-            if (StringUtils.isNotEmpty(postCodes)) {
+        }
+        if (StringUtils.isBlank(postRankUpperName)) {
+            stringBuffer.append("职级上限为必填项！");
+        }
+        if (StringUtils.isBlank(postRankLowerName)) {
+            stringBuffer.append("职级下限为必填项！");
+        }
+
+/*      if (参数是否检验){
+            if (StringUtils.isNotBlank(postCode) && StringUtils.isNotEmpty(postCodes)) {
                 if (postCodes.contains(postExcel.getPostCode())) {
                     stringBuffer.append(postExcel.getPostCode() + "岗位编码已存在！");
                 }
             }
-        }
-        if (StringUtils.isNull(officialRankSystemName)) {
+        }*/
+        if (StringUtils.isBlank(officialRankSystemName)) {
             stringBuffer.append("职级体系为必填项！");
         }
-        if (StringUtils.isNull(parentDepartmentExcelName)) {
+        if (StringUtils.isBlank(parentDepartmentExcelName)) {
             stringBuffer.append("适用组织为必填项！");
         }
         List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
         if (StringUtils.isEmpty(departmentDTO)) {
-            stringBuffer.append(parentDepartmentExcelName+"组织不存在！");
+            stringBuffer.append(parentDepartmentExcelName + "组织不存在！");
         }
     }
 }

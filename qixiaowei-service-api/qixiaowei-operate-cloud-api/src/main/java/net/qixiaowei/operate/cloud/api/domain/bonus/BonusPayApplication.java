@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 奖金发放申请表
@@ -71,6 +72,22 @@ public class BonusPayApplication extends TenantEntity {
      * 奖项事迹描述
      */
     private String awardDescription;
+    /**
+     * 预算部门名称
+     */
+    private String budgetDepartmentNames;
+    /**
+     * 预算部门等于
+     */
+    private String budgetDepartmentIdsEqual;
+    /**
+     * 预算部门不等于
+     */
+    private String budgetDepartmentIdsNotEqual;
 
+    /**
+     * 预算部门ID集合
+     */
+    private List<Long> budgetDepartmentIds;
 }
 

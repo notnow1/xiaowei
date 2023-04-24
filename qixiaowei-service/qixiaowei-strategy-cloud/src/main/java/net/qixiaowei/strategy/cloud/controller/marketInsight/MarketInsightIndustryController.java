@@ -44,7 +44,7 @@ public class MarketInsightIndustryController extends BaseController {
     /**
      * 查询市场洞察行业表详情
      */
-    @RequiresPermissions("strategy:cloud:marketInsightIndustry:info")
+    @RequiresPermissions(value = {"strategy:cloud:marketInsightIndustry:info","strategy:cloud:marketInsightIndustry:edit"},logical = Logical.OR)
     @GetMapping("/info/{marketInsightIndustryId}")
     public AjaxResult info(@PathVariable Long marketInsightIndustryId) {
         MarketInsightIndustryDTO marketInsightIndustryDTO = marketInsightIndustryService.selectMarketInsightIndustryByMarketInsightIndustryId(marketInsightIndustryId);

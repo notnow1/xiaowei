@@ -195,4 +195,11 @@ public interface UserMapper {
      * @return 结果
      */
     int batchUser(@Param("users") List<User> Users);
+
+    /**
+     * 查询管理员用户ID
+     *
+     * @return 角色ID
+     */
+    UserDTO selectUserOfAdmin();
 }

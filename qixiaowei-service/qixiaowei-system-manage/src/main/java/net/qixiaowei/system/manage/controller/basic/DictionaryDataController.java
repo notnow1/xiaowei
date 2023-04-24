@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import java.util.List;
 
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,7 @@ public class DictionaryDataController extends BaseController {
     /**
      * 查询字典数据表详情
      */
-    @RequiresPermissions("system:manage:dictionaryData:info")
+    @RequiresPermissions(value = {"system:manage:dictionaryData:info","system:manage:dictionaryData:edit"},logical = Logical.OR)
     @GetMapping("/info/{dictionaryDataId}")
     public AjaxResult info(@PathVariable Long dictionaryDataId) {
         DictionaryDataDTO dictionaryDataDTO = dictionaryDataService.selectDictionaryDataByDictionaryDataId(dictionaryDataId);

@@ -45,9 +45,18 @@ public class IndustryController extends BaseController {
     @GetMapping("/treeList")
     public AjaxResult treeList(IndustryDTO industryDTO) {
         if (!CheckObjectIsNullUtils.isNull(industryDTO) || StringUtils.isNotEmpty(industryDTO.getParams())) {
-            return AjaxResult.success(industryService.selectIndustryList(industryDTO));
+            return AjaxResult.success(industryService.selectIndustryPageList(industryDTO));
         }
         return AjaxResult.success(industryService.selectIndustryTreeList(industryDTO));
+    }
+
+    /**
+     * 查询行业树结构列表
+     */
+    @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
+    @GetMapping("/effectiveTreeList")
+    public AjaxResult effectiveTreeList(IndustryDTO industryDTO) {
+        return AjaxResult.success(industryService.selectIndustryEffectiveTreeList(industryDTO));
     }
 
     /**
@@ -162,7 +171,6 @@ public class IndustryController extends BaseController {
      */
     @GetMapping("/list")
     public AjaxResult list(IndustryDTO industryDTO) {
-        industryDTO.setStatus(1);
         List<IndustryDTO> list = industryService.selectIndustryList(industryDTO);
         return AjaxResult.success(list);
     }

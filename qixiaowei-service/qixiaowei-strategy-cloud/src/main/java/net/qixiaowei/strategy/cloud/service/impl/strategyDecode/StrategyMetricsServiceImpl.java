@@ -145,7 +145,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
                 }
             }
         }
-        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionRootList(new StrategyIndexDimensionDTO());
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionService.selectStrategyIndexDimensionAllRootList(new StrategyIndexDimensionDTO());
         for (StrategyMetricsDetailDTO detailDTO : strategyMetricsDetailDTOS) {
             for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOS) {
                 if (strategyIndexDimensionDTO.getStrategyIndexDimensionId().equals(detailDTO.getStrategyIndexDimensionId())) {
@@ -400,6 +400,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
     public Long insertStrategyMetrics(StrategyMetricsDTO strategyMetricsDTO) {
         StrategyMetrics strategyMetrics = new StrategyMetrics();
         BeanUtils.copyProperties(strategyMetricsDTO, strategyMetrics);
+        strategyMetrics.setPlanPeriod(1);
         strategyMetrics.setCreateBy(SecurityUtils.getUserId());
         strategyMetrics.setCreateTime(DateUtils.getNowDate());
         strategyMetrics.setUpdateTime(DateUtils.getNowDate());

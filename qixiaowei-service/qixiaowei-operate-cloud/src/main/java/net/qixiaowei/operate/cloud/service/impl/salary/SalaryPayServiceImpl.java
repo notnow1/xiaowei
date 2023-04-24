@@ -8,7 +8,6 @@ import net.qixiaowei.integration.common.constant.HttpStatus;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
-import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.PageUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -174,25 +173,23 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         employeeDTO.setEmployeeDepartmentName(departmentName);
         SalaryPay salaryPay = new SalaryPay();
         BeanUtils.copyProperties(salaryPayDTO, salaryPay);
-        if (CheckObjectIsNullUtils.isNull(employeeDTO)) {
-            return salaryPayMapper.selectSalaryPayList(salaryPay);
-        }
         R<List<EmployeeDTO>> employeeDTOR = employeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
         List<EmployeeDTO> employeeDTOS = employeeDTOR.getData();
         if (employeeDTOR.getCode() != 200) {
             throw new ServiceException("远程获取人员信息失败");
         }
-        List<Long> employeeIds = new ArrayList<>();
+        List<Long> employeeIds;
         if (StringUtils.isNotEmpty(employeeDTOS)) {
-            for (EmployeeDTO dto : employeeDTOS) {
-                employeeIds.add(dto.getEmployeeId());
-            }
+            employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
         } else {
             return salaryPayDTOList;
         }
         Map<String, Object> params = salaryPayDTO.getParams();
         if (StringUtils.isNotEmpty(params)) {
-            getRemoteIds(params, employeeIds);
+            int remoteIds = getRemoteIds(params, employeeIds);
+            if (remoteIds == 0) {
+                return new ArrayList<>();
+            }
         } else {
             params = new HashMap<>();
             params.put("employeeIds", employeeIds);
@@ -213,6 +210,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                         payDTO.setEmployeeName(dto.getEmployeeName());
                         payDTO.setEmployeeCode(dto.getEmployeeCode());
                         payDTO.setEmployeeDepartmentName(dto.getEmployeeDepartmentName());
+                        payDTO.setTopLevelDepartmentName(dto.getTopLevelDepartmentName());
                         payDTO.setEmployeePostName(dto.getEmployeePostName());
                         payDTO.setEmployeeRankName(dto.getEmployeeRankName());
                         payDTO.setEmployeeName(dto.getEmployeeName());
@@ -230,8 +228,9 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      *
      * @param params      请求参数
      * @param employeeIds 员工ID集合
+     * @return 结果
      */
-    private void getRemoteIds(Map<String, Object> params, List<Long> employeeIds) {
+    private int getRemoteIds(Map<String, Object> params, List<Long> employeeIds) {
         Map<String, Object> params2 = new HashMap<>();
         for (String key : params.keySet()) {
             switch (key) {
@@ -259,17 +258,17 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 case "employeeCodeNotLike":
                     params2.put("employeeCodeNotLike", params.get("employeeCodeNotLike"));
                     break;
-                case "employeeDepartmentNameEqual":
-                    params2.put("employeeDepartmentNameEqual", params.get("employeeDepartmentNameEqual"));
+                case "employeeDepartmentIdEqual":
+                    params2.put("employeeDepartmentIdEqual", params.get("employeeDepartmentIdEqual"));
                     break;
-                case "employeeDepartmentNameNotEqual":
-                    params2.put("employeeDepartmentNameNotEqual", params.get("employeeDepartmentNameNotEqual"));
+                case "employeeDepartmentIdNotEqual":
+                    params2.put("employeeDepartmentIdNotEqual", params.get("employeeDepartmentIdNotEqual"));
                     break;
-                case "employeePostNameEqual":
-                    params2.put("employeePostNameEqual", params.get("employeePostNameEqual"));
+                case "employeePostIdEqual":
+                    params2.put("employeePostIdEqual", params.get("employeePostIdEqual"));
                     break;
-                case "employeePostNameNotEqual":
-                    params2.put("employeePostNameNotEqual", params.get("employeePostNameNotEqual"));
+                case "employeePostIdNotEqual":
+                    params2.put("employeePostIdNotEqual", params.get("employeePostIdNotEqual"));
                     break;
             }
         }
@@ -279,8 +278,11 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             if (StringUtils.isNotEmpty(employeeDTOS)) {
                 employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
                 params.put("employeeIds", employeeIds);
+            } else {
+                return 0;
             }
         }
+        return 1;
     }
 
     /**
@@ -1288,7 +1290,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * 通过Id集合查找发行表
      *
      * @param salaryPayIds 薪酬发行ID集合
-     * @return
+     * @return 结果
      */
     @Override
     public List<SalaryPayDTO> selectSalaryPayBySalaryPay(Integer isSelect, List<Long> salaryPayIds) {
@@ -1331,6 +1333,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                     salaryPayDTO.setEmployeeCode(employeeDTO.getEmployeeCode());
                     salaryPayDTO.setEmployeeDepartmentName(employeeDTO.getEmployeeDepartmentName());
                     salaryPayDTO.setEmployeePostName(employeeDTO.getEmployeePostName());
+                    salaryPayDTO.setTopLevelDepartmentName(employeeDTO.getTopLevelDepartmentName());
                     break;
                 }
             }

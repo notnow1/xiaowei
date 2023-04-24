@@ -222,7 +222,7 @@
             AND
             <foreach item="item"
                      collection="user.params.userAccountNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 u.user_account NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -257,7 +257,7 @@
             AND (
             <foreach item="item"
                      collection="user.params.mobilePhoneNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 u.mobile_phone NOT LIKE concat('%', #{item}, '%')
             </foreach>
             OR u.mobile_phone IS NULL
@@ -294,7 +294,7 @@
             AND (
             <foreach item="item"
                      collection="user.params.emailNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 u.email NOT LIKE concat('%', #{item}, '%')
             </foreach>
             OR u.email IS NULL
@@ -331,7 +331,7 @@
             AND (
             <foreach item="item"
                      collection="user.params.userNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 u.user_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
             OR u.user_name IS NULL
@@ -546,6 +546,13 @@
             (#{item.userType},#{item.employeeId},#{item.userAccount},#{item.password},#{item.userName},#{item.mobilePhone},#{item.email},#{item.avatar},#{item.remark},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
+
+    <select id="selectUserOfAdmin"
+            resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
+        SELECT user_id, user_type, employee_id, user_account, mobile_phone, email
+        FROM user
+        WHERE user_type = 1 AND delete_flag=0 ORDER BY  create_time ASC LIMIT 1
+    </select>
 
     <!--物理删除用户表-->
     <delete id="deleteUserByUserId">

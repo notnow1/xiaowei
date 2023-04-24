@@ -152,10 +152,10 @@
             )
         </if>
         <if test="industryDefault.params.parentIndustryNameNull != null">
-            and i2.industry_name IS NULL OR i2.industry_name OR =''
+            and i2.industry_name IS NULL OR i2.industry_name =''
         </if>
         <if test="industryDefault.params.parentIndustryNameNotNull != null">
-            and i2.industry_name IS NOT NULL OR i2.industry_name OR !=''
+            and i2.industry_name IS NOT NULL OR i2.industry_name !=''
         </if>
         <!--    行业层级过滤-->
         <if test="industryDefault.params.levelEqual != null and industryDefault.params.levelEqual.size() > 0">

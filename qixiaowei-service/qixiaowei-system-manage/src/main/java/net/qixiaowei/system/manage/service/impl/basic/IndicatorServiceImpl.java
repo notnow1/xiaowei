@@ -10,7 +10,6 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
-import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -29,7 +28,6 @@ import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteSettingService
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiOpponentFinanceDTO;
-import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.AnnualKeyWorkDetailDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyDecode.StrategyMetricsDetailDTO;
 import net.qixiaowei.strategy.cloud.api.remote.gap.RemoteGapAnalysisService;
@@ -350,7 +348,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         Long parentIndicatorId = indicatorDTO.getParentIndicatorId();
         String parentAncestors = "";//仅在非一级行业时有用
         Integer parentLevel = 1;
-        if (StringUtils.isNotNull(parentIndicatorId)) {// 一级行业
+        if (StringUtils.isNotNull(parentIndicatorId) && parentIndicatorId != 0L) {// 一级行业
             IndicatorDTO parentIndicator = indicatorMapper.selectIndicatorByIndicatorId(parentIndicatorId);
             if (parentIndicator == null) {
                 throw new ServiceException("上级指标不存在");
@@ -360,7 +358,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
-        if (StringUtils.isNotNull(parentIndicatorId)) {
+        if (StringUtils.isNotNull(parentIndicatorId) && parentIndicatorId != 0L) {
             String ancestors = parentAncestors;
             if (StringUtils.isNotEmpty(ancestors)) {
                 ancestors = ancestors + ",";
@@ -570,7 +568,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         miOpponentFinanceDTO.setParams(params);
         R<List<MiOpponentFinanceDTO>> miOpponentFinanceList = remoteMarketInsightOpponentService.remoteMiOpponentFinanceList(miOpponentFinanceDTO, SecurityConstants.INNER);
         List<MiOpponentFinanceDTO> miOpponentFinanceListData = miOpponentFinanceList.getData();
-        if (StringUtils.isNotEmpty(miOpponentFinanceListData)){
+        if (StringUtils.isNotEmpty(miOpponentFinanceListData)) {
             throw new ServiceException("数据被引用!");
         }
     }
@@ -710,7 +708,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         // 总奖金包预算
         BonusBudgetDTO bonusBudgetDTO = new BonusBudgetDTO();
         bonusBudgetDTO.setIndicatorIds(indicatorIds);
-        R<List<BonusBudgetParametersDTO>> bonusBudgetParametersList= bonusBudgetService.selectBonusBudgetByIndicatorId(bonusBudgetDTO, SecurityConstants.INNER);
+        R<List<BonusBudgetParametersDTO>> bonusBudgetParametersList = bonusBudgetService.selectBonusBudgetByIndicatorId(bonusBudgetDTO, SecurityConstants.INNER);
 
         List<BonusBudgetParametersDTO> data = bonusBudgetParametersList.getData();
         if (StringUtils.isNotEmpty(data)) {

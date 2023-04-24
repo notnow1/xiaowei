@@ -54,6 +54,11 @@
             <artifactId>qixiaowei-message-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixaiowei-sales-cloud-api</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

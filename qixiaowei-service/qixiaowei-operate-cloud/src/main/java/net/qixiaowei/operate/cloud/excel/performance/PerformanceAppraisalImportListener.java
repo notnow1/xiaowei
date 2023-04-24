@@ -11,6 +11,7 @@ import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColum
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -46,50 +47,39 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
      *
      * @return List
      */
-    public static List<List<String>> headOrgSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS) {
-        List<String> listSelect = new ArrayList<>();
+    public static List<List<String>> headOrgSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS, List<EmployeeDTO> employeeData) {
+        List<String> listSelectTwo = new ArrayList<>();
         for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
-            listSelect.add(performanceRankFactorDTO.getPerformanceRankName());
+            listSelectTwo.add(performanceRankFactorDTO.getPerformanceRankName());
         }
-        listSelect.add("不考核");
+        listSelectTwo.add("不考核");
+        List<String> listSelectThree = new ArrayList<>();
+        for (EmployeeDTO employeeDatum : employeeData) {
+            listSelectThree.add(employeeDatum.getEmployeeName() + "（" + employeeDatum.getEmployeeCode() + "）");
+        }
         List<List<String>> list = new ArrayList<List<String>>();
         // 第1列
         List<String> head0 = new ArrayList<String>();
-        head0.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
-        head0.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head0.add("组织编码");
+        head0.add("考核对象");
         // 第1列
         List<String> head1 = new ArrayList<String>();
-        head1.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
-        head1.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head1.add("考核对象");
+        head1.add("评议总分数");
         // 第2列
         List<String> head2 = new ArrayList<String>();
-        head2.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
-        head2.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head2.add("评议总分");
+        head2.add("考核结果*");
+        selectMap.put(2, listSelectTwo);
         // 第3列
         List<String> head3 = new ArrayList<String>();
-        head3.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
-        head3.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head3.add("考核结果");
-        selectMap.put(3, listSelect);
+        head3.add("考核责任人");
+        selectMap.put(3, listSelectThree);
         // 第4列
         List<String> head4 = new ArrayList<String>();
-        head4.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
-        head4.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head4.add("考核责任人工号");
-        // 第4列
-        List<String> head5 = new ArrayList<String>();
-        head5.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
-        head5.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head5.add("考核责任人姓名");
+        head4.add("备注");
         list.add(head0);
         list.add(head1);
         list.add(head2);
         list.add(head3);
         list.add(head4);
-        list.add(head5);
         return list;
     }
 
@@ -205,61 +195,48 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
     /**
      * 个人绩效归档导入系统模板
      *
-     * @return
+     * @return 结果
      */
-    public static List<List<String>> headPerSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS) {
-        List<String> listSelect = new ArrayList<>();
+    public static List<List<String>> headPerSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS, List<EmployeeDTO> employeeData) {
+        List<String> listSelectSix = new ArrayList<>();
         for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
-            listSelect.add(performanceRankFactorDTO.getPerformanceRankName());
+            listSelectSix.add(performanceRankFactorDTO.getPerformanceRankName());
         }
-        listSelect.add("不考核");
+        listSelectSix.add("不考核");
+        List<String> listSelectSeven = new ArrayList<>();
+        for (EmployeeDTO employeeDatum : employeeData) {
+            listSelectSeven.add(employeeDatum.getEmployeeName() + "（" + employeeDatum.getEmployeeCode() + "）");
+        }
         List<List<String>> list = new ArrayList<List<String>>();
         // 第1列
         List<String> head0 = new ArrayList<String>();
-        head0.add("注：1、【员工工号】、【员工姓名】、【岗位】、【部门】、【个人职级】根据绩效考核任务中的范围带出。");
-        head0.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
         head0.add("员工工号");
         // 第2列
         List<String> head1 = new ArrayList<String>();
-        head1.add("注：1、【员工工号】、【员工姓名】、【岗位】、【部门】、【个人职级】根据绩效考核任务中的范围带出。");
-        head1.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
         head1.add("员工姓名");
         // 第3列
         List<String> head2 = new ArrayList<String>();
-        head2.add("注：1、【员工工号】、【员工姓名】、【岗位】、【部门】、【个人职级】根据绩效考核任务中的范围带出。");
-        head2.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head2.add("岗位");
+        head2.add("部门");
         // 第4列
         List<String> head3 = new ArrayList<String>();
-        head3.add("注：1、【员工工号】、【员工姓名】、【岗位】、【部门】、【个人职级】根据绩效考核任务中的范围带出。");
-        head3.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head3.add("部门");
+        head3.add("岗位");
         // 第4列
         List<String> head4 = new ArrayList<String>();
-        head4.add("注：1、【员工工号】、【员工姓名】、【岗位】、【部门】、【个人职级】根据绩效考核任务中的范围带出。");
-        head4.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
         head4.add("个人职级");
         // 第4列
         List<String> head5 = new ArrayList<String>();
-        head5.add("注：1、【员工工号】、【员工姓名】、【岗位】、【部门】、【个人职级】根据绩效考核任务中的范围带出。");
-        head5.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head5.add("评议总分");
+        head5.add("评议总分数");
         // 第4列
         List<String> head6 = new ArrayList<String>();
-        head6.add("注：1、【员工工号】、【员工姓名】、【岗位】、【部门】、【个人职级】根据绩效考核任务中的范围带出。");
-        head6.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        selectMap.put(6, listSelect);
-        head6.add("考核结果");
+        selectMap.put(6, listSelectSix);
+        head6.add("考核结果*");
         // 第4列
         List<String> head7 = new ArrayList<String>();
-        head7.add("注：1、【员工工号】、【员工姓名】、【岗位】、【部门】、【个人职级】根据绩效考核任务中的范围带出。");
-        head7.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head7.add("考核责任人工号");
+        selectMap.put(7, listSelectSeven);
+        head7.add("考核责任人");
         // 第4列
         List<String> head8 = new ArrayList<String>();
-        head8.add("注：1、【员工工号】、【员工姓名】、【岗位】、【部门】、【个人职级】根据绩效考核任务中的范围带出。");
-        head8.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head8.add("考核责任人姓名");
+        head8.add("备注");
         list.add(head0);
         list.add(head1);
         list.add(head2);
@@ -466,13 +443,19 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
         List<List<Object>> list = new ArrayList<>();
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
             List<Object> data = new ArrayList<Object>();
-            data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());
-            data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());
-            if (appraisalDTO.getAppraisalObject() == 2) {
-                data.add(performanceAppraisalObjectsDTO.getPostName());
+            if (appraisalDTO.getAppraisalObject() == 1) {
+                data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName() + "（" + performanceAppraisalObjectsDTO.getAppraisalObjectCode() + "）");
+            } else {
+                data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());
+                data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());
                 data.add(performanceAppraisalObjectsDTO.getDepartmentName());
+                data.add(performanceAppraisalObjectsDTO.getPostName());
                 data.add(performanceAppraisalObjectsDTO.getOfficialRankName());
             }
+            data.add("");
+            data.add("");
+            data.add("");
+            data.add("");
             list.add(data);
         }
         return list;

@@ -119,6 +119,13 @@ public interface IStrategyIndexDimensionService {
     List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionRootList(StrategyIndexDimensionDTO strategyIndexDimensionDTO);
 
     /**
+     * 获取所有的战略指标维度根节点
+     *
+     * @return List
+     */
+    List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionAllRootList(StrategyIndexDimensionDTO strategyIndexDimensionDTO);
+
+    /**
      * 规划业务单元列表-不带本身
      *
      * @param strategyIndexDimensionId 主键
@@ -139,4 +146,12 @@ public interface IStrategyIndexDimensionService {
      * @return 真假
      */
     boolean initStrategyIndexDimension(Long userId);
+
+    /**
+     * 查询有效的树结构列表
+     *
+     * @param strategyIndexDimensionDTO 战略指标维度dto
+     * @return 结果
+     */
+    List<Tree<Long>> selectStrategyIndexDimensionEffectiveTreeList(StrategyIndexDimensionDTO strategyIndexDimensionDTO);
 }

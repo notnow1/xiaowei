@@ -226,6 +226,25 @@
             </foreach>
             )
         </if>
+        <!--级别-->
+        <if test="annualKeyWork.params.planRankEqual != null and annualKeyWork.params.planRankEqual.size() > 0">
+            AND akw.plan_rank IN
+            <foreach item="item"
+                     collection="annualKeyWork.params.planRankEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="annualKeyWork.params.planRankNotEqual != null and annualKeyWork.params.planRankNotEqual.size() > 0">
+            AND (akw.plan_rank NOT IN
+            <foreach item="item"
+                     collection="annualKeyWork.params.planRankNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR akw.plan_rank IS NULL
+            )
+        </if>
         <!--行业-->
         <if test="annualKeyWork.params.industryIdEqual != null and annualKeyWork.params.industryIdEqual.size() > 0">
             and akw.industry_id IN
@@ -246,10 +265,10 @@
             )
         </if>
         <if test="annualKeyWork.params.industryIdNull != null">
-            AND (akw.industry_id IS NULL or akw.industry_id ='')
+            AND akw.industry_id IS NULL
         </if>
         <if test="annualKeyWork.params.industryIdNotNull != null">
-            AND (akw.industry_id IS NOT NULL or akw.industry_id != '')
+            AND akw.industry_id IS NOT NULL
         </if>
         <!--区域-->
         <if test="annualKeyWork.params.areaIdEqual != null and annualKeyWork.params.areaIdEqual.size() > 0">
@@ -271,10 +290,10 @@
             )
         </if>
         <if test="annualKeyWork.params.areaIdNull != null">
-            AND (akw.area_id IS NULL or akw.area_id ='')
+            AND akw.area_id IS NULL
         </if>
         <if test="annualKeyWork.params.areaIdNotNull != null">
-            AND (akw.area_id IS NOT NULL or akw.area_id != '')
+            AND akw.area_id IS NOT NULL
         </if>
         <!--产品-->
         <if test="annualKeyWork.params.productIdEqual != null and annualKeyWork.params.productIdEqual.size() > 0">
@@ -296,10 +315,10 @@
             )
         </if>
         <if test="annualKeyWork.params.productIdNull != null">
-            AND (akw.product_id IS NULL or akw.product_id ='')
+            AND akw.product_id IS NULL
         </if>
         <if test="annualKeyWork.params.productIdNotNull != null">
-            AND (akw.product_id IS NOT NULL or akw.product_id != '')
+            AND akw.product_id IS NOT NULL
         </if>
         <!--部门-->
         <if test="annualKeyWork.params.departmentIdEqual != null and annualKeyWork.params.departmentIdEqual.size() > 0">
@@ -321,10 +340,10 @@
             )
         </if>
         <if test="annualKeyWork.params.departmentIdNull != null">
-            AND (akw.department_id IS NULL or akw.department_id ='')
+            AND akw.department_id IS NULL
         </if>
         <if test="annualKeyWork.params.departmentIdNotNull != null">
-            AND (akw.department_id IS NOT NULL or akw.department_id != '')
+            AND akw.department_id IS NOT NULL
         </if>
         <!-- 创建人等于过滤  -->
         <if test="annualKeyWork.params.createByNameEqual != null">

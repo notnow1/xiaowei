@@ -48,7 +48,7 @@
                     and menu_first_name like '%${dictionaryType.menuFirstName}%'
                 </if>
                 <if test="dictionaryType.menuSecondName != null and dictionaryType.menuSecondName != ''">
-                    and menu_second_name=#{dictionaryType.menuSecondName}
+                    and menu_second_name like '%${dictionaryType.menuSecondName}%'
                 </if>
                 <if test="dictionaryType.remark != null and dictionaryType.remark != ''">
                     and remark=#{dictionaryType.remark}

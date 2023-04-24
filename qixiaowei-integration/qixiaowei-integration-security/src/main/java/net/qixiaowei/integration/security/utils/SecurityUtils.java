@@ -43,6 +43,13 @@ public class SecurityUtils {
     }
 
     /**
+     * 获取销售云token
+     */
+    public static String getSalesToken() {
+        return SecurityContextHolder.getSalesToken();
+    }
+
+    /**
      * 获取登录用户信息
      */
     public static LoginUserVO getLoginUser() {

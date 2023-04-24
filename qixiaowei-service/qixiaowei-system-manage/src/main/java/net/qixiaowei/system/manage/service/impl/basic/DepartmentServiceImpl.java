@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
+import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -27,6 +28,8 @@ import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppra
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteDeptSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
+import net.qixiaowei.sales.cloud.api.dto.sync.SyncDeptDTO;
+import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
 import net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.*;
@@ -43,10 +46,12 @@ import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.basic.PostMapper;
+import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,6 +68,7 @@ import java.util.stream.Collectors;
  * @since 2022-09-27
  */
 @Service
+@Slf4j
 public class DepartmentServiceImpl implements IDepartmentService {
     @Autowired
     private DepartmentMapper departmentMapper;
@@ -107,6 +113,10 @@ public class DepartmentServiceImpl implements IDepartmentService {
     private RemoteMarketInsightOpponentService remoteMarketInsightOpponentService;
     @Autowired
     private RemoteMarketInsightSelfService remoteMarketInsightSelfService;
+    @Autowired
+    private RemoteSyncAdminService remoteSyncAdminService;
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 查询部门表
@@ -134,7 +144,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
         this.handleResult(departmentDTOList);
-        if (StringUtils.isNotEmpty(departmentDTO.getParams())){
+        if (StringUtils.isNotEmpty(departmentDTO.getParams())) {
             return departmentDTOList;
         }
         if (!CheckObjectIsNullUtils.isNull(departmentDTO)) {
@@ -168,7 +178,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @return
      */
     @Override
-    public List<String> selectDepartmentListName() {
+    public List<String> selectDepartmentListName(DepartmentDTO departmentDTO) {
         List<String> parentDepartmentExcelNames = new ArrayList<>();
         Department department = new Department();
         //查询数据
@@ -243,7 +253,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<Integer> selectLevel() {
-        return departmentMapper.selectLevel();
+        List<Integer> list = departmentMapper.selectLevel();
+        Collections.sort(list);
+        return list;
     }
 
 
@@ -260,13 +272,13 @@ public class DepartmentServiceImpl implements IDepartmentService {
         for (DepartmentDTO catelog : lists) {
             if (catelog.getParentDepartmentId() == pid) {
                 if (pid == 0) {
-                    catelog.setStatusFlag(catelog.getStatus()==0);
+                    catelog.setStatusFlag(catelog.getStatus() == 0);
                     catelog.setParentDepartmentExcelName(catelog.getDepartmentName());
                 } else {
                     List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                         catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
-                        catelog.setStatusFlag(catelog.getStatus()==0);
+                        catelog.setStatusFlag(catelog.getStatus() == 0);
                     }
                 }
                 catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getDepartmentId().toString())));
@@ -342,17 +354,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //层级
         Integer level = departmentDTO.getLevel();
         //如果父级部门ID为空 直接插入数据库
+        department = this.packDepartment(department);
         if (level == 1) {
-            department = this.packDepartment(department);
             department.setSort(1);
             department.setParentDepartmentId(Constants.TOP_PARENT_ID);
             department.setAncestors("");
-            departmentMapper.insertDepartment(department);
-            departmentDTO.setDepartmentId(department.getDepartmentId());
-            this.packageInsertDepartmentPost(departmentDTO, departmentPostList, departmentPostDTOList);
-            return departmentDTO;
         } else {
-            department = this.packDepartment(department);
             //根据父级id查询 获取父级id的祖级列表ID
             departmentDTO2 = departmentMapper.selectParentDepartmentId(parentDepartmentId);
             Long departmentId = departmentDTO2.getDepartmentId();
@@ -364,16 +371,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
             } else {
                 ancestors = departmentDTO2.getParentDepartmentId() + "," + departmentDTO2.getDepartmentId();
             }
-
             //祖级id
             department.setAncestors(ancestors);
-            departmentMapper.insertDepartment(department);
-            departmentDTO.setDepartmentId(department.getDepartmentId());
-            this.packageInsertDepartmentPost(departmentDTO, departmentPostList, departmentPostDTOList);
-
-            return departmentDTO;
-
         }
+        departmentMapper.insertDepartment(department);
+        departmentDTO.setDepartmentId(department.getDepartmentId());
+        this.packageInsertDepartmentPost(departmentDTO, departmentPostList, departmentPostDTOList);
+        //同步销售云
+        this.syncSalesAddDepartment(department);
+        return departmentDTO;
     }
 
     private void packageInsertDepartmentPost(DepartmentDTO departmentDTO, List<DepartmentPost> departmentPostList, List<DepartmentPostDTO> departmentPostDTOList) {
@@ -587,6 +593,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
         }
         try {
             num = departmentMapper.updateDepartment(department);
+            //同步销售云
+            this.syncSalesEditDepartment(department);
         } catch (Exception e) {
             throw new ServiceException("修改组织信息失败");
         }
@@ -757,7 +765,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //看客户远程查询是否引用
         R<List<MarketInsightCustomerDTO>> marketInsightCustomerList = remoteMarketInsightCustomerService.remoteMarketInsightCustomerList(marketInsightCustomerDTO, SecurityConstants.INNER);
         List<MarketInsightCustomerDTO> marketInsightCustomerListData = marketInsightCustomerList.getData();
-        if (StringUtils.isNotEmpty(marketInsightCustomerListData)){
+        if (StringUtils.isNotEmpty(marketInsightCustomerListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightIndustryDTO marketInsightIndustryDTO = new MarketInsightIndustryDTO();
@@ -767,7 +775,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //看行业远程查询是否引用
         R<List<MarketInsightIndustryDTO>> marketInsightIndustryList = remoteMarketInsightIndustryService.remoteMarketInsightIndustryList(marketInsightIndustryDTO, SecurityConstants.INNER);
         List<MarketInsightIndustryDTO> marketInsightIndustryListData = marketInsightIndustryList.getData();
-        if (StringUtils.isNotEmpty(marketInsightIndustryListData)){
+        if (StringUtils.isNotEmpty(marketInsightIndustryListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightMacroDTO marketInsightMacroDTO = new MarketInsightMacroDTO();
@@ -777,7 +785,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //看宏观远程查询是否引用
         R<List<MarketInsightMacroDTO>> marketInsightMacroList = remoteMarketInsightMacroService.remoteMarketInsightMacroList(marketInsightMacroDTO, SecurityConstants.INNER);
         List<MarketInsightMacroDTO> marketInsightMacroListData = marketInsightMacroList.getData();
-        if (StringUtils.isNotEmpty(marketInsightMacroListData)){
+        if (StringUtils.isNotEmpty(marketInsightMacroListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightOpponentDTO marketInsightOpponentDTO = new MarketInsightOpponentDTO();
@@ -787,7 +795,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //看对手远程查询是否引用
         R<List<MarketInsightOpponentDTO>> marketInsightOpponentList = remoteMarketInsightOpponentService.remoteMarketInsightOpponentList(marketInsightOpponentDTO, SecurityConstants.INNER);
         List<MarketInsightOpponentDTO> marketInsightOpponentListData = marketInsightOpponentList.getData();
-        if (StringUtils.isNotEmpty(marketInsightOpponentListData)){
+        if (StringUtils.isNotEmpty(marketInsightOpponentListData)) {
             throw new ServiceException("数据被引用！");
         }
         MarketInsightSelfDTO marketInsightSelfDTO = new MarketInsightSelfDTO();
@@ -797,7 +805,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //看自身远程查询是否引用
         R<List<MarketInsightSelfDTO>> marketInsightSelfList = remoteMarketInsightSelfService.remoteMarketInsightSelfList(marketInsightSelfDTO, SecurityConstants.INNER);
         List<MarketInsightSelfDTO> marketInsightSelfListData = marketInsightSelfList.getData();
-        if (StringUtils.isNotEmpty(marketInsightSelfListData)){
+        if (StringUtils.isNotEmpty(marketInsightSelfListData)) {
             throw new ServiceException("数据被引用！");
         }
     }
@@ -835,26 +843,21 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
 
     /**
-     *
      * @param departmentId
      * @param status
      * @return
      */
     @Override
-    public List<DepartmentDTO> queryparent(Long departmentId,Integer status) {
-        //为空默认赋值生效
-        if (StringUtils.isNull(status)){
-            status=1;
-        }
+    public List<DepartmentDTO> queryparent(Long departmentId, Integer status) {
         List<DepartmentDTO> queryparent = departmentMapper.queryparent(status);
         List<DepartmentDTO> tree = this.createTree(queryparent, 0);
-            //为空默认赋值生效
-            if (StringUtils.isNotNull(departmentId)) {
-                if (StringUtils.isNotEmpty(tree)) {
-                    this.remoteTree(tree, departmentId);
-                }
-
+        //为空默认赋值生效
+        if (StringUtils.isNotNull(departmentId)) {
+            if (StringUtils.isNotEmpty(tree)) {
+                this.remoteTree(tree, departmentId);
             }
+
+        }
 
         return tree;
     }
@@ -1013,6 +1016,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     /**
      * 暂为使用的方法
+     *
      * @param departmentDTO
      * @return
      */
@@ -1048,37 +1052,73 @@ public class DepartmentServiceImpl implements IDepartmentService {
         List<DepartmentDTO> departmentDTOList = new ArrayList<>();
         //根据id查询所有子级数据
         departmentDTOList = departmentMapper.selectAncestors(department.getDepartmentId());
-
+        if (StringUtils.isNotEmpty(departmentDTOList) && departmentDTOList.size() > 1) {
+            throw new ServiceException("该部门存在子部门，请先删除子部门");
+        }
+/*        查子级并删除子级
         List<DepartmentDTO> departmentDTOList12 = departmentDTOList.stream().distinct().collect(Collectors.toList());
         if (StringUtils.isNotEmpty(departmentDTOList12)) {
-            List<Long> departmentIdList = departmentDTOList.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            this.quoteDepartment(departmentIdList, officialRankDecomposeerreo, employeeBudgetErreo, bonusPayApplicationErreo, employeeAnnualBonusErreo, posterreo, emplerreo, decomposesErreo, empSalaryAdjustPlanErreo);
-            //战略云引用
-            isStrategyQuote(departmentIdList);
-        }
+        List<Long> departmentIdList = departmentDTOList.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+
+        }*/
+        List<Long> departmentIdList = new ArrayList<>();
+        departmentIdList.add(departmentDTO.getDepartmentId());
+        //经营云以及基础配置引用
+        this.quoteDepartment(departmentIdList, officialRankDecomposeerreo, employeeBudgetErreo, bonusPayApplicationErreo, employeeAnnualBonusErreo, posterreo, emplerreo, decomposesErreo, empSalaryAdjustPlanErreo);
+        //战略云引用
+        this.isStrategyQuote(departmentIdList);
         //将错误信息放在一个字符串中
-        depterreo.append(posterreo).append(emplerreo).append(decomposesErreo).append(employeeBudgetErreo).append(bonusPayApplicationErreo).append(employeeAnnualBonusErreo).append(officialRankDecomposeerreo).append(empSalaryAdjustPlanErreo);
+        depterreo.append(posterreo)
+                .append(emplerreo)
+                .append(decomposesErreo)
+                .append(employeeBudgetErreo)
+                .append(bonusPayApplicationErreo)
+                .append(employeeAnnualBonusErreo)
+                .append(officialRankDecomposeerreo)
+                .append(empSalaryAdjustPlanErreo);
         if (depterreo.length() > 0) {
             throw new ServiceException(depterreo.toString());
         } else {
             //没有引用批量删除数据
-            List<Long> departmentIds = departmentDTOList.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+            List<Long> departmentIds = new ArrayList<>();
+            departmentIds.add(departmentDTO.getDepartmentId());
+            //处理销售云同步
+            this.syncSalesDeleteDepartment(departmentDTO.getDepartmentId());
             try {
-                i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                if (StringUtils.isNotEmpty(departmentIds)) {
+                    i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                }
             } catch (Exception e) {
                 throw new ServiceException("删除组织失败");
             }
+            //这段逻辑已删除 打开也不影响
             try {
-                departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                if (StringUtils.isNotEmpty(departmentIds)) {
+                    departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                }
             } catch (Exception e) {
-                throw new ServiceException("删除组织关联表失败");
+                throw new ServiceException("删除组织关联信息失败");
             }
         }
         return i;
     }
 
+    @Override
+    public void initSalesDepartment() {
+        List<DepartmentDTO> all = departmentMapper.getAll();
+        if (StringUtils.isNotEmpty(all)) {
+            for (DepartmentDTO departmentDTO : all) {
+                //同步销售云
+                Department department = new Department();
+                BeanUtils.copyProperties(departmentDTO, department);
+                this.syncSalesAddDepartment(department);
+            }
+        }
+    }
+
     /**
      * 组织引用删除
+     *
      * @param departmentIdList
      * @param officialRankDecomposeerreo
      * @param employeeBudgetErreo
@@ -1110,16 +1150,16 @@ public class DepartmentServiceImpl implements IDepartmentService {
         String employeeNames = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
         if (!StringUtils.isEmpty(employeeDTOS)) {
             throw new ServiceException("数据被引用！");
-           // emplerreo.append("组织名称" + dto.getDepartmentName() + "已被人员" + StringUtils.join(employeeNames, ",") + "引用\n");
+            // emplerreo.append("组织名称" + dto.getDepartmentName() + "已被人员" + StringUtils.join(employeeNames, ",") + "引用\n");
         }
         //远程调用 目标分解是否被引用
-        R<List<TargetDecompose>> listR = remoteDecomposeService.queryDeptDecompose(departmentIdList,SecurityConstants.INNER);
+        R<List<TargetDecompose>> listR = remoteDecomposeService.queryDeptDecompose(departmentIdList, SecurityConstants.INNER);
         List<TargetDecompose> data = listR.getData();
         if (StringUtils.isNotEmpty(data)) {
             List<String> collect = data.stream().map(TargetDecompose::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
             if (StringUtils.isNotEmpty(collect)) {
                 throw new ServiceException("数据被引用！");
-               // decomposesErreo.append("组织名称" + dto.getDepartmentName() + "已被目标分解[" + StringUtils.join(collect, ",") + "]引用\n");
+                // decomposesErreo.append("组织名称" + dto.getDepartmentName() + "已被目标分解[" + StringUtils.join(collect, ",") + "]引用\n");
             }
         }
         //远程人力预算
@@ -1147,7 +1187,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             List<String> awardNames = bonusPayApplicationData.stream().map(BonusPayApplicationDTO::getAwardName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
             if (StringUtils.isNotEmpty(awardYearMonths)) {
                 throw new ServiceException("数据被引用！");
-               // bonusPayApplicationErreo.append("组织名称" + dto.getDepartmentName() + "已被[" + StringUtils.join(awardYearMonths, ",") + "]奖金发放申请的奖金名称[" + StringUtils.join(awardNames, ",") + "]引用\n");
+                // bonusPayApplicationErreo.append("组织名称" + dto.getDepartmentName() + "已被[" + StringUtils.join(awardYearMonths, ",") + "]奖金发放申请的奖金名称[" + StringUtils.join(awardNames, ",") + "]引用\n");
             }
         }
         //远程个人年终奖
@@ -1156,7 +1196,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         if (StringUtils.isNotEmpty(employeeAnnualBonusData)) {
             List<Integer> annualBonusYears = employeeAnnualBonusData.stream().map(EmployeeAnnualBonus::getAnnualBonusYear).filter(Objects::nonNull).distinct().collect(Collectors.toList());
             throw new ServiceException("数据被引用！");
-           // bonusPayApplicationErreo.append("组织名称" + dto.getDepartmentName() + "已被[" + StringUtils.join(annualBonusYears, ",") + "]个人年终奖引用\n");
+            // bonusPayApplicationErreo.append("组织名称" + dto.getDepartmentName() + "已被[" + StringUtils.join(annualBonusYears, ",") + "]个人年终奖引用\n");
         }
         //远程绩效考核服务
         R<List<PerformanceAppraisalObjectsDTO>> performanceAppraisalObjectsList = remotePerformanceAppraisalService.selectByDepartmentIds(departmentIdList, SecurityConstants.INNER);
@@ -1168,7 +1208,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 //bonusPayApplicationErreo.append("组织名称" + dto.getDepartmentName() + "已被[" + StringUtils.join(appraisalNames, ",") + "]绩效考核引用\n");
             }
         }
-        if (StringUtils.isNotEmpty(departmentIdList)){
+        if (StringUtils.isNotEmpty(departmentIdList)) {
             for (Long departmentId : departmentIdList) {
                 //远程查询个人调薪 组织引用
                 R<List<EmpSalaryAdjustPlanDTO>> empSalaryAdjustPlanList = remoteSalaryAdjustPlanService.selectByDepartmentId(departmentId, SecurityConstants.INNER);
@@ -1262,6 +1302,98 @@ public class DepartmentServiceImpl implements IDepartmentService {
             departmentList.add(department);
         }
         return departmentMapper.updateDepartments(departmentList);
+    }
+
+    /**
+     * @description: 同步销售云新增部门
+     * @Author: hzk
+     * @date: 2023/4/12 15:31
+     * @param: [department]
+     * @return: void
+     **/
+    private void syncSalesAddDepartment(Department department) {
+        String salesToken = SecurityUtils.getSalesToken();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            SyncDeptDTO syncDeptDTO = this.getSyncDeptDTO(department);
+            R<?> r = remoteSyncAdminService.syncDeptAdd(syncDeptDTO, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云部门新增失败:{}", r.getMsg());
+                throw new ServiceException("部门新增失败");
+            }
+        }
+    }
+
+    /**
+     * @description: 同步销售云编辑部门
+     * @Author: hzk
+     * @date: 2023/4/12 15:31
+     * @param: [department]
+     * @return: void
+     **/
+    private void syncSalesEditDepartment(Department department) {
+        String salesToken = SecurityUtils.getSalesToken();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            SyncDeptDTO syncDeptDTO = this.getSyncDeptDTO(department);
+            R<?> r = remoteSyncAdminService.syncDeptEdit(syncDeptDTO, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云部门编辑失败:{}", r.getMsg());
+                throw new ServiceException("部门编辑失败");
+            }
+        }
+    }
+
+    /**
+     * @description: 同步销售云删除部门
+     * @Author: hzk
+     * @date: 2023/4/12 15:35
+     * @param: [departmentId]
+     * @return: void
+     **/
+    private void syncSalesDeleteDepartment(Long departmentId) {
+        String salesToken = SecurityUtils.getSalesToken();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            R<?> r = remoteSyncAdminService.syncDeptDelete(departmentId, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云部门删除失败:{}", r.getMsg());
+                throw new ServiceException("部门删除失败");
+            }
+        }
+    }
+
+    /**
+     * @description: 获取同步部门DTO
+     * @Author: hzk
+     * @date: 2023/4/12 15:33
+     * @param: [department]
+     * @return: net.qixiaowei.sales.cloud.api.dto.sync.SyncDeptDTO
+     **/
+    private SyncDeptDTO getSyncDeptDTO(Department department) {
+        SyncDeptDTO syncDeptDTO = new SyncDeptDTO();
+        syncDeptDTO.setDeptId(department.getDepartmentId());
+        syncDeptDTO.setParentId(department.getParentDepartmentId());
+        syncDeptDTO.setName(department.getDepartmentName());
+        Long departmentLeaderUserId = this.getDepartmentLeaderUserId(department.getDepartmentLeaderId());
+        syncDeptDTO.setOwnerUserId(departmentLeaderUserId);
+        syncDeptDTO.setNum(department.getSort());
+        return syncDeptDTO;
+    }
+
+    /**
+     * @description: 获取部门负责人用户ID
+     * @Author: hzk
+     * @date: 2023/4/12 15:29
+     * @param: [departmentLeaderId]
+     * @return: java.lang.Long
+     **/
+    private Long getDepartmentLeaderUserId(Long departmentLeaderId) {
+        Long userId = null;
+        if (StringUtils.isNotNull(departmentLeaderId)) {
+            UserDTO userDTO = userMapper.selectUserByEmployeeId(departmentLeaderId);
+            if (StringUtils.isNotNull(userDTO)) {
+                userId = userDTO.getUserId();
+            }
+        }
+        return userId;
     }
 }
 

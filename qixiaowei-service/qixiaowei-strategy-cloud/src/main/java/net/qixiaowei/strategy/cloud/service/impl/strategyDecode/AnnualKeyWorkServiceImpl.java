@@ -270,6 +270,11 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
             }
         }
         for (AnnualKeyWorkDTO annualKeyDTO : annualKeyWorkDTOS) {
+            if (annualKeyDTO.getPlanRank() == 1) {
+                annualKeyDTO.setPlanRankName("部门级");
+            } else {
+                annualKeyDTO.setPlanRankName("公司级");
+            }
             String businessUnitDecompose = annualKeyDTO.getBusinessUnitDecompose();
             Long areaId = annualKeyDTO.getAreaId();
             Long industryId = annualKeyDTO.getIndustryId();
@@ -375,6 +380,7 @@ public class AnnualKeyWorkServiceImpl implements IAnnualKeyWorkService {
         AnnualKeyWork annualKeyWorkParams = getAnnualKeyWorkParams(annualKeyWorkDTO, businessUnitDecompose);
         // 是否重复
         Integer planYear = annualKeyWorkDTO.getPlanYear();
+        annualKeyWorkParams.setPlanRank(planRank);
         annualKeyWorkParams.setPlanYear(planYear);
         annualKeyWorkParams.setPlanBusinessUnitId(annualKeyWorkDTO.getPlanBusinessUnitId());
         List<AnnualKeyWorkDTO> annualKeyWorkDTOS = annualKeyWorkMapper.selectAnnualKeyWorkList(annualKeyWorkParams);

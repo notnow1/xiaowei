@@ -70,6 +70,10 @@ public class EmployeeBudgetDTO extends BaseDTO {
      */
     private Integer officialRank;
     /**
+     * 岗位职级名称
+     */
+    private String officialRankName;
+    /**
      * 预算部门名称
      */
     private String departmentName;

@@ -126,12 +126,10 @@ public class IndustryServiceImpl implements IIndustryService {
     @DataScope(businessAlias = "i1")
     @Override
     public List<IndustryDTO> selectIndustryPageList(IndustryDTO industryDTO) {
-        Long parentIndustryId = industryDTO.getParentIndustryId();
-        if (StringUtils.isNull(parentIndustryId)) {
-            industryDTO.setParentIndustryId(0L);
-        }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
+        Map<String, Object> params = industryDTO.getParams();
+        industry.setParams(params);
         return industryMapper.selectIndustryList(industry);
     }
 
@@ -206,6 +204,7 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.putExtra("level", treeNode.getLevel());
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());
+            tree.putExtra("statusFlag", treeNode.getStatus() != 1);
             tree.putExtra("createBy", treeNode.getCreateBy());
             tree.putExtra("createByName", treeNode.getCreateByName());
             tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
@@ -334,7 +333,7 @@ public class IndustryServiceImpl implements IIndustryService {
         }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
-        String ancestors = "";//仅在非一级指标时有用
+        String ancestors ;//仅在非一级指标时有用
         int parentLevel = 1;
         Integer status = industryDTO.getStatus();
         Long parentIndustryId = industryDTO.getParentIndustryId();
@@ -350,13 +349,11 @@ public class IndustryServiceImpl implements IIndustryService {
             // 等级
             parentLevel = parentIndustry.getLevel() + 1;
             // 路径修改
-            if (!industryById.getParentIndustryId().equals(parentIndustryId)) {
-                ancestors = parentIndustry.getAncestors();
-                if (StringUtils.isNotEmpty(ancestors)) {
-                    ancestors = ancestors + ",";
-                }
-                ancestors = ancestors + parentIndustryId;
+            ancestors = parentIndustry.getAncestors();
+            if (StringUtils.isNotEmpty(ancestors)) {
+                ancestors = ancestors + ",";
             }
+            ancestors = ancestors + parentIndustryId;
         } else {
             ancestors = "";
             industry.setParentIndustryId(Constants.TOP_PARENT_ID);
@@ -805,16 +802,13 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<Tree<Long>> getEnableList(IndustryDTO industryDTO) {
-        Integer isAll = industryDTO.getIsAll();
         Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
         if (StringUtils.isNull(enableType)) {
             throw new ServiceException("系统配置数据异常");
         }
         if (enableType == 2) {
             Industry industry = new Industry();
-            if (StringUtils.isNull(isAll)) {
-                industry.setStatus(1);
-            }
+            BeanUtils.copyProperties(industryDTO, industry);
             List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(industry);
             //自定义属性名
             TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
@@ -829,15 +823,14 @@ public class IndustryServiceImpl implements IIndustryService {
                 tree.putExtra("level", treeNode.getLevel());
                 tree.putExtra("industryCode", treeNode.getIndustryCode());
                 tree.putExtra("status", treeNode.getStatus());
+                tree.putExtra("statusFlag", treeNode.getStatus() != 1);
                 tree.putExtra("createBy", treeNode.getCreateBy());
                 tree.putExtra("statusValue", treeNode.getStatus() != 1);
                 tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
             });
         } else {
             IndustryDefault industryDefault = new IndustryDefault();
-            if (StringUtils.isNull(isAll)) {
-                industryDefault.setStatus(1);
-            }
+            BeanUtils.copyProperties(industryDTO, industryDefault);
             List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultMapper.selectIndustryDefaultList(industryDefault);
             //自定义属性名
             TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
@@ -852,6 +845,7 @@ public class IndustryServiceImpl implements IIndustryService {
                 tree.putExtra("level", treeNode.getLevel());
                 tree.putExtra("industryCode", treeNode.getIndustryCode());
                 tree.putExtra("status", treeNode.getStatus());
+                tree.putExtra("statusFlag", treeNode.getStatus() != 1);
                 tree.putExtra("createBy", treeNode.getCreateBy());
                 tree.putExtra("statusValue", treeNode.getStatus() != 1);
                 tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
@@ -1036,6 +1030,16 @@ public class IndustryServiceImpl implements IIndustryService {
             industryDTOS.removeAll(removeIndustryDTOS);
         }
         //自定义属性名
+        return getTreeList(industryDTOS);
+    }
+
+    /**
+     * 获取树
+     *
+     * @param industryDTOS 列表
+     * @return 结果
+     */
+    private static List<Tree<Long>> getTreeList(List<IndustryDTO> industryDTOS) {
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         treeNodeConfig.setIdKey("industryId");
         treeNodeConfig.setNameKey("industryName");
@@ -1048,7 +1052,24 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.putExtra("level", treeNode.getLevel());
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());
+            tree.putExtra("statusFlag", treeNode.getStatus() != 1);
         });
+    }
+
+    /**
+     * 查询行业树结构列表
+     *
+     * @param industryDTO 行业
+     * @return 结果
+     */
+    @Override
+    public List<Tree<Long>> selectIndustryEffectiveTreeList(IndustryDTO industryDTO) {
+        Integer status = industryDTO.getStatus();
+        if (StringUtils.isNull(status)) {
+            throw new ServiceException("请传入状态");
+        }
+        List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(new Industry().setStatus(status));
+        return getTreeList(industryDTOS);
     }
 }
 

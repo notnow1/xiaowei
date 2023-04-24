@@ -123,7 +123,7 @@ public interface IPostService{
      * @param departmentId
      * @return
      */
-    List<PostDTO> selectBydepartmentId(Long departmentId);
+    List<PostDTO> selectBydepartmentId(Long departmentId,Integer status);
 
     /**
      * 根据部门查询岗位表列表

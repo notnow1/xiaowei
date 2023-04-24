@@ -117,7 +117,16 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
                 entity.setCreateByName(employeeNameMap.get(userId));
             });
         }
-        //自定义属性名
+        return getTreeList(list);
+    }
+
+    /**
+     * 获取树结构
+     *
+     * @param list 列表
+     * @return 结果
+     */
+    private static List<Tree<Long>> getTreeList(List<StrategyIndexDimensionDTO> list) {
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         treeNodeConfig.setIdKey("strategyIndexDimensionId");
         treeNodeConfig.setNameKey("indexDimensionName");
@@ -140,6 +149,22 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
     }
 
     /**
+     * 查询有效的树结构列表
+     *
+     * @param strategyIndexDimensionDTO 战略指标维度dto
+     * @return 结果
+     */
+    @Override
+    public List<Tree<Long>> selectStrategyIndexDimensionEffectiveTreeList(StrategyIndexDimensionDTO strategyIndexDimensionDTO) {
+        Integer status = strategyIndexDimensionDTO.getStatus();
+        if (StringUtils.isNull(status)) {
+            throw new ServiceException("请传入状态");
+        }
+        List<StrategyIndexDimensionDTO> list = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(new StrategyIndexDimension().setStatus(status));
+        return getTreeList(list);
+    }
+
+    /**
      * 获取战略指标维度根节点
      *
      * @return List
@@ -158,6 +183,32 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
                 setRootNameValue(children, strategyIndexDimensionDTO, rootList);
             else
                 rootList.add(strategyIndexDimensionDTO);
+        }
+        for (int i = 0; i < rootList.size(); i++) {
+            rootList.get(i).setSort(i);
+        }
+        return rootList;
+    }
+
+    /**
+     * 获取所有的战略指标维度根节点
+     *
+     * @return List
+     */
+    @Override
+    public List<StrategyIndexDimensionDTO> selectStrategyIndexDimensionAllRootList(StrategyIndexDimensionDTO indexDimensionDTO) {
+        StrategyIndexDimension strategyIndexDimension = new StrategyIndexDimension();
+        BeanUtils.copyProperties(indexDimensionDTO, strategyIndexDimension);
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = strategyIndexDimensionMapper.selectStrategyIndexDimensionList(strategyIndexDimension);
+        List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOTree = this.createTree(strategyIndexDimensionDTOS, 0L);
+        List<StrategyIndexDimensionDTO> rootList = new ArrayList<>();
+        for (StrategyIndexDimensionDTO strategyIndexDimensionDTO : strategyIndexDimensionDTOTree) {
+            List<StrategyIndexDimensionDTO> children = strategyIndexDimensionDTO.getChildren();
+            strategyIndexDimensionDTO.setRootIndexDimensionName(strategyIndexDimensionDTO.getIndexDimensionName());
+            if (StringUtils.isNotEmpty(children)) {
+                setAllRootNameValue(children, strategyIndexDimensionDTO, rootList);
+            }
+            rootList.add(strategyIndexDimensionDTO);
         }
         for (int i = 0; i < rootList.size(); i++) {
             rootList.get(i).setSort(i);
@@ -216,12 +267,15 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         //战略指标维度主表
         List<StrategyIndexDimension> strategyIndexDimensions = new ArrayList<>();
         for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_PAR) {
-            strategyIndexDimension.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            strategyIndexDimension.setCreateBy(userId);
-            strategyIndexDimension.setUpdateBy(userId);
-            strategyIndexDimension.setCreateTime(nowDate);
-            strategyIndexDimension.setUpdateTime(nowDate);
-            strategyIndexDimensions.add(strategyIndexDimension);
+            StrategyIndexDimension strategyIndexDimension1 = new StrategyIndexDimension();
+            BeanUtils.copyProperties(strategyIndexDimension, strategyIndexDimension1);
+            strategyIndexDimension1.setStrategyIndexDimensionId(null);
+            strategyIndexDimension1.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            strategyIndexDimension1.setCreateBy(userId);
+            strategyIndexDimension1.setUpdateBy(userId);
+            strategyIndexDimension1.setCreateTime(nowDate);
+            strategyIndexDimension1.setUpdateTime(nowDate);
+            strategyIndexDimensions.add(strategyIndexDimension1);
         }
         try {
             strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensions);
@@ -236,24 +290,30 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
         }
         List<StrategyIndexDimension> strategyIndexDimensionSon = new ArrayList<>();
         for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_SON_1) {
-            strategyIndexDimension.setParentIndexDimensionId(strategyIndexDimension1.getStrategyIndexDimensionId());
-            strategyIndexDimension.setAncestors(strategyIndexDimension1.getStrategyIndexDimensionId().toString());
-            strategyIndexDimension.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            strategyIndexDimension.setCreateBy(userId);
-            strategyIndexDimension.setUpdateBy(userId);
-            strategyIndexDimension.setCreateTime(nowDate);
-            strategyIndexDimension.setUpdateTime(nowDate);
-            strategyIndexDimensionSon.add(strategyIndexDimension);
+            StrategyIndexDimension strategyIndexDimension3 = new StrategyIndexDimension();
+            BeanUtils.copyProperties(strategyIndexDimension, strategyIndexDimension3);
+            strategyIndexDimension3.setStrategyIndexDimensionId(null);
+            strategyIndexDimension3.setParentIndexDimensionId(strategyIndexDimension1.getStrategyIndexDimensionId());
+            strategyIndexDimension3.setAncestors(strategyIndexDimension1.getStrategyIndexDimensionId().toString());
+            strategyIndexDimension3.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            strategyIndexDimension3.setCreateBy(userId);
+            strategyIndexDimension3.setUpdateBy(userId);
+            strategyIndexDimension3.setCreateTime(nowDate);
+            strategyIndexDimension3.setUpdateTime(nowDate);
+            strategyIndexDimensionSon.add(strategyIndexDimension3);
         }
         for (StrategyIndexDimension strategyIndexDimension : INIT_STRATEGY_INDEX_DIMENSION_SON_2) {
-            strategyIndexDimension.setParentIndexDimensionId(strategyIndexDimension2.getStrategyIndexDimensionId());
-            strategyIndexDimension.setAncestors(strategyIndexDimension2.getStrategyIndexDimensionId().toString());
-            strategyIndexDimension.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            strategyIndexDimension.setCreateBy(userId);
-            strategyIndexDimension.setUpdateBy(userId);
-            strategyIndexDimension.setCreateTime(nowDate);
-            strategyIndexDimension.setUpdateTime(nowDate);
-            strategyIndexDimensionSon.add(strategyIndexDimension);
+            StrategyIndexDimension strategyIndexDimension3 = new StrategyIndexDimension();
+            BeanUtils.copyProperties(strategyIndexDimension, strategyIndexDimension3);
+            strategyIndexDimension3.setStrategyIndexDimensionId(null);
+            strategyIndexDimension3.setParentIndexDimensionId(strategyIndexDimension2.getStrategyIndexDimensionId());
+            strategyIndexDimension3.setAncestors(strategyIndexDimension2.getStrategyIndexDimensionId().toString());
+            strategyIndexDimension3.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            strategyIndexDimension3.setCreateBy(userId);
+            strategyIndexDimension3.setUpdateBy(userId);
+            strategyIndexDimension3.setCreateTime(nowDate);
+            strategyIndexDimension3.setUpdateTime(nowDate);
+            strategyIndexDimensionSon.add(strategyIndexDimension3);
         }
         try {
             strategyIndexDimensionMapper.batchStrategyIndexDimension(strategyIndexDimensionSon);
@@ -281,6 +341,25 @@ public class StrategyIndexDimensionServiceImpl implements IStrategyIndexDimensio
                 rootList.add(strategyIndexDimensionDTO);
         }
     }
+
+    /**
+     * 树形结构
+     *
+     * @param children                  子级列表
+     * @param strategyIndexDimensionDTO 父级DTO
+     * @param rootList                  根目录list
+     */
+    private void setAllRootNameValue(List<StrategyIndexDimensionDTO> children, StrategyIndexDimensionDTO strategyIndexDimensionDTO, List<StrategyIndexDimensionDTO> rootList) {
+        for (StrategyIndexDimensionDTO child : children) {
+            List<StrategyIndexDimensionDTO> strategyIndexDimensionDTOS = child.getChildren();
+            child.setRootIndexDimensionName(strategyIndexDimensionDTO.getRootIndexDimensionName() + "-" + child.getIndexDimensionName());
+            if (StringUtils.isNotEmpty(strategyIndexDimensionDTOS)) {
+                setAllRootNameValue(strategyIndexDimensionDTOS, child, rootList);
+            }
+            rootList.add(child);
+        }
+    }
+
 
     /**
      * 树形结构

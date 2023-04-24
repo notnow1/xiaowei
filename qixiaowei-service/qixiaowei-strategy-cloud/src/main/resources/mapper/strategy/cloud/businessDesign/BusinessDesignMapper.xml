@@ -247,10 +247,10 @@
             )
         </if>
         <if test="businessDesign.params.industryIdNull != null">
-            AND (bd.industry_id IS NULL or bd.industry_id ='')
+            AND bd.industry_id IS NULL
         </if>
         <if test="businessDesign.params.industryIdNotNull != null">
-            AND (bd.industry_id IS NOT NULL or bd.industry_id != '')
+            AND bd.industry_id IS NOT NULL
         </if>
         <!--区域-->
         <if test="businessDesign.params.areaIdEqual != null and businessDesign.params.areaIdEqual.size() > 0">
@@ -272,10 +272,10 @@
             )
         </if>
         <if test="businessDesign.params.areaIdNull != null">
-            AND (bd.area_id IS NULL or bd.area_id ='')
+            AND bd.area_id IS NULL
         </if>
         <if test="businessDesign.params.areaIdNotNull != null">
-            AND (bd.area_id IS NOT NULL or bd.area_id != '')
+            AND bd.area_id IS NOT NULL
         </if>
         <!--产品-->
         <if test="businessDesign.params.productIdEqual != null and businessDesign.params.productIdEqual.size() > 0">
@@ -297,10 +297,10 @@
             )
         </if>
         <if test="businessDesign.params.productIdNull != null">
-            AND (bd.product_id IS NULL or bd.product_id ='')
+            AND bd.product_id IS NULL
         </if>
         <if test="businessDesign.params.productIdNotNull != null">
-            AND (bd.product_id IS NOT NULL or bd.product_id != '')
+            AND bd.product_id IS NOT NULL
         </if>
         <!--部门-->
         <if test="businessDesign.params.departmentIdEqual != null and businessDesign.params.departmentIdEqual.size() > 0">
@@ -322,10 +322,10 @@
             )
         </if>
         <if test="businessDesign.params.departmentIdNull != null">
-            AND (bd.department_id IS NULL or bd.department_id ='')
+            AND bd.department_id IS NULL
         </if>
         <if test="businessDesign.params.departmentIdNotNull != null">
-            AND (bd.department_id IS NOT NULL or bd.department_id != '')
+            AND bd.department_id IS NOT NULL
         </if>
         <!-- 创建人等于过滤  -->
         <if test="businessDesign.params.createByNameEqual != null">
@@ -430,7 +430,6 @@
             AND date_format(bd.create_time,'%Y/%m/%d') &lt;= #{businessDesign.params.createTimeEnd}
         </if>
         GROUP BY bd.business_design_id
-        ${businessDesign.params.dataScope}
         ORDER BY bd.create_time DESC
     </select>
     <!--查询最近一次-->

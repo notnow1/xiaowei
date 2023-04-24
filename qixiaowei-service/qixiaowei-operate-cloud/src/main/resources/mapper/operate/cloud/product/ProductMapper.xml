@@ -193,72 +193,58 @@
             AND p.level &gt;=#{product.params.levelNotLessThan}
         </if>
         <!-- 产品量纲名称过滤  -->
-        <if test="product.params.productUnitNameEqual != null and product.params.productUnitNameEqual.size() > 0">
-            AND pu.product_unit_name IN
+        <if test="product.params.productUnitIdEqual != null and product.params.productUnitIdEqual.size() > 0">
+            AND pu.product_unit_id IN
             <foreach item="item"
-                     collection="product.params.productUnitNameEqual"
+                     collection="product.params.productUnitIdEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="product.params.productUnitNameNotEqual != null and product.params.productUnitNameNotEqual.size() > 0">
-            AND (pu.product_unit_name NOT IN
+        <if test="product.params.productUnitIdNotEqual != null and product.params.productUnitIdNotEqual.size() > 0">
+            AND (pu.product_unit_id NOT IN
             <foreach item="item"
-                     collection="product.params.productUnitNameNotEqual"
+                     collection="product.params.productUnitIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR pu.product_unit_name IS NULL
+            OR pu.product_unit_id IS NULL
             )
         </if>
-        <if test="product.params.productUnitNameLike != null and product.params.productUnitNameLike.size() > 0">
+        <if test="product.params.productUnitIdLike != null and product.params.productUnitIdLike.size() > 0">
             AND(
             <foreach item="item"
-                     collection="product.params.productUnitNameLike"
+                     collection="product.params.productUnitIdLike"
                      index="index" open="(" separator="OR" close=")">
-                pu.product_unit_name LIKE concat('%', #{item}, '%')
+                pu.product_unit_id LIKE concat('%', #{item}, '%')
             </foreach>)
         </if>
-        <if test="product.params.productUnitNameNotLike != null and product.params.productUnitNameNotLike.size() > 0">
+        <if test="product.params.productUnitIdNotLike != null and product.params.productUnitIdNotLike.size() > 0">
             AND
             <foreach item="item"
-                     collection="product.params.productUnitNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
-                pu.product_unit_name NOT LIKE concat('%', #{item}, '%')
+                     collection="product.params.productUnitIdNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                pu.product_unit_id NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
-        <!-- 产品类别过滤  -->
-        <if test="product.params.dictionaryLabelEqual != null  ">
-            <!-- 产品类别过滤  -->
-            <if test="product.params.dictionaryDataIds != null and product.params.dictionaryDataIds.size() > 0">
+        <!-- 产品类别等于过滤  -->
+        <if test="product.params.productCategoryEqual != null  and product.params.productCategoryEqual.size() > 0">
                 AND p.product_category IN
                 <foreach item="item"
-                         collection="product.params.dictionaryDataIds"
+                         collection="product.params.productCategoryEqual"
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-            </if>
-            <!-- 产品类别过滤  -->
-            <if test="product.params.dictionaryDataIds == null">
-                AND (p.product_category ='' or p.product_category is null)
-            </if>
         </if>
-        <!-- 产品类别过滤  -->
-        <if test="product.params.dictionaryLabelNotEqual != null">
-            <!-- 产品类别过滤  -->
-            <if test="product.params.dictionaryDataIds != null and product.params.dictionaryDataIds.size() > 0">
-                AND (p.product_category IN
+        <!-- 产品类别不等于过滤  -->
+        <if test="product.params.productCategoryNotEqual != null and product.params.productCategoryNotEqual.size() > 0">
+                AND (p.product_category NOT IN
                 <foreach item="item"
-                         collection="product.params.dictionaryDataIds"
+                         collection="product.params.productCategoryNotEqual"
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
                 or (p.product_category ='' or p.product_category is null))
-            </if>
-            <!-- 产品类别过滤  -->
-            <if test="product.params.dictionaryDataIds == null">
-                AND (p.product_category ='' or p.product_category is null)
-            </if>
         </if>
         <!-- 产品状态过滤  -->
         <if test="product.params.listingFlagEqual != null and product.params.listingFlagEqual.size() > 0">

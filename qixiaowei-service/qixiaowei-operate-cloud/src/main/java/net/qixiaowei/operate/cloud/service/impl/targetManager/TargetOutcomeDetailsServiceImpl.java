@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -11,6 +13,7 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeDetailsExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeDetailsMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -138,12 +143,31 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
     /**
      * 根据outId查找目标结果详情表
      *
-     * @param targetOutcomeId
-     * @return
+     * @param targetOutcomeId 结果id
+     * @return 结恶
      */
     @Override
     public List<TargetOutcomeDetailsDTO> selectTargetOutcomeDetailsByOutcomeId(Long targetOutcomeId) {
-        return targetOutcomeDetailsMapper.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDetailsMapper.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
+        List<Long> indicatorIds = targetOutcomeDetailsDTOList.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(indicatorIds)) {
+            R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+            List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
+            if (indicatorR.getCode() != 200 || StringUtils.isEmpty(indicatorDTOS)) {
+                throw new ServiceException("获取指标名称失败!");
+            }
+            for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+                for (IndicatorDTO indicatorDTO : indicatorDTOS) {
+                    if (indicatorDTO.getIndicatorId().equals(targetOutcomeDetailsDTO.getIndicatorId())) {
+                        targetOutcomeDetailsDTO.setIndicatorName(indicatorDTO.getIndicatorName());
+                        targetOutcomeDetailsDTO.setIndicatorCode(indicatorDTO.getIndicatorCode());
+                        break;
+                    }
+                }
+            }
+            return targetOutcomeDetailsDTOList;
+        }
+        return new ArrayList<>();
     }
 
     /**

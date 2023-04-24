@@ -181,7 +181,7 @@ public class FieldConfigServiceImpl implements IFieldConfigService {
 
     @Override
     public List<FieldConfig> insertFieldConfigs(List<FieldConfigDTO> fieldConfigDtos) {
-        List<FieldConfig> fieldConfigList = new ArrayList();
+        List<FieldConfig> fieldConfigList = new ArrayList<>();
 
         for (FieldConfigDTO fieldConfigDTO : fieldConfigDtos) {
             FieldConfig fieldConfig = new FieldConfig();
@@ -205,7 +205,7 @@ public class FieldConfigServiceImpl implements IFieldConfigService {
 
     @Override
     public int updateFieldConfigs(List<FieldConfigDTO> fieldConfigDtos) {
-        List<FieldConfig> fieldConfigList = new ArrayList();
+        List<FieldConfig> fieldConfigList = new ArrayList<>();
 
         for (FieldConfigDTO fieldConfigDTO : fieldConfigDtos) {
             FieldConfig fieldConfig = new FieldConfig();

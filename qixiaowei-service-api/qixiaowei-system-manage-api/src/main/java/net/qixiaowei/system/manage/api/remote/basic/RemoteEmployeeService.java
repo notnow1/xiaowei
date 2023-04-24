@@ -87,6 +87,15 @@ public interface RemoteEmployeeService {
     R<List<EmployeeDTO>> selectByCodes(@RequestBody List<String> assessmentList, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
+     * 根据Name集合
+     *
+     * @param employeeNames 员工名称
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/selectByNames")
+    R<List<EmployeeDTO>> selectByNames(@RequestBody List<String> employeeNames, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
      * 相同部门下 相同职级的 在职人数
      *
      * @param source

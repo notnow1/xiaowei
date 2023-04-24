@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
@@ -235,10 +236,10 @@ public interface IEmployeeService {
     /**
      * 根据部门id查询员工表列表
      *
-     * @param employeeDepartmentId
+     * @param employeeDTO
      * @return
      */
-    List<EmployeeDTO> queryEmployeeByDept(Long employeeDepartmentId);
+    List<EmployeeDTO> queryEmployeeByDept(EmployeeDTO employeeDTO);
 
     /**
      * 查询一级部门下所有的人员 返回部门id和职级体系id
@@ -297,7 +298,18 @@ public interface IEmployeeService {
 
     /**
      * 查询有账号的员工
-     * @return
+     *
+     * @return 结果
      */
     List<EmployeeDTO> getUseEmployeeUser();
+
+    /**
+     * 根据name 查询
+     *
+     * @param employeeNames 人员名称
+     * @return 结果
+     */
+    List<EmployeeDTO> selectByNames(List<String> employeeNames);
+
+    void initSalesEmployee();
 }
