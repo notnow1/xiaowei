@@ -171,11 +171,13 @@ public class EmployeeController extends BaseController {
             if (StringUtils.equals("人员信息配置", sheetName)) {
                 //构建读取器
                 ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-                list = read.sheet("人员信息配置").doReadSync();
+                listMap = read.sheet("人员信息配置").doReadSync();
+                ExcelUtils.mapToListModel(1, 0, listMap, new EmployeeExcel(), list,true);
             } else if (StringUtils.equals("人员信息错误数据配置", sheetName)) {
                 //构建读取器
                 ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-                list = read.sheet("人员信息错误数据配置").doReadSync();
+                listMap = read.sheet("人员信息错误数据配置").doReadSync();
+                ExcelUtils.mapToListModel(1, 0, listMap, new EmployeeExcel(), list,false);
             } else {
                 throw new ServerException("模板sheet名称不正确！");
             }
