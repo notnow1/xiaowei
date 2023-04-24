@@ -59,22 +59,22 @@ public class SysLoginService {
     public LoginUserVO login(HttpServletRequest request, String userAccount, String password) {
         // 用户名或密码为空 错误
         if (StringUtils.isAnyBlank(userAccount, password)) {
-            throw new ServiceException("账号或密码有误");
+            throw new ServiceException("账号或密码有误，请重新输入");
         }
         // 密码如果不在指定范围内 错误
         if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
                 || password.length() > UserConstants.PASSWORD_MAX_LENGTH) {
-            throw new ServiceException("账号或密码有误");
+            throw new ServiceException("账号或密码有误，请重新输入");
         }
         // 用户名不在指定范围内 错误 20230111 需求更改，帐号长度范围改为1-20
         if (userAccount.length() > UserConstants.USERNAME_MAX_LENGTH) {
-            throw new ServiceException("账号或密码有误");
+            throw new ServiceException("账号或密码有误，请重新输入");
         }
         // 查询用户信息
         String serverName = StringUtils.isNotEmpty(request.getHeader("proxyHost")) ? request.getHeader("proxyHost") : request.getServerName();
         R<LoginUserVO> userResult = remoteUserService.getUserInfo(userAccount, serverName, SecurityConstants.INNER);
         if (StringUtils.isNull(userResult)) {
-            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+            throw new ServiceException("账号或密码有误，请重新输入");
         }
         if (R.FAIL == userResult.getCode()) {
             throw new ServiceException(userResult.getMsg());
@@ -82,7 +82,7 @@ public class SysLoginService {
         LoginUserVO userInfo = userResult.getData();
         UserDTO user = userInfo.getUserDTO();
         if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag()) || UserStatus.DISABLE.getCode().equals(user.getStatus())) {
-            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+            throw new ServiceException("账号或密码有误，请重新输入");
         }
         passwordService.validate(user, password);
         return userInfo;
@@ -123,7 +123,9 @@ public class SysLoginService {
         String intervalCacheKey = passwordService.getResetIntervalCacheKeyContainTenantId(userAccount, tenantId);
         if (redisService.hasKey(intervalCacheKey)) {
             long expire = redisService.getExpire(intervalCacheKey);
-            throw new ServiceException("请等待" + expire + "秒后再重置密码。");
+            String errorTimeDesc = passwordService.getErrorTimeDesc(expire);
+            String errMsg = String.format("请等待%s后再重置密码。", errorTimeDesc);
+            throw new ServiceException(errMsg);
         }
         passwordService.validateOfReset(userAccount, tenantId);
         if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag())) {
@@ -148,6 +150,9 @@ public class SysLoginService {
         //发送间隔：10分钟。
         long keyExpireTime = 10;
         redisService.setCacheObject(intervalCacheKey, null, keyExpireTime, TimeUnit.MINUTES);
+        //密码重置成功清空错误密码次数
+        String cacheKey = passwordService.getLoginCacheKeyContainTenantId(userAccount, tenantId);
+        redisService.deleteObject(cacheKey);
     }
 
     /**

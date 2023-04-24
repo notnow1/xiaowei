@@ -110,10 +110,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * 查询经营结果分析报表详情
      *
      * @param targetDecomposeId 目标分解表主键
+     * @param flag
      * @return
      */
     @Override
-    public TargetDecomposeDTO selectResultTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
+    public TargetDecomposeDTO selectResultTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, boolean flag) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNull(targetDecomposeDTO)) {
@@ -128,7 +129,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
-        this.packRemote(targetDecomposeDetailsDTOList, false);
+        this.packRemote(targetDecomposeDetailsDTOList, flag);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //年度预测值
@@ -421,10 +422,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      *
      * @param targetDecomposeId 目标分解表主键
      * @param backlogId
+     * @param flag
      * @return
      */
     @Override
-    public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, Long backlogId) {
+    public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, Long backlogId, boolean flag) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNull(targetDecomposeDTO)) {
@@ -449,7 +451,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByPowerTargetDecomposeId(targetDecomposeId, SecurityUtils.getEmployeeId());
         }
 
-        this.packRemote(targetDecomposeDetailsDTOList, false);
+        this.packRemote(targetDecomposeDetailsDTOList, flag);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //年度预测值
@@ -1655,22 +1657,27 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecomposeDetailsDTOS
      */
     private void validDecompositionDimension(TargetDecomposeDTO targetDecomposeDTO, List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS) {
+        StringBuffer errorData = new StringBuffer();
         //分解维度集合
         List<String> decompositionDimensionAllData = new ArrayList<>();
-        for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+        for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
             StringBuffer decompositionDimensionAll = new StringBuffer();
-            decompositionDimensionAll.append(targetDecomposeDetailsDTO.getProductId())
-                                     .append(targetDecomposeDetailsDTO.getDepartmentId())
-                                     .append(targetDecomposeDetailsDTO.getIndustryId())
-                                     .append(targetDecomposeDetailsDTO.getEmployeeId())
-                                     .append(targetDecomposeDetailsDTO.getAreaId())
-                                     .append(targetDecomposeDetailsDTO.getRegionId());
+            decompositionDimensionAll.append(targetDecomposeDetailsDTOS.get(i).getProductId())
+                    .append(targetDecomposeDetailsDTOS.get(i).getDepartmentId())
+                    .append(targetDecomposeDetailsDTOS.get(i).getIndustryId())
+                    .append(targetDecomposeDetailsDTOS.get(i).getEmployeeId())
+                    .append(targetDecomposeDetailsDTOS.get(i).getAreaId())
+                    .append(targetDecomposeDetailsDTOS.get(i).getRegionId());
             if (StringUtils.isNotBlank(decompositionDimensionAll.toString())) {
                 if (decompositionDimensionAllData.contains(decompositionDimensionAll.toString())){
-                    throw new ServiceException(targetDecomposeDTO.getDecompositionDimension()+"已存在");
+                    errorData.append((i+1)+"行"+ targetDecomposeDTO.getDecompositionDimension()+"已存在");
+
                 }
                 decompositionDimensionAllData.add(decompositionDimensionAll.toString());
             }
+        }
+        if (StringUtils.isNotBlank(errorData.toString())){
+            throw new ServiceException(errorData.toString());
         }
     }
 
@@ -2450,7 +2457,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
 
         } catch (IOException e) {
-            throw new ServiceException("导入人员信息配置Excel失败");
+            throw new ServiceException("解析Excel失败");
         }
     }
 
@@ -3390,11 +3397,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             }
         }
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
-/*            try {
+                //校检分解维度是否重复
                 this.validDecompositionDimension(targetDecomposeDTO,targetDecomposeDetailsDTOS);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
+
 
             //详情周期数据
             for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {

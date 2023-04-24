@@ -69,7 +69,7 @@ public class SysPasswordService {
      * @param tenantId    租户ID
      * @return 缓存键key
      */
-    private String getLoginCacheKeyContainTenantId(String userAccount, Long tenantId) {
+    public String getLoginCacheKeyContainTenantId(String userAccount, Long tenantId) {
         return this.getLoginCacheKey(userAccount) + ":" + tenantId;
     }
 
@@ -99,24 +99,26 @@ public class SysPasswordService {
         String userAccount = user.getUserAccount();
         Long tenantId = user.getTenantId();
         String cacheKey = this.getLoginCacheKeyContainTenantId(userAccount, tenantId);
-
         Integer retryCount = redisService.getCacheObject(cacheKey);
-
         if (retryCount == null) {
             retryCount = 0;
         }
-
         if (retryCount >= Integer.valueOf(maxRetryCount).intValue()) {
-            String errMsg = String.format("密码输入错误%s次，帐户锁定%s分钟", maxRetryCount, lockTime);
-//            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, errMsg);
+            long expireTime = redisService.getExpire(cacheKey);
+            String errorTimeDesc = this.getErrorTimeDesc(expireTime);
+            String errMsg = String.format("账号或密码多次输入错误，请在%s后重试或找回密码", errorTimeDesc);
             throw new ServiceException(errMsg);
         }
-
         if (!matches(user, password)) {
             retryCount = retryCount + 1;
-//            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, String.format("密码输入错误%s次", retryCount));
-            redisService.setCacheObject(cacheKey, retryCount, lockTime, TimeUnit.MINUTES);
-            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+            long expireTime = lockTime;
+            if (retryCount < 10) {
+                Date nowDate = DateUtils.getNowDate();
+                Date endOfDay = DateUtil.endOfDay(nowDate);
+                expireTime = DateUtil.between(nowDate, endOfDay, DateUnit.SECOND);
+            }
+            redisService.setCacheObject(cacheKey, retryCount, expireTime, TimeUnit.SECONDS);
+            throw new ServiceException("账号或密码有误，请重新输入");
         } else {
             clearLoginRecordCache(cacheKey);
         }
@@ -156,4 +158,24 @@ public class SysPasswordService {
             redisService.deleteObject(cacheKey);
         }
     }
+
+    /**
+     * @description: 获取倒数秒数的中文时间错误信息
+     * @Author: hzk
+     * @date: 2023/4/21 15:57
+     * @param: [second]
+     * @return: java.lang.String
+     **/
+    public String getErrorTimeDesc(long second) {
+        String errorTimeDesc;
+        if (second < 60) {
+            errorTimeDesc = second + "秒";
+        } else if (second % 60 == 0) {
+            errorTimeDesc = second / 60 + "分";
+        } else {
+            errorTimeDesc = second / 60 + "分" + second % 60 + "秒";
+        }
+        return errorTimeDesc;
+    }
+
 }

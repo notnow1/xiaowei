@@ -26,18 +26,20 @@ public interface ITargetDecomposeService {
      * 查询经营结果分析报表详情
      *
      * @param targetDecomposeId 目标分解表主键
+     * @param flag
      * @return 目标分解表
      */
-    TargetDecomposeDTO selectResultTargetDecomposeByTargetDecomposeId(Long targetDecomposeId);
+    TargetDecomposeDTO selectResultTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, boolean flag);
 
     /**
      * 查询滚动预测表详情
      *
      * @param targetDecomposeId 目标分解表主键
      * @param backlogId
+     * @param flag
      * @return 目标分解表
      */
-    TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, Long backlogId);
+    TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, Long backlogId, boolean flag);
 
     /**
      * 远程调用根据id目标分解id查询数据

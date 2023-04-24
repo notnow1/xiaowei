@@ -594,7 +594,9 @@ public class PostServiceImpl implements IPostService {
                         for (int i = 0; i < postExcelDistinct.size(); i++) {
                             //重复数据(认为错误数据)
                             if (StringUtils.isNotEmpty(postExcelDistinct)) {
-                                postExcels.removeAll(postExcelDistinct);
+                                for (PostExcel postExcel : postExcelDistinct) {
+                                    postExcels.remove(postExcel);
+                                }
                                 if (StringUtils.isNotEmpty(postExcels)){
                                     errorExcelList.add(postExcelDistinct.get(i));
                                     postError.append("岗位" + postExcelDistinct.get(i).getPostName() + "数据重复");

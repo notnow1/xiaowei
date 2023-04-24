@@ -9,6 +9,9 @@
                (SELECT p2.product_name
                 FROM product p2
                 WHERE p2.product_id = p.parent_product_id and p2.delete_flag = 0) AS parentProductName,
+               (SELECT p2.listing_flag
+                FROM product p2
+                WHERE p2.product_id = p.parent_product_id and p2.delete_flag = 0) AS parentListingFlag,
                pu.product_unit_name,
                p.ancestors,
                p.product_code,
@@ -303,7 +306,7 @@
         </if>
         <!-- 数据范围过滤 -->
         ${product.params.dataScope}
-        ORDER BY p.create_time DESC
+        ORDER BY p.listing_flag DESC,p.create_time DESC
     </select>
 
     <select id="getProductCodes" resultType="java.lang.String">

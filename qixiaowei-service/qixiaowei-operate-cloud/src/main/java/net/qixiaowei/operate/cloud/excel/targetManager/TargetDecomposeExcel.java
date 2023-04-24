@@ -94,6 +94,7 @@ public class TargetDecomposeExcel {
      */
     @ColumnWidth(16)
     @ExcelProperty(value = {"币种：人民币     单位：万元", "公司目标"})
+    @ContentStyle(dataFormat = 2)
     private BigDecimal targetValue;
 
     /**
@@ -101,6 +102,7 @@ public class TargetDecomposeExcel {
      */
     @ColumnWidth(16)
     @ExcelProperty(value = {"币种：人民币     单位：万元", "分解目标"})
+    @ContentStyle(dataFormat = 2)
     private BigDecimal decomposeTarget;
 
 
@@ -109,12 +111,14 @@ public class TargetDecomposeExcel {
      */
     @ExcelIgnore
     @ExcelProperty("年度预测值")
+    @ContentStyle(dataFormat = 2)
     private BigDecimal forecastYear;
     /**
      * 累计实际值
      */
     @ExcelIgnore
     @ExcelProperty("累计实际值")
+    @ContentStyle(dataFormat = 2)
     private BigDecimal actualTotal;
     /**
      * 状态:0待录入;1已录入

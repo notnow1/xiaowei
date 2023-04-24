@@ -113,7 +113,7 @@ public class UserServiceImpl implements IUserService {
     public LoginUserVO getUserByUserAccount(String userAccount, String domain) {
         Long tenantId = 0L;
         if (StringUtils.isEmpty(domain)) {
-            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+            throw new ServiceException("账号或密码有误，请重新输入");
         }
         if (StringUtils.isNotEmpty(domain)) {
             domain = domain.replace("." + tenantConfig.getMainDomain(), "");
@@ -128,16 +128,16 @@ public class UserServiceImpl implements IUserService {
                             throw new ServiceException("您的账号状态为异常状态，请联系客服查询。");
                         }
                     } else {
-                        throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+                        throw new ServiceException("账号或密码有误，请重新输入");
                     }
                 }
             } else {
-                throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+                throw new ServiceException("账号或密码有误，请重新输入");
             }
         }
         UserDTO userDTO = userMapper.selectUserByUserAccountAndTenantId(userAccount, tenantId);
         if (StringUtils.isNull(userDTO)) {
-            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+            throw new ServiceException("账号或密码有误，请重新输入");
         }
         userDTO.setAvatar(this.convertToFullFilePath(userDTO.getAvatar()));
         userDTO.setTenantLogo(this.convertToFullFilePath(userDTO.getTenantLogo()));
@@ -594,18 +594,17 @@ public class UserServiceImpl implements IUserService {
         }
         boolean disable = BusinessConstants.DISABLE.equals(status);
         Long userId = SecurityUtils.getUserId();
-        String userAccount = SecurityUtils.getUserAccount();
         if (disable && userIds.contains(userId)) {
-            throw new ServiceException("当前用户【" + userAccount + "】不能停用");
+            throw new ServiceException("当前用户不可停用");
         }
         List<UserDTO> userDTOS = userMapper.selectUserListByUserIds(userIds);
         if (StringUtils.isEmpty(userDTOS)) {
-            throw new ServiceException("用户状态修改失败，用户不存在");
+            throw new ServiceException("用户不存在");
         }
         if (disable) {
             userDTOS.forEach(userDTO -> {
                 if (userDTO.isAdmin()) {
-                    throw new ServiceException("系统管理员帐号不可停用，请重新勾选。");
+                    throw new ServiceException("系统管理员不可停用");
                 }
             });
         }

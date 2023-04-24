@@ -399,7 +399,7 @@
         </if>
         <!-- 数据范围过滤 -->
         ${department.params.dataScope}
-        ORDER BY dm.create_time DESC
+        ORDER BY dm.status DESC,dm.create_time DESC
     </select>
 
     <select id="getDepartmentCodes" resultType="java.lang.String">

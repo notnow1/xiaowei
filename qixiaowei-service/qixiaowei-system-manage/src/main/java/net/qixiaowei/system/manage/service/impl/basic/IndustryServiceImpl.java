@@ -155,12 +155,13 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public List<IndustryDTO> selectIndustryList(IndustryDTO industryDTO) {
         Integer enableType = getInteger();
+        List<IndustryDTO> industryDTOList = new ArrayList<>();
         if (enableType == 2) {
             Industry industry = new Industry();
             BeanUtils.copyProperties(industryDTO, industry);
             Map<String, Object> params = industryDTO.getParams();
             industry.setParams(params);
-            return industryMapper.selectIndustryList(industry);
+            industryDTOList = industryMapper.selectIndustryList(industry);
         } else {
             IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
             BeanUtils.copyProperties(industryDTO, industryDefaultDTO);
@@ -168,20 +169,19 @@ public class IndustryServiceImpl implements IIndustryService {
             if (StringUtils.isEmpty(industryDefaultDTOS)) {
                 return new ArrayList<>();
             }
-            List<IndustryDTO> industryDTOList = new ArrayList<>();
             for (IndustryDefaultDTO defaultDTO : industryDefaultDTOS) {
                 IndustryDTO industryDTO1 = new IndustryDTO();
                 BeanUtils.copyProperties(defaultDTO, industryDTO1);
                 industryDTOList.add(industryDTO1);
             }
-            if (StringUtils.isNotEmpty(industryDTOList)){
-                List<IndustryDTO> tree = new ArrayList<>();
-                tree.addAll(this.createTree(industryDTOList, 0));
-                industryDTOList.clear();
-                industryDTOList.addAll(treeToList(tree));
-            }
-            return industryDTOList;
         }
+        if (StringUtils.isNotEmpty(industryDTOList)) {
+            List<IndustryDTO> tree = new ArrayList<>();
+            tree.addAll(this.createTree(industryDTOList, 0));
+            industryDTOList.clear();
+            industryDTOList.addAll(treeToList(tree));
+        }
+        return industryDTOList;
     }
 
     /**
@@ -210,6 +210,7 @@ public class IndustryServiceImpl implements IIndustryService {
         }
         return tree;
     }
+
     /**
      * 树形数据转list
      *
@@ -228,6 +229,7 @@ public class IndustryServiceImpl implements IIndustryService {
         }
         return allSysMenuDto;
     }
+
     /**
      * 树结构
      *
@@ -383,7 +385,7 @@ public class IndustryServiceImpl implements IIndustryService {
         }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
-        String ancestors ;//仅在非一级指标时有用
+        String ancestors;//仅在非一级指标时有用
         int parentLevel = 1;
         Integer status = industryDTO.getStatus();
         Long parentIndustryId = industryDTO.getParentIndustryId();

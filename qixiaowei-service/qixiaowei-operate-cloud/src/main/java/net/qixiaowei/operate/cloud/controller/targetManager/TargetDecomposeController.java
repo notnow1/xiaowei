@@ -1,27 +1,20 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
-import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
+import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.handler.CellWriteHandler;
-import com.alibaba.excel.write.handler.RowWriteHandler;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
-import com.alibaba.excel.write.handler.WriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
-import com.alibaba.excel.write.merge.AbstractMergeStrategy;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
-import com.alibaba.excel.write.metadata.holder.WriteTableHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
-import com.alibaba.excel.write.style.AbstractVerticalCellStyleStrategy;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
-import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -58,7 +51,6 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,6 +165,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
+                .excelType(ExcelTypeEnum.XLSX)
                 .inMemory(true)
                 .useDefaultStyle(false)
                 .sheet("销售订单目标分解详情")
@@ -295,9 +288,10 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
+                .excelType(ExcelTypeEnum.XLSX)
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .sheet("销售收入目标分解详情")
+                .sheet("销售收入目标分解列表")
                 .registerWriteHandler(new CellWriteHandler() {
                     @Override
                     public void afterCellDispose(CellWriteHandlerContext context) {
@@ -418,9 +412,10 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class)
+                        .excelType(ExcelTypeEnum.XLSX)
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .sheet("销售回款目标分解详情")
+                .sheet("回款金额（含税）目标分解导入")
                 .registerWriteHandler(new CellWriteHandler() {
                     @Override
                     public void afterCellDispose(CellWriteHandlerContext context) {
@@ -540,6 +535,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
@@ -625,6 +621,17 @@ public class TargetDecomposeController extends BaseController {
                         cellData.setWriteCellStyle(writeCellStyle);
                     }
                 })
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                        Sheet sheet = writeSheetHolder.getSheet();
+                        int columnIndex = cell.getColumnIndex();
+                        // 列宽16
+                        sheet.setColumnWidth(columnIndex, (270 * 16));
+                        // 行高7
+                        sheet.setDefaultRowHeight((short) (20 * 15));
+                    }
+                })
                 .doWrite(TargetDecomposeImportListener.dataList(targetDecomposeExcelList));// 写入数据
     }
 
@@ -667,7 +674,7 @@ public class TargetDecomposeController extends BaseController {
     @RequiresPermissions(value = {"operate:cloud:targetDecompose:roll:info", "operate:cloud:targetDecompose:roll:edit"}, logical = Logical.OR)
     @GetMapping("/roll/info/{targetDecomposeId}")
     public AjaxResult rollInfo(@PathVariable Long targetDecomposeId, @RequestParam(required = false) Long backlogId) {
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId);
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId, false);
         return AjaxResult.success(targetDecomposeDTO);
     }
 
@@ -708,7 +715,7 @@ public class TargetDecomposeController extends BaseController {
     @GetMapping("/exportRoll-details/info/{targetDecomposeId}")
     public void exportRollTargetDecomposeDetails(@PathVariable Long targetDecomposeId, @RequestParam(required = false) Long backlogId, HttpServletResponse response) {
         //查询详情
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId);
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId,true);
         if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在！ 请刷新重试！");
         }
@@ -722,6 +729,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
@@ -860,12 +868,7 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高20
                         sheet.setDefaultRowHeight((short) (20 * 15));
-                        //取消自动合并
-                        if (relativeRowIndex <5){
-                            if (cell.getColumnIndex()>2){
-                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
-                            }
-                        }
+
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, true));
@@ -878,7 +881,7 @@ public class TargetDecomposeController extends BaseController {
     @GetMapping("/exportRoll-details-template/info/{targetDecomposeId}")
     public void exportRollTargetDecomposeDetailsTemplate(@PathVariable Long targetDecomposeId, @RequestParam(required = false) Long backlogId, HttpServletResponse response) {
         //查询详情
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId);
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId, true);
         if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在！ 请刷新重试！");
         }
@@ -1091,12 +1094,7 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高20
                         sheet.setDefaultRowHeight((short) (20 * 15));
-                        //取消自动合并
-                        if (relativeRowIndex <5){
-                            if (cell.getColumnIndex()>2){
-                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
-                            }
-                        }
+
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, false));
@@ -1108,7 +1106,7 @@ public class TargetDecomposeController extends BaseController {
 //    @RequiresPermissions("system:manage:employee:import")
     @PostMapping("import")
     public AjaxResult importProduct(Long targetDecomposeId, Long backlogId, MultipartFile file) throws IOException {
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId);
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId, true);
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -1146,7 +1144,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @GetMapping("/result/info/{targetDecomposeId}")
     public AjaxResult resultInfo(@PathVariable Long targetDecomposeId) {
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectResultTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectResultTargetDecomposeByTargetDecomposeId(targetDecomposeId,false);
         return AjaxResult.success(targetDecomposeDTO);
     }
 
@@ -1158,7 +1156,7 @@ public class TargetDecomposeController extends BaseController {
     @GetMapping("/exportResult-details/info/{targetDecomposeId}")
     public void exportResultTargetDecomposeDetails(@PathVariable Long targetDecomposeId, HttpServletResponse response) {
         //查询详情
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectResultTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectResultTargetDecomposeByTargetDecomposeId(targetDecomposeId,true);
         if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在！ 请刷新重试！");
         }
@@ -1172,6 +1170,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
@@ -1310,12 +1309,7 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高20
                         sheet.setDefaultRowHeight((short) (20 * 15));
-                        //取消自动合并
-                        if (relativeRowIndex <5){
-                            if (cell.getColumnIndex()>2){
-                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
-                            }
-                        }
+
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsResultDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, true));
@@ -1445,12 +1439,12 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,12,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
                 .sheet(targetDecomposeDTO.getIndicatorName() + "目标分解详情")// 设置 sheet 的名字
-
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -1630,12 +1624,7 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高7
                         sheet.setDefaultRowHeight((short) (20 * 15));
-                        //取消自动合并
-                        if (relativeRowIndex == 8){
-                            if (cell.getColumnIndex()>0 && cell.getColumnIndex()<5){
-                                sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
-                            }
-                        }
+
 
                     }
                 })
@@ -1671,7 +1660,7 @@ public class TargetDecomposeController extends BaseController {
     @GetMapping("/export-details/info/{targetDecomposeId}")
     public void exportTargetDecomposeDetails(@PathVariable Long targetDecomposeId, HttpServletResponse response) {
         //查询详情
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectOrderTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在！ 请刷新重试！");
         }
@@ -1685,6 +1674,7 @@ public class TargetDecomposeController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
@@ -1779,15 +1769,14 @@ public class TargetDecomposeController extends BaseController {
                             }
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            if (context.getRowIndex() > 6) {
-                                //设置边框
-                                writeCellStyle.setBorderLeft(BorderStyle.THIN);
-                                writeCellStyle.setBorderTop(BorderStyle.THIN);
-                                writeCellStyle.setBorderRight(BorderStyle.THIN);
-                                writeCellStyle.setBorderBottom(BorderStyle.THIN);
-                            }
+
                             if (context.getRowIndex() == 7) {
                                 if (context.getColumnIndex() < 7) {
+                                    //设置边框
+                                    writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                    writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                    writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                    writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -1809,6 +1798,11 @@ public class TargetDecomposeController extends BaseController {
                             }
                             if (context.getRowIndex() == 8) {
                                 if (context.getColumnIndex() < 7) {
+                                    //设置边框
+                                    writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                    writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                    writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                    writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -1825,6 +1819,20 @@ public class TargetDecomposeController extends BaseController {
                                     // cell里面去 会导致自己设置的不一样（很关键）
                                     cellData.setOriginCellStyle(xssfCellColorStyle);
                                     cell.setCellStyle(cellStyle);
+                                }
+
+                            }
+                            if (context.getRowIndex() > 10) {
+                                int num = 0;
+                                if (StringUtils.isNotEmpty(targetDecomposeDetailsExcels)) {
+                                    num = targetDecomposeDetailsExcels.get(0).getCycleTargets().size();
+                                }
+                                if (context.getColumnIndex() < (targetDecomposeDTO.getFileNameList().size() + 2 + num)){
+                                    //设置边框
+                                    writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                    writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                    writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                    writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                 }
 
                             }
@@ -1865,12 +1873,12 @@ public class TargetDecomposeController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                         // 行高7
                         sheet.setDefaultRowHeight((short) (20 * 15));
-                        //取消自动合并
+    /*                    //取消自动合并
                         if (relativeRowIndex == 8){
                             if (cell.getColumnIndex()>0 && cell.getColumnIndex()<5){
                                 sheet.removeMergedRegion(sheet.getNumMergedRegions() - 1);
                             }
-                        }
+                        }*/
                     }
                 })
                 .doWrite(TargetDecomposeImportListener.detailsDataList(targetDecomposeDetailsExcels, targetDecomposeDTO));

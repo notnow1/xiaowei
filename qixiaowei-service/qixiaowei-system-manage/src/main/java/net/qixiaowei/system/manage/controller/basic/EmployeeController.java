@@ -184,10 +184,14 @@ public class EmployeeController extends BaseController {
         } catch (IOException e) {
             throw new ServerException("模板sheet名称不正确！");
         }
-        if (listMap.size() > 1000) {
-            throw new RuntimeException("数据量过大(峰值1000) 请重新导入");
+        if (listMap.size()>10000){
+            throw new RuntimeException("数据量过大(峰值10000) 请重新导入");
         }
-
+        if (StringUtils.isNotEmpty(listMap)){
+            if (listMap.get(0).size() != 24){
+                throw new RuntimeException("导入模板被修改，请重新下载模板进行导入!");
+            }
+        }
         // 调用importer方法
         try {
             employeeService.importEmployee(list);
