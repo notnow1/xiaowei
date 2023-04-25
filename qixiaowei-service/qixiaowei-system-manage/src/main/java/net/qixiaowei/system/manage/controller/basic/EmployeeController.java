@@ -206,11 +206,14 @@ public class EmployeeController extends BaseController {
     @RequiresPermissions("system:manage:employee:export")
     @GetMapping("export")
     public void exportEmployee(@RequestParam Map<String, Object> employee, EmployeeDTO employeeDTO, HttpServletResponse response) {
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(new DepartmentDTO());
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
         //岗位名称
         List<String> postNames = new ArrayList<>();
         PostDTO postDTO = new PostDTO();
+        postDTO.setStatus(1);
         //查询岗位信息
         List<PostDTO> postDTOS = postService.selectPostList(postDTO);
         if (StringUtils.isNotEmpty(postDTOS)) {
