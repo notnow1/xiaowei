@@ -1188,7 +1188,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         head5.add("");
         head5.add("");
         head5.add("已分解");
-        head5.add(null != targetDecomposeDTO.getDecomposed() ? targetDecomposeDTO.getDecomposed().setScale(2, RoundingMode.HALF_UP).toString() : "0.00");
+        head5.add(null != targetDecomposeDTO.getDecomposed() ? " "+targetDecomposeDTO.getDecomposed().setScale(2, RoundingMode.HALF_UP).toString() : " 0.00");
         head5.add("");
         head5.add("");
         // 第七列
