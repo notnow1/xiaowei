@@ -47,7 +47,7 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
      *
      * @return List
      */
-    public static List<List<String>> headOrgSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS, List<EmployeeDTO> employeeData) {
+    public static List<List<String>> headOrgSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS, List<EmployeeDTO> employeeData, boolean isError) {
         List<String> listSelectTwo = new ArrayList<>();
         for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
             listSelectTwo.add(performanceRankFactorDTO.getPerformanceRankName());
@@ -58,6 +58,12 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
             listSelectThree.add(employeeDatum.getEmployeeName() + "（" + employeeDatum.getEmployeeCode() + "）");
         }
         List<List<String>> list = new ArrayList<List<String>>();
+        if (isError) {
+            // 第0列
+            List<String> head = new ArrayList<String>();
+            head.add("错误信息");
+            list.add(head);
+        }
         // 第1列
         List<String> head0 = new ArrayList<String>();
         head0.add("考核对象");
@@ -67,11 +73,11 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
         // 第2列
         List<String> head2 = new ArrayList<String>();
         head2.add("考核结果*");
-        selectMap.put(2, listSelectTwo);
+        selectMap.put(isError ? 3 : 2, listSelectTwo);
         // 第3列
         List<String> head3 = new ArrayList<String>();
         head3.add("考核责任人");
-        selectMap.put(3, listSelectThree);
+        selectMap.put(isError ? 4 : 3, listSelectThree);
         // 第4列
         List<String> head4 = new ArrayList<String>();
         head4.add("备注");
@@ -197,7 +203,7 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
      *
      * @return 结果
      */
-    public static List<List<String>> headPerSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS, List<EmployeeDTO> employeeData) {
+    public static List<List<String>> headPerSystemTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS, List<EmployeeDTO> employeeData, boolean isError) {
         List<String> listSelectSix = new ArrayList<>();
         for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
             listSelectSix.add(performanceRankFactorDTO.getPerformanceRankName());
@@ -208,6 +214,12 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
             listSelectSeven.add(employeeDatum.getEmployeeName() + "（" + employeeDatum.getEmployeeCode() + "）");
         }
         List<List<String>> list = new ArrayList<List<String>>();
+        if (isError) {
+            // 第0列
+            List<String> head = new ArrayList<String>();
+            head.add("员工工号");
+            list.add(head);
+        }
         // 第1列
         List<String> head0 = new ArrayList<String>();
         head0.add("员工工号");
@@ -228,11 +240,11 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
         head5.add("评议总分数");
         // 第4列
         List<String> head6 = new ArrayList<String>();
-        selectMap.put(6, listSelectSix);
+        selectMap.put(isError ? 7 : 6, listSelectSix);
         head6.add("考核结果*");
         // 第4列
         List<String> head7 = new ArrayList<String>();
-        selectMap.put(7, listSelectSeven);
+        selectMap.put(isError ? 8 : 7, listSelectSeven);
         head7.add("考核责任人");
         // 第4列
         List<String> head8 = new ArrayList<String>();
@@ -252,7 +264,7 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
     /**
      * 个人绩效归档导入自定义模板
      *
-     * @return
+     * @return 结果
      */
     public static List<List<String>> headPerCustomTemplate(Map<Integer, List<String>> selectMap, List<PerformanceRankFactorDTO> performanceRankFactorDTOS) {
         List<String> listSelect = new ArrayList<>();
@@ -433,32 +445,38 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
 
     /**
      * @param performanceAppraisalObjectsDTOList 考核对象列表
+     * @param errorList                          错误列表
      * @param appraisalDTO                       绩效考核
      * @return Collection
      */
-    public static Collection<List<Object>> dataTemplateList(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList, PerformanceAppraisalDTO appraisalDTO) {
+    public static Collection<List<Object>> dataTemplateList(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList, List<List<Object>> errorList, PerformanceAppraisalDTO appraisalDTO) {
         if (StringUtils.isNull(appraisalDTO)) {
             throw new ServiceException("当前要导出的绩效任务不存在");
         }
         List<List<Object>> list = new ArrayList<>();
-        for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-            List<Object> data = new ArrayList<Object>();
-            if (appraisalDTO.getAppraisalObject() == 1) {
-                data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName() + "（" + performanceAppraisalObjectsDTO.getAppraisalObjectCode() + "）");
-            } else {
-                data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());
-                data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());
-                data.add(performanceAppraisalObjectsDTO.getDepartmentName());
-                data.add(performanceAppraisalObjectsDTO.getPostName());
-                data.add(performanceAppraisalObjectsDTO.getOfficialRankName());
+        if (StringUtils.isEmpty(errorList)) {
+            for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                List<Object> data = new ArrayList<Object>();
+                if (appraisalDTO.getAppraisalObject() == 1) {
+                    data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName() + "（" + performanceAppraisalObjectsDTO.getAppraisalObjectCode() + "）");
+                } else {
+                    data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());
+                    data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());
+                    data.add(performanceAppraisalObjectsDTO.getDepartmentName());
+                    data.add(performanceAppraisalObjectsDTO.getPostName());
+                    data.add(performanceAppraisalObjectsDTO.getOfficialRankName());
+                }
+                data.add("");
+                data.add("");
+                data.add("");
+                data.add("");
+                list.add(data);
             }
-            data.add("");
-            data.add("");
-            data.add("");
-            data.add("");
-            list.add(data);
+            return list;
+        } else {
+            return errorList;
         }
-        return list;
+
     }
 
 }

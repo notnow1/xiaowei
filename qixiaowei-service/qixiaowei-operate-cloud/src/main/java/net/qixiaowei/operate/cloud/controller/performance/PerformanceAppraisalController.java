@@ -13,8 +13,11 @@ import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
@@ -22,6 +25,7 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
@@ -60,6 +64,8 @@ public class PerformanceAppraisalController extends BaseController {
     @Autowired
     private IPerformanceAppraisalColumnsService performanceAppraisalColumnsService;
 
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 分页查询绩效考核表列表
@@ -252,7 +258,7 @@ public class PerformanceAppraisalController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgArchive:import")
     @GetMapping("export-org-template")
-    public void exportOrgTemplate(@RequestParam Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
+    public void exportOrgTemplate(@RequestParam(required = false) Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
 //        if (StringUtils.isNull(importType)) {
 //            throw new ServiceException("请选择考核流程");
 //        }
@@ -262,7 +268,7 @@ public class PerformanceAppraisalController extends BaseController {
         List<List<String>> head;
         String fileName;
 //        if (importType.equals(1)) {//系统流程
-        head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData);
+        head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData, false);
         fileName = URLEncoder.encode("组织绩效归档导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
 //        } else {
 //            head = PerformanceAppraisalImportListener.headOrgCustomTemplate(selectMap, performanceRankFactorDTOS);
@@ -278,7 +284,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("组织绩效归档导入")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -366,7 +372,136 @@ public class PerformanceAppraisalController extends BaseController {
                         sheet.setDefaultRowHeight((short) (20 * 16));
                     }
                 })
-                .doWrite(PerformanceAppraisalImportListener.dataTemplateList(performanceAppraisalObjectsDTOList, appraisalDTO));
+                .doWrite(PerformanceAppraisalImportListener.dataTemplateList(performanceAppraisalObjectsDTOList, null, appraisalDTO));
+    }
+
+    /**
+     * 导出组织模板表
+     */
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:performanceAppraisal:orgArchive:import")
+    @GetMapping("export-org-error")
+    public void exportOrgError(@RequestParam String errorExcelId, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
+//        if (StringUtils.isNull(importType)) {
+//            throw new ServiceException("请选择考核流程");
+//        }
+        List<List<Object>> errorList = redisService.getCacheObject(CacheConstants.ERROR_EXCEL_KEY + errorExcelId);
+        if (StringUtils.isEmpty(errorList)) {
+            throw new ServiceException("当前错误报告已过期");
+        }
+        List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
+        List<EmployeeDTO> employeeData = performanceAppraisalService.getEmployeeData();
+        Map<Integer, List<String>> selectMap = new HashMap<>();
+        List<List<String>> head;
+        String fileName;
+//        if (importType.equals(1)) {//系统流程
+        head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData, true);
+        fileName = URLEncoder.encode("组织绩效归档导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+//        } else {
+//            head = PerformanceAppraisalImportListener.headOrgCustomTemplate(selectMap, performanceRankFactorDTOS);
+//            fileName = URLEncoder.encode("组织绩效归档导入自定义模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+//        }
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        PerformanceAppraisalDTO appraisalDTO = performanceAppraisalService.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalService.selectOrgAppraisalObjectList(performanceAppraisalId);
+        EasyExcel.write(response.getOutputStream())
+                .inMemory(true)
+                .useDefaultStyle(false)
+                .head(head)
+                .sheet("组织绩效归档导入错误报告")// 设置 sheet 的名字
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
+                .registerWriteHandler(new SheetWriteHandler() {
+                    @Override
+                    public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
+                        for (int i = 0; i < 7; i++) {
+                            // 设置为文本格式
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            CellStyle cellStyle = writeWorkbookHolder.getCachedWorkbook().createCellStyle();
+                            // 49为文本格式
+                            cellStyle.setDataFormat((short) 49);
+                            // i为列，一整列设置为文本格式
+                            sheet.setDefaultColumnStyle(i, cellStyle);
+                        }
+                    }
+                })
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        //设置文本
+                        DataFormatData dataFormatData = new DataFormatData();
+                        dataFormatData.setIndex((short) 49);
+                        writeCellStyle.setDataFormatData(dataFormatData);
+                        // 设置字体
+                        WriteFont headWriteFont = new WriteFont();
+                        // 拿到poi的workbook
+                        // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                        // 不同单元格尽量传同一个 cellStyle
+                        Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                        CellStyle cellStyle = workbook.createCellStyle();
+                        if (context.getRowIndex() < 1) {
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            //加粗
+                            headWriteFont.setBold(true);
+                            if (context.getColumnIndex() == 2) {
+                                headWriteFont.setColor(IndexedColors.RED.getIndex());
+                            }
+                            headWriteFont.setFontName("微软雅黑");
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            cellData.setWriteCellStyle(writeCellStyle);
+                        } else {
+                            //居左
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            headWriteFont.setFontName("微软雅黑");
+                            cellData.setWriteCellStyle(writeCellStyle);
+                            if (context.getColumnIndex() == 1) {
+                                //设置rgb颜色
+                                byte[] rgb = new byte[]{(byte) 217, (byte) 217, (byte) 217};
+                                XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                cellData.setOriginCellStyle(xssfCellColorStyle);
+                            }
+                            cell.setCellStyle(cellStyle);
+                        }
+                        if (context.getColumnIndex() == 0) {
+                            headWriteFont.setColor(IndexedColors.RED.getIndex());
+                        }
+                        writeCellStyle.setWriteFont(headWriteFont);
+                        //垂直居中
+                        writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                        //设置 自动换行
+                        writeCellStyle.setWrapped(true);
+                        //设置边框
+                        writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                        writeCellStyle.setBorderTop(BorderStyle.THIN);
+                        writeCellStyle.setBorderRight(BorderStyle.THIN);
+                        writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                    }
+                })
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                        Sheet sheet = writeSheetHolder.getSheet();
+                        int columnIndex = cell.getColumnIndex();
+                        // 列宽16
+                        sheet.setColumnWidth(columnIndex, (270 * 16));
+                        // 行高16
+                        sheet.setDefaultRowHeight((short) (20 * 16));
+                    }
+                })
+                .doWrite(PerformanceAppraisalImportListener.dataTemplateList(performanceAppraisalObjectsDTOList, errorList, appraisalDTO));
     }
 
     /**
@@ -379,11 +514,10 @@ public class PerformanceAppraisalController extends BaseController {
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
 //        Integer selfDefinedColumnsFlag = performanceRankFactorDTOS.get(0).getSelfDefinedColumnsFlag();
         Map<Integer, List<String>> selectMap = new HashMap<>();
-        List<List<String>> head;
         Collection<List<Object>> list = performanceAppraisalService.dataOrgSysList(performanceAppraisalId, performanceRankFactorDTOS);
         List<EmployeeDTO> employeeData = performanceAppraisalService.getEmployeeData();
 //        if (selfDefinedColumnsFlag == 0) {
-        head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData);
+        List<List<String>> head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData, false);
 //        } else {
 //            List<PerformanceAppraisalColumnsDTO> appraisalColumnsDTOList = performanceAppraisalColumnsService.selectAppraisalColumnsByAppraisalId(performanceAppraisalId);
 //            head = PerformanceAppraisalImportListener.headOrgCustom(selectMap, performanceRankFactorDTOS, appraisalColumnsDTOList);
@@ -615,11 +749,140 @@ public class PerformanceAppraisalController extends BaseController {
     public AjaxResult importPerPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file) {
 //        Integer importType = performanceAppraisalDTO.getImportType();
 //        if (importType.equals(1)) {
-        performanceAppraisalService.importSysPerPerformanceAppraisal(performanceAppraisalDTO, file);
+        Map<Object, Object> objectObjectMap = performanceAppraisalService.importSysPerPerformanceAppraisal(performanceAppraisalDTO, file);
 //        } else {
 //            performanceAppraisalService.importCustomPerPerformanceAppraisal(performanceAppraisalDTO, file);
 //        }
-        return AjaxResult.success("操作成功");
+        return AjaxResult.successExcel(objectObjectMap, "导入成功");
+    }
+
+    /**
+     * 导出组织模板表
+     */
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:performanceAppraisal:perArchive:import")
+    @GetMapping("export-per-error")
+    public void exportPerError(@RequestParam String errorExcelId, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
+//        if (StringUtils.isNull(importType)) {
+//            throw new ServiceException("请选择考核流程");
+//        }
+        List<List<Object>> errorList = redisService.getCacheObject(CacheConstants.ERROR_EXCEL_KEY + errorExcelId);
+        if (StringUtils.isEmpty(errorList)) {
+            throw new ServiceException("当前错误报告已过期");
+        }
+        List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
+        List<EmployeeDTO> employeeData = performanceAppraisalService.getEmployeeData();
+        Map<Integer, List<String>> selectMap = new HashMap<>();
+        List<List<String>> head = PerformanceAppraisalImportListener.headPerSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData, true);
+        String fileName;
+//        if (importType.equals(1)) {//系统流程
+
+        fileName = URLEncoder.encode("组织绩效归档导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+//        } else {
+//            head = PerformanceAppraisalImportListener.headOrgCustomTemplate(selectMap, performanceRankFactorDTOS);
+//            fileName = URLEncoder.encode("组织绩效归档导入自定义模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+//        }
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        PerformanceAppraisalDTO appraisalDTO = performanceAppraisalService.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalService.selectOrgAppraisalObjectList(performanceAppraisalId);
+        EasyExcel.write(response.getOutputStream())
+                .inMemory(true)
+                .useDefaultStyle(false)
+                .head(head)
+                .sheet("组织绩效归档导入错误报告")// 设置 sheet 的名字
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
+                .registerWriteHandler(new SheetWriteHandler() {
+                    @Override
+                    public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
+                        for (int i = 0; i < 11; i++) {
+                            // 设置为文本格式
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            CellStyle cellStyle = writeWorkbookHolder.getCachedWorkbook().createCellStyle();
+                            // 49为文本格式
+                            cellStyle.setDataFormat((short) 49);
+                            // i为列，一整列设置为文本格式
+                            sheet.setDefaultColumnStyle(i, cellStyle);
+                        }
+                    }
+                })
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        Cell cell = context.getCell();
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        //设置文本
+                        DataFormatData dataFormatData = new DataFormatData();
+                        dataFormatData.setIndex((short) 49);
+                        writeCellStyle.setDataFormatData(dataFormatData);
+                        // 设置字体
+                        WriteFont headWriteFont = new WriteFont();
+                        // 拿到poi的workbook
+                        // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                        // 不同单元格尽量传同一个 cellStyle
+                        Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                        CellStyle cellStyle = workbook.createCellStyle();
+                        if (context.getRowIndex() < 1) {
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            //加粗
+                            headWriteFont.setBold(true);
+                            if (context.getColumnIndex() == 2) {
+                                headWriteFont.setColor(IndexedColors.RED.getIndex());
+                            }
+                            headWriteFont.setFontName("微软雅黑");
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            cellData.setWriteCellStyle(writeCellStyle);
+                        } else {
+                            //居左
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                            headWriteFont.setFontHeightInPoints((short) 11);
+                            headWriteFont.setFontName("微软雅黑");
+                            cellData.setWriteCellStyle(writeCellStyle);
+                            if (context.getColumnIndex() > 0 && context.getColumnIndex() < 6) {
+                                //设置rgb颜色
+                                byte[] rgb = new byte[]{(byte) 217, (byte) 217, (byte) 217};
+                                XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                cellData.setOriginCellStyle(xssfCellColorStyle);
+                            }
+                            cell.setCellStyle(cellStyle);
+                        }
+                        if (context.getColumnIndex() == 0) {
+                            headWriteFont.setColor(IndexedColors.RED.getIndex());
+                        }
+                        writeCellStyle.setWriteFont(headWriteFont);
+                        //垂直居中
+                        writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                        //设置 自动换行
+                        writeCellStyle.setWrapped(true);
+                        //设置边框
+                        writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                        writeCellStyle.setBorderTop(BorderStyle.THIN);
+                        writeCellStyle.setBorderRight(BorderStyle.THIN);
+                        writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                    }
+                })
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                        Sheet sheet = writeSheetHolder.getSheet();
+                        int columnIndex = cell.getColumnIndex();
+                        // 列宽16
+                        sheet.setColumnWidth(columnIndex, (270 * 16));
+                        // 行高16
+                        sheet.setDefaultRowHeight((short) (20 * 16));
+                    }
+                })
+                .doWrite(PerformanceAppraisalImportListener.dataTemplateList(performanceAppraisalObjectsDTOList, errorList, appraisalDTO));
     }
 
     /**
@@ -628,7 +891,7 @@ public class PerformanceAppraisalController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("operate:cloud:performanceAppraisal:perArchive:import")
     @GetMapping("export-per-template")
-    public void exportPerTemplate(@RequestParam Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
+    public void exportPerTemplate(@RequestParam(required = false) Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
 //        if (StringUtils.isNull(importType)) {
 //            throw new ServiceException("请选择考核流程");
 //        }
@@ -636,7 +899,7 @@ public class PerformanceAppraisalController extends BaseController {
         Map<Integer, List<String>> selectMap = new HashMap<>();
         List<EmployeeDTO> employeeData = performanceAppraisalService.getEmployeeData();
 //        if (importType.equals(1)) {//系统流程
-        List<List<String>> head = PerformanceAppraisalImportListener.headPerSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData);
+        List<List<String>> head = PerformanceAppraisalImportListener.headPerSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData, false);
         String fileName = URLEncoder.encode("个人绩效归档导入系统模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
 //        } else {
 //            head = PerformanceAppraisalImportListener.headPerCustomTemplate(selectMap, performanceRankFactorDTOS);
@@ -746,7 +1009,7 @@ public class PerformanceAppraisalController extends BaseController {
                         sheet.setDefaultRowHeight((short) (20 * 16));
                     }
                 })
-                .doWrite(PerformanceAppraisalImportListener.dataTemplateList(performanceAppraisalObjectsDTOList, appraisalDTO));
+                .doWrite(PerformanceAppraisalImportListener.dataTemplateList(performanceAppraisalObjectsDTOList, null, appraisalDTO));
     }
 
     /**
@@ -763,7 +1026,7 @@ public class PerformanceAppraisalController extends BaseController {
         List<List<String>> head;
         Collection<List<Object>> list = performanceAppraisalService.dataPerSysList(performanceAppraisalId, performanceRankFactorDTOS);
 //        if (selfDefinedColumnsFlag == 0) {
-        head = PerformanceAppraisalImportListener.headPerSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData);
+        head = PerformanceAppraisalImportListener.headPerSystemTemplate(selectMap, performanceRankFactorDTOS, employeeData, false);
 //        } else {
 //            List<PerformanceAppraisalColumnsDTO> appraisalColumnsDTOList = performanceAppraisalColumnsService.selectAppraisalColumnsByAppraisalId(performanceAppraisalId);
 //            head = PerformanceAppraisalImportListener.headPerCustom(selectMap, performanceRankFactorDTOS, appraisalColumnsDTOList);

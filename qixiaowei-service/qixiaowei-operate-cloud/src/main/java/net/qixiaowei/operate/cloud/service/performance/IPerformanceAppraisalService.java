@@ -169,7 +169,7 @@ public interface IPerformanceAppraisalService {
      * @param performanceAppraisalDTO 绩效考核
      * @param file                    文件
      */
-    void importSysPerPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
+    Map<Object, Object> importSysPerPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
 
     /**
      * 导入自定义的组织绩效考核Excel

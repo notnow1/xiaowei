@@ -16,6 +16,7 @@ import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
@@ -116,6 +117,9 @@ public class OfficialRankEmolumentController extends BaseController {
             OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentService.selectOfficialRankEmolumentByOfficialRankEmolumentId(officialRankEmolumentDTO);
             List<List<String>> head = OfficialRankEmolumentImportListener.getHead(emolumentDTO.getOfficialRankSystemName(), true);
             List<List<String>> errorList = redisService.getCacheObject(CacheConstants.ERROR_EXCEL_KEY + errorExcelId);
+            if (StringUtils.isEmpty(errorList)) {
+                throw new ServiceException("当前错误报告已过期");
+            }
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding(CharsetKit.UTF_8);
             String fileName = URLEncoder.encode("职级确定薪酬导入错误报告" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
