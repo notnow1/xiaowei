@@ -149,6 +149,7 @@ public class EmployeeController extends BaseController {
     /**
      * 导入人员
      */
+    @SneakyThrows
     @RequiresPermissions("system:manage:employee:import")
     @PostMapping("import")
     public AjaxResult importEmployee(MultipartFile file) throws IOException {
@@ -194,14 +195,8 @@ public class EmployeeController extends BaseController {
         if (listMap.size() > 10000) {
             throw new ServerException("数据量过大(峰值10000) 请重新导入");
         }
-        // 调用importer方法
-        try {
-            employeeService.importEmployee(list);
-        } catch (ParseException e) {
-            return AjaxResult.error();
-        }
 
-        return AjaxResult.success();
+        return AjaxResult.successExcel(employeeService.importEmployee(list),null);
     }
 
     /**

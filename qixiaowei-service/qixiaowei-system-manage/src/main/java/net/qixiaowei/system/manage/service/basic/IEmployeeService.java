@@ -170,7 +170,7 @@ public interface IEmployeeService {
      *
      * @param list
      */
-    void importEmployee(List<EmployeeExcel> list) throws ParseException;
+    Map<Object, Object>  importEmployee(List<EmployeeExcel> list) throws ParseException;
 
     /**
      * 导出Excel

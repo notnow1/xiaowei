@@ -1,7 +1,6 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import cn.hutool.core.util.StrUtil;
-import groovy.lang.Lazy;
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
@@ -13,6 +12,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.utils.uuid.IdUtils;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.redis.service.RedisService;
@@ -31,7 +31,6 @@ import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppra
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
-import net.qixiaowei.sales.cloud.api.dto.sync.SyncDeptDTO;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncUserDTO;
 import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
@@ -58,7 +57,6 @@ import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.basic.ICountryService;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
-import net.qixiaowei.system.manage.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -583,7 +581,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      */
     @Override
     @Transactional
-    public void importEmployee(List<EmployeeExcel> list) throws ParseException {
+    public Map<Object, Object> importEmployee(List<EmployeeExcel> list) throws ParseException {
         if (StringUtils.isEmpty(list)) {
             throw new RuntimeException("请填写Excel数据!");
         }
@@ -606,7 +604,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<RegionDTO> regionProvinceNameAndCityNames = regionMapper.selectRegionByProvinceNameAndCityName();
         //查询所有省市区
         List<RegionDTO> regionProvinceNameAndCityNameAndDistrictNames = regionMapper.selectRegionByProvinceNameAndCityNameAndDistrictName();
-        List<PostDTO> postDTOS = postMapper.selectPostList( new Post());
+        List<PostDTO> postDTOS = postMapper.selectPostList(new Post());
         Department departmentExcel = new Department();
         departmentExcel.setStatus(1);
         //查询部门名称附加父级名称
@@ -630,8 +628,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
             departmentPostMap = departmentPostDTOList.parallelStream().collect(Collectors.groupingBy(DepartmentPostDTO::getDepartmentId));
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        //成功list
-        List<Employee> successExcelList = new ArrayList<>();
+        //成功返回List
+        List<EmployeeExcel> successExcelList = new ArrayList<>();
         //失败List
         List<EmployeeExcel> errorExcelList = new ArrayList<>();
 
@@ -648,6 +646,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<String> employeeExcelCodes = list.stream().map(EmployeeExcel::getEmployeeCode).collect(Collectors.toList());
         //身份证集合检验唯一性
         List<String> excelIdentityCards = list.stream().map(EmployeeExcel::getIdentityCard).collect(Collectors.toList());
+        //手机号码
+        List<String> excelEmployeeMobile = list.stream().map(EmployeeExcel::getEmployeeMobile).collect(Collectors.toList());
+        //邮箱
+        List<String> excelEmployeeEmail = list.stream().map(EmployeeExcel::getEmployeeEmail).collect(Collectors.toList());
         //返回报错信息
         StringBuffer employeeError = new StringBuffer();
         //数据库已存在修改人员数据
@@ -677,7 +679,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         //员工详细信息
                         EmployeeInfo employeeInfo = new EmployeeInfo();
                         if (StringUtils.equals(employeeDTO.getEmployeeCode(), employeeExcel.getEmployeeCode())) {
-                            StringBuffer stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap);
+                            StringBuffer stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap,excelEmployeeMobile,excelEmployeeEmail);
                             if (stringBuffer.length() > 1) {
                                 employeeExcel.setErrorData(stringBuffer.toString());
                                 errorExcelList.add(employeeExcel);
@@ -698,7 +700,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             Employee employee2 = new Employee();
             //员工详细信息
             EmployeeInfo employeeInfo = new EmployeeInfo();
-            StringBuffer stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap);
+            StringBuffer stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap, excelEmployeeMobile, excelEmployeeEmail);
             if (stringBuffer.length() > 1) {
                 employeeExcel.setErrorData(stringBuffer.toString());
                 errorExcelList.add(employeeExcel);
@@ -715,25 +717,32 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
 
         }
+        String uuId = null;
         //后续优化导入
         if (employeeError.length() > 1) {
-            String uuId = null;
             String simpleUUID = IdUtils.simpleUUID();
             uuId = "errorExeclId:" + simpleUUID;
             redisService.setCacheObject(uuId, errorExcelList, 24L, TimeUnit.HOURS);
         }
-
         if (StringUtils.isNotEmpty(employeeAddList)) {
             employeeMapper.batchEmployee(employeeAddList);
             for (Employee employee1 : employeeAddList) {
+                EmployeeExcel employeeExcel = new EmployeeExcel();
+                BeanUtils.copyProperties(employee1, employeeExcel);
+                successExcelList.add(employeeExcel);
                 //同步销售云
                 this.addUser(employee1);
+
             }
-            successExcelList.addAll(employeeAddList);
+
         }
         if (StringUtils.isNotEmpty(employeeUpdateList)) {
             employeeMapper.updateEmployees(employeeUpdateList);
-            successExcelList.addAll(employeeUpdateList);
+            for (Employee employee1 : employeeUpdateList) {
+                EmployeeExcel employeeExcel = new EmployeeExcel();
+                BeanUtils.copyProperties(employee1, employeeExcel);
+                successExcelList.add(employeeExcel);
+            }
         }
         if (StringUtils.isNotEmpty(employeeInfoAddList)) {
             for (int i = 0; i < employeeInfoAddList.size(); i++) {
@@ -744,8 +753,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (StringUtils.isNotEmpty(employeeInfoUpdateList)) {
             employeeInfoMapper.updateEmployeeInfos(employeeInfoUpdateList);
         }
-
-
+        return ExcelUtils.parseExcelResult(successExcelList, errorExcelList, false, uuId);
     }
 
     /**
@@ -1038,18 +1046,27 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 检验数据
-     *
-     * @param employeeCodes
+     *  @param employeeCodes
      * @param employeeExcel
      * @param employeeExcelCodes
      * @param excelIdentityCards
      * @param postDTOS
      * @param departmentPostMap
      * @param parentDepartmentNameMap
+     * @param excelEmployeeMobile
+     * @param excelEmployeeEmail
      */
-    private StringBuffer validEmployee(List<String> employeeCodes, EmployeeExcel employeeExcel, List<String> employeeExcelCodes, List<String> excelIdentityCards, List<PostDTO> postDTOS, Map<Long, List<DepartmentPostDTO>> departmentPostMap, Map<String, Long> parentDepartmentNameMap) {
+    private StringBuffer validEmployee(List<String> employeeCodes, EmployeeExcel employeeExcel, List<String> employeeExcelCodes, List<String> excelIdentityCards, List<PostDTO> postDTOS, Map<Long, List<DepartmentPostDTO>> departmentPostMap, Map<String, Long> parentDepartmentNameMap, List<String> excelEmployeeMobile, List<String> excelEmployeeEmail) {
         StringBuffer validEmployeeError = new StringBuffer();
         if (StringUtils.isNotNull(employeeExcel)) {
+            String employeeEmail = employeeExcel.getEmployeeEmail();
+            if (StringUtils.isNotBlank(employeeEmail)){
+                Pattern pt2 = Pattern.compile("(^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$)");
+                Matcher matcher2 = pt2.matcher(employeeExcel.getEmployeeEmail());
+                if (!matcher2.find()) {
+                    validEmployeeError.append("邮箱格式不正确；");
+                }
+            }
             //入职日期
             String employmentDate = employeeExcel.getEmploymentDate();
             //离职日期
@@ -1135,6 +1152,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
                 validEmployeeError.append("员工手机号为必填项；");
             }
+            Pattern pt1 = Pattern.compile("(^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$)");
+            Matcher matcher1 = pt1.matcher(employeeExcel.getEmployeeMobile());
+            if (!matcher1.find()) {
+                validEmployeeError.append("手机号格式不正确；");
+            }
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
                 validEmployeeError.append("紧急联系人电话为必填项；");
             }
@@ -1149,7 +1171,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (identityCards.size() > 1) {
                 validEmployeeError.append("excel列表中身份证号码重复；");
             }
-
+            //手机号
+            List<String> employeeMobileList = excelEmployeeMobile.stream().filter(f -> f.equals(employeeExcel.getEmployeeMobile())).collect(Collectors.toList());
+            if (employeeMobileList.size() > 1) {
+                validEmployeeError.append("excel列表中手机号重复；");
+            }
+            //邮箱
+            List<String> employeeEmailList = excelEmployeeEmail.stream().filter(f -> f.equals(employeeExcel.getEmployeeEmail())).collect(Collectors.toList());
+            if (employeeEmailList.size() > 1) {
+                validEmployeeError.append("excel列表中邮箱重复；");
+            }
 
             //岗位是否属于这个部门
             if (StringUtils.isNotEmpty(postName) && StringUtils.isNotEmpty(departmentName)) {
