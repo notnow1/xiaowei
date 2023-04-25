@@ -678,7 +678,7 @@ public class PostServiceImpl implements IPostService {
                                     }
                                     List<DepartmentPostDTO> departmentPostDTOList2 = departmentPostMapper.selectExcelDepartmentPostId(post.getPostId());
                                     if (StringUtils.isNotEmpty(departmentPostDTOList2)) {
-                                        departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentPostDTOList2.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+                                        departmentPostMapper.logicDeleteDepartmentPostByDepartmentPostIds(departmentPostDTOList2.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
                                     }
                                     departmentPost.setPostId(post.getPostId());
                                     if (StringUtils.isNotEmpty(departmentDTOList)) {
@@ -688,6 +688,8 @@ public class PostServiceImpl implements IPostService {
                                             departmentPost.setDepartmentId(departmentDTO.get(0).getDepartmentId());
                                             //组织排序
                                             departmentPost.setDepartmentSort(1);
+                                            departmentPost.setCreateBy(SecurityUtils.getUserId());
+                                            departmentPost.setCreateTime(DateUtils.getNowDate());
                                             departmentPost.setUpdateBy(SecurityUtils.getUserId());
                                             departmentPost.setUpdateTime(DateUtils.getNowDate());
                                             departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
@@ -699,7 +701,7 @@ public class PostServiceImpl implements IPostService {
                                         throw new ServiceException("适用组织不存在! 请先配置组织数据");
                                     }
                                     try {
-                                        departmentPostMapper.updateDepartmentPost(departmentPost);
+                                        departmentPostMapper.insertDepartmentPost(departmentPost);
                                     } catch (Exception e) {
                                         throw new ServiceException("插入岗位关联表失败！");
                                     }
@@ -791,6 +793,8 @@ public class PostServiceImpl implements IPostService {
                                             //组织排序
                                             departmentPost.setDepartmentSort(i + 1);
                                             departmentPost.setPostId(postId);
+                                            departmentPost.setCreateBy(SecurityUtils.getUserId());
+                                            departmentPost.setCreateTime(DateUtils.getNowDate());
                                             departmentPost.setUpdateBy(SecurityUtils.getUserId());
                                             departmentPost.setUpdateTime(DateUtils.getNowDate());
                                             departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
@@ -802,11 +806,11 @@ public class PostServiceImpl implements IPostService {
                                     if (i == (postExcelDistinct.size() - 1)) {
 
                                         if (StringUtils.isNotEmpty(departmentPostDTOList)) {
-                                            departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+                                            departmentPostMapper.logicDeleteDepartmentPostByDepartmentPostIds(departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
                                         }
                                         if (StringUtils.isNotEmpty(departmentPostUpdateList)) {
                                             try {
-                                                departmentPostMapper.updateDepartmentPosts(departmentPostUpdateList);
+                                                departmentPostMapper.batchDepartmentPost(departmentPostUpdateList);
                                             } catch (Exception e) {
                                                 throw new ServiceException("修改岗位表失败！");
                                             }
@@ -918,12 +922,6 @@ public class PostServiceImpl implements IPostService {
 
         if (StringUtils.isBlank(postName)) {
             stringBuffer.append("岗位名称为必填项！");
-        } else {
-            if (StringUtils.isNotEmpty(postNames)) {
-                if (postNames.contains(postExcel.getPostName())) {
-                    stringBuffer.append(postExcel.getPostName() + "岗位名称已存在！");
-                }
-            }
         }
         if (StringUtils.isBlank(postCode)) {
             stringBuffer.append("岗位编码为必填项！");
