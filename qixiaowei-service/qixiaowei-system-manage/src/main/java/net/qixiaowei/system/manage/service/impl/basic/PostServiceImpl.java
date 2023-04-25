@@ -547,7 +547,9 @@ public class PostServiceImpl implements IPostService {
         departmentExcel.setStatus(1);
         List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentExcelListName(departmentExcel);
         //职级体系集合
-        List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(new OfficialRankSystemDTO());
+        OfficialRankSystemDTO officialRankSystemDTO = new OfficialRankSystemDTO();
+        officialRankSystemDTO.setStatus(1);
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(officialRankSystemDTO);
         //岗位名称集合
         List<String> postNames = postDTOS.stream().map(PostDTO::getPostName).collect(Collectors.toList());
         //岗位编码集合
@@ -691,7 +693,7 @@ public class PostServiceImpl implements IPostService {
                                     }
                                     List<DepartmentPostDTO> departmentPostDTOList2 = departmentPostMapper.selectExcelDepartmentPostId(post.getPostId());
                                     if (StringUtils.isNotEmpty(departmentPostDTOList2)) {
-                                        departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentPostDTOList2.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+                                        departmentPostMapper.logicDeleteDepartmentPostByDepartmentPostIds(departmentPostDTOList2.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
                                     }
                                     departmentPost.setPostId(post.getPostId());
                                     if (StringUtils.isNotEmpty(departmentDTOList)) {
@@ -701,6 +703,8 @@ public class PostServiceImpl implements IPostService {
                                             departmentPost.setDepartmentId(departmentDTO.get(0).getDepartmentId());
                                             //组织排序
                                             departmentPost.setDepartmentSort(1);
+                                            departmentPost.setCreateBy(SecurityUtils.getUserId());
+                                            departmentPost.setCreateTime(DateUtils.getNowDate());
                                             departmentPost.setUpdateBy(SecurityUtils.getUserId());
                                             departmentPost.setUpdateTime(DateUtils.getNowDate());
                                             departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
@@ -805,6 +809,8 @@ public class PostServiceImpl implements IPostService {
                                             //组织排序
                                             departmentPost.setDepartmentSort(i + 1);
                                             departmentPost.setPostId(postId);
+                                            departmentPost.setCreateBy(SecurityUtils.getUserId());
+                                            departmentPost.setCreateTime(DateUtils.getNowDate());
                                             departmentPost.setUpdateBy(SecurityUtils.getUserId());
                                             departmentPost.setUpdateTime(DateUtils.getNowDate());
                                             departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
@@ -814,11 +820,11 @@ public class PostServiceImpl implements IPostService {
                                     if (i == (postExcelDistinct.size() - 1)) {
 
                                         if (StringUtils.isNotEmpty(departmentPostDTOList)) {
-                                            departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+                                            departmentPostMapper.logicDeleteDepartmentPostByDepartmentPostIds(departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
                                         }
                                         if (StringUtils.isNotEmpty(departmentPostUpdateList)) {
                                             try {
-                                                departmentPostMapper.updateDepartmentPosts(departmentPostUpdateList);
+                                                departmentPostMapper.batchDepartmentPost(departmentPostUpdateList);
                                             } catch (Exception e) {
                                                 throw new ServiceException("修改岗位表失败！");
                                             }
