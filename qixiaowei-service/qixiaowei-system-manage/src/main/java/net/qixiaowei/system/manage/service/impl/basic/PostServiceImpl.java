@@ -275,8 +275,7 @@ public class PostServiceImpl implements IPostService {
                 throw new ServiceException("删除岗位组织信息失败");
             }
         }
-        //是否包含
-        List<Long> collect = departmentPostDTOS1.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+
         for (DepartmentDTO departmentDTO : collect3) {
             //组织中间表
             DepartmentPost departmentPost = new DepartmentPost();
@@ -286,16 +285,12 @@ public class PostServiceImpl implements IPostService {
             departmentPost.setDepartmentSort(departmentDTO.getSort());
             //岗位id
             departmentPost.setPostId(post.getPostId());
-            if (collect.contains(departmentDTO.getDepartmentId())) {
+            if (StringUtils.isNotNull(departmentDTO.getDepartmentPostId())){
                 //修改id
                 departmentPost.setDepartmentPostId(departmentDTO.getDepartmentPostId());
                 departmentPost.setUpdateBy(SecurityUtils.getUserId());
                 departmentPost.setUpdateTime(DateUtils.getNowDate());
-                for (DepartmentDTO departmentDTO1 : departmentPostDTOS1) {
-                    if (departmentDTO1.getDepartmentId().equals(departmentDTO.getDepartmentId())) {
-                        departmentPost.setDepartmentPostId(departmentDTO1.getDepartmentPostId());
-                    }
-                }
+                departmentPost.setDepartmentPostId(departmentDTO.getDepartmentPostId());
                 departmentUpdatePostList.add(departmentPost);
             } else {
                 departmentPost.setCreateBy(SecurityUtils.getUserId());
