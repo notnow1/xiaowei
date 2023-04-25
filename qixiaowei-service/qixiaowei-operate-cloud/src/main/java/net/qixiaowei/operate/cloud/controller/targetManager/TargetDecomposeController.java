@@ -1367,9 +1367,9 @@ public class TargetDecomposeController extends BaseController {
     @SneakyThrows
     @PostMapping("/export-template")
     public void exportTargetDecomposeTemplate(@RequestBody TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
-        Department departmentDTO = new Department();
-        departmentDTO.setStatus(1);
-        R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(departmentDTO, SecurityConstants.INNER);
+        Department department = new Department();
+        department.setStatus(1);
+        R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(department, SecurityConstants.INNER);
         //部门名称集合
         List<DepartmentDTO>  parentDepartmentExcelNamesData = departmentExcelList.getData();
         List<String>  parentDepartmentExcelNames = new ArrayList<>();
@@ -1379,8 +1379,10 @@ public class TargetDecomposeController extends BaseController {
             }
 
         }
+        EmployeeDTO employeeDTO1 = new EmployeeDTO();
+        employeeDTO1.setStatus(1);
         //销售员下拉框
-        R<List<EmployeeDTO>> employeeExcelList = remoteEmployeeService.selectDropEmployeeList(new EmployeeDTO(), SecurityConstants.INNER);
+        R<List<EmployeeDTO>> employeeExcelList = remoteEmployeeService.selectDropEmployeeList(employeeDTO1, SecurityConstants.INNER);
         List<EmployeeDTO> employeeExcelListData = employeeExcelList.getData();
         List<String> employeeExcelExcelNames = new ArrayList<>();
         if (StringUtils.isNotEmpty(employeeExcelListData)){
@@ -1399,17 +1401,20 @@ public class TargetDecomposeController extends BaseController {
                 principalEmployeeExcelNames.add(employeeExcelListDatum.getEmployeeName()+"（"+employeeExcelListDatum.getEmployeeCode()+"）");
             }
         }
+        IndustryDTO industryDTO = new IndustryDTO();
+        industryDTO.setStatus(1);
         //行业下拉框
-        R<List<IndustryDTO>> industryExcelList = remoteIndustryService.selectListByIndustry(new IndustryDTO(), SecurityConstants.INNER);
+        R<List<IndustryDTO>> industryExcelList = remoteIndustryService.selectListByIndustry(industryDTO, SecurityConstants.INNER);
         List<String> parentIndustryExcelNames = new ArrayList<>();
         List<IndustryDTO> industryExcelListData = industryExcelList.getData();
         if (StringUtils.isNotEmpty(industryExcelListData)){
             parentIndustryExcelNames = industryExcelListData.stream().filter(f -> StringUtils.isNotBlank(f.getParentIndustryExcelName())).map(IndustryDTO::getParentIndustryExcelName).collect(Collectors.toList());
 
         }
-
+        ProductDTO productDTO =  new ProductDTO();
+        productDTO.setListingFlag(1);
         //产品下拉框
-        List<ProductDTO> productDTOList = productService.selectDropList(new ProductDTO());
+        List<ProductDTO> productDTOList = productService.selectDropList(productDTO);
         List<String> parentProductExcelNames = new ArrayList<>();
         if (StringUtils.isNotEmpty(productDTOList)){
             parentProductExcelNames = productDTOList.stream().filter(f -> StringUtils.isNotBlank(f.getParentProductExcelName())).map(ProductDTO::getParentProductExcelName).collect(Collectors.toList());

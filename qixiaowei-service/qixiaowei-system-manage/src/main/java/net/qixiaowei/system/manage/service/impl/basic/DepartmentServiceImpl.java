@@ -182,6 +182,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public List<String> selectDepartmentExcelListName(DepartmentDTO departmentDTO) {
         List<String> parentDepartmentExcelNames = new ArrayList<>();
         Department department = new Department();
+        BeanUtils.copyProperties(departmentDTO,department);
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
         List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0);

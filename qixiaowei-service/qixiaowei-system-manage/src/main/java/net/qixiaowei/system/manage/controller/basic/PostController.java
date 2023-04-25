@@ -175,11 +175,13 @@ public class PostController extends BaseController {
         departmentDTO.setStatus(1);
         //部门名称集合
         List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
-        if (StringUtils.isNull(parentDepartmentExcelNames)){
+        if (StringUtils.isNull(parentDepartmentExcelNames)) {
             throw new ServiceException("请先创建部门数据！");
         }
+        OfficialRankSystemDTO officialRankSystemDTO= new OfficialRankSystemDTO();
+        officialRankSystemDTO.setStatus(1);
         //职级体系集合
-        List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(new OfficialRankSystemDTO());
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(officialRankSystemDTO);
         //职级体系名称
         List<String> officialRankSystemNames = new ArrayList<>();
         if (StringUtils.isNotEmpty(officialRankSystemDTOS)){
