@@ -252,7 +252,7 @@ public class PerformanceAppraisalController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgArchive:import")
     @GetMapping("export-org-template")
-    public void exportOrgTemplate(@RequestParam Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
+    public void exportOrgTemplate(@RequestParam(required = false) Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
 //        if (StringUtils.isNull(importType)) {
 //            throw new ServiceException("请选择考核流程");
 //        }
@@ -278,7 +278,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("组织绩效归档导入")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -398,7 +398,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("组织绩效归档导入")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -628,7 +628,7 @@ public class PerformanceAppraisalController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("operate:cloud:performanceAppraisal:perArchive:import")
     @GetMapping("export-per-template")
-    public void exportPerTemplate(@RequestParam Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
+    public void exportPerTemplate(@RequestParam(required = false) Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
 //        if (StringUtils.isNull(importType)) {
 //            throw new ServiceException("请选择考核流程");
 //        }
@@ -652,7 +652,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("个人绩效归档导入")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -778,7 +778,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("个人绩效归档导出")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
