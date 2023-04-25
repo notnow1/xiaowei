@@ -83,4 +83,9 @@ public interface CacheConstants {
      * 用户 redis key
      */
     String USER_KEY = "user:";
+
+    /**
+     * 登录用户缓存前缀
+     */
+    String LOGIN_USER_TOKEN_KEY = LOGIN_TOKEN_KEY + USER_KEY;
 }
