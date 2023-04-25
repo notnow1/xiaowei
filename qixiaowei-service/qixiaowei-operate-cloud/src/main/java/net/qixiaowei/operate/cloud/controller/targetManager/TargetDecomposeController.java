@@ -1376,10 +1376,8 @@ public class TargetDecomposeController extends BaseController {
             }
 
         }
-        EmployeeDTO employeeDTO1 = new EmployeeDTO();
-        employeeDTO1.setStatus(1);
         //销售员下拉框
-        R<List<EmployeeDTO>> employeeExcelList = remoteEmployeeService.selectDropEmployeeList(employeeDTO1, SecurityConstants.INNER);
+        R<List<EmployeeDTO>> employeeExcelList = remoteEmployeeService.selectDropEmployeeList( new EmployeeDTO(), SecurityConstants.INNER);
         List<EmployeeDTO> employeeExcelListData = employeeExcelList.getData();
         List<String> employeeExcelExcelNames = new ArrayList<>();
         if (StringUtils.isNotEmpty(employeeExcelListData)){
