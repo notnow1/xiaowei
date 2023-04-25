@@ -193,7 +193,7 @@ public class EmployeeController extends BaseController {
             throw new ServerException("模板sheet名称不正确！");
         }
         if (listMap.size() > 10000) {
-            throw new ServerException("数据量过大(峰值10000) 请重新导入");
+            throw new ServerException("数据超过1万条,请减少数据后，重新上传");
         }
 
         return AjaxResult.successExcel(employeeService.importEmployee(list), null);

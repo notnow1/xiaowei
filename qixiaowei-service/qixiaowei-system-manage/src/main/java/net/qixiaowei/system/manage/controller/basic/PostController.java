@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.rmi.ServerException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -36,6 +37,7 @@ import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.excel.post.PostExcel;
 import net.qixiaowei.system.manage.excel.post.PostImportListener;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
@@ -75,7 +77,6 @@ public class PostController extends BaseController {
     private IOfficialRankSystemService officialRankSystemService;
 
 
-
     /**
      * 分页查询岗位表列表
      */
@@ -95,7 +96,7 @@ public class PostController extends BaseController {
     @RequiresPermissions(value = {"system:manage:post:add", "system:manage:post:edit"}, logical = Logical.OR)
     @GetMapping("/generate/postCode")
     public AjaxResult generatePostCode() {
-        return AjaxResult.success("操作成功",postService.generatePostCode());
+        return AjaxResult.success("操作成功", postService.generatePostCode());
     }
 
     /**
@@ -160,7 +161,7 @@ public class PostController extends BaseController {
      */
     @GetMapping("/postList/{departmentId}")
     public AjaxResult selectBydepartmentId(@PathVariable Long departmentId, @RequestParam(required = false) Integer status) {
-        List<PostDTO> list = postService.selectBydepartmentId(departmentId,status);
+        List<PostDTO> list = postService.selectBydepartmentId(departmentId, status);
         return AjaxResult.success(list);
     }
 
@@ -168,29 +169,31 @@ public class PostController extends BaseController {
      * 导出模板
      */
     @SneakyThrows
-   @RequiresPermissions("system:manage:post:import")
+    @RequiresPermissions("system:manage:post:import")
     @GetMapping("/export-template")
-    public void exportEmployeeTemplate(HttpServletResponse response) {
+    public void exportEmployeeTemplate(HttpServletResponse response, @RequestParam(required = false) String errorExcelId) {
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
         //部门名称集合
         List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
-        if (StringUtils.isNull(parentDepartmentExcelNames)){
+        if (StringUtils.isNull(parentDepartmentExcelNames)) {
             throw new ServiceException("请先创建部门数据！");
         }
+        OfficialRankSystemDTO officialRankSystemDTO= new OfficialRankSystemDTO();
+        officialRankSystemDTO.setStatus(1);
         //职级体系集合
-        List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(new OfficialRankSystemDTO());
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(officialRankSystemDTO);
         //职级体系名称
         List<String> officialRankSystemNames = new ArrayList<>();
-        if (StringUtils.isNotEmpty(officialRankSystemDTOS)){
+        if (StringUtils.isNotEmpty(officialRankSystemDTOS)) {
             officialRankSystemNames = officialRankSystemDTOS.stream().map(OfficialRankSystemDTO::getOfficialRankSystemName).filter(Objects::nonNull).collect(Collectors.toList());
 
-        }else {
+        } else {
             throw new ServiceException("请先创建职级数据！");
         }
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = PostImportListener.importHead(selectMap, parentDepartmentExcelNames,officialRankSystemNames);
+        List<List<String>> head = PostImportListener.importHead(selectMap, parentDepartmentExcelNames, officialRankSystemNames, errorExcelId);
 
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
@@ -201,7 +204,7 @@ public class PostController extends BaseController {
 
         EasyExcel.write(response.getOutputStream())
                 .excelType(ExcelTypeEnum.XLSX)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .head(head)
                 .inMemory(true)
                 .useDefaultStyle(false)
@@ -272,7 +275,6 @@ public class PostController extends BaseController {
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                             //设置 自动换行
                             writeCellStyle.setWrapped(true);
-                            ;
                         } else {
                             //设置边框
                             writeCellStyle.setBorderLeft(BorderStyle.THIN);
@@ -283,21 +285,59 @@ public class PostController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 4 || columnIndex == 6) {
-                                //设置 自动换行
-                                writeCellStyle.setWrapped(true);
-                                headWriteFont.setColor(IndexedColors.RED.getIndex());
-                                headWriteFont.setFontHeightInPoints((short) 11);
-                                headWriteFont.setFontName("微软雅黑");
-                                writeCellStyle.setWriteFont(headWriteFont);
+                            if (StringUtils.isNotBlank(errorExcelId)) {
+                                if (rowIndex == 1) {
+                                    if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 4 || columnIndex == 5 || columnIndex == 7) {
+                                        //设置 自动换行
+                                        writeCellStyle.setWrapped(true);
+                                        headWriteFont.setColor(IndexedColors.RED.getIndex());
+                                        headWriteFont.setFontHeightInPoints((short) 11);
+                                        headWriteFont.setFontName("微软雅黑");
+                                        writeCellStyle.setWriteFont(headWriteFont);
+                                    } else {
+                                        //设置 自动换行
+                                        writeCellStyle.setWrapped(true);
+                                        headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                        headWriteFont.setFontHeightInPoints((short) 11);
+                                        headWriteFont.setFontName("微软雅黑");
+                                        writeCellStyle.setWriteFont(headWriteFont);
+                                    }
+                                } else if (rowIndex > 1) {
+                                    if (columnIndex == 0) {
+                                        //设置 自动换行
+                                        writeCellStyle.setWrapped(true);
+                                        headWriteFont.setColor(IndexedColors.RED.getIndex());
+                                        headWriteFont.setFontHeightInPoints((short) 11);
+                                        headWriteFont.setFontName("微软雅黑");
+                                        writeCellStyle.setWriteFont(headWriteFont);
+                                    } else {
+                                        //设置 自动换行
+                                        writeCellStyle.setWrapped(true);
+                                        headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                        headWriteFont.setFontHeightInPoints((short) 11);
+                                        headWriteFont.setFontName("微软雅黑");
+                                        writeCellStyle.setWriteFont(headWriteFont);
+                                    }
+                                }
+
                             } else {
-                                //设置 自动换行
-                                writeCellStyle.setWrapped(true);
-                                headWriteFont.setColor(IndexedColors.BLACK.getIndex());
-                                headWriteFont.setFontHeightInPoints((short) 11);
-                                headWriteFont.setFontName("微软雅黑");
-                                writeCellStyle.setWriteFont(headWriteFont);
+                                if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 4 || columnIndex == 6) {
+                                    //设置 自动换行
+                                    writeCellStyle.setWrapped(true);
+                                    headWriteFont.setColor(IndexedColors.RED.getIndex());
+                                    headWriteFont.setFontHeightInPoints((short) 11);
+                                    headWriteFont.setFontName("微软雅黑");
+                                    writeCellStyle.setWriteFont(headWriteFont);
+                                } else {
+                                    //设置 自动换行
+                                    writeCellStyle.setWrapped(true);
+                                    headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                    headWriteFont.setFontHeightInPoints((short) 11);
+                                    headWriteFont.setFontName("微软雅黑");
+                                    writeCellStyle.setWriteFont(headWriteFont);
+                                }
                             }
+
                         }
                         cellData.setWriteCellStyle(writeCellStyle);
                     }
@@ -326,6 +366,7 @@ public class PostController extends BaseController {
     /**
      * 导入岗位
      */
+    @SneakyThrows
     @RequiresPermissions("system:manage:post:import")
     @PostMapping("import")
     public AjaxResult importEmployee(MultipartFile file) throws IOException {
@@ -338,30 +379,45 @@ public class PostController extends BaseController {
         }
 
         List<PostExcel> list = new ArrayList<>();
-
-        //构建读取器
-        ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-        ExcelReaderSheetBuilder sheet = read.sheet(0);
-        List<Map<Integer, String>> listMap = sheet.doReadSync();
-        if (listMap.size()>10000){
-            throw new RuntimeException("数据量过大(峰值10000) 请重新导入");
+        List<Map<Integer, String>> listMap = new ArrayList<>();
+        try {
+            String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
+            if (StringUtils.equals("岗位信息", sheetName)) {
+                //构建读取器
+                ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+                listMap = read.sheet("岗位信息").doReadSync();
+                if (StringUtils.isNotEmpty(listMap)) {
+                    if (listMap.get(0).size() != 7) {
+                        throw new ServerException("导入模板被修改，请重新下载模板进行导入!");
+                    }
+                }
+                ExcelUtils.mapToListModel(1, 0, listMap, new PostExcel(), list, true);
+            } else if (StringUtils.equals("岗位信息错误报告", sheetName)) {
+                //构建读取器
+                ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+                listMap = read.sheet("岗位信息错误报告").doReadSync();
+                if (StringUtils.isNotEmpty(listMap)) {
+                    if (listMap.get(0).size() == 8 && !listMap.get(0).get(0).equals("错误信息")) {
+                        throw new ServerException("导入模板被修改，请重新下载模板进行导入!");
+                    }
+                }
+                ExcelUtils.mapToListModel(1, 0, listMap, new PostExcel(), list, false);
+            } else {
+                throw new ServerException("模板sheet名称不正确！");
+            }
+        } catch (IOException e) {
+            throw new ServerException("模板sheet名称不正确！");
         }
-        if (StringUtils.isNotEmpty(listMap)){
-            if (listMap.get(0).size() != 7){
+
+        if (listMap.size() > 10000) {
+            throw new RuntimeException("数据超过1万条 请减少数据后，重新上传");
+        }
+        if (StringUtils.isNotEmpty(listMap)) {
+            if (listMap.get(0).size() != 7) {
                 throw new RuntimeException("导入模板被修改，请重新下载模板进行导入!");
             }
         }
-
-        PostExcel postExcel = new PostExcel();
-        ExcelUtils.mapToListModel(1, 0, listMap, postExcel, list, true);
-        // 调用importer方法
-        try {
-            postService.importPost(list);
-        } catch (ParseException e) {
-            return AjaxResult.error();
-        }
-
-        return AjaxResult.success();
+        return AjaxResult.successExcel(postService.importPost(list), null);
     }
 
 

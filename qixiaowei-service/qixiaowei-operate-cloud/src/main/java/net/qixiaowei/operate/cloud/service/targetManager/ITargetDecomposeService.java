@@ -324,7 +324,7 @@ public interface ITargetDecomposeService {
      * @param areaDTOList
      * @return
      */
-    TargetDecomposeDTO excelParseObject(TargetDecomposeDTO targetDecomposeDTO, MultipartFile file, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList);
+    List<TargetDecomposeDetailsDTO> excelParseObject(TargetDecomposeDTO targetDecomposeDTO, MultipartFile file, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList);
 
     /**
      * 目标分解(销售订单)导出列表Excel
@@ -437,5 +437,5 @@ public interface ITargetDecomposeService {
      * @param targetDecomposeDTO
      * @return
      */
-    TargetDecomposeDTO importProduct(List<DecomposeDetailCyclesDTO> list, TargetDecomposeDTO targetDecomposeDTO);
+    List<TargetDecomposeDetailsDTO> importProduct(List<DecomposeDetailCyclesDTO> list, TargetDecomposeDTO targetDecomposeDTO);
 }

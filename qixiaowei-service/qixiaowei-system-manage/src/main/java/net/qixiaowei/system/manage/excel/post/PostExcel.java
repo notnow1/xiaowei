@@ -25,7 +25,12 @@ import com.alibaba.excel.annotation.ExcelProperty;
 @ContentRowHeight(18)
 public class PostExcel{
 
-
+     /**
+      * 错误数据
+      */
+     @ExcelIgnore
+     @ExcelProperty(index = 0)
+     private String errorData;
      /**
      * 岗位编码
      */

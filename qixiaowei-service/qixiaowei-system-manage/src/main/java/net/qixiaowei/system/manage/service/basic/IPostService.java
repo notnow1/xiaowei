@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
@@ -137,5 +138,5 @@ public interface IPostService{
      * @param list
      * @throws ParseException
      */
-    void importPost(List<PostExcel> list) throws ParseException;
+    Map<Object, Object> importPost(List<PostExcel> list) throws ParseException;
 }

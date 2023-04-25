@@ -1124,10 +1124,7 @@ public class TargetDecomposeController extends BaseController {
 
         //导入解析滚动预测
         TargetDecomposeImportListener.mapToListModel(6, 0, listMap, list, targetDecomposeDTO);
-        // 调用importer方法
-        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeService.importProduct(list, targetDecomposeDTO);
-
-        return AjaxResult.success(targetDecomposeDTO1);
+        return AjaxResult.success(targetDecomposeService.importProduct(list, targetDecomposeDTO));
     }
     //==============================其他==================================//
 

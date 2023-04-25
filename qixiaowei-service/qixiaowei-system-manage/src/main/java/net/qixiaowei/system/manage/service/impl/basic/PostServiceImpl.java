@@ -8,7 +8,10 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
+import net.qixiaowei.integration.common.utils.uuid.IdUtils;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -53,6 +57,8 @@ public class PostServiceImpl implements IPostService {
     private EmployeeMapper employeeMapper;
     @Autowired
     private RemoteSalaryAdjustPlanService remoteSalaryAdjustPlanService;
+    @Autowired
+    private RedisService redisService;
     @Autowired
     private IDepartmentService departmentService;
     @Autowired
@@ -531,7 +537,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     @Transactional
-    public void importPost(List<PostExcel> postExcelList) {
+    public   Map<Object, Object> importPost(List<PostExcel> postExcelList) {
         //查询岗位已有的数据
         Post postExceExist = new Post();
         postExceExist.setStatus(1);
@@ -598,8 +604,11 @@ public class PostServiceImpl implements IPostService {
                                     postExcels.remove(postExcel);
                                 }
                                 if (StringUtils.isNotEmpty(postExcels)){
-                                    errorExcelList.add(postExcelDistinct.get(i));
-                                    postError.append("岗位" + postExcelDistinct.get(i).getPostName() + "数据重复");
+                                    PostExcel postExcel = new PostExcel();
+                                    BeanUtils.copyProperties(postExcelDistinct.get(i),postExcel);
+                                    postError.append("岗位" + postExcelDistinct.get(i).getPostName() + "数据重复;");
+                                    postExcel.setErrorData("岗位" + postExcelDistinct.get(i).getPostName() + "数据重复;");
+                                    errorExcelList.add(postExcel);
                                     continue;
                                 }
                             }
@@ -620,8 +629,12 @@ public class PostServiceImpl implements IPostService {
                             if (postExcelDistinct.size() == 1) {
                                 this.onlyOne(departmentDTOList, officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
                                 if (stringBuffer.length() > 1) {
+
+                                    PostExcel postExcel = new PostExcel();
+                                    BeanUtils.copyProperties(postExcelDistinct.get(i),postExcel);
                                     postError.append(stringBuffer);
-                                    errorExcelList.addAll(postExcelDistinct);
+                                    postExcel.setErrorData(stringBuffer.toString());
+                                    errorExcelList.add(postExcel);
                                     continue;
                                 }
                                 post.setUpdateBy(SecurityUtils.getUserId());
@@ -709,8 +722,11 @@ public class PostServiceImpl implements IPostService {
 
                                 this.onlyOne(departmentDTOList, officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
                                 if (stringBuffer.length() > 1) {
+                                    PostExcel postExcel = new PostExcel();
+                                    BeanUtils.copyProperties(postExcelDistinct.get(i),postExcel);
                                     postError.append(stringBuffer);
-                                    errorExcelList.addAll(postExcelDistinct);
+                                    postExcel.setErrorData(stringBuffer.toString());
+                                    errorExcelList.add(postExcel);
                                     continue;
                                 }
                                 if (i == 0) {
@@ -767,8 +783,6 @@ public class PostServiceImpl implements IPostService {
                                             departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                                             departmentPostAddList.add(departmentPost);
                                         }
-                                    } else {
-                                        throw new ServiceException("适用组织不存在! 请先配置组织数据");
                                     }
                                     if (i == (postExcelDistinct.size() - 1)) {
                                         if (StringUtils.isNotEmpty(departmentPostAddList)) {
@@ -796,8 +810,6 @@ public class PostServiceImpl implements IPostService {
                                             departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                                             departmentPostUpdateList.add(departmentPost);
                                         }
-                                    } else {
-                                        throw new ServiceException("适用组织不存在! 请先配置组织数据");
                                     }
                                     if (i == (postExcelDistinct.size() - 1)) {
 
@@ -821,6 +833,13 @@ public class PostServiceImpl implements IPostService {
                 }
             }
         }
+        String uuId = null;
+        //后续优化导入
+        if (postError.length() > 1) {
+            String simpleUUID = IdUtils.simpleUUID();
+            uuId = "errorExcelId:" + simpleUUID;
+            redisService.setCacheObject(uuId, errorExcelList, 24L, TimeUnit.HOURS);
+        }
         if (StringUtils.isNotEmpty(parentDepartmentExcelNameList)) {
             List<String> collect = parentDepartmentExcelNameList.stream().distinct().collect(Collectors.toList());
             postError.append(String.join(",", collect));
@@ -828,6 +847,7 @@ public class PostServiceImpl implements IPostService {
         if (postError.length() > 1) {
             throw new ServiceException(postError.toString());
         }
+        return ExcelUtils.parseExcelResult(new ArrayList<>(),errorExcelList,false,uuId);
     }
 
     /**
@@ -854,28 +874,31 @@ public class PostServiceImpl implements IPostService {
             if (StringUtils.isNotEmpty(OfficialRankSystemDTO)) {
                 post.setOfficialRankSystemId(OfficialRankSystemDTO.get(0).getOfficialRankSystemId());
                 if (StringUtils.isNotBlank(postRankLowerName)) {
-                    if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankLowerName) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankLowerName)) {
-                        stringBuffer.append("职级下限不在" + officialRankSystemName + "职级体系的职级范围区间！");
+                    String rankPrefixCode = OfficialRankSystemDTO.get(0).getRankPrefixCode();
+
+                    if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankLowerName.replace(rankPrefixCode,"")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankLowerName.replace(rankPrefixCode,""))) {
+                        stringBuffer.append("职级下限不在" + officialRankSystemName + "职级体系的职级范围区间;");
                     } else {
                         try {
-                            post.setPostRankLower(Integer.parseInt(postRankLowerName));
+                            post.setPostRankLower(Integer.parseInt(postRankLowerName.replace(rankPrefixCode,"")));
                         } catch (NumberFormatException e) {
-                            stringBuffer.append("职级下限请填入数字");
+                            stringBuffer.append("职级下限前缀不正确；");
                         }
                     }
                 }
 
 
                 if (StringUtils.isNotBlank(postRankUpperName)) {
-                    if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankUpperName) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankUpperName)) {
-                        stringBuffer.append("职级上限不在" + officialRankSystemName + "职级体系的职级范围区间！");
+                    String rankPrefixCode = OfficialRankSystemDTO.get(0).getRankPrefixCode();
+                    if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankUpperName.replace(rankPrefixCode,""))) {
+                        stringBuffer.append("职级上限不在" + officialRankSystemName + "职级体系的职级范围区间;");
                     } else {
                         try {
-                            post.setPostRank(Integer.parseInt(postRankUpperName));
+                            post.setPostRank(Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")));
                         } catch (NumberFormatException e) {
-                            stringBuffer.append("职级上限请填入数字");
+                            stringBuffer.append("职级上限前缀不正确；");
                         }
-                        post.setPostRankUpper(Integer.parseInt(postRankUpperName));
+                        post.setPostRankUpper(Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")));
                     }
                 }
             }
@@ -912,34 +935,25 @@ public class PostServiceImpl implements IPostService {
         String postRankUpperName = postExcel.getPostRankUpperName();
         //适用组织 部门名称(excel用)
         String parentDepartmentExcelName = postExcel.getParentDepartmentExcelName();
-        try {
-            Integer.parseInt(postRankLowerName);
-        } catch (NumberFormatException e) {
-            stringBuffer.append("岗位职级下限岗位必须为数字类型！");
-        }
-        try {
-            Integer.parseInt(postRankUpperName);
-        } catch (NumberFormatException e) {
-            stringBuffer.append("岗位职级上限岗位必须为数字类型！");
-        }
+
 
         if (StringUtils.isBlank(postName)) {
-            stringBuffer.append("岗位名称为必填项！");
+            stringBuffer.append("岗位名称为必填项;");
         } else {
             if (StringUtils.isNotEmpty(postNames)) {
                 if (postNames.contains(postExcel.getPostName())) {
-                    stringBuffer.append(postExcel.getPostName() + "岗位名称已存在！");
+                    stringBuffer.append(postExcel.getPostName() + "岗位名称已存在;");
                 }
             }
         }
         if (StringUtils.isBlank(postCode)) {
-            stringBuffer.append("岗位编码为必填项！");
+            stringBuffer.append("岗位编码为必填项;");
         }
         if (StringUtils.isBlank(postRankUpperName)) {
-            stringBuffer.append("职级上限为必填项！");
+            stringBuffer.append("职级上限为必填项;");
         }
         if (StringUtils.isBlank(postRankLowerName)) {
-            stringBuffer.append("职级下限为必填项！");
+            stringBuffer.append("职级下限为必填项;");
         }
 
 /*      if (参数是否检验){
@@ -950,14 +964,17 @@ public class PostServiceImpl implements IPostService {
             }
         }*/
         if (StringUtils.isBlank(officialRankSystemName)) {
-            stringBuffer.append("职级体系为必填项！");
+            stringBuffer.append("职级体系为必填项;");
         }
         if (StringUtils.isBlank(parentDepartmentExcelName)) {
-            stringBuffer.append("适用组织为必填项！");
+            stringBuffer.append("适用组织为必填项;");
+        }
+        if (StringUtils.isEmpty(departmentDTOList)){
+            stringBuffer.append("适用组织不存在! 请先配置组织数据;");
         }
         List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
         if (StringUtils.isEmpty(departmentDTO)) {
-            stringBuffer.append(parentDepartmentExcelName + "组织不存在！");
+            stringBuffer.append(parentDepartmentExcelName + "组织不存在;");
         }
     }
 }

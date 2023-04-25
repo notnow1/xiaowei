@@ -2277,7 +2277,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     @Override
-    public TargetDecomposeDTO excelParseObject(TargetDecomposeDTO targetDecomposeDTO, MultipartFile file, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList) {
+    public List<TargetDecomposeDetailsDTO> excelParseObject(TargetDecomposeDTO targetDecomposeDTO, MultipartFile file, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList) {
 
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = new ArrayList<>();
@@ -2889,7 +2889,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     @Override
-    public TargetDecomposeDTO importProduct(List<DecomposeDetailCyclesDTO> list, TargetDecomposeDTO targetDecomposeDTO) {
+    public List<TargetDecomposeDetailsDTO> importProduct(List<DecomposeDetailCyclesDTO> list, TargetDecomposeDTO targetDecomposeDTO) {
         if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在 请刷新页面重试！");
         }
@@ -2923,7 +2923,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             }
 
         }
-        return targetDecomposeDTO;
+        return targetDecomposeDetailsDTOS;
     }
 
     /**
@@ -3142,7 +3142,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param areaDTOList
      * @return
      */
-    public TargetDecomposeDTO packExcelData(TargetDecomposeDTO targetDecomposeDTO, Map<String, List<String>> mapAllData, List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS, List<List<String>> cyclesExcelData, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList) {
+    public List<TargetDecomposeDetailsDTO> packExcelData(TargetDecomposeDTO targetDecomposeDTO, Map<String, List<String>> mapAllData, List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS, List<List<String>> cyclesExcelData, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList) {
         Department departmentDTO = new Department();
         departmentDTO.setStatus(1);
         R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(departmentDTO, SecurityConstants.INNER);
@@ -3441,7 +3441,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
         //解析完成数据
         targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOS);
-        return targetDecomposeDTO;
+        return targetDecomposeDetailsDTOS;
     }
 
     /**
