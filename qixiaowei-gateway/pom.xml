@@ -84,6 +84,12 @@
             <version>${swagger.fox.version}</version>
         </dependency>
 
+        <!-- qixiaowei Api System -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-system-manage-api</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
