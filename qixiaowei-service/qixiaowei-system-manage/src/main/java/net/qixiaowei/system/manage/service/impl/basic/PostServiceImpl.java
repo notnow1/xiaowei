@@ -638,7 +638,7 @@ public class PostServiceImpl implements IPostService {
                                 post.setUpdateTime(DateUtils.getNowDate());
                                 post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                                 //不包含就是新增数据
-                                if ((StringUtils.isNotEmpty(postExcelUpdates) && !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) || StringUtils.isEmpty(postExcelUpdates)) {
+                                if ((!postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) || StringUtils.isEmpty(postExcelUpdates)) {
                                     post.setCreateBy(SecurityUtils.getUserId());
                                     post.setCreateTime(DateUtils.getNowDate());
                                     try {
@@ -731,7 +731,7 @@ public class PostServiceImpl implements IPostService {
                                 if (i == 0) {
 
                                     //不包含就是新增数据
-                                    if (StringUtils.isNotEmpty(postExcelUpdates) && !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                    if ( !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
                                         post.setCreateBy(SecurityUtils.getUserId());
                                         post.setCreateTime(DateUtils.getNowDate());
                                         post.setUpdateBy(SecurityUtils.getUserId());
@@ -766,7 +766,7 @@ public class PostServiceImpl implements IPostService {
                                     departmentPostDTOList = departmentPostMapper.selectExcelDepartmentPostId(postId);
                                 }
                                 //不包含就是新增数据
-                                if (StringUtils.isNotEmpty(postExcelUpdates) && !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                if ( !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
                                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                                         List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
                                         if (StringUtils.isNotEmpty(departmentDTO)) {
