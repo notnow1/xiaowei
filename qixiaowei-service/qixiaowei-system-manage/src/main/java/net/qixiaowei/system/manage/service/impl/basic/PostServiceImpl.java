@@ -940,12 +940,6 @@ public class PostServiceImpl implements IPostService {
 
         if (StringUtils.isBlank(postName)) {
             stringBuffer.append("岗位名称为必填项;");
-        } else {
-            if (StringUtils.isNotEmpty(postNames)) {
-                if (postNames.contains(postExcel.getPostName())) {
-                    stringBuffer.append(postExcel.getPostName() + "岗位名称已存在;");
-                }
-            }
         }
         if (StringUtils.isBlank(postCode)) {
             stringBuffer.append("岗位编码为必填项;");
