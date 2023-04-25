@@ -196,7 +196,7 @@ public class EmployeeController extends BaseController {
             throw new ServerException("数据量过大(峰值10000) 请重新导入");
         }
 
-        return AjaxResult.successExcel(employeeService.importEmployee(list),null);
+        return AjaxResult.successExcel(employeeService.importEmployee(list), null);
     }
 
     /**
@@ -527,10 +527,15 @@ public class EmployeeController extends BaseController {
                         }
                         // 列宽16
                         sheet.setColumnWidth(columnIndex, (270 * 16));
-                        if (columnIndex == 4) {
-                            sheet.setColumnWidth(columnIndex, (270 * 22));
+                        if (StringUtils.isNotBlank(errorExcelId)) {
+                            if (columnIndex == 5) {
+                                sheet.setColumnWidth(columnIndex, (270 * 22));
+                            }
+                        } else {
+                            if (columnIndex == 4) {
+                                sheet.setColumnWidth(columnIndex, (270 * 22));
+                            }
                         }
-
                     }
                 })
                 .doWrite(EmployeeImportListener.dataTemplateList(errorExcelId, employeeExcelList));
