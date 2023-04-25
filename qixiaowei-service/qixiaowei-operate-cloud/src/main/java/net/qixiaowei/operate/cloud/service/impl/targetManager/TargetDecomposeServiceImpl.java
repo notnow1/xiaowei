@@ -3153,9 +3153,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //滚动预测负责人下拉框
         R<List<EmployeeDTO>> principalEmployeeExcelList = remoteEmployeeService.selectDropEmployeeList(employeeDTO, SecurityConstants.INNER);
         List<EmployeeDTO> principalEmployeeListData = principalEmployeeExcelList.getData();
-
+        IndustryDTO industryDTO1 = new IndustryDTO();
+        industryDTO1.setStatus(1);
         //行业下拉框
-        R<List<IndustryDTO>> industryExcelList = remoteIndustryService.selectListByIndustry(new IndustryDTO(), SecurityConstants.INNER);
+        R<List<IndustryDTO>> industryExcelList = remoteIndustryService.selectListByIndustry(industryDTO1, SecurityConstants.INNER);
         List<IndustryDTO> industryExcelListData = industryExcelList.getData();
 
         //省份下拉框
