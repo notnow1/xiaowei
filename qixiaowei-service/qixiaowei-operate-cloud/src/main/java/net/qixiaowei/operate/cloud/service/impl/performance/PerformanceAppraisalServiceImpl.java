@@ -1737,6 +1737,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             //2.更新绩效考核对象表
             List<EmployeeDTO> employeeListByCode = getEmployeeDTOS(listMap, 3);
             List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = new ArrayList<>();//需要更新的对象表lIst
+            if (performanceAppraisalObjectsDTOList.size() != listMap.size()) {
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            }
             for (Map<Integer, String> map : listMap) {
                 if (StringUtils.isNull(map.get(0))) {
                     break;
@@ -1779,6 +1782,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
             }
             performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ServiceException("导入绩效考核表Excel失败");
         }
@@ -1793,7 +1798,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Collection<String> valueCollection = head.values();
         List<String> headValueList = new ArrayList<>(valueCollection);
         if (!headValueList.contains("评议总分数")) {
-            throw new ServiceException("请导入正确的系统绩效考核模板");
+            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
         }
     }
 
@@ -1806,7 +1811,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Collection<String> valueCollection = head.values();
         List<String> headValueList = new ArrayList<>(valueCollection);
         if (headValueList.contains("评议总分")) {
-            throw new ServiceException("请导入正确的自定义绩效考核模板");
+            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
         }
     }
 
@@ -1867,6 +1872,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             //2.更新绩效考核对象表
             List<EmployeeDTO> employeeListByCode = getEmployeeDTOS(listMap, 7);
             List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = new ArrayList<>();//需要更新的对象表lIst
+            if (performanceAppraisalObjectsDTOList.size() != listMap.size()) {
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            }
             for (Map<Integer, String> map : listMap) {
                 if (StringUtils.isNull(map.get(0))) {
                     break;
@@ -1907,6 +1915,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
             }
             performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ServiceException("导入绩效考核表Excel失败");
         }
@@ -2000,7 +2010,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         List<Map<Integer, String>> listMap = read.doReadAllSync();
         Map<Integer, String> head = listMap.get(2);
         if (head.containsValue(null)) {
-            throw new ServiceException("导入失败 请导入正确的自定义绩效考核模板");
+            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
         }
         judgmentCustomTemplate(head);
         listMap.remove(2);
