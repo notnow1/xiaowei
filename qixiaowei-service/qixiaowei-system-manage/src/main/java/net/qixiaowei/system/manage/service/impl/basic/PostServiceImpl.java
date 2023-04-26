@@ -547,7 +547,7 @@ public class PostServiceImpl implements IPostService {
         //岗位编码集合
         List<String> postCodes = postDTOS.stream().map(PostDTO::getPostCode).collect(Collectors.toList());
         //新增list
-        List<Post> successExcelList = new ArrayList<>();
+        List<PostExcel> successExcelList = new ArrayList<>();
         //失败List
         List<PostExcel> errorExcelList = new ArrayList<>();
 
@@ -640,6 +640,7 @@ public class PostServiceImpl implements IPostService {
                                     post.setCreateTime(DateUtils.getNowDate());
                                     try {
                                         postMapper.insertPost(post);
+                                        successExcelList.add(postExcelDistinct.get(i));
                                     } catch (Exception e) {
                                         throw new ServiceException("插入岗位表失败！");
                                     }
@@ -680,6 +681,7 @@ public class PostServiceImpl implements IPostService {
                                     post.setPostName("");
                                     try {
                                         postMapper.updatePost(post);
+                                        successExcelList.add(postExcelDistinct.get(i));
                                     } catch (Exception e) {
                                         throw new ServiceException("修改岗位表失败！");
                                     }
@@ -713,7 +715,7 @@ public class PostServiceImpl implements IPostService {
                                         throw new ServiceException("插入岗位关联表失败！");
                                     }
                                 }
-                                successExcelList.add(post);
+
                             } else {
 
                                 this.onlyOne(departmentDTOList, officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
@@ -736,6 +738,7 @@ public class PostServiceImpl implements IPostService {
                                         post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                                         try {
                                             postMapper.insertPost(post);
+                                            successExcelList.add(postExcelDistinct.get(i));
                                         } catch (Exception e) {
                                             throw new ServiceException("插入岗位表失败！");
                                         }
@@ -754,6 +757,7 @@ public class PostServiceImpl implements IPostService {
                                         post.setPostName("");
                                         try {
                                             postMapper.updatePost(post);
+                                            successExcelList.add(postExcelDistinct.get(i));
                                         } catch (Exception e) {
                                             throw new ServiceException("插入岗位表失败！");
                                         }
@@ -838,7 +842,7 @@ public class PostServiceImpl implements IPostService {
             uuId = "errorExcelId:" + simpleUUID;
             redisService.setCacheObject(uuId, errorExcelList, 24L, TimeUnit.HOURS);
         }
-        return ExcelUtils.parseExcelResult(new ArrayList<>(), errorExcelList, false, uuId);
+        return ExcelUtils.parseExcelResult(successExcelList, errorExcelList, false, uuId);
     }
 
     /**

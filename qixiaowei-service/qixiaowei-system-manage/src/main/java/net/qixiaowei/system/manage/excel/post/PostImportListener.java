@@ -6,12 +6,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.system.manage.service.basic.IPostService;
 
 /**
@@ -88,7 +86,11 @@ public class PostImportListener extends AnalysisEventListener<PostExcel> {
                 "4、职级上限、职级下限应在对应职级体系的职级范围内，若填写错误，则该行导入失败\n" +
                 "5、若一个岗位对应多个适用组织，应分行录入");
         head2.add("职级体系*");
-        selectMap.put(2, officialRankSystemNames);
+       if (StringUtils.isNotBlank(errorExcelId)){
+           selectMap.put(3, officialRankSystemNames);
+       }else {
+           selectMap.put(2, officialRankSystemNames);
+       }
 
         // 第四列
         List<String> head3 = new ArrayList<String>();
@@ -117,7 +119,12 @@ public class PostImportListener extends AnalysisEventListener<PostExcel> {
                 "4、职级上限、职级下限应在对应职级体系的职级范围内，若填写错误，则该行导入失败\n" +
                 "5、若一个岗位对应多个适用组织，应分行录入");
         head5.add("岗位状态");
-        selectMap.put(5, Arrays.asList("生效", "失效"));
+        if (StringUtils.isNotBlank(errorExcelId)){
+            selectMap.put(6, Arrays.asList("生效", "失效"));
+        }else {
+            selectMap.put(5, Arrays.asList("生效", "失效"));
+        }
+
 
         // 第七列
         List<String> head6 = new ArrayList<String>();
@@ -128,7 +135,12 @@ public class PostImportListener extends AnalysisEventListener<PostExcel> {
                 "4、职级上限、职级下限应在对应职级体系的职级范围内，若填写错误，则该行导入失败\n" +
                 "5、若一个岗位对应多个适用组织，应分行录入");
         head6.add("适用组织*");
-        selectMap.put(6, parentDepartmentExcelNames);
+        if (StringUtils.isNotBlank(errorExcelId)){
+            selectMap.put(7, parentDepartmentExcelNames);
+        }else {
+            selectMap.put(6, parentDepartmentExcelNames);
+        }
+
         list.add(head0);
         list.add(head1);
         list.add(head2);
@@ -136,6 +148,18 @@ public class PostImportListener extends AnalysisEventListener<PostExcel> {
         list.add(head4);
         list.add(head5);
         list.add(head6);
+        return list;
+    }
+
+    public static List dataTemplateList(String errorExcelId, List<PostExcel> postExcelList) {
+        List<List<Object>> list = new ArrayList<List<Object>>();
+        if (StringUtils.isNotBlank(errorExcelId)){
+            for (int i = 0; i < postExcelList.size(); i++) {
+                List<Object> data = new ArrayList<Object>();
+                ExcelUtils.packList(postExcelList.get(i), data, errorExcelId);
+                list.add(data);
+            }
+        }
         return list;
     }
 

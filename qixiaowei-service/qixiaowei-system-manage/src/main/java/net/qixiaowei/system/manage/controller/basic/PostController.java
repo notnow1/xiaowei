@@ -33,11 +33,13 @@ import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
+import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
 import net.qixiaowei.system.manage.excel.post.PostExcel;
 import net.qixiaowei.system.manage.excel.post.PostImportListener;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
@@ -75,6 +77,8 @@ public class PostController extends BaseController {
     private IDepartmentService departmentService;
     @Autowired
     private IOfficialRankSystemService officialRankSystemService;
+    @Autowired
+    private RedisService redisService;
 
 
     /**
@@ -172,6 +176,19 @@ public class PostController extends BaseController {
     @RequiresPermissions("system:manage:post:import")
     @GetMapping("/export-template")
     public void exportEmployeeTemplate(HttpServletResponse response, @RequestParam(required = false) String errorExcelId) {
+        String sheetName = null;
+        List<PostExcel> postExcelList = new ArrayList<>();
+        if (StringUtils.isNotBlank(errorExcelId)) {
+            sheetName = "岗位信息错误报告";
+            try {
+                postExcelList = redisService.getCacheObject(errorExcelId);
+            } catch (Exception e) {
+                throw new ServiceException("转化错误数据异常 请联系管理员");
+            }
+        } else {
+            sheetName = "岗位信息";
+
+        }
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
         //部门名称集合
@@ -208,7 +225,7 @@ public class PostController extends BaseController {
                 .head(head)
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .sheet("岗位信息")// 设置 sheet 的名字
+                .sheet(sheetName)// 设置 sheet 的名字
                 // 设置 sheet 的名字
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
@@ -360,7 +377,7 @@ public class PostController extends BaseController {
                         sheet.setColumnWidth(columnIndex, (270 * 16));
                     }
                 })
-                .doWrite(new ArrayList<>());
+                .doWrite(PostImportListener.dataTemplateList(errorExcelId, postExcelList));
     }
 
     /**
@@ -411,11 +428,6 @@ public class PostController extends BaseController {
 
         if (listMap.size() > 10000) {
             throw new RuntimeException("数据超过1万条 请减少数据后，重新上传");
-        }
-        if (StringUtils.isNotEmpty(listMap)) {
-            if (listMap.get(0).size() != 7) {
-                throw new RuntimeException("导入模板被修改，请重新下载模板进行导入!");
-            }
         }
         return AjaxResult.successExcel(postService.importPost(list), null);
     }
