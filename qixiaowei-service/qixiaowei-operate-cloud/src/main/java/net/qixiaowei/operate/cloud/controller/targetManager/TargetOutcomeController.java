@@ -108,10 +108,16 @@ public class TargetOutcomeController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-        ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-        List<Map<Integer, String>> targetSettingExcelList = read.doReadAllSync();
-        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeService.importTargetOutcome(targetSettingExcelList, targetOutSettingId);
-        return AjaxResult.successExcel(targetOutcomeDetailsDTOList, null, null);
+        try {
+            ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+            List<Map<Integer, String>> targetSettingExcelList = read.doReadAllSync();
+            List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeService.importTargetOutcome(targetSettingExcelList, targetOutSettingId);
+            return AjaxResult.successExcel(targetOutcomeDetailsDTOList, null, null);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("导入Excel失败");
+        }
     }
 
     /**

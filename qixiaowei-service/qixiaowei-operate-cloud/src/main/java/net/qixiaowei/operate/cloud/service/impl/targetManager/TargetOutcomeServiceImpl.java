@@ -618,6 +618,10 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         for (Map<Integer, String> data : dataList) {
             indicatorNames.add(data.get(0));
         }
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsBefore = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
+        if (targetOutcomeDetailsBefore.size() != dataList.size()) {
+            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+        }
         List<IndicatorDTO> indicatorDTOS = getIndicatorDTOS(dataList, indicatorNames);
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsAfter = new ArrayList<>();
         for (Map<Integer, String> data : dataList) {
@@ -635,14 +639,10 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         }
         List<Long> indicatorIds = indicatorDTOS.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingByIndicators(indicatorIds, targetYear);
-        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsBefore = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
-        if (targetOutcomeDetailsBefore.size() != targetOutcomeDetailsAfter.size()) {
-            throw new ServiceException("导入失败 模板错误");
-        }
         Set<Long> indicatorBefore = targetOutcomeDetailsBefore.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toSet());
         Set<Long> indicatorAfter = targetOutcomeDetailsAfter.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toSet());
         if (!indicatorBefore.containsAll(indicatorAfter)) {
-            throw new ServiceException("导入失败 模板错误");
+            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
         }
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsBefore) {
             for (TargetOutcomeDetailsDTO outcomeDetailsDTO : targetOutcomeDetailsAfter) {

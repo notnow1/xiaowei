@@ -151,7 +151,9 @@ public class SalaryPayController extends BaseController {
             inputStream = new BufferedInputStream(file.getInputStream());
             ExcelReaderBuilder builder = EasyExcel.read(inputStream, salaryPayImportListener).headRowNumber(1);
             builder.sheet().doRead();
-        } catch (IOException e) {
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
             throw new ServiceException("导入人员信息配置Excel失败");
         }
         return AjaxResult.success("操作成功");

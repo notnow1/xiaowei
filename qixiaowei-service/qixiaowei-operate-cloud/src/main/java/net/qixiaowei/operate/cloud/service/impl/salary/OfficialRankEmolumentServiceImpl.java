@@ -445,7 +445,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
             Map<Integer, String> head = listMap.get(2);
             if (head.size() != 4) {
-                throw new ServiceException("职级确定薪酬模板不正确 请检查");
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
             }
             listMap.remove(1);
             listMap.remove(0);
@@ -479,7 +479,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                 return this.insertOfficialRankEmoluments(officialRankEmolumentDTOList);
             }
             if (officialRankEmolumentDTOList.size() != officialRankEmolumentDTOS.size()) {
-                throw new ServiceException("职级确定薪酬模板不正确 请检查");
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
             }
             // 更新
             for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOS) {
