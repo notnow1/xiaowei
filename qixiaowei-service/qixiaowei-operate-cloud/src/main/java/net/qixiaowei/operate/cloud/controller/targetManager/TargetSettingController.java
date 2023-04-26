@@ -319,6 +319,7 @@ public class TargetSettingController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                         }
                         writeCellStyle.setWriteFont(headWriteFont);
+                        writeCellStyle.setWrapped(true);
                     }
                 })
                 .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
