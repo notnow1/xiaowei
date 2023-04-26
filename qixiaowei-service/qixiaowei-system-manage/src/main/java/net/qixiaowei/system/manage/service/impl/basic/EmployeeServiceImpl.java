@@ -1319,6 +1319,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                             int i = 0;
                                             try {
                                                 i = Integer.parseInt(replace);
+                                                if (i > postRankUpper || i < postRankLower) {
+                                                    validEmployeeError.append("个人职级需在岗位职级上下限范围内；");
+                                                }
                                             } catch (NumberFormatException e) {
                                                 validEmployeeError.append(StrUtil.BRACKET_START + "个人职级:")
                                                         .append(employeeRankName)
@@ -1328,9 +1331,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                                         .append(StrUtil.BRACKET_END)
                                                         .append("；");
                                             }
-                                            if (i > postRankUpper || i < postRankLower) {
-                                                validEmployeeError.append("个人职级需在岗位职级上下限范围内；");
-                                            }
+
+
                                         } else {
                                             //下限
                                             Integer postRankLower = postIds.get(0).getPostRankLower();
