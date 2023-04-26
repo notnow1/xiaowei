@@ -838,13 +838,6 @@ public class PostServiceImpl implements IPostService {
             uuId = "errorExcelId:" + simpleUUID;
             redisService.setCacheObject(uuId, errorExcelList, 24L, TimeUnit.HOURS);
         }
-        if (StringUtils.isNotEmpty(parentDepartmentExcelNameList)) {
-            List<String> collect = parentDepartmentExcelNameList.stream().distinct().collect(Collectors.toList());
-            postError.append(String.join(",", collect));
-        }
-        if (postError.length() > 1) {
-            throw new ServiceException(postError.toString());
-        }
         return ExcelUtils.parseExcelResult(new ArrayList<>(),errorExcelList,false,uuId);
     }
 
