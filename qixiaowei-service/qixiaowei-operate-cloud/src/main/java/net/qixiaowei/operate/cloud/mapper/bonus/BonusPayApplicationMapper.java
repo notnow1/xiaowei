@@ -124,12 +124,12 @@ public interface BonusPayApplicationMapper {
     int batchBonusPayApplication(@Param("bonusPayApplications") List<BonusPayApplication> BonusPayApplications);
 
     /**
-     * 取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计
+     * 取相同年度下，奖项类别为公司级的所有奖金发放申请单中，奖金总金额的合计
      *
      * @param annualBonusYear
      * @return
      */
-    BigDecimal selectBonusPayApplicationAddDeptAnnual(@Param("annualBonusYear") int annualBonusYear, @Param("salaryItemId") Long salaryItemId);
+    BigDecimal selectBonusPayApplicationAddDeptAnnual(@Param("annualBonusYear") int annualBonusYear, @Param("salaryItemIds") List<Long> salaryItemIds);
 
     /**
      * 查询奖金发放台账申请部门
