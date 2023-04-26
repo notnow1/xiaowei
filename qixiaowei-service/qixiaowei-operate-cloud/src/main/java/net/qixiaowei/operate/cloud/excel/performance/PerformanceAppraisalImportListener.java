@@ -217,7 +217,7 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
         if (isError) {
             // 第0列
             List<String> head = new ArrayList<String>();
-            head.add("员工工号");
+            head.add("错误信息");
             list.add(head);
         }
         // 第1列

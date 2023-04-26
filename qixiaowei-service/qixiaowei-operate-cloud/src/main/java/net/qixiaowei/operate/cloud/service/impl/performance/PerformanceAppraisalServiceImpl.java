@@ -1839,17 +1839,17 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     private List<Map<Integer, String>> getMaps(MultipartFile file, Integer type) throws IOException {
         List<Map<Integer, String>> listMap;
-        Integer maxLength = type == 1 ? 5 : 9;
+        int maxLength = type == 1 ? 5 : 9;
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         listMap = read.sheet(0).doReadSync();
         if (StringUtils.isEmpty(listMap)) {
-            throw new ServiceException("组织绩效归档Excel没有数据 请检查");
+            throw new ServiceException("个人绩效归档Excel没有数据 请检查");
         }
         String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
-        if (StringUtils.equals(sheetName, "组织绩效归档导入错误报告")) {
-            Map<Integer, String> head = listMap.get(1);
+        if (StringUtils.equals(sheetName, "个人绩效归档导入错误报告")) {
+            Map<Integer, String> head = listMap.get(0);
             if (head.size() != maxLength + 1) {
-                throw new ServiceException("组织绩效归档模板不正确 请检查");
+                throw new ServiceException("个人绩效归档模板不正确 请检查");
             }
             List<Map<Integer, String>> objects = new ArrayList<>();
             for (Map<Integer, String> map1 : listMap) {
@@ -1860,10 +1860,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 objects.add(map2);
             }
             listMap = objects;
-        } else if (StringUtils.equals(sheetName, "组织绩效归档导入")) {
-            Map<Integer, String> head = listMap.get(1);
+        } else if (StringUtils.equals(sheetName, "个人绩效归档导入")) {
+            Map<Integer, String> head = listMap.get(0);
             if (head.size() != maxLength) {
-                throw new ServiceException("组织绩效归档模板不正确 请检查");
+                throw new ServiceException("个人绩效归档模板不正确 请检查");
             }
         } else {
             throw new ServiceException("模板错误");
@@ -2123,7 +2123,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             throw new ServiceException("导入绩效考核表Excel失败");
         }
         List<Map<Integer, String>> listMap = read.doReadAllSync();
-        Map<Integer, String> head = listMap.get(2);
+        Map<Integer, String> head = listMap.get(1);
         if (head.containsValue(null)) {
             throw new ServiceException("导入失败 请导入正确的自定义绩效考核模板");
         }
@@ -2145,7 +2145,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             if (StringUtils.isNull(listMap.get(i).get(0))) {
                 break;
             }
-            Map<Integer, String> valueMap = listMap.get(i);
+            Map<Integer, String> valueMap = listMap.get(1);
             nameMap.put(i, valueMap.get(0));
             PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = new PerformanceAppraisalObjectsDTO();
             Long performanceObjectId = orgObjectMap.get(valueMap.get(0));
@@ -2290,7 +2290,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             throw new ServiceException("导入绩效考核表Excel失败");
         }
         List<Map<Integer, String>> listMap = read.doReadAllSync();
-        Map<Integer, String> head = listMap.get(2);
+        Map<Integer, String> head = listMap.get(1);
         if (head.containsValue(null)) {
             throw new ServiceException("导入失败 请导入正确的自定义绩效考核模板");
         }

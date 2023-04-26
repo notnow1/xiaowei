@@ -791,7 +791,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .inMemory(true)
                 .useDefaultStyle(false)
                 .head(head)
-                .sheet("组织绩效归档导入错误报告")// 设置 sheet 的名字
+                .sheet("个人绩效归档导入错误报告")// 设置 sheet 的名字
                 .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
