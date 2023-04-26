@@ -1223,34 +1223,42 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
                 validEmployeeError.append("员工手机号为必填项；");
-            }
-            Pattern pt1 = Pattern.compile("(^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$)");
-            Matcher matcher1 = pt1.matcher(employeeExcel.getEmployeeMobile());
-            if (!matcher1.find()) {
-                validEmployeeError.append("手机号格式不正确；");
-            }
-            if (flag) {
-                if (StringUtils.isNotEmpty(employeeMobiles) && employeeMobiles.contains(employeeExcel.getEmployeeMobile())) {
-                    validEmployeeError.append("手机号已存在");
+            }else {
+                Pattern pt1 = Pattern.compile("(^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$)");
+                Matcher matcher1 = pt1.matcher(employeeExcel.getEmployeeMobile());
+                if (!matcher1.find()) {
+                    validEmployeeError.append("手机号格式不正确；");
                 }
-            } else {
-                if (StringUtils.isNotEmpty(employeeMobiles)) {
-                    List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getEmployeeCode().equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
-                    if (StringUtils.isNotEmpty(collect)) {
-                        if (StringUtils.isNotBlank(collect.get(0).getEmployeeMobile())){
-                            if (!collect.get(0).getEmployeeMobile().equals(employeeExcel.getEmployeeMobile())) {
-                                if (employeeMobiles.contains(employeeExcel.getEmployeeMobile())) {
-                                    validEmployeeError.append("手机号已存在");
+                if (flag) {
+                    if (StringUtils.isNotEmpty(employeeMobiles) && employeeMobiles.contains(employeeExcel.getEmployeeMobile())) {
+                        validEmployeeError.append("手机号已存在");
+                    }
+                } else {
+                    if (StringUtils.isNotEmpty(employeeMobiles)) {
+                        List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getEmployeeCode().equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)) {
+                            if (StringUtils.isNotBlank(collect.get(0).getEmployeeMobile())){
+                                if (!collect.get(0).getEmployeeMobile().equals(employeeExcel.getEmployeeMobile())) {
+                                    if (employeeMobiles.contains(employeeExcel.getEmployeeMobile())) {
+                                        validEmployeeError.append("手机号已存在");
+                                    }
                                 }
                             }
+
+
                         }
-
-
                     }
                 }
             }
+
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
                 validEmployeeError.append("紧急联系人电话为必填项；");
+            }else {
+                Pattern pt1 = Pattern.compile("(^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$)");
+                Matcher matcher1 = pt1.matcher(employeeExcel.getEmployeeMobile());
+                if (!matcher1.find()) {
+                    validEmployeeError.append("紧急联系人电话格式不正确；");
+                }
             }
 
             //工号
