@@ -731,20 +731,19 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
         }
         for (EmployeeExcel employeeExcel : list) {
-            //新增所有员工
-            Employee employee2 = new Employee();
-            //员工详细信息
-            EmployeeInfo employeeInfo = new EmployeeInfo();
-            StringBuffer stringBuffer = this.validEmployee(employeeDTOList, employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap, excelEmployeeMobile, excelEmployeeEmail, employeeMobiles, employeeEmails, identityCards, true);
-            if (stringBuffer.length() > 1) {
-                errorExcelList.add(employeeExcel);
-                employeeError.append(stringBuffer);
-                continue;
-            }
-
             //新增工号
             if (StringUtils.isNotBlank(employeeExcel.getEmployeeCode())) {
                 if (!employeeCodes.contains(employeeExcel.getEmployeeCode())) {
+                    //新增所有员工
+                    Employee employee2 = new Employee();
+                    //员工详细信息
+                    EmployeeInfo employeeInfo = new EmployeeInfo();
+                    StringBuffer stringBuffer = this.validEmployee(employeeDTOList, employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap, excelEmployeeMobile, excelEmployeeEmail, employeeMobiles, employeeEmails, identityCards, true);
+                    if (stringBuffer.length() > 1) {
+                        errorExcelList.add(employeeExcel);
+                        employeeError.append(stringBuffer);
+                        continue;
+                    }
                     //封装新增修改到数据库的数据
                     this.packAddAndUpdateEmplyee(new ArrayList<>(), new EmployeeDTO(), employeeCodes, nationDTOS, countryDTOS, regionProvinceNameAndCityNames, regionProvinceNameAndCityNameAndDistrictNames, postDTOS, departmentDTOList, simpleDateFormat, employeeAddList, employeeInfoAddList, employeeError, employeeExcel, employee2, employeeInfo);
                 }
@@ -1104,7 +1103,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 } else {
                     List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getEmployeeEmail().equals(employeeEmail)).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(collect)) {
-                        if (StringUtils.isNotBlank(collect.get(0).getEmployeeEmail())){
+                        if (StringUtils.isNotBlank(collect.get(0).getEmployeeEmail())) {
                             if (!collect.get(0).getEmployeeEmail().equals(employeeEmail)) {
                                 if (employeeEmails.contains(employeeEmail)) {
                                     validEmployeeError.append("邮箱已存在");
@@ -1174,7 +1173,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             } else {
                 List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getIdentityCard().equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
                 if (StringUtils.isNotEmpty(collect)) {
-                    if (StringUtils.isNotBlank(collect.get(0).getIdentityCard())){
+                    if (StringUtils.isNotBlank(collect.get(0).getIdentityCard())) {
                         if (!collect.get(0).getIdentityCard().equals(employeeExcel.getIdentityCard())) {
                             if (identityCards.contains(employeeExcel.getIdentityCard())) {
                                 validEmployeeError.append("身份证号已存在");
@@ -1214,7 +1213,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
                 validEmployeeError.append("员工手机号为必填项；");
-            }else {
+            } else {
                 Pattern pt1 = Pattern.compile("(^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$)");
                 Matcher matcher1 = pt1.matcher(employeeExcel.getEmployeeMobile());
                 if (!matcher1.find()) {
@@ -1228,7 +1227,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     if (StringUtils.isNotEmpty(employeeMobiles)) {
                         List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getEmployeeCode().equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
                         if (StringUtils.isNotEmpty(collect)) {
-                            if (StringUtils.isNotBlank(collect.get(0).getEmployeeMobile())){
+                            if (StringUtils.isNotBlank(collect.get(0).getEmployeeMobile())) {
                                 if (!collect.get(0).getEmployeeMobile().equals(employeeExcel.getEmployeeMobile())) {
                                     if (employeeMobiles.contains(employeeExcel.getEmployeeMobile())) {
                                         validEmployeeError.append("手机号已存在");
@@ -1244,7 +1243,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
                 validEmployeeError.append("紧急联系人电话为必填项；");
-            }else {
+            } else {
                 Pattern pt1 = Pattern.compile("(^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$)");
                 Matcher matcher1 = pt1.matcher(employeeExcel.getEmployeeMobile());
                 if (!matcher1.find()) {
@@ -1301,17 +1300,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                         PostDTO postDTO = postIds.get(0);
                                         String rankPrefixCode = postDTO.getRankPrefixCode();
                                         if (StringUtils.isNotBlank(rankPrefixCode)) {
-                                            if (employeeRankName.contains(rankPrefixCode)) {
-                                                //下限
-                                                Integer postRankLower = postDTO.getPostRankLower();
-                                                //上限
-                                                Integer postRankUpper = postDTO.getPostRankUpper();
-                                                String replace = employeeRankName.replace(rankPrefixCode, "");
-                                                int i = Integer.parseInt(replace);
-                                                if (i > postRankUpper || i < postRankLower) {
-                                                    validEmployeeError.append("个人职级需在岗位职级上下限范围内；");
-                                                }
-                                            } else {
+
+                                            //下限
+                                            Integer postRankLower = postDTO.getPostRankLower();
+                                            //上限
+                                            Integer postRankUpper = postDTO.getPostRankUpper();
+                                            String replace = employeeRankName.replace(rankPrefixCode, "");
+                                            int i = 0;
+                                            try {
+                                                i = Integer.parseInt(replace);
+                                            } catch (NumberFormatException e) {
                                                 validEmployeeError.append(StrUtil.BRACKET_START + "个人职级:")
                                                         .append(employeeRankName)
                                                         .append("与系统岗位职级:")
@@ -1320,6 +1318,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                                         .append(StrUtil.BRACKET_END)
                                                         .append("；");
                                             }
+                                            if (i > postRankUpper || i < postRankLower) {
+                                                validEmployeeError.append("个人职级需在岗位职级上下限范围内；");
+                                            }
+
                                         } else {
                                             //下限
                                             Integer postRankLower = postIds.get(0).getPostRankLower();
