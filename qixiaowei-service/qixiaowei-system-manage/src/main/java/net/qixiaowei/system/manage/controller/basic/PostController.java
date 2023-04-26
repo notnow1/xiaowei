@@ -1,12 +1,5 @@
 package net.qixiaowei.system.manage.controller.basic;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.DataFormatData;
@@ -30,32 +23,35 @@ import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
+import net.qixiaowei.integration.common.web.controller.BaseController;
+import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.excel.post.PostExcel;
 import net.qixiaowei.system.manage.excel.post.PostImportListener;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankSystemService;
+import net.qixiaowei.system.manage.service.basic.IPostService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
-import net.qixiaowei.system.manage.service.basic.IPostService;
-import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -346,11 +342,11 @@ public class PostController extends BaseController {
         ExcelReaderSheetBuilder sheet = read.sheet(0);
         List<Map<Integer, String>> listMap = sheet.doReadSync();
         if (listMap.size()>10000){
-            throw new RuntimeException("数据量过大(峰值10000) 请重新导入");
+            throw new ServiceException("数据量过大(峰值10000) 请重新导入");
         }
         if (StringUtils.isNotEmpty(listMap)){
             if (listMap.get(0).size() != 7){
-                throw new RuntimeException("导入模板被修改，请重新下载模板进行导入!");
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
             }
         }
 
