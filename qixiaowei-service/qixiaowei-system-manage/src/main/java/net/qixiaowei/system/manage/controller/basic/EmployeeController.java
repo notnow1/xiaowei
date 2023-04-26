@@ -49,6 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.rmi.ServerException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -163,11 +164,11 @@ public class EmployeeController extends BaseController {
         ExcelReaderSheetBuilder sheet = read.sheet(0);
         List<Map<Integer, String>> listMap = sheet.doReadSync();
         if (listMap.size()>10000){
-            throw new RuntimeException("数据量过大(峰值10000) 请重新导入");
+            throw new ServerException("数据量过大(峰值10000) 请重新导入");
         }
         if (StringUtils.isNotEmpty(listMap)){
             if (listMap.get(0).size() != 24){
-                throw new RuntimeException("导入模板被修改，请重新下载模板进行导入!");
+                throw new ServerException("导入模板被修改，请重新下载模板进行导入!");
             }
         }
         EmployeeExcel employeeExcel = new EmployeeExcel();
