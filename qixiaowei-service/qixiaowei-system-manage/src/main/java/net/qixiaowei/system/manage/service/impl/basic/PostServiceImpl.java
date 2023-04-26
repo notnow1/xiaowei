@@ -870,30 +870,37 @@ public class PostServiceImpl implements IPostService {
                 post.setOfficialRankSystemId(OfficialRankSystemDTO.get(0).getOfficialRankSystemId());
                 if (StringUtils.isNotBlank(postRankLowerName)) {
                     String rankPrefixCode = OfficialRankSystemDTO.get(0).getRankPrefixCode();
-
-                    if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankLowerName.replace(rankPrefixCode, "")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankLowerName.replace(rankPrefixCode, ""))) {
-                        stringBuffer.append("职级下限不在" + officialRankSystemName + "职级体系的职级范围区间;");
-                    } else {
-                        try {
-                            post.setPostRankLower(Integer.parseInt(postRankLowerName.replace(rankPrefixCode, "")));
-                        } catch (NumberFormatException e) {
-                            stringBuffer.append("职级下限前缀不正确；");
+                    try {
+                        if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankLowerName.replace(rankPrefixCode,"")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankLowerName.replace(rankPrefixCode,""))) {
+                            stringBuffer.append("职级下限不在" + officialRankSystemName + "职级体系的职级范围区间！");
+                        } else {
+                            try {
+                                post.setPostRankLower(Integer.parseInt(postRankLowerName.replace(rankPrefixCode,"")));
+                            } catch (NumberFormatException e) {
+                                stringBuffer.append("职级下限前缀不正确；");
+                            }
                         }
+                    } catch (NumberFormatException e) {
+                        stringBuffer.append("职级下限前缀不正确；");
                     }
                 }
 
 
                 if (StringUtils.isNotBlank(postRankUpperName)) {
                     String rankPrefixCode = OfficialRankSystemDTO.get(0).getRankPrefixCode();
-                    if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankUpperName.replace(rankPrefixCode, "")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankUpperName.replace(rankPrefixCode, ""))) {
-                        stringBuffer.append("职级上限不在" + officialRankSystemName + "职级体系的职级范围区间;");
-                    } else {
-                        try {
-                            post.setPostRank(Integer.parseInt(postRankUpperName.replace(rankPrefixCode, "")));
-                        } catch (NumberFormatException e) {
-                            stringBuffer.append("职级上限前缀不正确；");
+                    try {
+                        if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankUpperName.replace(rankPrefixCode,""))) {
+                            stringBuffer.append("职级上限不在" + officialRankSystemName + "职级体系的职级范围区间！");
+                        } else {
+                            try {
+                                post.setPostRank(Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")));
+                            } catch (NumberFormatException e) {
+                                stringBuffer.append("职级上限前缀不正确；");
+                            }
+                            post.setPostRankUpper(Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")));
                         }
-                        post.setPostRankUpper(Integer.parseInt(postRankUpperName.replace(rankPrefixCode, "")));
+                    } catch (NumberFormatException e) {
+                        stringBuffer.append("职级上限前缀不正确；");
                     }
                 }
             }

@@ -1310,17 +1310,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                         PostDTO postDTO = postIds.get(0);
                                         String rankPrefixCode = postDTO.getRankPrefixCode();
                                         if (StringUtils.isNotBlank(rankPrefixCode)) {
-                                            if (employeeRankName.contains(rankPrefixCode)) {
-                                                //下限
-                                                Integer postRankLower = postDTO.getPostRankLower();
-                                                //上限
-                                                Integer postRankUpper = postDTO.getPostRankUpper();
-                                                String replace = employeeRankName.replace(rankPrefixCode, "");
-                                                int i = Integer.parseInt(replace);
-                                                if (i > postRankUpper || i < postRankLower) {
-                                                    validEmployeeError.append("个人职级需在岗位职级上下限范围内；");
-                                                }
-                                            } else {
+
+                                            //下限
+                                            Integer postRankLower = postDTO.getPostRankLower();
+                                            //上限
+                                            Integer postRankUpper = postDTO.getPostRankUpper();
+                                            String replace = employeeRankName.replace(rankPrefixCode, "");
+                                            int i = 0;
+                                            try {
+                                                i = Integer.parseInt(replace);
+                                            } catch (NumberFormatException e) {
                                                 validEmployeeError.append(StrUtil.BRACKET_START + "个人职级:")
                                                         .append(employeeRankName)
                                                         .append("与系统岗位职级:")
@@ -1328,6 +1327,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                                         .append("不匹配")
                                                         .append(StrUtil.BRACKET_END)
                                                         .append("；");
+                                            }
+                                            if (i > postRankUpper || i < postRankLower) {
+                                                validEmployeeError.append("个人职级需在岗位职级上下限范围内；");
                                             }
                                         } else {
                                             //下限
