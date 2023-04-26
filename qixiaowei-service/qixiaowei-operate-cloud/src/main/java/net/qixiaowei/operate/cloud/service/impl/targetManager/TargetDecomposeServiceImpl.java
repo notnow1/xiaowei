@@ -2,7 +2,11 @@ package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.read.listener.IgnoreExceptionReadListener;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import net.qixiaowei.integration.common.constant.Constants;
@@ -1653,6 +1657,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
     /**
      * 校检分解维度是否重复
+     *
      * @param targetDecomposeDTO
      * @param targetDecomposeDetailsDTOS
      */
@@ -1669,14 +1674,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     .append(targetDecomposeDetailsDTOS.get(i).getAreaId())
                     .append(targetDecomposeDetailsDTOS.get(i).getRegionId());
             if (StringUtils.isNotBlank(decompositionDimensionAll.toString())) {
-                if (decompositionDimensionAllData.contains(decompositionDimensionAll.toString())){
-                    errorData.append((i+1)+"行"+ targetDecomposeDTO.getDecompositionDimension()+"已存在");
+                if (decompositionDimensionAllData.contains(decompositionDimensionAll.toString())) {
+                    errorData.append((i + 1) + "行" + targetDecomposeDTO.getDecompositionDimension() + "已存在");
 
                 }
                 decompositionDimensionAllData.add(decompositionDimensionAll.toString());
             }
         }
-        if (StringUtils.isNotBlank(errorData.toString())){
+        if (StringUtils.isNotBlank(errorData.toString())) {
             throw new ServiceException(errorData.toString());
         }
     }
@@ -2290,8 +2295,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             int num = 0;
             if (StringUtils.isNotNull(targetDecomposeDTO)) {
                 Integer timeDimension = targetDecomposeDTO.getTimeDimension();
+
+
+                String decompositionDimension = targetDecomposeDTO.getDecompositionDimension();
+                businessUnitDecomposeList = Arrays.asList(decompositionDimension.split("\\+"));
                 if (timeDimension == 1) {
-                    num = 2;
+                    num = 1;
                 } else if (timeDimension == 2) {
                     num = 2;
                 } else if (timeDimension == 3) {
@@ -2301,20 +2310,37 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 } else if (timeDimension == 5) {
                     num = 52;
                 }
-
-                String decompositionDimension = targetDecomposeDTO.getDecompositionDimension();
-                businessUnitDecomposeList = Arrays.asList(decompositionDimension.split("\\+"));
-
             }
+
             int headArrange = businessUnitDecomposeList.size() + 1 + num;
+
             //构建读取器
             ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-            List<Map<Integer, String>> listMap = read.sheet(0).doReadSync();
+            List<Map<Integer, String>> listMap = new ArrayList<>();
+
+            listMap = read.sheet(0).doReadSync();
+            if (StringUtils.isEmpty(listMap)){
+                throw new ServiceException("模板数据不能为空，至少有1条数据");
+            }
             int maxListMap = 0;
             for (int i = 0; i < listMap.size(); i++) {
-                    if (listMap.get(i).size() > maxListMap) {
-                        maxListMap = listMap.get(i).size();
+                if (i == 8) {
+                    int size = 0;
+                    for (Integer key : listMap.get(i).keySet()) {
+                        if (StringUtils.isNotBlank(listMap.get(i).get(key))) {
+                            size = size + 1;
+                        }
                     }
+                    maxListMap = size;
+                }
+            }
+            for (Map<Integer, String> map : listMap) {
+                if (map.size() < maxListMap) {
+                    int size = map.size();
+                    for (int i = 0; i < maxListMap - size; i++) {
+                        map.put(size + i, "");
+                    }
+                }
 
             }
             if (maxListMap != headArrange) {
@@ -2349,7 +2375,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             List<String> provinceNames = new ArrayList<>();
 
             //产品下标
-            String productCodeKey =null;
+            String productCodeKey = null;
             //产品code集合
             List<String> productCodes = new ArrayList<>();
 
@@ -2360,25 +2386,25 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     Map<Integer, String> map = listMap.get(i);
                     if (i == 8) {
                         for (Integer key : map.keySet()) {
-                            if (StringUtils.isBlank(map.get(key))){
+                            if (StringUtils.isBlank(map.get(key))) {
                                 continue;
                             }
-                            if (StringUtils.equals( DecompositionDimension.EMPLOYEE.getInfo(),map.get(key).replace("*", ""))) {
-                                employeeNameKey=String.valueOf(key.intValue());
+                            if (StringUtils.equals(DecompositionDimension.EMPLOYEE.getInfo(), map.get(key).replace("*", ""))) {
+                                employeeNameKey = String.valueOf(key.intValue());
 
-                            } else if (StringUtils.equals( DecompositionDimension.AREA.getInfo(),map.get(key).replace("*", ""))) {
-                                areaCodesKey=String.valueOf(key.intValue());
-                            } else if (StringUtils.equals( DecompositionDimension.DEPARTMENT.getInfo(),map.get(key).replace("*", ""))) {
-                                departmentCodeKey=String.valueOf(key.intValue());
-                            } else if (StringUtils.equals( DecompositionDimension.INDUSTRY.getInfo(),map.get(key).replace("*", ""))) {
-                                industryCodeKey=String.valueOf(key.intValue());
-                            } else if (StringUtils.equals( DecompositionDimension.REGION.getInfo(),map.get(key).replace("*", ""))) {
-                                provinceNameKey=String.valueOf(key.intValue());
-                            } else if (StringUtils.equals( DecompositionDimension.PRODUCT.getInfo(),map.get(key).replace("*", ""))) {
-                                productCodeKey=String.valueOf(key.intValue());
-                            } else if (StringUtils.equals( DecompositionDimension.PRINCIPALEMPLOYEE.getInfo(),map.get(key).replace("*", ""))) {
-                                principalEmployeeKey=String.valueOf(key.intValue());
-                                timeDimensionKey=String.valueOf((key.intValue() + 1));
+                            } else if (StringUtils.equals(DecompositionDimension.AREA.getInfo(), map.get(key).replace("*", ""))) {
+                                areaCodesKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.DEPARTMENT.getInfo(), map.get(key).replace("*", ""))) {
+                                departmentCodeKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.INDUSTRY.getInfo(), map.get(key).replace("*", ""))) {
+                                industryCodeKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.REGION.getInfo(), map.get(key).replace("*", ""))) {
+                                provinceNameKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.PRODUCT.getInfo(), map.get(key).replace("*", ""))) {
+                                productCodeKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.PRINCIPALEMPLOYEE.getInfo(), map.get(key).replace("*", ""))) {
+                                principalEmployeeKey = String.valueOf(key.intValue());
+                                timeDimensionKey = String.valueOf((key.intValue() + 1));
                             }
                         }
                     }
@@ -2437,7 +2463,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                             if (key >= Integer.parseInt(timeDimensionKey)) {
-                                list.add(map.get(key));
+                                String s = map.get(key);
+                                if (StringUtils.isBlank(s)) {
+                                    s = "0";
+                                }
+                                list.add(s);
                             }
                         }
                         cyclesExcelData.add(list);
@@ -3393,8 +3423,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             }
         }
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
-                //校检分解维度是否重复
-                this.validDecompositionDimension(targetDecomposeDTO,targetDecomposeDetailsDTOS);
+            //校检分解维度是否重复
+            this.validDecompositionDimension(targetDecomposeDTO, targetDecomposeDetailsDTOS);
 
 
             //详情周期数据
