@@ -711,7 +711,7 @@ public class PostServiceImpl implements IPostService {
                                         throw new ServiceException("适用组织不存在! 请先配置组织数据");
                                     }
                                     try {
-                                        departmentPostMapper.updateDepartmentPost(departmentPost);
+                                        departmentPostMapper.insertDepartmentPost(departmentPost);
                                     } catch (Exception e) {
                                         throw new ServiceException("插入岗位关联表失败！");
                                     }
