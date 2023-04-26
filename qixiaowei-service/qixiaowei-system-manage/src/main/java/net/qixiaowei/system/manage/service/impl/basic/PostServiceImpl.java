@@ -533,10 +533,7 @@ public class PostServiceImpl implements IPostService {
     @Override
     @Transactional
     public   Map<Object, Object> importPost(List<PostExcel> postExcelList) {
-        //查询岗位已有的数据
-        Post postExceExist = new Post();
-        postExceExist.setStatus(1);
-        List<PostDTO> postDTOS = postMapper.selectPostList(postExceExist);
+        List<PostDTO> postDTOS = postMapper.selectPostList(new Post());
         //查询部门已有数据
         Department departmentExcel = new Department();
         departmentExcel.setStatus(1);
