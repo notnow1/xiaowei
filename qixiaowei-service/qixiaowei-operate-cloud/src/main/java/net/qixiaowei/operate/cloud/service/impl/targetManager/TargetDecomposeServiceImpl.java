@@ -2314,7 +2314,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             List<Map<Integer, String>> listMap = new ArrayList<>();
 
             listMap = read.sheet(0).doReadSync();
-            if (StringUtils.isEmpty(listMap)){
+            if (listMap.size() < 10){
                 throw new ServiceException("模板数据不能为空，至少有1条数据");
             }
             int maxListMap = 0;
