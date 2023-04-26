@@ -285,7 +285,7 @@ public class PostServiceImpl implements IPostService {
             departmentPost.setDepartmentSort(departmentDTO.getSort());
             //岗位id
             departmentPost.setPostId(post.getPostId());
-            if (StringUtils.isNotNull(departmentDTO.getDepartmentPostId())){
+            if (StringUtils.isNotNull(departmentDTO.getDepartmentPostId())) {
                 //修改id
                 departmentPost.setDepartmentPostId(departmentDTO.getDepartmentPostId());
                 departmentPost.setUpdateBy(SecurityUtils.getUserId());
@@ -532,7 +532,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     @Transactional
-    public   Map<Object, Object> importPost(List<PostExcel> postExcelList) {
+    public Map<Object, Object> importPost(List<PostExcel> postExcelList) {
         List<PostDTO> postDTOS = postMapper.selectPostList(new Post());
         //查询部门已有数据
         Department departmentExcel = new Department();
@@ -597,9 +597,9 @@ public class PostServiceImpl implements IPostService {
                                 for (PostExcel postExcel : postExcelDistinct) {
                                     postExcels.remove(postExcel);
                                 }
-                                if (StringUtils.isNotEmpty(postExcels)){
+                                if (StringUtils.isNotEmpty(postExcels)) {
                                     PostExcel postExcel = new PostExcel();
-                                    BeanUtils.copyProperties(postExcelDistinct.get(i),postExcel);
+                                    BeanUtils.copyProperties(postExcelDistinct.get(i), postExcel);
                                     postError.append("岗位" + postExcelDistinct.get(i).getPostName() + "数据重复;");
                                     postExcel.setErrorData("岗位" + postExcelDistinct.get(i).getPostName() + "数据重复;");
                                     errorExcelList.add(postExcel);
@@ -625,7 +625,7 @@ public class PostServiceImpl implements IPostService {
                                 if (stringBuffer.length() > 1) {
 
                                     PostExcel postExcel = new PostExcel();
-                                    BeanUtils.copyProperties(postExcelDistinct.get(i),postExcel);
+                                    BeanUtils.copyProperties(postExcelDistinct.get(i), postExcel);
                                     postError.append(stringBuffer);
                                     postExcel.setErrorData(stringBuffer.toString());
                                     errorExcelList.add(postExcel);
@@ -719,7 +719,7 @@ public class PostServiceImpl implements IPostService {
                                 this.onlyOne(departmentDTOList, officialRankSystemDTOS, postNames, postCodes, postExcelDistinct, i, post, stringBuffer, officialRankSystemName, postRankLowerName, postRankUpperName, postStatus);
                                 if (stringBuffer.length() > 1) {
                                     PostExcel postExcel = new PostExcel();
-                                    BeanUtils.copyProperties(postExcelDistinct.get(i),postExcel);
+                                    BeanUtils.copyProperties(postExcelDistinct.get(i), postExcel);
                                     postError.append(stringBuffer);
                                     postExcel.setErrorData(stringBuffer.toString());
                                     errorExcelList.add(postExcel);
@@ -728,7 +728,7 @@ public class PostServiceImpl implements IPostService {
                                 if (i == 0) {
 
                                     //不包含就是新增数据
-                                    if ( !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                    if (!postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
                                         post.setCreateBy(SecurityUtils.getUserId());
                                         post.setCreateTime(DateUtils.getNowDate());
                                         post.setUpdateBy(SecurityUtils.getUserId());
@@ -741,7 +741,7 @@ public class PostServiceImpl implements IPostService {
                                         }
                                     } else if (StringUtils.isNotEmpty(postExcelUpdates) && postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
                                         for (PostDTO postExcelUpdate : postExcelUpdates) {
-                                            if (postExcelUpdate.getPostCode().equals(postExcelDistinct.get(i).getPostCode())){
+                                            if (postExcelUpdate.getPostCode().equals(postExcelDistinct.get(i).getPostCode())) {
                                                 post.setPostId(postExcelUpdate.getPostId());
                                                 break;
                                             }
@@ -763,7 +763,7 @@ public class PostServiceImpl implements IPostService {
                                     departmentPostDTOList = departmentPostMapper.selectExcelDepartmentPostId(postId);
                                 }
                                 //不包含就是新增数据
-                                if ( !postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
+                                if (!postExcelUpdates.stream().map(PostDTO::getPostCode).collect(Collectors.toList()).contains(postExcelDistinct.get(i).getPostCode())) {
                                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                                         List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
                                         if (StringUtils.isNotEmpty(departmentDTO)) {
@@ -793,7 +793,7 @@ public class PostServiceImpl implements IPostService {
                                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                                         List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
                                         if (StringUtils.isNotEmpty(departmentDTO)) {
-                                            if (StringUtils.isNotEmpty(departmentPostDTOList)){
+                                            if (StringUtils.isNotEmpty(departmentPostDTOList)) {
                                                 departmentPost.setDepartmentPostId(departmentPostDTOList.get(0).getDepartmentPostId());
                                             }
                                             //组织id
@@ -838,7 +838,7 @@ public class PostServiceImpl implements IPostService {
             uuId = "errorExcelId:" + simpleUUID;
             redisService.setCacheObject(uuId, errorExcelList, 24L, TimeUnit.HOURS);
         }
-        return ExcelUtils.parseExcelResult(new ArrayList<>(),errorExcelList,false,uuId);
+        return ExcelUtils.parseExcelResult(new ArrayList<>(), errorExcelList, false, uuId);
     }
 
     /**
@@ -867,11 +867,11 @@ public class PostServiceImpl implements IPostService {
                 if (StringUtils.isNotBlank(postRankLowerName)) {
                     String rankPrefixCode = OfficialRankSystemDTO.get(0).getRankPrefixCode();
 
-                    if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankLowerName.replace(rankPrefixCode,"")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankLowerName.replace(rankPrefixCode,""))) {
+                    if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankLowerName.replace(rankPrefixCode, "")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankLowerName.replace(rankPrefixCode, ""))) {
                         stringBuffer.append("职级下限不在" + officialRankSystemName + "职级体系的职级范围区间;");
                     } else {
                         try {
-                            post.setPostRankLower(Integer.parseInt(postRankLowerName.replace(rankPrefixCode,"")));
+                            post.setPostRankLower(Integer.parseInt(postRankLowerName.replace(rankPrefixCode, "")));
                         } catch (NumberFormatException e) {
                             stringBuffer.append("职级下限前缀不正确；");
                         }
@@ -881,15 +881,15 @@ public class PostServiceImpl implements IPostService {
 
                 if (StringUtils.isNotBlank(postRankUpperName)) {
                     String rankPrefixCode = OfficialRankSystemDTO.get(0).getRankPrefixCode();
-                    if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankUpperName.replace(rankPrefixCode,""))) {
+                    if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankUpperName.replace(rankPrefixCode, "")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankUpperName.replace(rankPrefixCode, ""))) {
                         stringBuffer.append("职级上限不在" + officialRankSystemName + "职级体系的职级范围区间;");
                     } else {
                         try {
-                            post.setPostRank(Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")));
+                            post.setPostRank(Integer.parseInt(postRankUpperName.replace(rankPrefixCode, "")));
                         } catch (NumberFormatException e) {
                             stringBuffer.append("职级上限前缀不正确；");
                         }
-                        post.setPostRankUpper(Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")));
+                        post.setPostRankUpper(Integer.parseInt(postRankUpperName.replace(rankPrefixCode, "")));
                     }
                 }
             }
@@ -953,14 +953,17 @@ public class PostServiceImpl implements IPostService {
         }
         if (StringUtils.isBlank(parentDepartmentExcelName)) {
             stringBuffer.append("适用组织为必填项;");
+        } else {
+            if (StringUtils.isEmpty(departmentDTOList)) {
+                stringBuffer.append("适用组织不存在! 请先配置组织数据;");
+            }
+            List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
+            if (StringUtils.isEmpty(departmentDTO)) {
+                stringBuffer.append(parentDepartmentExcelName + "组织不存在;");
+            }
         }
-        if (StringUtils.isEmpty(departmentDTOList)){
-            stringBuffer.append("适用组织不存在! 请先配置组织数据;");
-        }
-        List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
-        if (StringUtils.isEmpty(departmentDTO)) {
-            stringBuffer.append(parentDepartmentExcelName + "组织不存在;");
-        }
+
+
     }
 }
 
