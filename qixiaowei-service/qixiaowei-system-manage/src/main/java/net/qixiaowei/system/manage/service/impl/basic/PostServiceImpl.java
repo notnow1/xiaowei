@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
+import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -838,8 +839,8 @@ public class PostServiceImpl implements IPostService {
         //后续优化导入
         if (postError.length() > 1) {
             String simpleUUID = IdUtils.simpleUUID();
-            uuId = "errorExcelId:" + simpleUUID;
-            redisService.setCacheObject(uuId, errorExcelList, 24L, TimeUnit.HOURS);
+            uuId = CacheConstants.ERROR_EXCEL_KEY + simpleUUID;
+            redisService.setCacheObject(uuId, errorExcelList, CacheConstants.ERROR_EXCEL_LOCK_TIME, TimeUnit.HOURS);
         }
         return ExcelUtils.parseExcelResult(successExcelList, errorExcelList, false, uuId);
     }

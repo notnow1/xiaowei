@@ -2,10 +2,7 @@ package net.qixiaowei.system.manage.service.impl.basic;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
-import net.qixiaowei.integration.common.constant.BusinessConstants;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import net.qixiaowei.integration.common.constant.SecurityConstants;
-import net.qixiaowei.integration.common.constant.UserConstants;
+import net.qixiaowei.integration.common.constant.*;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -755,8 +752,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //后续优化导入
         if (employeeError.length() > 1) {
             String simpleUUID = IdUtils.simpleUUID();
-            uuId = "errorExcelId:" + simpleUUID;
-            redisService.setCacheObject(uuId, errorExcelList, 24L, TimeUnit.HOURS);
+            uuId = CacheConstants.ERROR_EXCEL_KEY + simpleUUID;
+            redisService.setCacheObject(uuId, errorExcelList, CacheConstants.ERROR_EXCEL_LOCK_TIME, TimeUnit.HOURS);
         }
         if (StringUtils.isNotEmpty(employeeAddList)) {
             employeeMapper.batchEmployee(employeeAddList);
