@@ -1101,11 +1101,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 Pattern pt2 = Pattern.compile("(^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$)");
                 Matcher matcher2 = pt2.matcher(employeeExcel.getEmployeeEmail());
                 if (!matcher2.find()) {
-                    validEmployeeError.append("邮箱格式不正确；");
+                    validEmployeeError.append("邮箱格式不正确"+Constants.China_Colon);
                 }
                 if (flag) {
                     if (StringUtils.isNotEmpty(employeeEmails) && employeeEmails.contains(employeeExcel.getEmployeeEmail())) {
-                        validEmployeeError.append("邮箱已存在");
+                        validEmployeeError.append("邮箱已存在"+Constants.China_Colon);
                     }
                 } else {
                     List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getEmployeeEmail().equals(employeeEmail)).collect(Collectors.toList());
@@ -1113,7 +1113,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         if (StringUtils.isNotBlank(collect.get(0).getEmployeeEmail())){
                             if (!collect.get(0).getEmployeeEmail().equals(employeeEmail)) {
                                 if (employeeEmails.contains(employeeEmail)) {
-                                    validEmployeeError.append("邮箱已存在");
+                                    validEmployeeError.append("邮箱已存在"+Constants.China_Colon);
                                 }
                             }
                         }
@@ -1141,37 +1141,37 @@ public class EmployeeServiceImpl implements IEmployeeService {
             //用工关系状态
             if (StringUtils.isNotBlank(employmentStatus)) {
                 if (!StringUtils.equals(employmentStatus, "在职") && !StringUtils.equals(employmentStatus, "离职")) {
-                    validEmployeeError.append("用工关系状态不存在 必须为在职和离职；");
+                    validEmployeeError.append("用工关系状态不存在 必须为在职和离职"+Constants.China_Colon);
                 }
             }
             if (StringUtils.isBlank(employeeExcel.getEmployeeCode())) {
-                validEmployeeError.append("工号为必填项；");
+                validEmployeeError.append("工号为必填项"+Constants.China_Colon);
             }
             if (StringUtils.isBlank(employeeExcel.getEmployeeName())) {
-                validEmployeeError.append("姓名为必填项；");
+                validEmployeeError.append("姓名为必填项"+Constants.China_Colon);
             }
             if (StringUtils.isBlank(employeeExcel.getEmploymentStatus())) {
-                validEmployeeError.append("用工关系状态为必填项；");
+                validEmployeeError.append("用工关系状态为必填项"+Constants.China_Colon);
             } else {
                 if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "在职")) {
                     if (StringUtils.isBlank(employmentDate)) {
-                        validEmployeeError.append("入职日期为必填项；");
+                        validEmployeeError.append("入职日期为必填项"+Constants.China_Colon);
                     }
                 }
                 if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "离职")) {
                     if (StringUtils.isBlank(departureDate)) {
-                        validEmployeeError.append("离职日期为必填项；");
+                        validEmployeeError.append("离职日期为必填项"+Constants.China_Colon);
                     }
                 }
             }
 
             if (StringUtils.isBlank(employeeExcel.getIdentityCard())) {
-                validEmployeeError.append("证件号码为必填项；");
+                validEmployeeError.append("证件号码为必填项"+Constants.China_Colon);
             }
             Pattern pt = Pattern.compile("(^[1-9]\\d{5}(19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{2}[0-9Xx]$)");
             Matcher matcher = pt.matcher(employeeExcel.getIdentityCard());
             if (!matcher.find()) {
-                validEmployeeError.append("身份证号格式不对；");
+                validEmployeeError.append("身份证号格式不对"+Constants.China_Colon);
             }
             if (flag) {
                 if (StringUtils.isNotEmpty(identityCards) && employeeMobiles.contains(employeeExcel.getIdentityCard())) {
@@ -1190,45 +1190,45 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 }
             }
             if (StringUtils.isBlank(employeeExcel.getEmploymentStatus())) {
-                validEmployeeError.append("用工关系状态为必填项；");
+                validEmployeeError.append("用工关系状态为必填项"+Constants.China_Colon);
             } else {
                 if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "在职") && StringUtils.isNotBlank(employmentDate)) {
                     try {
                         Date parse = DateUtils.parseAnalysisExcelDate(employmentDate);
                     } catch (Exception e) {
-                        validEmployeeError.append("入职日期格式不正确；");
+                        validEmployeeError.append("入职日期格式不正确"+Constants.China_Colon);
                     }
                 }
                 if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "离职") && StringUtils.isNotBlank(departureDate)) {
                     try {
                         Date parse = DateUtils.parseAnalysisExcelDate(departureDate);
                     } catch (Exception e) {
-                        validEmployeeError.append("离职日期格式不正确；");
+                        validEmployeeError.append("离职日期格式不正确"+Constants.China_Colon);
                     }
                 }
             }
 
 
             if (StringUtils.isBlank(departmentName)) {
-                validEmployeeError.append("部门为必填项；");
+                validEmployeeError.append("部门为必填项"+Constants.China_Colon);
             }
             if (StringUtils.isBlank(postName)) {
-                validEmployeeError.append("岗位为必填项；");
+                validEmployeeError.append("岗位为必填项"+Constants.China_Colon);
             }
             if (StringUtils.isBlank(employeeExcel.getEmployeeRankName())) {
-                validEmployeeError.append("个人职级为必填项；");
+                validEmployeeError.append("个人职级为必填项"+Constants.China_Colon);
             }
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
-                validEmployeeError.append("员工手机号为必填项；");
+                validEmployeeError.append("员工手机号为必填项"+Constants.China_Colon);
             }else {
                 Pattern pt1 = Pattern.compile("(^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$)");
                 Matcher matcher1 = pt1.matcher(employeeExcel.getEmployeeMobile());
                 if (!matcher1.find()) {
-                    validEmployeeError.append("手机号格式不正确；");
+                    validEmployeeError.append("手机号格式不正确"+Constants.China_Colon);
                 }
                 if (flag) {
                     if (StringUtils.isNotEmpty(employeeMobiles) && employeeMobiles.contains(employeeExcel.getEmployeeMobile())) {
-                        validEmployeeError.append("手机号已存在");
+                        validEmployeeError.append("手机号已存在"+Constants.China_Colon);
                     }
                 } else {
                     if (StringUtils.isNotEmpty(employeeMobiles)) {
@@ -1249,34 +1249,34 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
 
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
-                validEmployeeError.append("紧急联系人电话为必填项；");
+                validEmployeeError.append("紧急联系人电话为必填项"+Constants.China_Colon);
             }else {
                 Pattern pt1 = Pattern.compile("(^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$)");
                 Matcher matcher1 = pt1.matcher(employeeExcel.getEmployeeMobile());
                 if (!matcher1.find()) {
-                    validEmployeeError.append("紧急联系人电话格式不正确；");
+                    validEmployeeError.append("紧急联系人电话格式不正确"+Constants.China_Colon);
                 }
             }
 
             //工号
             List<String> employeeCodeList = employeeExcelCodes.stream().filter(f -> f.equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
             if (employeeCodeList.size() > 1) {
-                validEmployeeError.append("excel列表中工号重复；");
+                validEmployeeError.append("excel列表中工号重复"+Constants.China_Colon);
             }
             //身份证号码
             List<String> identityCardList = excelIdentityCards.stream().filter(f -> f.equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
             if (identityCardList.size() > 1) {
-                validEmployeeError.append("excel列表中身份证号码重复；");
+                validEmployeeError.append("excel列表中身份证号码重复"+Constants.China_Colon);
             }
             //手机号
             List<String> employeeMobileList = excelEmployeeMobile.stream().filter(f -> f.equals(employeeExcel.getEmployeeMobile())).collect(Collectors.toList());
             if (employeeMobileList.size() > 1) {
-                validEmployeeError.append("excel列表中手机号重复；");
+                validEmployeeError.append("excel列表中手机号重复"+Constants.China_Colon);
             }
             //邮箱
             List<String> employeeEmailList = excelEmployeeEmail.stream().filter(f -> f.equals(employeeExcel.getEmployeeEmail())).collect(Collectors.toList());
             if (employeeEmailList.size() > 1) {
-                validEmployeeError.append("excel列表中邮箱重复；");
+                validEmployeeError.append("excel列表中邮箱重复"+Constants.China_Colon);
             }
 
             //岗位是否属于这个部门
@@ -1297,7 +1297,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                             .append(departmentName)
                                             .append("部门")
                                             .append(StrUtil.BRACKET_END)
-                                            .append("；");
+                                            .append(Constants.China_Colon);
                                 }
 
                                 //个人职级名称
@@ -1317,7 +1317,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                             try {
                                                 i = Integer.parseInt(replace);
                                                 if (i > postRankUpper || i < postRankLower) {
-                                                    validEmployeeError.append("个人职级需在岗位职级上下限范围内；");
+                                                    validEmployeeError.append("个人职级需在岗位职级上下限范围内"+Constants.China_Colon);
                                                 }
                                             } catch (NumberFormatException e) {
                                                 validEmployeeError.append(StrUtil.BRACKET_START + "个人职级:")
@@ -1326,7 +1326,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                                         .append(postDTO.getPostRankName())
                                                         .append("不匹配")
                                                         .append(StrUtil.BRACKET_END)
-                                                        .append("；");
+                                                       .append(Constants.China_Colon);
                                             }
 
 
@@ -1337,7 +1337,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                             Integer postRankUpper = postIds.get(0).getPostRankUpper();
                                             int i = Integer.parseInt(employeeRankName);
                                             if (i > postRankUpper || i < postRankLower) {
-                                                validEmployeeError.append("个人职级需在岗位职级上下限范围内；");
+                                                validEmployeeError.append("个人职级需在岗位职级上下限范围内"+Constants.China_Colon);
                                             }
                                         }
 
@@ -1349,7 +1349,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         }
                     }
                 } else {
-                    throw new ServiceException("部门不存在 请联系管理员；");
+                    throw new ServiceException("部门不存在 请联系管理员"+Constants.China_Colon);
                 }
 
 

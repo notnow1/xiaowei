@@ -135,9 +135,13 @@ public interface Constants {
     String COLON_EN = ":";
 
     /**
-     * 英文逗号号
+     * 英文逗号
      */
     String COMMA_EN = ",";
+    /**
+     * 中文冒号
+     */
+    String China_Colon = "；";
 
     /**
      * 数字常量0

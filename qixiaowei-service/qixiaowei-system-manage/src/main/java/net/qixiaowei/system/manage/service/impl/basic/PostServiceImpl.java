@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.CacheConstants;
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -872,16 +873,16 @@ public class PostServiceImpl implements IPostService {
                     String rankPrefixCode = OfficialRankSystemDTO.get(0).getRankPrefixCode();
                     try {
                         if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankLowerName.replace(rankPrefixCode,"")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankLowerName.replace(rankPrefixCode,""))) {
-                            stringBuffer.append("职级下限不在" + officialRankSystemName + "职级体系的职级范围区间！");
+                            stringBuffer.append("职级下限不在" + officialRankSystemName + "职级体系的职级范围区间"+Constants.China_Colon);
                         } else {
                             try {
                                 post.setPostRankLower(Integer.parseInt(postRankLowerName.replace(rankPrefixCode,"")));
                             } catch (NumberFormatException e) {
-                                stringBuffer.append("职级下限前缀不正确；");
+                                stringBuffer.append("职级下限前缀不正确"+Constants.China_Colon);
                             }
                         }
                     } catch (NumberFormatException e) {
-                        stringBuffer.append("职级下限前缀不正确；");
+                        stringBuffer.append("职级下限前缀不正确"+Constants.China_Colon);
                     }
                 }
 
@@ -890,17 +891,17 @@ public class PostServiceImpl implements IPostService {
                     String rankPrefixCode = OfficialRankSystemDTO.get(0).getRankPrefixCode();
                     try {
                         if (OfficialRankSystemDTO.get(0).getRankStart() > Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")) || OfficialRankSystemDTO.get(0).getRankEnd() < Integer.parseInt(postRankUpperName.replace(rankPrefixCode,""))) {
-                            stringBuffer.append("职级上限不在" + officialRankSystemName + "职级体系的职级范围区间！");
+                            stringBuffer.append("职级上限不在" + officialRankSystemName + "职级体系的职级范围区间"+Constants.China_Colon);
                         } else {
                             try {
                                 post.setPostRank(Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")));
                             } catch (NumberFormatException e) {
-                                stringBuffer.append("职级上限前缀不正确；");
+                                stringBuffer.append("职级上限前缀不正确"+Constants.China_Colon);
                             }
                             post.setPostRankUpper(Integer.parseInt(postRankUpperName.replace(rankPrefixCode,"")));
                         }
                     } catch (NumberFormatException e) {
-                        stringBuffer.append("职级上限前缀不正确；");
+                        stringBuffer.append("职级上限前缀不正确"+Constants.China_Colon);
                     }
                 }
             }
@@ -940,16 +941,16 @@ public class PostServiceImpl implements IPostService {
 
 
         if (StringUtils.isBlank(postName)) {
-            stringBuffer.append("岗位名称为必填项;");
+            stringBuffer.append("岗位名称为必填项"+Constants.China_Colon);
         }
         if (StringUtils.isBlank(postCode)) {
-            stringBuffer.append("岗位编码为必填项;");
+            stringBuffer.append("岗位编码为必填项"+Constants.China_Colon);
         }
         if (StringUtils.isBlank(postRankUpperName)) {
-            stringBuffer.append("职级上限为必填项;");
+            stringBuffer.append("职级上限为必填项"+Constants.China_Colon);
         }
         if (StringUtils.isBlank(postRankLowerName)) {
-            stringBuffer.append("职级下限为必填项;");
+            stringBuffer.append("职级下限为必填项"+Constants.China_Colon);
         }
 
 /*      if (参数是否检验){
@@ -960,17 +961,17 @@ public class PostServiceImpl implements IPostService {
             }
         }*/
         if (StringUtils.isBlank(officialRankSystemName)) {
-            stringBuffer.append("职级体系为必填项;");
+            stringBuffer.append("职级体系为必填项"+Constants.China_Colon);
         }
         if (StringUtils.isBlank(parentDepartmentExcelName)) {
-            stringBuffer.append("适用组织为必填项;");
+            stringBuffer.append("适用组织为必填项"+Constants.China_Colon);
         } else {
             if (StringUtils.isEmpty(departmentDTOList)) {
-                stringBuffer.append("适用组织不存在! 请先配置组织数据;");
+                stringBuffer.append("适用组织不存在! 请先配置组织数据"+ Constants.China_Colon);
             }
             List<DepartmentDTO> departmentDTO = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), parentDepartmentExcelName)).collect(Collectors.toList());
             if (StringUtils.isEmpty(departmentDTO)) {
-                stringBuffer.append(parentDepartmentExcelName + "组织不存在;");
+                stringBuffer.append(parentDepartmentExcelName + "组织不存在"+Constants.China_Colon);
             }
         }
 
