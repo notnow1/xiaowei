@@ -1670,7 +1670,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     .append(targetDecomposeDetailsDTOS.get(i).getRegionId());
             if (StringUtils.isNotBlank(decompositionDimensionAll.toString())) {
                 if (decompositionDimensionAllData.contains(decompositionDimensionAll.toString())) {
-                    errorData.append((i + 1) + "行" + targetDecomposeDTO.getDecompositionDimension() + "已存在");
+                    errorData.append((i + 1) + "行" + targetDecomposeDTO.getDecompositionDimension() + "已存在；");
 
                 }
                 decompositionDimensionAllData.add(decompositionDimensionAll.toString());
