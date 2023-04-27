@@ -2,9 +2,7 @@ package net.qixiaowei.auth.service;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import net.qixiaowei.auth.form.LoginBody;
 import net.qixiaowei.auth.form.RegisterBody;
 import net.qixiaowei.auth.form.ResetPasswordBody;
 import net.qixiaowei.integration.common.constant.*;
@@ -57,21 +55,11 @@ public class SysLoginService {
      * 登录
      */
     public LoginUserVO login(HttpServletRequest request, String userAccount, String password) {
-        // 用户名或密码为空 错误
-        if (StringUtils.isAnyBlank(userAccount, password)) {
-            throw new ServiceException("账号或密码有误，请重新输入");
-        }
-        // 密码如果不在指定范围内 错误
-        if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
-                || password.length() > UserConstants.PASSWORD_MAX_LENGTH) {
-            throw new ServiceException("账号或密码有误，请重新输入");
-        }
-        // 用户名不在指定范围内 错误 20230111 需求更改，帐号长度范围改为1-20
-        if (userAccount.length() > UserConstants.USERNAME_MAX_LENGTH) {
-            throw new ServiceException("账号或密码有误，请重新输入");
-        }
-        // 查询用户信息
         String serverName = StringUtils.isNotEmpty(request.getHeader("proxyHost")) ? request.getHeader("proxyHost") : request.getServerName();
+        String loginCacheKeyContainDomain = passwordService.getLoginCacheKeyContainDomain(userAccount, serverName);
+        Integer retryCount = passwordService.getRetryCount(loginCacheKeyContainDomain);
+        passwordService.preValidate(loginCacheKeyContainDomain, retryCount, userAccount, password);
+        // 查询用户信息
         R<LoginUserVO> userResult = remoteUserService.getUserInfo(userAccount, serverName, SecurityConstants.INNER);
         if (StringUtils.isNull(userResult)) {
             throw new ServiceException("账号或密码有误，请重新输入");
@@ -81,10 +69,7 @@ public class SysLoginService {
         }
         LoginUserVO userInfo = userResult.getData();
         UserDTO user = userInfo.getUserDTO();
-        if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag()) || UserStatus.DISABLE.getCode().equals(user.getStatus())) {
-            throw new ServiceException("账号或密码有误，请重新输入");
-        }
-        passwordService.validate(user, password);
+        passwordService.validate(user, password, loginCacheKeyContainDomain, retryCount);
         return userInfo;
     }
 
@@ -96,38 +81,34 @@ public class SysLoginService {
      * @return: void
      **/
     public void resetPwd(HttpServletRequest request, ResetPasswordBody resetPasswordBody) {
+        String serverName = StringUtils.isNotEmpty(request.getHeader("proxyHost")) ? request.getHeader("proxyHost") : request.getServerName();
         String userAccount = resetPasswordBody.getUserAccount();
         String email = resetPasswordBody.getEmail();
         // 用户名或邮箱为空 错误
         if (StringUtils.isAnyBlank(userAccount, email)) {
+            passwordService.validateOfReset(userAccount, serverName);
             throw new ServiceException("用户/邮箱必须填写");
         }
         // 用户名不在指定范围内 错误
         if (userAccount.length() > UserConstants.USERNAME_MAX_LENGTH) {
+            passwordService.validateOfReset(userAccount, serverName);
             throw new ServiceException("账号有误");
         }
         // 查询用户信息
-        String serverName = StringUtils.isNotEmpty(request.getHeader("proxyHost")) ? request.getHeader("proxyHost") : request.getServerName();
         R<LoginUserVO> userResult = remoteUserService.getUserInfo(userAccount, serverName, SecurityConstants.INNER);
         if (StringUtils.isNull(userResult) || StringUtils.isNull(userResult.getData())) {
-            passwordService.validateOfReset(userAccount, null);
+            passwordService.validateOfReset(userAccount, serverName);
             throw new ServiceException("账号与邮箱不匹配，请重新输入。");
         }
         if (R.FAIL == userResult.getCode()) {
-            passwordService.validateOfReset(userAccount, null);
+            passwordService.validateOfReset(userAccount, serverName);
             throw new ServiceException(userResult.getMsg());
         }
         LoginUserVO userInfo = userResult.getData();
         UserDTO user = userInfo.getUserDTO();
-        Long tenantId = user.getTenantId();
-        String intervalCacheKey = passwordService.getResetIntervalCacheKeyContainTenantId(userAccount, tenantId);
-        if (redisService.hasKey(intervalCacheKey)) {
-            long expire = redisService.getExpire(intervalCacheKey);
-            String errorTimeDesc = passwordService.getErrorTimeDesc(expire);
-            String errMsg = String.format("请等待%s后再重置密码。", errorTimeDesc);
-            throw new ServiceException(errMsg);
-        }
-        passwordService.validateOfReset(userAccount, tenantId);
+        String intervalCacheKey = passwordService.getResetIntervalCacheKeyContainDomain(userAccount, serverName);
+        passwordService.checkResetInterval(intervalCacheKey);
+        passwordService.validateOfReset(userAccount, serverName);
         if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag())) {
             throw new ServiceException("账号与邮箱不匹配，请重新输入。");
         }
@@ -151,8 +132,8 @@ public class SysLoginService {
         long keyExpireTime = 10;
         redisService.setCacheObject(intervalCacheKey, null, keyExpireTime, TimeUnit.MINUTES);
         //密码重置成功清空错误密码次数
-        String cacheKey = passwordService.getLoginCacheKeyContainTenantId(userAccount, tenantId);
-        redisService.deleteObject(cacheKey);
+        String cacheKey = passwordService.getLoginCacheKeyContainDomain(userAccount, serverName);
+        passwordService.clearLoginRecordCache(cacheKey);
     }
 
     /**
