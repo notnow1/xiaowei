@@ -275,7 +275,6 @@ public class PostServiceImpl implements IPostService {
                 throw new ServiceException("删除岗位组织信息失败");
             }
         }
-
         for (DepartmentDTO departmentDTO : collect3) {
             //组织中间表
             DepartmentPost departmentPost = new DepartmentPost();

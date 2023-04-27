@@ -58,7 +58,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -1653,6 +1652,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
     /**
      * 校检分解维度是否重复
+     *
      * @param targetDecomposeDTO
      * @param targetDecomposeDetailsDTOS
      */
@@ -1669,14 +1669,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     .append(targetDecomposeDetailsDTOS.get(i).getAreaId())
                     .append(targetDecomposeDetailsDTOS.get(i).getRegionId());
             if (StringUtils.isNotBlank(decompositionDimensionAll.toString())) {
-                if (decompositionDimensionAllData.contains(decompositionDimensionAll.toString())){
-                    errorData.append((i+1)+"行"+ targetDecomposeDTO.getDecompositionDimension()+"已存在");
+                if (decompositionDimensionAllData.contains(decompositionDimensionAll.toString())) {
+                    errorData.append((i + 1) + "行" + targetDecomposeDTO.getDecompositionDimension() + "已存在");
 
                 }
                 decompositionDimensionAllData.add(decompositionDimensionAll.toString());
             }
         }
-        if (StringUtils.isNotBlank(errorData.toString())){
+        if (StringUtils.isNotBlank(errorData.toString())) {
             throw new ServiceException(errorData.toString());
         }
     }
@@ -2290,6 +2290,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             int num = 0;
             if (StringUtils.isNotNull(targetDecomposeDTO)) {
                 Integer timeDimension = targetDecomposeDTO.getTimeDimension();
+
+
+                String decompositionDimension = targetDecomposeDTO.getDecompositionDimension();
+                businessUnitDecomposeList = Arrays.asList(decompositionDimension.split("\\+"));
                 if (timeDimension == 1) {
                     num = 1;
                 } else if (timeDimension == 2) {
@@ -2301,150 +2305,166 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 } else if (timeDimension == 5) {
                     num = 52;
                 }
-
-                String decompositionDimension = targetDecomposeDTO.getDecompositionDimension();
-                businessUnitDecomposeList = Arrays.asList(decompositionDimension.split("\\+"));
-
             }
+
             int headArrange = businessUnitDecomposeList.size() + 1 + num;
+
             //构建读取器
             ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-            List<Map<Integer, String>> listMap = read.sheet(0).doReadSync();
+            List<Map<Integer, String>> listMap = new ArrayList<>();
+
+            listMap = read.sheet(0).doReadSync();
+            if (listMap.size() < 10){
+                throw new ServiceException("模板数据不能为空，至少有1条数据");
+            }
             int maxListMap = 0;
             for (int i = 0; i < listMap.size(); i++) {
                 if (i == 8) {
-                    if (listMap.get(i).size() > maxListMap) {
-                        maxListMap = listMap.get(i).size();
+                    int size = 0;
+                    for (Integer key : listMap.get(i).keySet()) {
+                        if (StringUtils.isNotBlank(listMap.get(i).get(key))) {
+                            size = size + 1;
+                        }
+                    }
+                    maxListMap = size;
+                }
+            }
+            for (Map<Integer, String> map : listMap) {
+                if (map.size() < maxListMap) {
+                    int size = map.size();
+                    for (int i = 0; i < maxListMap - size; i++) {
+                        map.put(size + i, "");
                     }
                 }
-                if (headArrange > listMap.get(i).size()) {
-                    int mapSize = listMap.get(i).size();
-                    for (int i1 = 0; i1 < headArrange - mapSize; i1++) {
-                        listMap.get(i).put(listMap.get(i).size(), "");
-                    }
-                }
+
             }
             if (maxListMap != headArrange) {
                 throw new ServiceException("导入模板被修改，请重新下载模板进行导入！");
             }
             //人员列下标
-            AtomicReference<Integer> employeeNameKey = new AtomicReference<>(0);
+            String employeeNameKey = null;
             //人员code集合
             List<String> employeeCodes = new ArrayList<>();
 
             //滚动预测负责人下标
-            AtomicReference<Integer> principalEmployeeKey = new AtomicReference<>(0);
+            String principalEmployeeKey = null;
             //滚动预测负责人集合
             List<String> principalEmployeeNames = new ArrayList<>();
             //区域下标
-            AtomicReference<Integer> areaCodesKey = new AtomicReference<>(0);
+            String areaCodesKey = null;
             //区域code集合
             List<String> areaCodes = new ArrayList<>();
             //部门下标
-            AtomicReference<Integer> departmentCodeKey = new AtomicReference<>(0);
+            String departmentCodeKey = null;
             //部门code集合
             List<String> departmentCodes = new ArrayList<>();
 
             //行业下标
-            AtomicReference<Integer> industryCodeKey = new AtomicReference<>(0);
+            String industryCodeKey = null;
             //行业code集合
             List<String> industryCodes = new ArrayList<>();
 
             //省份下标
-            AtomicReference<Integer> provinceNameKey = new AtomicReference<>(0);
+            String provinceNameKey = null;
             //省份名称集合
             List<String> provinceNames = new ArrayList<>();
 
             //产品下标
-            AtomicReference<Integer> productCodeKey = new AtomicReference<>(0);
+            String productCodeKey = null;
             //产品code集合
             List<String> productCodes = new ArrayList<>();
 
             //时间维度下标
-            AtomicReference<Integer> timeDimensionKey = new AtomicReference<>(0);
+            String timeDimensionKey = null;
             try {
                 for (int i = 0; i < listMap.size(); i++) {
                     Map<Integer, String> map = listMap.get(i);
                     if (i == 8) {
-
-                        map.forEach((key, value) -> {
-                            if (StringUtils.equals(map.get(key).replace("*", ""), DecompositionDimension.EMPLOYEE.getInfo())) {
-
-                                employeeNameKey.set(key);
-                            } else if (StringUtils.equals(map.get(key).replace("*", ""), DecompositionDimension.AREA.getInfo())) {
-                                areaCodesKey.set(key);
-                            } else if (StringUtils.equals(map.get(key).replace("*", ""), DecompositionDimension.DEPARTMENT.getInfo())) {
-                                departmentCodeKey.set(key);
-                            } else if (StringUtils.equals(map.get(key).replace("*", ""), DecompositionDimension.INDUSTRY.getInfo())) {
-                                industryCodeKey.set(key);
-                            } else if (StringUtils.equals(map.get(key).replace("*", ""), DecompositionDimension.REGION.getInfo())) {
-                                provinceNameKey.set(key);
-                            } else if (StringUtils.equals(map.get(key).replace("*", ""), DecompositionDimension.PRODUCT.getInfo())) {
-                                productCodeKey.set(key);
-                            } else if (StringUtils.equals(map.get(key).replace("*", ""), DecompositionDimension.PRINCIPALEMPLOYEE.getInfo())) {
-                                principalEmployeeKey.set(key);
-                                timeDimensionKey.set(key + 1);
+                        for (Integer key : map.keySet()) {
+                            if (StringUtils.isBlank(map.get(key))) {
+                                continue;
                             }
-                        });
+                            if (StringUtils.equals(DecompositionDimension.EMPLOYEE.getInfo(), map.get(key).replace("*", ""))) {
+                                employeeNameKey = String.valueOf(key.intValue());
+
+                            } else if (StringUtils.equals(DecompositionDimension.AREA.getInfo(), map.get(key).replace("*", ""))) {
+                                areaCodesKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.DEPARTMENT.getInfo(), map.get(key).replace("*", ""))) {
+                                departmentCodeKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.INDUSTRY.getInfo(), map.get(key).replace("*", ""))) {
+                                industryCodeKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.REGION.getInfo(), map.get(key).replace("*", ""))) {
+                                provinceNameKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.PRODUCT.getInfo(), map.get(key).replace("*", ""))) {
+                                productCodeKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.PRINCIPALEMPLOYEE.getInfo(), map.get(key).replace("*", ""))) {
+                                principalEmployeeKey = String.valueOf(key.intValue());
+                                timeDimensionKey = String.valueOf((key.intValue() + 1));
+                            }
+                        }
                     }
 
                     if (i > 8) {
                         List<String> list = new ArrayList<>();
-                        map.forEach((key, value) -> {
-                            if (null != employeeNameKey.get()) {
-                                if (key.equals(employeeNameKey.get())) {
-                                    employeeCodes.add(map.get(employeeNameKey.get()));
+                        for (Integer key : map.keySet()) {
+                            if (null != employeeNameKey) {
+                                if (key.equals(Integer.parseInt(employeeNameKey))) {
+                                    employeeCodes.add(map.get(Integer.parseInt(employeeNameKey)));
                                     mapAllData.put(DecompositionDimension.EMPLOYEE.getInfo(), employeeCodes);
                                 }
 
                             }
-                            if (null != principalEmployeeKey.get()) {
-                                if (key.equals(principalEmployeeKey.get())) {
-                                    principalEmployeeNames.add(map.get(principalEmployeeKey.get()));
+                            if (null != principalEmployeeKey) {
+                                if (key.equals(Integer.parseInt(principalEmployeeKey))) {
+                                    principalEmployeeNames.add(map.get(Integer.parseInt(principalEmployeeKey)));
                                     mapAllData.put(DecompositionDimension.PRINCIPALEMPLOYEE.getInfo(), principalEmployeeNames);
                                 }
 
                             }
-                            if (null != areaCodesKey.get()) {
-                                if (key.equals(areaCodesKey.get())) {
-                                    areaCodes.add(map.get(areaCodesKey.get()));
+                            if (null != areaCodesKey) {
+                                if (key.equals(Integer.parseInt(areaCodesKey))) {
+                                    areaCodes.add(map.get(Integer.parseInt(areaCodesKey)));
                                     mapAllData.put(DecompositionDimension.AREA.getInfo(), areaCodes);
                                 }
 
                             }
-                            if (null != departmentCodeKey.get()) {
-                                if (key.equals(departmentCodeKey.get())) {
-                                    departmentCodes.add(map.get(departmentCodeKey.get()));
+                            if (null != departmentCodeKey) {
+                                if (key.equals(Integer.parseInt(departmentCodeKey))) {
+                                    departmentCodes.add(map.get(Integer.parseInt(departmentCodeKey)));
                                     mapAllData.put(DecompositionDimension.DEPARTMENT.getInfo(), departmentCodes);
                                 }
 
                             }
-                            if (null != industryCodeKey.get()) {
-                                if (key.equals(industryCodeKey.get())) {
-                                    industryCodes.add(map.get(industryCodeKey.get()));
+                            if (null != industryCodeKey) {
+                                if (key.equals(Integer.parseInt(industryCodeKey))) {
+                                    industryCodes.add(map.get(Integer.parseInt(industryCodeKey)));
                                     mapAllData.put(DecompositionDimension.INDUSTRY.getInfo(), industryCodes);
                                 }
 
                             }
-                            if (null != provinceNameKey.get()) {
-                                if (key.equals(provinceNameKey.get())) {
-                                    provinceNames.add(map.get(provinceNameKey.get()));
+                            if (null != provinceNameKey) {
+                                if (key.equals(Integer.parseInt(provinceNameKey))) {
+                                    provinceNames.add(map.get(Integer.parseInt(provinceNameKey)));
                                     mapAllData.put(DecompositionDimension.REGION.getInfo(), provinceNames);
                                 }
 
                             }
-                            if (null != productCodeKey.get()) {
-                                if (key.equals(productCodeKey.get())) {
-                                    productCodes.add(map.get(productCodeKey.get()));
+                            if (null != productCodeKey) {
+                                if (key.equals(Integer.parseInt(productCodeKey))) {
+                                    productCodes.add(map.get(Integer.parseInt(productCodeKey)));
                                     mapAllData.put(DecompositionDimension.PRODUCT.getInfo(), productCodes);
                                 }
 
                             }
 
-                            if (key >= timeDimensionKey.get()) {
-                                list.add(map.get(key));
+                            if (key >= Integer.parseInt(timeDimensionKey)) {
+                                String s = map.get(key);
+                                if (StringUtils.isBlank(s)) {
+                                    s = "0";
+                                }
+                                list.add(s);
                             }
-                        });
+                        }
                         cyclesExcelData.add(list);
                     }
 
@@ -3398,8 +3418,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             }
         }
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
-                //校检分解维度是否重复
-                this.validDecompositionDimension(targetDecomposeDTO,targetDecomposeDetailsDTOS);
+            //校检分解维度是否重复
+            this.validDecompositionDimension(targetDecomposeDTO, targetDecomposeDetailsDTOS);
 
 
             //详情周期数据

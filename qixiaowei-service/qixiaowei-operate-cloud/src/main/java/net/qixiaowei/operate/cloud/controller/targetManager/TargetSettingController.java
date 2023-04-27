@@ -319,6 +319,7 @@ public class TargetSettingController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                         }
                         writeCellStyle.setWriteFont(headWriteFont);
+                        writeCellStyle.setWrapped(true);
                     }
                 })
                 .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
@@ -451,8 +452,10 @@ public class TargetSettingController extends BaseController {
             Map<String, List<TargetSettingExcel>> targetSettingExcelMaps = listener.getData(file.getInputStream(), TargetSettingExcel.class);
             List<TargetSettingDTO> targetSettingDTOS = targetSettingService.importTargetSetting(targetSettingExcelMaps, targetYear);
             return AjaxResult.success(targetSettingDTOS);
-        } catch (IOException e) {
-            throw new RuntimeException("导出失败");
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("解析失败");
         }
     }
 

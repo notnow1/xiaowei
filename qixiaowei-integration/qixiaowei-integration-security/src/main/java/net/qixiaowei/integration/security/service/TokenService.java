@@ -55,6 +55,8 @@ public class TokenService {
         loginUserVO.setUserAccount(userAccount);
         loginUserVO.setIpaddr(IpUtils.getIpAddr(ServletUtils.getRequest()));
         refreshToken(loginUserVO);
+        //设置用户最新登录的token
+        setUserTokenKey(token, userId);
 
         // Jwt存储信息
         Map<String, Object> claimsMap = new HashMap<String, Object>();
@@ -63,7 +65,7 @@ public class TokenService {
         claimsMap.put(SecurityConstants.DETAILS_USER_ACCOUNT, userAccount);
         claimsMap.put(SecurityConstants.DETAILS_TENANT_ID, tenantId);
         claimsMap.put(SecurityConstants.DETAILS_EMPLOYEE_ID, employeeId);
-        claimsMap.put(SecurityConstants.SALES_TOKEN_NAME,salesCloudToken);
+        claimsMap.put(SecurityConstants.SALES_TOKEN_NAME, salesCloudToken);
 
         // 接口返回信息
         Map<String, Object> rspMap = new HashMap<String, Object>();
@@ -158,5 +160,20 @@ public class TokenService {
 
     private String getTokenKey(String token) {
         return ACCESS_TOKEN + token;
+    }
+
+    /**
+     * 获取用户Token缓存key
+     */
+    private String getUserTokenKey(Long userId) {
+        return CacheConstants.LOGIN_USER_TOKEN_KEY + userId;
+    }
+
+    /**
+     * 设置用户登录缓存key
+     */
+    private void setUserTokenKey(String token, Long userId) {
+        String userLoginTokenKey = getUserTokenKey(userId);
+        redisService.setCacheObject(userLoginTokenKey, token, expireTime, TimeUnit.MINUTES);
     }
 }

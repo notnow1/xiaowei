@@ -604,7 +604,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Transactional
     public Map<Object, Object> importEmployee(List<EmployeeExcel> list) throws ParseException {
         if (StringUtils.isEmpty(list)) {
-            throw new RuntimeException("请填写Excel数据!");
+            throw new ServiceException("请填写Excel数据!");
         }
         //所有员工
         Employee employee = new Employee();

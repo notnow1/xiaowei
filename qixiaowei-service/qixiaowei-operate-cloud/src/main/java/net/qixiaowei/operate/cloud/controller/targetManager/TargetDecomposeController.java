@@ -1443,7 +1443,7 @@ public class TargetDecomposeController extends BaseController {
                 .head(head)// 设置表头
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,12,65533))
                 .sheet(targetDecomposeDTO.getIndicatorName() + "目标分解详情")// 设置 sheet 的名字
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
@@ -1531,15 +1531,14 @@ public class TargetDecomposeController extends BaseController {
                             }
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            if (context.getRowIndex() > 6) {
-                                //设置边框
-                                writeCellStyle.setBorderLeft(BorderStyle.THIN);
-                                writeCellStyle.setBorderTop(BorderStyle.THIN);
-                                writeCellStyle.setBorderRight(BorderStyle.THIN);
-                                writeCellStyle.setBorderBottom(BorderStyle.THIN);
-                            }
+
                             if (context.getRowIndex() == 7) {
                                 if (context.getColumnIndex() < 5) {
+                                    //设置边框
+                                    writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                    writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                    writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                    writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -1561,6 +1560,11 @@ public class TargetDecomposeController extends BaseController {
                             }
                             if (context.getRowIndex() == 8) {
                                 if (context.getColumnIndex() < 5) {
+                                    //设置边框
+                                    writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                    writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                    writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                    writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
@@ -1581,6 +1585,7 @@ public class TargetDecomposeController extends BaseController {
                                 }
 
                             }
+
                             if (context.getRowIndex() == 11) {
 
                                 int num = 0;
@@ -1591,6 +1596,11 @@ public class TargetDecomposeController extends BaseController {
                                     headWriteFont.setColor(IndexedColors.RED.getIndex());
                                 }
                                 if (context.getColumnIndex() < (targetDecomposeDTO.getFileNameList().size() + 1 + num)) {
+                                    //设置边框
+                                    writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                                    writeCellStyle.setBorderTop(BorderStyle.THIN);
+                                    writeCellStyle.setBorderRight(BorderStyle.THIN);
+                                    writeCellStyle.setBorderBottom(BorderStyle.THIN);
                                     // 拿到poi的workbook
                                     Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                                     // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
