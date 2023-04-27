@@ -247,7 +247,7 @@ public class TenantServiceImpl implements ITenantService {
         List<TenantContractDTO> tenantContractDTOList = tenantDTO.getTenantContractDTOList();
 
         Set<Long> initMenuIds = this.saveTenantContract(tenantContractDTOList, tenantId, userId, nowDate);
-        Date endTime = this.getSalesEndTime(tenantContractDTOList, nowDate);
+        Date endTime = Optional.ofNullable(this.getSalesEndTime(tenantContractDTOList, nowDate)).orElse(nowDate);
         //初始化租户数据
         Boolean initSuccess = tenantLogic.initTenantData(tenant, endTime, initMenuIds);
         if (!initSuccess) {
@@ -407,7 +407,7 @@ public class TenantServiceImpl implements ITenantService {
         List<TenantContractDTO> tenantContractDTOS = tenantContractMapper.selectTenantContractByTenantId(tenantId);
         this.handleResponseOfTenantContract(tenantContractDTOS);
         Date nowDate = DateUtils.getNowDate();
-        Date endTime = this.getSalesEndTime(tenantContractDTOS, nowDate);
+        Date endTime = Optional.ofNullable(this.getSalesEndTime(tenantContractDTOS, nowDate)).orElse(nowDate);
         //初始化租户数据
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, tenant);
@@ -824,6 +824,7 @@ public class TenantServiceImpl implements ITenantService {
                         if (null != initMenuIds) {
                             initMenuIds.addAll(menuIds);
                         }
+                        tenantContractDTO.setMenuIds(menuIds);
                     }
                 }
             }
@@ -1161,10 +1162,11 @@ public class TenantServiceImpl implements ITenantService {
      **/
     private Date getSalesEndTime(List<TenantContractDTO> tenantContractDTOList, Date nowDate) {
         Date endTime = DateUtils.getNowDate();
+        boolean changeTimeFlag = false;
         //租户合同
         if (StringUtils.isNotEmpty(tenantContractDTOList)) {
             for (TenantContractDTO tenantContractDTO : tenantContractDTOList) {
-                //保存合同授权
+                //获取合同授权
                 Set<Long> menuIds = tenantContractDTO.getMenuIds();
                 if (StringUtils.isNotEmpty(menuIds)) {
                     for (Long menuId : menuIds) {
@@ -1175,12 +1177,17 @@ public class TenantServiceImpl implements ITenantService {
                             if (this.containContractTime(nowDate, contractStartTime, contractEndTime)) {
                                 if (endTime.before(contractEndTime)) {
                                     endTime = contractEndTime;
+                                    changeTimeFlag = true;
+                                    break;
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+        if (!changeTimeFlag) {
+            return null;
         }
         return DateUtil.endOfDay(endTime);
     }
