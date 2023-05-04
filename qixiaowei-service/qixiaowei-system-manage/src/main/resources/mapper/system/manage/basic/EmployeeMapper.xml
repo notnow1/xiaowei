@@ -584,6 +584,12 @@
             OR p.post_id IS NULL
             )
         </if>
+        <if test="employee.params.employeePostIdNull != null">
+            AND p.post_id IS NULL
+        </if>
+        <if test="employee.params.employeePostIdNotNull != null">
+            AND p.post_id IS NOT NULL
+        </if>
         <!-- 员工职级体系名称过滤  -->
         <if test="employee.params.officialRankSystemIdEqual != null and employee.params.officialRankSystemIdEqual.size() > 0">
             AND ors.official_rank_system_id IN
@@ -686,6 +692,12 @@
                 when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end NOT LIKE
                 concat('%', #{item}, '%')
             </foreach>
+        </if>
+        <if test="employee.params.employeeRankNameNull != null">
+            AND  e.employee_rank IS NULL
+        </if>
+        <if test="employee.params.employeeRankNameNotNull != null">
+            AND e.employee_rank IS NOT NULL
         </if>
         <!-- 基本工资过滤  -->
         <if test="employee.params.employeeBasicWageEqual != null and employee.params.employeeBasicWageEqual.size() > 0">
