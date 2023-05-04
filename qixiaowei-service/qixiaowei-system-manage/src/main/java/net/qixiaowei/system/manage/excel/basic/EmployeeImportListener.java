@@ -238,7 +238,7 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
                 "3、户口所在地、参保地应按照XX省XX市录入\n" +
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
-        head13.add("岗位*");
+        head13.add("岗位");
         if (StringUtils.isNotBlank(errorExcelId)){
             selectMap.put(15, postNames);
         }else {
@@ -253,7 +253,7 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
                 "3、户口所在地、参保地应按照XX省XX市录入\n" +
                 "4、常住地、通信地址应按照XX省XX市XX区（县）录入\n" +
                 "5、个人职级应在岗位职级上下限范围内");
-        head14.add("个人职级*");
+        head14.add("个人职级");
 
         // 第十六列
         List<String> head15 = new ArrayList<String>();
