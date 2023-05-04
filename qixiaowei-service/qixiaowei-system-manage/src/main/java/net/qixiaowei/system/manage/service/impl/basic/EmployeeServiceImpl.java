@@ -440,8 +440,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 throw new ServiceException("身份证号已存在");
             }
         }
-        employeeMapper.selectEmployeeByEmployeeEmail(employeeDTO.getEmployeeCode());
-
         //员工表
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
