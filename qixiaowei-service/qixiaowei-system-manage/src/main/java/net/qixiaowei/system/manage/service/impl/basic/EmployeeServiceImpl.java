@@ -1273,7 +1273,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
 
             //岗位是否属于这个部门
-            if (StringUtils.isNotEmpty(postName) && StringUtils.isNotEmpty(departmentName)) {
+            if (StringUtils.isNotBlank(postName) && StringUtils.isNotBlank(departmentName)) {
                 if (StringUtils.isNotEmpty(parentDepartmentNameMap)) {
                     if (parentDepartmentNameMap.containsKey(departmentName)) {
                         Long departmentId = parentDepartmentNameMap.get(departmentName);
@@ -1294,7 +1294,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                 }
 
                                 //个人职级名称
-                                if (StringUtils.isNotEmpty(employeeRankName)) {
+                                if (StringUtils.isNotBlank(employeeRankName)) {
                                     List<PostDTO> postIds = postDTOS.stream().filter(f -> postId.equals(f.getPostId())).collect(Collectors.toList());
                                     if (StringUtils.isNotEmpty(postIds)) {
                                         PostDTO postDTO = postIds.get(0);
