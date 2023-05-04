@@ -962,7 +962,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
         }
         //不能修改身份证号和出生日期
-        if (!employeeCodes.contains(employeeExcel.getEmployeeCode())) {
+        if (!employeeCodes.contains(employeeExcel.getEmployeeCode()) || (employeeCodes.contains(employeeExcel.getEmployeeCode()) && employeeDTO.getStatus().equals(0))) {
             //用工关系状态
             if (StringUtils.isNotBlank(employmentStatus)) {
                 if (StringUtils.equals(employmentStatus, "在职")) {
