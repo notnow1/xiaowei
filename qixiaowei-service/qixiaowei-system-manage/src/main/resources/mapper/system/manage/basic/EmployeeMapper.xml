@@ -1376,6 +1376,12 @@
         <if test="employee.employeePostId != null">
             and e.employee_post_id =#{employee.employeePostId}
         </if>
+        <if test="employee.employeePostIdNull != null">
+            and e.employee_post_id is null
+        </if>
+        <if test="employee.employeePostIdNotNull != null">
+            and e.employee_post_id is not null
+        </if>
         <if test="employee.employeeRankName != null and employee.employeeRankName != ''">
             and case when ors.rank_prefix_code is null then e.employee_rank
             when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end
