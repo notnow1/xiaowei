@@ -106,6 +106,12 @@ public class SalaryPayExcel {
     @ExcelIgnore
     @ExcelProperty("删除标记:0未删除;1已删除")
     private Integer deleteFlag;
+    /**
+     * uuid
+     */
+    @ExcelIgnore
+    @ExcelProperty("UUID")
+    private String errorExcelId;
 
 }
 

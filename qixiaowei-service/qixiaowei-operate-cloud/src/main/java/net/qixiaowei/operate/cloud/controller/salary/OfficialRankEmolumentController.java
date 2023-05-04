@@ -99,7 +99,7 @@ public class OfficialRankEmolumentController extends BaseController {
     /**
      * 导入职级确定薪酬
      */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:import")
+    @RequiresPermissions(value = {"operate:cloud:officialRankEmolument:info", "operate:cloud:officialRankEmolument:import"}, logical = Logical.OR)
     @PostMapping("import")
     public AjaxResult importOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO, MultipartFile file) {
         Map<Object, Object> objectObjectMap = officialRankEmolumentService.importOfficialRankEmolument(officialRankEmolumentDTO, file);
@@ -109,7 +109,7 @@ public class OfficialRankEmolumentController extends BaseController {
     /**
      * 导入职级确定薪酬
      */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:import")
+     @RequiresPermissions(value = {"operate:cloud:officialRankEmolument:info", "operate:cloud:officialRankEmolument:import"}, logical = Logical.OR)
     @GetMapping("export-error")
     public void exportErrorList(OfficialRankEmolumentDTO officialRankEmolumentDTO, HttpServletResponse response) {
         try {
@@ -218,7 +218,7 @@ public class OfficialRankEmolumentController extends BaseController {
      * 导出职级确定薪酬
      */
     @SneakyThrows
-    @RequiresPermissions("operate:cloud:officialRankEmolument:import")
+     @RequiresPermissions(value = {"operate:cloud:officialRankEmolument:info", "operate:cloud:officialRankEmolument:import"}, logical = Logical.OR)
     @GetMapping("/export-template")
     public void exportTemplate(OfficialRankEmolumentDTO officialRankEmolumentDTO, HttpServletResponse response) {
         try {

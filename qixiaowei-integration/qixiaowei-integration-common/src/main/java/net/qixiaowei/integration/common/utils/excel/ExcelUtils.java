@@ -99,13 +99,16 @@ public class ExcelUtils {
      * @param str 判断是否为数字类型
      * @return 判断
      */
-    public static boolean isNumber(String str) {
+    public static boolean isNotNumber(String str) {
+        if (StringUtils.isBlank(str)) {
+            return true;
+        }
         // 整数
         //Pattern pattern = Pattern.compile("^([0-9]+|[0-9]{1,3}(,[0-9]{3})*)(.[0-9]{1,2})?$");
         // 包含负数
         Pattern pattern = Pattern.compile("^-?([0-9]+|[0-9]{1,3}(,[0-9]{3})*)(.[0-9]{1,2})?$");
         Matcher match = pattern.matcher(str);
-        return match.matches();
+        return !match.matches();
     }
 
     /**
@@ -308,9 +311,9 @@ public class ExcelUtils {
             if (method == null) {
                 return t1;
             }
-            if (flag){
-                method.invoke(t1, list.get(k-1));
-            }else {
+            if (flag) {
+                method.invoke(t1, list.get(k - 1));
+            } else {
                 method.invoke(t1, list.get(k));
             }
 

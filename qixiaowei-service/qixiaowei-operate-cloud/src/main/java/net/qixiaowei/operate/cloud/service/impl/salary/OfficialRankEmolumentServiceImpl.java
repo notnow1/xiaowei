@@ -452,13 +452,13 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             for (Map<Integer, String> map : listMap) {
                 StringBuilder errorNote = new StringBuilder();
                 // 判断小数点后2位的数字的正则表达式
-                if (!ExcelUtils.isNumber(map.get(1))) {
+                if (StringUtils.isNotBlank(map.get(1)) && ExcelUtils.isNotNumber(map.get(1))) {
                     errorNote.append("工资上限格式不正确；");
                 }
-                if (!ExcelUtils.isNumber(map.get(2))) {
+                if (StringUtils.isNotBlank(map.get(2)) && ExcelUtils.isNotNumber(map.get(2))) {
                     errorNote.append("工资下限格式不正确；");
                 }
-                if (!ExcelUtils.isNumber(map.get(3))) {
+                if (StringUtils.isNotBlank(map.get(3)) && ExcelUtils.isNotNumber(map.get(3))) {
                     errorNote.append("工资中位数格式不正确；");
                 }
                 if (errorNote.length() == 0) {
@@ -523,7 +523,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             String simpleUUID = IdUtils.simpleUUID();
             if (StringUtils.isNotEmpty(errorExcelList)) {
                 uuId = CacheConstants.ERROR_EXCEL_KEY + simpleUUID;
-                redisService.setCacheObject(uuId, errorExcelList, 12L, TimeUnit.HOURS);
+                redisService.setCacheObject(uuId, errorExcelList, CacheConstants.ERROR_EXCEL_LOCK_TIME, TimeUnit.HOURS);
             }
             return ExcelUtils.parseExcelResult(successExcelList, errorExcelList, false, simpleUUID);
         } catch (ServiceException e) {

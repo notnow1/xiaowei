@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +60,14 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
      * 工资项服务
      */
     private final ISalaryItemService salaryItemService;
+    /**
+     * 导入返回信息
+     */
+    Map<Object, Object> data = new HashMap<>();
+    /**
+     * 是否为错误报告
+     */
+    boolean isError = false;
 
     @Override
     public void invokeHeadMap(Map<Integer, String> headMap, AnalysisContext context) {
@@ -68,6 +77,7 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
         }
         if (headMap.size() > (salaryItemDTOS.size() + 3)) {
             throw new ServiceException("当前系统配置的薪酬类别与导入的薪酬类别不匹配，请检查.");
+//            throw new ServiceException("当前工资条模板不正确 请重新下载模板导入");
         }
         Map<String, SalaryItemDTO> salaryItemOfThirdLevelItemMap = new HashMap<>();
         Map<Long, SalaryItemDTO> salaryItemMap = new HashMap<>();
@@ -101,8 +111,10 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
         list.add(map);
         // 达到BATCH_COUNT，则调用importer方法入库，防止数据几万条数据在内存，容易OOM
         if (list.size() >= batchCount) {
+            List<ReadSheet> readSheets = context.readSheetList();
+            String sheetName = readSheets.get(0).getSheetName();
             // 调用importer方法
-            salaryPayService.importSalaryPay(salaryPayImportTempDataVO, list);
+            data = salaryPayService.importSalaryPay(salaryPayImportTempDataVO, list, sheetName);
             // 存储完成清理list
             list.clear();
         }
@@ -110,8 +122,9 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+        String sheetName = analysisContext.readSheetHolder().getSheetName();
         logger.info("Excel解析完成");
-        salaryPayService.importSalaryPay(salaryPayImportTempDataVO, list);
+        data = salaryPayService.importSalaryPay(salaryPayImportTempDataVO, list, sheetName);
         // 存储完成清理list
         list.clear();
     }
@@ -119,10 +132,16 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
     /**
      * 创建导入模板表头，可以创建复杂的表头
      *
-     * @return
+     * @return List
      */
-    public static List<List<String>> headTemplate(List<SalaryItemDTO> salaryItemDTOS) {
+    public static List<List<String>> headTemplate(List<SalaryItemDTO> salaryItemDTOS, boolean isError) {
         List<List<String>> list = new ArrayList<List<String>>();
+        // 第一列
+        if (isError) {
+            List<String> head = new ArrayList<String>();
+            head.add("错误信息");
+            list.add(head);
+        }
         // 第一列
         List<String> head0 = new ArrayList<String>();
         head0.add("员工工号*");

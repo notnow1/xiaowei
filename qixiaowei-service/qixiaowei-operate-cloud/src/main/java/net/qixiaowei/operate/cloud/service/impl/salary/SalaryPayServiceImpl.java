@@ -2,7 +2,10 @@ package net.qixiaowei.operate.cloud.service.impl.salary;
 
 import cn.hutool.core.util.PageUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.HttpStatus;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -12,8 +15,11 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.PageUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
+import net.qixiaowei.integration.common.utils.uuid.IdUtils;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryPay;
@@ -36,10 +42,13 @@ import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -66,6 +75,9 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
 
     @Autowired
     RemoteEmployeeService employeeService;
+
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 查询工资发薪表
@@ -687,14 +699,16 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     /**
      * 导入Excel
      *
-     * @param list excel内容
+     * @param list      excel内容
+     * @param sheetName sheet名称
      */
     @Override
     @Transactional
-    public void importSalaryPay(SalaryPayImportTempDataVO salaryPayImportTempDataVO, List<Map<Integer, String>> list) {
+    public Map<Object, Object> importSalaryPay(SalaryPayImportTempDataVO salaryPayImportTempDataVO, List<Map<Integer, String>> list, String sheetName) {
         if (StringUtils.isEmpty(list)) {
             throw new ServiceException("当前excel数据为空 请填充数据");
         }
+        List<Map<Integer, String>> listMap = this.getMaps(sheetName, list);
         //以下三个值取初始化值即可
         Map<Integer, String> headMap = salaryPayImportTempDataVO.getHeadMap();
         Map<String, SalaryItemDTO> salaryItemOfThirdLevelItemMap = salaryPayImportTempDataVO.getSalaryItemOfThirdLevelItemMap();
@@ -709,46 +723,54 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         List<String> employeeCodeList = new ArrayList<>();
         Set<Integer> salaryYearsOfThisCycle = new HashSet<>();
         Set<Long> employeeIdsOfThisCycle = new HashSet<>();
-        for (Map<Integer, String> map : list) {
+        List<Object> errorExcelList = new ArrayList<>();
+        List<Map<Integer, String>> successExcels = new ArrayList<>();
+        for (Map<Integer, String> map : listMap) {
+            StringBuilder errorNote = new StringBuilder();
             String employeeCode = map.get(0);
             String employeeName = map.get(1);
             String salaryYearAndMonth = map.get(2);
             if (StringUtils.isEmpty(employeeCode)) {
-                throw new ServiceException("员工编码为空 请输入员工编码");
+                errorNote.append("员工编码为空；");
             }
             if (StringUtils.isEmpty(employeeName)) {
-                throw new ServiceException("员工姓名为空 请输入员工姓名");
-            }
-            if (StringUtils.isEmpty(salaryYearAndMonth)) {
-                throw new ServiceException("请输入 " + employeeCode + " 员工工号发薪年月");
+                errorNote.append("员工姓名为空；");
             }
             //发薪年月校验
             if (StringUtils.isEmpty(salaryYearAndMonth)) {
-                throw new ServiceException("员工编码(" + employeeCode + ")的发薪年月未输入,请检查.");
+                errorNote.append("发薪年月未输入；");
             }
-            int year;
+            int year = 0;
             try {
                 Date date = DateUtils.parseAnalysisExcelDate(salaryYearAndMonth);
                 if (StringUtils.isNull(date)) {
-                    throw new ServiceException("请输入时间格式");
+                    errorNote.append("发薪年月格式错误；");
                 }
                 year = Integer.parseInt(String.valueOf(DateUtils.getYear(date)));
                 int month = Integer.parseInt(String.valueOf(DateUtils.getMonth(date)));
             } catch (Exception e) {
                 log.error("导入员工薪酬报错，发薪年月格式错误:{}", e.getMessage());
-                throw new ServiceException("员工编码(" + employeeCode + ")的发薪年月格式错误[" + salaryYearAndMonth + "],请检查.");
+                errorNote.append("发薪年月格式错误；");
             }
             String salary = employeeCode + StrUtil.COLON + salaryYearAndMonth;
             if (salarySet.contains(salary)) {
-                throw new ServiceException("员工编码(" + employeeCode + ")存在重复工资项 请检查");
+                errorNote.append("存在重复工资项；");
             }
             String employeeCodeAndPayYear = employeeCode + StrUtil.COLON + year;
             salarySet.add(salary);
             // 员工编码
-            handleEmployeeImportData(employeeTempDataOfCode, employeeCodes, employeeCodeAndPayYearSet, employeeCodeList, employeeIdsOfThisCycle, employeeCode, employeeName, employeeCodeAndPayYear);
+            handleEmployeeImportData(employeeTempDataOfCode, employeeCodes, employeeCodeAndPayYearSet, employeeCodeList, employeeIdsOfThisCycle, employeeCode, employeeName, employeeCodeAndPayYear, errorNote);
             if (!employeeCodeAndPayYearSet.contains(employeeCodeAndPayYear)) {
                 employeeCodeAndPayYearSet.add(employeeCodeAndPayYear);
                 salaryYearsOfThisCycle.add(year);
+            }
+            if (errorNote.length() != 0) {
+                List<String> errorList = new ArrayList<>();
+                errorList.add(errorNote.substring(0, errorNote.length() - 1));
+                errorList.addAll(map.values());
+                errorExcelList.add(errorList);
+            } else {
+                successExcels.add(map);
             }
         }
         //添加本次循环的值
@@ -765,85 +787,39 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         Map<String, List<SalaryPayDetails>> yearAndMonthOfSalaryPayDetailsMap = new HashMap<>();
-        for (Map<Integer, String> map : list) {
-            String employeeCode = map.get(0);
-            SalaryPayImportOfEmpDataVO salaryPayImportOfEmpDataVO = employeeTempDataOfCode.get(employeeCode);
-            Long employeeId = salaryPayImportOfEmpDataVO.getEmployeeId();
-            String salaryYearAndMonth = map.get(2);
-            Date date = DateUtils.parseAnalysisExcelDate(salaryYearAndMonth);
-            if (StringUtils.isNull(date)) {
-                throw new ServiceException("请输入时间格式");
-            }
-            int year = Integer.parseInt(String.valueOf(DateUtils.getYear(date)));
-            int month = Integer.parseInt(String.valueOf(DateUtils.getMonth(date)));
-            BigDecimal salaryAmount = BigDecimal.ZERO;//工资金额
-            BigDecimal allowanceAmount = BigDecimal.ZERO;//津贴金额
-            BigDecimal welfareAmount = BigDecimal.ZERO;//福利金额
-            BigDecimal bonusAmount = BigDecimal.ZERO;//奖金金额
-            BigDecimal withholdRemitTax = BigDecimal.ZERO;//代扣代缴金额
-            BigDecimal otherDeductions = BigDecimal.ZERO;//其他扣款金额
-            List<SalaryPayDetails> salaryPayDetailsOfImport = new ArrayList<>();
-            //处理发薪明细
-            for (int i = 3; i < headMap.size(); i++) {
-                SalaryPayDetails salaryPayDetails = new SalaryPayDetails();
-                String thirdLevelItemOfImport = headMap.get(i);
-                if (salaryItemOfThirdLevelItemMap.containsKey(thirdLevelItemOfImport)) {
-                    SalaryItemDTO salaryItemDTO = salaryItemOfThirdLevelItemMap.get(thirdLevelItemOfImport);
-                    BigDecimal amount;
-                    String amountOfImport = map.get(i);
-                    if (StringUtils.isEmpty(amountOfImport)) {
-                        amount = BigDecimal.ZERO;
-                    } else {
-                        amount = new BigDecimal(amountOfImport);
-                    }
-                    salaryPayDetails.setSalaryItemId(salaryItemDTO.getSalaryItemId());
-                    salaryPayDetails.setAmount(amount);
-                    salaryPayDetails.setSort(i - 2);
-                    switch (salaryItemDTO.getSecondLevelItem()) {
-                        case 1:
-                            salaryAmount = salaryAmount.add(amount);
-                            break;
-                        case 2:
-                            allowanceAmount = allowanceAmount.add(amount);
-                            break;
-                        case 3:
-                            welfareAmount = welfareAmount.add(amount);
-                            break;
-                        case 4:
-                            bonusAmount = bonusAmount.add(amount);
-                            break;
-                        case 5:
-                            withholdRemitTax = withholdRemitTax.add(amount);
-                            break;
-                        case 6:
-                            otherDeductions = otherDeductions.add(amount);
-                            break;
-                    }
-                    salaryPayDetailsOfImport.add(salaryPayDetails);
-                }
-            }
-            String key = employeeId + StrUtil.COLON + year + StrUtil.COLON + month;
-            SalaryPay salaryPay = new SalaryPay();
-            //判断系统是否存在发薪记录
-            salaryPay.setUpdateBy(userId);
-            salaryPay.setUpdateTime(nowDate);
-            //更新
-            if (employeeIdAndYearAndMonthOfSalaryPayMap.containsKey(key)) {
-                SalaryPayDTO salaryPayDTO = employeeIdAndYearAndMonthOfSalaryPayMap.get(key);
-                Long salaryPayId = salaryPayDTO.getSalaryPayId();
-                List<SalaryPayDetailsDTO> salaryPayDetailsDTOList = salaryPayDTO.getSalaryPayDetailsDTOList();
-                Map<Long, SalaryPayDetailsDTO> salaryPayDetailsMap = new HashMap<>();
-                for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
-                    salaryPayDetailsMap.put(salaryPayDetailsDTO.getSalaryItemId(), salaryPayDetailsDTO);
-                }
-                Set<Long> salaryPayDetailsSet = new HashSet<>();
-                handleSalaryPayDetails(insertSalaryPayDetails, updateSalaryPayDetails, userId, nowDate, salaryPayDetailsOfImport, salaryPayId, salaryPayDetailsMap, salaryPayDetailsSet);
-                for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
-                    Long salaryItemId = salaryPayDetailsDTO.getSalaryItemId();
-                    BigDecimal amount = Optional.ofNullable(salaryPayDetailsDTO.getAmount()).orElse(BigDecimal.ZERO);
-                    //如果导入不包含的话，则把系统里面的重新一起计算一遍
-                    if (!salaryPayDetailsSet.contains(salaryItemId)) {
-                        SalaryItemDTO salaryItemDTO = salaryItemMap.get(salaryItemId);
+        List<Object> successExcelList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(successExcels)) {
+            for (Map<Integer, String> map : successExcels) {
+                String employeeCode = map.get(0);
+                SalaryPayImportOfEmpDataVO salaryPayImportOfEmpDataVO = employeeTempDataOfCode.get(employeeCode);
+                Long employeeId = salaryPayImportOfEmpDataVO.getEmployeeId();
+                String salaryYearAndMonth = map.get(2);
+                Date date = DateUtils.parseAnalysisExcelDate(salaryYearAndMonth);
+                int year = Integer.parseInt(String.valueOf(DateUtils.getYear(date)));
+                int month = Integer.parseInt(String.valueOf(DateUtils.getMonth(date)));
+                BigDecimal salaryAmount = BigDecimal.ZERO;//工资金额
+                BigDecimal allowanceAmount = BigDecimal.ZERO;//津贴金额
+                BigDecimal welfareAmount = BigDecimal.ZERO;//福利金额
+                BigDecimal bonusAmount = BigDecimal.ZERO;//奖金金额
+                BigDecimal withholdRemitTax = BigDecimal.ZERO;//代扣代缴金额
+                BigDecimal otherDeductions = BigDecimal.ZERO;//其他扣款金额
+                List<SalaryPayDetails> salaryPayDetailsOfImport = new ArrayList<>();
+                //处理发薪明细
+                for (int i = 3; i < headMap.size(); i++) {
+                    SalaryPayDetails salaryPayDetails = new SalaryPayDetails();
+                    String thirdLevelItemOfImport = headMap.get(i);
+                    if (salaryItemOfThirdLevelItemMap.containsKey(thirdLevelItemOfImport)) {
+                        SalaryItemDTO salaryItemDTO = salaryItemOfThirdLevelItemMap.get(thirdLevelItemOfImport);
+                        BigDecimal amount;
+                        String amountOfImport = map.get(i);
+                        if (StringUtils.isEmpty(amountOfImport)) {
+                            amount = BigDecimal.ZERO;
+                        } else {
+                            amount = new BigDecimal(amountOfImport);
+                        }
+                        salaryPayDetails.setSalaryItemId(salaryItemDTO.getSalaryItemId());
+                        salaryPayDetails.setAmount(amount);
+                        salaryPayDetails.setSort(i - 2);
                         switch (salaryItemDTO.getSecondLevelItem()) {
                             case 1:
                                 salaryAmount = salaryAmount.add(amount);
@@ -864,38 +840,116 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                                 otherDeductions = otherDeductions.add(amount);
                                 break;
                         }
+                        salaryPayDetailsOfImport.add(salaryPayDetails);
                     }
                 }
-                //获取工资发薪
-                this.buildSalaryPay
-                        (salaryPay, employeeId, salaryAmount, allowanceAmount,
-                                welfareAmount, bonusAmount, withholdRemitTax, otherDeductions);
-                salaryPay.setSalaryPayId(salaryPayId);
-                updateSalaryPays.add(salaryPay);
-            } else {//插入
-                //获取工资发薪
-                this.buildSalaryPay
-                        (salaryPay, employeeId, salaryAmount, allowanceAmount,
-                                welfareAmount, bonusAmount, withholdRemitTax, otherDeductions);
-                salaryPay.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                salaryPay.setCreateBy(userId);
-                salaryPay.setCreateTime(nowDate);
-                insertSalaryPays.add(salaryPay);
-                //处理发薪明细
-                yearAndMonthOfSalaryPayDetailsMap.put(employeeId + StrUtil.COLON + year + StrUtil.COLON + month, salaryPayDetailsOfImport);
+                String key = employeeId + StrUtil.COLON + year + StrUtil.COLON + month;
+                SalaryPay salaryPay = new SalaryPay();
+                //判断系统是否存在发薪记录
+                salaryPay.setUpdateBy(userId);
+                salaryPay.setUpdateTime(nowDate);
+                //更新
+                if (employeeIdAndYearAndMonthOfSalaryPayMap.containsKey(key)) {
+                    SalaryPayDTO salaryPayDTO = employeeIdAndYearAndMonthOfSalaryPayMap.get(key);
+                    Long salaryPayId = salaryPayDTO.getSalaryPayId();
+                    List<SalaryPayDetailsDTO> salaryPayDetailsDTOList = salaryPayDTO.getSalaryPayDetailsDTOList();
+                    Map<Long, SalaryPayDetailsDTO> salaryPayDetailsMap = new HashMap<>();
+                    for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
+                        salaryPayDetailsMap.put(salaryPayDetailsDTO.getSalaryItemId(), salaryPayDetailsDTO);
+                    }
+                    Set<Long> salaryPayDetailsSet = new HashSet<>();
+                    handleSalaryPayDetails(insertSalaryPayDetails, updateSalaryPayDetails, userId, nowDate, salaryPayDetailsOfImport, salaryPayId, salaryPayDetailsMap, salaryPayDetailsSet);
+                    for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
+                        Long salaryItemId = salaryPayDetailsDTO.getSalaryItemId();
+                        BigDecimal amount = Optional.ofNullable(salaryPayDetailsDTO.getAmount()).orElse(BigDecimal.ZERO);
+                        //如果导入不包含的话，则把系统里面的重新一起计算一遍
+                        if (!salaryPayDetailsSet.contains(salaryItemId)) {
+                            SalaryItemDTO salaryItemDTO = salaryItemMap.get(salaryItemId);
+                            switch (salaryItemDTO.getSecondLevelItem()) {
+                                case 1:
+                                    salaryAmount = salaryAmount.add(amount);
+                                    break;
+                                case 2:
+                                    allowanceAmount = allowanceAmount.add(amount);
+                                    break;
+                                case 3:
+                                    welfareAmount = welfareAmount.add(amount);
+                                    break;
+                                case 4:
+                                    bonusAmount = bonusAmount.add(amount);
+                                    break;
+                                case 5:
+                                    withholdRemitTax = withholdRemitTax.add(amount);
+                                    break;
+                                case 6:
+                                    otherDeductions = otherDeductions.add(amount);
+                                    break;
+                            }
+                        }
+                    }
+                    //获取工资发薪
+                    this.buildSalaryPay
+                            (salaryPay, employeeId, salaryAmount, allowanceAmount,
+                                    welfareAmount, bonusAmount, withholdRemitTax, otherDeductions);
+                    salaryPay.setSalaryPayId(salaryPayId);
+                    updateSalaryPays.add(salaryPay);
+                } else {//插入
+                    //获取工资发薪
+                    this.buildSalaryPay
+                            (salaryPay, employeeId, salaryAmount, allowanceAmount,
+                                    welfareAmount, bonusAmount, withholdRemitTax, otherDeductions);
+                    salaryPay.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    salaryPay.setCreateBy(userId);
+                    salaryPay.setCreateTime(nowDate);
+                    insertSalaryPays.add(salaryPay);
+                    //处理发薪明细
+                    yearAndMonthOfSalaryPayDetailsMap.put(employeeId + StrUtil.COLON + year + StrUtil.COLON + month, salaryPayDetailsOfImport);
+                }
+                salaryPay.setPayYear(year);
+                salaryPay.setPayMonth(month);
+                successExcelList.add(map);
             }
-            salaryPay.setPayYear(year);
-            salaryPay.setPayMonth(month);
+            salaryPayImportTempDataVO.setEmployeeTempDataOfCode(employeeTempDataOfCode);
+            //批量新增工资发薪
+            this.insertSalaryPaysOfImport(insertSalaryPays, insertSalaryPayDetails, userId, nowDate, yearAndMonthOfSalaryPayDetailsMap);
+            //批量修改工资发薪
+            this.updateSalaryPaysOfImport(updateSalaryPays);
+            //批量新增工资发薪明细
+            this.insertSalaryPayDetailsOfImport(insertSalaryPayDetails);
+            //批量修改工资发薪明细
+            this.updateSalaryPayDetailsOfImport(updateSalaryPayDetails);
         }
-        salaryPayImportTempDataVO.setEmployeeTempDataOfCode(employeeTempDataOfCode);
-        //批量新增工资发薪
-        this.insertSalaryPaysOfImport(insertSalaryPays, insertSalaryPayDetails, userId, nowDate, yearAndMonthOfSalaryPayDetailsMap);
-        //批量修改工资发薪
-        this.updateSalaryPaysOfImport(updateSalaryPays);
-        //批量新增工资发薪明细
-        this.insertSalaryPayDetailsOfImport(insertSalaryPayDetails);
-        //批量修改工资发薪明细
-        this.updateSalaryPayDetailsOfImport(updateSalaryPayDetails);
+        String uuId;
+        String simpleUUID = IdUtils.simpleUUID();
+        if (StringUtils.isNotEmpty(errorExcelList)) {
+            uuId = CacheConstants.ERROR_EXCEL_KEY + simpleUUID;
+            redisService.setCacheObject(uuId, errorExcelList, CacheConstants.ERROR_EXCEL_LOCK_TIME, TimeUnit.HOURS);
+        }
+        return ExcelUtils.parseExcelResult(successExcelList, errorExcelList, false, simpleUUID);
+    }
+
+    /**
+     * 获取list
+     *
+     * @param sheetName sheet名称
+     * @param listMap   列表内容
+     * @return 结果
+     */
+    private List<Map<Integer, String>> getMaps(String sheetName, List<Map<Integer, String>> listMap) {
+        if (StringUtils.equals(sheetName, "月度工资条导入错误报告")) {
+            List<Map<Integer, String>> objects = new ArrayList<>();
+            for (Map<Integer, String> map1 : listMap) {
+                Map<Integer, String> map2 = new TreeMap<>();
+                for (int i = 1; i < map1.size(); i++) {
+                    map2.put(i - 1, map1.get(i));
+                }
+                objects.add(map2);
+            }
+            listMap = objects;
+        } else if (!StringUtils.equals(sheetName, "月度工资条导入")) {
+            throw new ServiceException("职级确定薪酬模板不正确 请检查");
+        }
+        return listMap;
     }
 
     /**
@@ -934,7 +988,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * @return: void
      **/
     private static void handleEmployeeImportData(Map<String, SalaryPayImportOfEmpDataVO> employeeTempDataOfCode, Set<String> employeeCodes, Set<String> employeeCodeAndPayYearSet,
-                                                 List<String> employeeCodeList, Set<Long> employeeIdsOfThisCycle, String employeeCode, String employeeName, String employeeCodeAndPayYear) {
+                                                 List<String> employeeCodeList, Set<Long> employeeIdsOfThisCycle, String employeeCode, String employeeName, String employeeCodeAndPayYear, StringBuilder errorNote) {
         if (!employeeCodes.contains(employeeCode)) {
             //如果不存在则添加进员工code的set集合
             employeeCodes.add(employeeCode);
@@ -947,7 +1001,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             String employeeNameOfTemp = salaryPayImportOfEmpDataVO.getEmployeeName();
             Long employeeId = salaryPayImportOfEmpDataVO.getEmployeeId();
             if (!employeeName.equals(employeeNameOfTemp)) {
-                throw new ServiceException("员工编码(" + employeeCode + ")存在姓名前[" + employeeNameOfTemp + "]," + "后[" + employeeName + "]不一致，请检查.");
+                errorNote.append("员工编码(").append(employeeCode).append(")存在姓名前[").append(employeeNameOfTemp).append("],").append("后[").append(employeeName).append("]不一致，请检查；");
             }
             if (!employeeCodeAndPayYearSet.contains(employeeCodeAndPayYear) && StringUtils.isNotNull(employeeId)) {
                 employeeIdsOfThisCycle.add(employeeId);

@@ -7,6 +7,7 @@ import net.qixiaowei.operate.cloud.api.dto.salary.SalaryStructureDTO;
 import net.qixiaowei.operate.cloud.api.vo.salary.SalaryPayImportTempDataVO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryPayExcel;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ public interface ISalaryPayService {
      * @return 工资发薪表集合
      */
     List<SalaryPayDTO> selectSalaryPayList(SalaryPayDTO salaryPayDTO);
+
     /**
      * 处理返回
      *
@@ -40,6 +42,7 @@ public interface ISalaryPayService {
      * @return 返回集合
      */
     void handleResult(List<SalaryPayDTO> result);
+
     /**
      * 新增工资发薪表
      *
@@ -116,9 +119,10 @@ public interface ISalaryPayService {
     /**
      * 导入Excel
      *
-     * @param list
+     * @param list      列表
+     * @param sheetName sheet名称
      */
-    void importSalaryPay(SalaryPayImportTempDataVO salaryPayImportTempDataVO, List<Map<Integer, String>> list);
+    Map<Object, Object> importSalaryPay(SalaryPayImportTempDataVO salaryPayImportTempDataVO, List<Map<Integer, String>> list, String sheetName);
 
     /**
      * 导出Excel
@@ -160,7 +164,6 @@ public interface ISalaryPayService {
      * @param salaryPayDetailsDTO 发薪详情表
      */
     void salarySetName(SalaryPayDetailsDTO salaryPayDetailsDTO);
-
 
 
     /**
