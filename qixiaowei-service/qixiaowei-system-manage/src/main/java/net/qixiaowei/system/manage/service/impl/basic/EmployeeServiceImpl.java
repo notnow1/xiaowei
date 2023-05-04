@@ -1212,12 +1212,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (StringUtils.isBlank(departmentName)) {
                 validEmployeeError.append("部门为必填项"+Constants.China_Colon);
             }
-            if (StringUtils.isBlank(postName)) {
+/*            if (StringUtils.isBlank(postName)) {
                 validEmployeeError.append("岗位为必填项"+Constants.China_Colon);
-            }
-            if (StringUtils.isBlank(employeeExcel.getEmployeeRankName())) {
+            }*/
+/*            if (StringUtils.isBlank(employeeExcel.getEmployeeRankName())) {
                 validEmployeeError.append("个人职级为必填项"+Constants.China_Colon);
-            }
+            }*/
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
                 validEmployeeError.append("员工手机号为必填项"+Constants.China_Colon);
             }else {

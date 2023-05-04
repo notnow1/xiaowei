@@ -201,7 +201,7 @@ public class EmployeeDTO extends BaseDTO {
     /**
      * 员工岗位ID
      */
-    @NotNull(message = "员工岗位不能为空", groups = {EmployeeDTO.AddEmployeeDTO.class, EmployeeDTO.UpdateEmployeeDTO.class})
+    //@NotNull(message = "员工岗位不能为空", groups = {EmployeeDTO.AddEmployeeDTO.class, EmployeeDTO.UpdateEmployeeDTO.class})
     private Long employeePostId;
 
     /**
@@ -216,7 +216,7 @@ public class EmployeeDTO extends BaseDTO {
     /**
      * 员工职级
      */
-    @NotNull(message = "个人职级不能为空", groups = {EmployeeDTO.AddEmployeeDTO.class, EmployeeDTO.UpdateEmployeeDTO.class})
+    //@NotNull(message = "个人职级不能为空", groups = {EmployeeDTO.AddEmployeeDTO.class, EmployeeDTO.UpdateEmployeeDTO.class})
     private Integer employeeRank;
 
     private String employeeRankName;
