@@ -1399,7 +1399,7 @@
                    when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 0 and
                         date_format(now(), '%m') &lt; 7 then
                        ifnull(sum(case
-                                      when date_format(employment_date, '%Y') = (#{employee.planYear} - 1)
+                                      when date_format(employment_date, '%Y') &lt;= (#{employee.planYear} - 1)
                                           then employment_status = 1 end), 0)
                    when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 6 and
                         date_format(now(), '%m') &lt; 13 then ifnull(sum(employment_status = 1), 0)
@@ -1415,6 +1415,7 @@
         where e.employee_department_id = #{employee.employeeDepartmentId}
           and p.official_rank_system_id = #{employee.officialRankSystemId}
           and e.delete_flag = 0
+          and e.status =1
         group by employeeRankName
     </select>
     <!--    根据部门 职级 获取人员信息集合-->
