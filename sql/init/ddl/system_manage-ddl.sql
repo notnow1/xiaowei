@@ -42,6 +42,7 @@ CREATE TABLE tenant(
     tenant_address VARCHAR(256)    COMMENT '租户地址' ,
     tenant_industry BIGINT UNSIGNED    COMMENT '租户行业' ,
     domain VARCHAR(128)    COMMENT '域名' ,
+    admin_name VARCHAR(32)    COMMENT '管理员姓名' ,
     admin_account VARCHAR(32)    COMMENT '管理员帐号' ,
     admin_password VARCHAR(32)    COMMENT '管理员密码' ,
     admin_email VARCHAR(64)    COMMENT '管理员邮箱' ,
