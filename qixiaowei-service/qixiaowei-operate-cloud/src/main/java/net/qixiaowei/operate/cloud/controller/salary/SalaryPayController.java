@@ -524,7 +524,11 @@ public class SalaryPayController extends BaseController {
                             Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
                             CellStyle cellStyle = workbook.createCellStyle();
                             if (context.getRowIndex() < 1) {
-                                headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                if (context.getColumnIndex() == 1) {
+                                    headWriteFont.setColor(IndexedColors.RED.getIndex());
+                                } else {
+                                    headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                }
                                 headWriteFont.setFontHeightInPoints((short) 11);
                                 //加粗
                                 headWriteFont.setBold(true);
