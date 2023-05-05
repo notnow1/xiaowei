@@ -693,6 +693,12 @@
             OR esa.adjust_post_id IS NULL
             )
         </if>
+        <if test="empSalaryAdjustPlan.params.adjustPostIdNull != null">
+            AND esa.adjust_post_id IS NULL
+        </if>
+        <if test="empSalaryAdjustPlan.params.adjustPostIdNotNull != null">
+            AND esa.adjust_post_id IS NOT NULL
+        </if>
         <!--原岗位名称-->
         <if test="empSalaryAdjustPlan.params.postIdEqual != null and empSalaryAdjustPlan.params.postIdEqual.size() > 0">
             AND ess.post_id IN
@@ -711,6 +717,12 @@
             </foreach>
             OR ess.post_id IS NULL
             )
+        </if>
+        <if test="empSalaryAdjustPlan.params.postIdNull != null">
+            AND ess.adjust_post_id IS NULL
+        </if>
+        <if test="empSalaryAdjustPlan.params.postIdNotNull != null">
+            AND ess.adjust_post_id IS NOT NULL
         </if>
         <!-- 数据范围过滤 -->
         ${empSalaryAdjustPlan.params.dataScope}
