@@ -199,7 +199,7 @@
         create_by, create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item =2
-        AND second_level_item IN (1,2,3,4)
+        AND second_level_item =4
         AND scope =1
         and status =1
         AND delete_flag=0
@@ -211,6 +211,7 @@
         create_time, update_by, update_time
         FROM salary_item
         WHERE scope=2
+        AND second_level_item =4
         and status =1
         and delete_flag=0
     </select>
