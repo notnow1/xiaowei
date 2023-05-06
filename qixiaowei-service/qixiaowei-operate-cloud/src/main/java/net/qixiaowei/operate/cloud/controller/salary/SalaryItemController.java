@@ -56,6 +56,16 @@ public class SalaryItemController extends BaseController {
     }
 
     /**
+     * 工资项编辑列表
+     */
+    @GetMapping("/edit-list")
+    @RequiresPermissions("operate:cloud:salaryItem:edit")
+    public AjaxResult editList(SalaryItemDTO salaryItemDTO) {
+        List<SalaryItemDTO> list = salaryItemService.selectSalaryItemEditList(salaryItemDTO);
+        return AjaxResult.success(list);
+    }
+
+    /**
      * 新增工资项
      */
     @RequiresPermissions("operate:cloud:salaryItem:add")
@@ -71,6 +81,15 @@ public class SalaryItemController extends BaseController {
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody SalaryItemDTO salaryItemDTO) {
         return toAjax(salaryItemService.updateSalaryItem(salaryItemDTO));
+    }
+
+    /**
+     * 批量修改工资项
+     */
+    @RequiresPermissions("operate:cloud:salaryItem:edit")
+    @PostMapping("/edits")
+    public AjaxResult edits(@RequestBody List<SalaryItemDTO> salaryItemDTOS) {
+        return toAjax(salaryItemService.editSalaryItems(salaryItemDTOS));
     }
 
     /**

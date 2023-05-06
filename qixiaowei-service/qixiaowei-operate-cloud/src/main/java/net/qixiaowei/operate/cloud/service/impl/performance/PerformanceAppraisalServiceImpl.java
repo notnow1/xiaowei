@@ -2022,7 +2022,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 successExcelList.add(map);
             }
             try {
-                performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
+                if (StringUtils.isNotEmpty(performanceAppraisalObjectsDTOS)) {
+                    performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
+                }
             } catch (Exception e) {
                 throw new ServiceException("更新绩效考核表Excel失败");
             }

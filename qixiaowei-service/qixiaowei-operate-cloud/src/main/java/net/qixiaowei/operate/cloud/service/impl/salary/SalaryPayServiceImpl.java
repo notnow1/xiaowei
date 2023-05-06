@@ -2,8 +2,6 @@ package net.qixiaowei.operate.cloud.service.impl.salary;
 
 import cn.hutool.core.util.PageUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
@@ -42,9 +40,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -725,54 +721,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         Set<Long> employeeIdsOfThisCycle = new HashSet<>();
         List<Object> errorExcelList = new ArrayList<>();
         List<Map<Integer, String>> successExcels = new ArrayList<>();
-        for (Map<Integer, String> map : listMap) {
-            StringBuilder errorNote = new StringBuilder();
-            String employeeCode = map.get(0);
-            String employeeName = map.get(1);
-            String salaryYearAndMonth = map.get(2);
-            if (StringUtils.isEmpty(employeeCode)) {
-                errorNote.append("员工编码为空；");
-            }
-            if (StringUtils.isEmpty(employeeName)) {
-                errorNote.append("员工姓名为空；");
-            }
-            //发薪年月校验
-            if (StringUtils.isEmpty(salaryYearAndMonth)) {
-                errorNote.append("发薪年月未输入；");
-            }
-            int year = 0;
-            try {
-                Date date = DateUtils.parseAnalysisExcelDate(salaryYearAndMonth);
-                if (StringUtils.isNull(date)) {
-                    errorNote.append("发薪年月格式错误；");
-                }
-                year = Integer.parseInt(String.valueOf(DateUtils.getYear(date)));
-                int month = Integer.parseInt(String.valueOf(DateUtils.getMonth(date)));
-            } catch (Exception e) {
-                log.error("导入员工薪酬报错，发薪年月格式错误:{}", e.getMessage());
-                errorNote.append("发薪年月格式错误；");
-            }
-            String salary = employeeCode + StrUtil.COLON + salaryYearAndMonth;
-            if (salarySet.contains(salary)) {
-                errorNote.append("存在重复工资项；");
-            }
-            String employeeCodeAndPayYear = employeeCode + StrUtil.COLON + year;
-            salarySet.add(salary);
-            // 员工编码
-            handleEmployeeImportData(employeeTempDataOfCode, employeeCodes, employeeCodeAndPayYearSet, employeeCodeList, employeeIdsOfThisCycle, employeeCode, employeeName, employeeCodeAndPayYear, errorNote);
-            if (!employeeCodeAndPayYearSet.contains(employeeCodeAndPayYear)) {
-                employeeCodeAndPayYearSet.add(employeeCodeAndPayYear);
-                salaryYearsOfThisCycle.add(year);
-            }
-            if (errorNote.length() != 0) {
-                List<String> errorList = new ArrayList<>();
-                errorList.add(errorNote.substring(0, errorNote.length() - 1));
-                errorList.addAll(map.values());
-                errorExcelList.add(errorList);
-            } else {
-                successExcels.add(map);
-            }
-        }
+        checkSalaryPayList(listMap, employeeTempDataOfCode, employeeCodes, salarySet, employeeCodeAndPayYearSet, employeeCodeList, salaryYearsOfThisCycle, employeeIdsOfThisCycle, errorExcelList, successExcels, headMap);
         //添加本次循环的值
         salaryPayImportTempDataVO.setSalarySet(salarySet);
         salaryPayImportTempDataVO.setEmployeeCodes(employeeCodes);
@@ -788,6 +737,26 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         Date nowDate = DateUtils.getNowDate();
         Map<String, List<SalaryPayDetails>> yearAndMonthOfSalaryPayDetailsMap = new HashMap<>();
         List<Object> successExcelList = new ArrayList<>();
+        operateSalaryList(salaryPayImportTempDataVO, headMap, salaryItemOfThirdLevelItemMap, salaryItemMap, employeeTempDataOfCode, employeeIdAndYearAndMonthOfSalaryPayMap, successExcels, insertSalaryPays, updateSalaryPays, insertSalaryPayDetails, updateSalaryPayDetails, userId, nowDate, yearAndMonthOfSalaryPayDetailsMap, successExcelList);
+        String uuId;
+        String simpleUUID = IdUtils.simpleUUID();
+        if (StringUtils.isNotEmpty(errorExcelList)) {
+            uuId = CacheConstants.ERROR_EXCEL_KEY + simpleUUID;
+            redisService.setCacheObject(uuId, errorExcelList, CacheConstants.ERROR_EXCEL_LOCK_TIME, TimeUnit.HOURS);
+        }
+        return ExcelUtils.parseExcelResult(successExcelList, errorExcelList, false, simpleUUID);
+    }
+
+    /**
+     * 更新工资表
+     *
+     * @param successExcelList excel列表
+     */
+    private void operateSalaryList(SalaryPayImportTempDataVO salaryPayImportTempDataVO, Map<Integer, String> headMap, Map<String, SalaryItemDTO> salaryItemOfThirdLevelItemMap,
+                                   Map<Long, SalaryItemDTO> salaryItemMap, Map<String, SalaryPayImportOfEmpDataVO> employeeTempDataOfCode,
+                                   Map<String, SalaryPayDTO> employeeIdAndYearAndMonthOfSalaryPayMap, List<Map<Integer, String>> successExcels, List<SalaryPay> insertSalaryPays,
+                                   List<SalaryPay> updateSalaryPays, List<SalaryPayDetails> insertSalaryPayDetails, List<SalaryPayDetails> updateSalaryPayDetails, Long userId,
+                                   Date nowDate, Map<String, List<SalaryPayDetails>> yearAndMonthOfSalaryPayDetailsMap, List<Object> successExcelList) {
         if (StringUtils.isNotEmpty(successExcels)) {
             for (Map<Integer, String> map : successExcels) {
                 String employeeCode = map.get(0);
@@ -919,13 +888,73 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             //批量修改工资发薪明细
             this.updateSalaryPayDetailsOfImport(updateSalaryPayDetails);
         }
-        String uuId;
-        String simpleUUID = IdUtils.simpleUUID();
-        if (StringUtils.isNotEmpty(errorExcelList)) {
-            uuId = CacheConstants.ERROR_EXCEL_KEY + simpleUUID;
-            redisService.setCacheObject(uuId, errorExcelList, CacheConstants.ERROR_EXCEL_LOCK_TIME, TimeUnit.HOURS);
+    }
+
+    /**
+     * 检查
+     *
+     * @param listMap excel数据
+     * @param headMap 表头
+     */
+    private static void checkSalaryPayList(List<Map<Integer, String>> listMap, Map<String, SalaryPayImportOfEmpDataVO> employeeTempDataOfCode, Set<String> employeeCodes, Set<String> salarySet,
+                                           Set<String> employeeCodeAndPayYearSet, List<String> employeeCodeList, Set<Integer> salaryYearsOfThisCycle, Set<Long> employeeIdsOfThisCycle,
+                                           List<Object> errorExcelList, List<Map<Integer, String>> successExcels, Map<Integer, String> headMap) {
+        for (Map<Integer, String> map : listMap) {
+            StringBuilder errorNote = new StringBuilder();
+            String employeeCode = map.get(0);
+            String employeeName = map.get(1);
+            String salaryYearAndMonth = map.get(2);
+            if (StringUtils.isEmpty(employeeCode)) {
+                errorNote.append("员工编码为空；");
+            }
+            if (StringUtils.isEmpty(employeeName)) {
+                errorNote.append("员工姓名为空；");
+            }
+            //发薪年月校验
+            if (StringUtils.isEmpty(salaryYearAndMonth)) {
+                errorNote.append("发薪年月未输入；");
+            }
+            int year = 0;
+            try {
+                Date date = DateUtils.parseAnalysisExcelDate(salaryYearAndMonth);
+                if (StringUtils.isNull(date)) {
+                    errorNote.append("发薪年月格式错误；");
+                }
+                year = Integer.parseInt(String.valueOf(DateUtils.getYear(date)));
+                int month = Integer.parseInt(String.valueOf(DateUtils.getMonth(date)));
+            } catch (Exception e) {
+                log.error("导入员工薪酬报错，发薪年月格式错误:{}", e.getMessage());
+                errorNote.append("发薪年月格式错误；");
+            }
+            String salary = employeeCode + StrUtil.COLON + salaryYearAndMonth;
+            if (salarySet.contains(salary)) {
+                errorNote.append("存在重复工资项；");
+            }
+            if (map.size() > 3) {
+                for (int i = 3; i < map.keySet().size(); i++) {
+                    String value = map.get(i);
+                    if (StringUtils.isNotBlank(value) && ExcelUtils.isNotNumber(value)) {
+                        errorNote.append(headMap.get(i)).append("格式错误；");
+                    }
+                }
+            }
+            String employeeCodeAndPayYear = employeeCode + StrUtil.COLON + year;
+            salarySet.add(salary);
+            // 员工编码
+            handleEmployeeImportData(employeeTempDataOfCode, employeeCodes, employeeCodeAndPayYearSet, employeeCodeList, employeeIdsOfThisCycle, employeeCode, employeeName, employeeCodeAndPayYear, errorNote);
+            if (!employeeCodeAndPayYearSet.contains(employeeCodeAndPayYear)) {
+                employeeCodeAndPayYearSet.add(employeeCodeAndPayYear);
+                salaryYearsOfThisCycle.add(year);
+            }
+            if (errorNote.length() != 0) {
+                List<String> errorList = new ArrayList<>();
+                errorList.add(errorNote.substring(0, errorNote.length() - 1));
+                errorList.addAll(map.values());
+                errorExcelList.add(errorList);
+            } else {
+                successExcels.add(map);
+            }
         }
-        return ExcelUtils.parseExcelResult(successExcelList, errorExcelList, false, simpleUUID);
     }
 
     /**

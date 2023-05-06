@@ -180,4 +180,12 @@ public interface ISalaryItemService {
      * @return 结果
      */
     int editSalaryItems(List<SalaryItemDTO> salaryItemDTOS);
+
+    /**
+     * 工资项编辑列表
+     *
+     * @param salaryItemDTO 工资项dto
+     * @return 结果
+     */
+    List<SalaryItemDTO> selectSalaryItemEditList(SalaryItemDTO salaryItemDTO);
 }

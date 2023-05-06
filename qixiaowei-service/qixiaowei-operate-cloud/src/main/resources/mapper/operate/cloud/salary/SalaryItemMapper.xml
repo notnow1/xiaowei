@@ -6,7 +6,7 @@
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
         salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
-        create_time, update_by, update_time
+        status, create_time, update_by, update_time
         FROM salary_item
         WHERE salary_item_id=#{salaryItemId}
         and delete_flag=0
@@ -15,8 +15,9 @@
     <!--    查询工资项列表-->
     <select id="selectSalaryItemList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        si.salary_item_id, si.first_level_item, si.second_level_item, si.third_level_item, si.scope, si.sort, si.delete_flag, si.create_by,
-        si.create_time, si.update_by, si.update_time
+        si.salary_item_id, si.first_level_item, si.second_level_item, si.third_level_item, si.scope, si.sort,
+        si.delete_flag, si.create_by,
+        si.status, si.create_time, si.update_by, si.update_time
         FROM salary_item si
         WHERE si.delete_flag=0
         <if test="salaryItem.salaryItemId != null">
@@ -36,6 +37,12 @@
         </if>
         <if test="salaryItem.sort != null">
             and si.sort=#{salaryItem.sort}
+        </if>
+        <if test="salaryItem.status == null">
+            and si.status = 1
+        </if>
+        <if test="salaryItem.status != null">
+            and si.status=#{salaryItem.status}
         </if>
         <if test="salaryItem.deleteFlag != null">
             and si.delete_flag=#{salaryItem.deleteFlag}
@@ -150,7 +157,7 @@
     </select>
     <!--根据id集合获取数据-->
     <select id="getSalaryItemByIds" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
-        SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag,
+        SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag,
         create_by, create_time, update_by, update_time
         FROM salary_item
         WHERE salary_item_id IN
@@ -160,19 +167,21 @@
             #{item}
         </foreach>
         AND delete_flag = 0
+        and status =1
     </select>
     <select id="getSalaryItemByThirdLevelItem"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
-        SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag,
+        SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag,
         create_by, create_time, update_by, update_time
         FROM salary_item
         WHERE third_level_item = #{thirdLevelItem}
         AND delete_flag = 0
+        and status =1
     </select>
     <!--通过ID集合查找工资项-->
     <select id="selectSalaryItemBySalaryItemIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
-        SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag,
+        SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag,
         create_by, create_time, update_by, update_time
         FROM salary_item
         WHERE salary_item_id
@@ -181,36 +190,40 @@
             #{item}
         </foreach>
         AND delete_flag = 0
+        and status =1
     </select>
     <!--    从工资条配置中取值，取所有部门级且二级工资项目属于奖金的工资项目-->
     <select id="selectSalaryAddPrefabricate"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
-        SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag,
+        SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag,
         create_by, create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item =2
         AND second_level_item IN (1,2,3,4)
         AND scope =1
+        and status =1
         AND delete_flag=0
     </select>
     <!--    查询战略奖的工资项id-->
     <select id="selectSalaryItemByAward" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
         create_time, update_by, update_time
         FROM salary_item
         WHERE scope=2
+        and status =1
         and delete_flag=0
     </select>
     <!--    所有二级工资项目为奖金且级别为部门级的三级工资项目-->
     <select id="selectSalaryItemByBonus" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
         create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item=2
         and second_level_item=4
         and scope =1
+        and status =1
         and delete_flag=0
     </select>
     <select id="selectMaxSort" resultType="java.lang.Integer">
@@ -219,23 +232,25 @@
     <!--    查找二级为奖金的三级工资条-->
     <select id="applyBonusList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
         create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item=2
         and second_level_item=4
+        and status =1
         and delete_flag=0
     </select>
     <!--    根据id查询所有二级工资项目为奖金且级别为部门级的三级工资项目-->
     <select id="selectSalaryItemByBonusId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
         create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item=2
         and second_level_item=4
         and scope =1
+        and status =1
         and delete_flag=0
         <if test="salaryItemId != null">
             and salary_item_id=#{salaryItemId}
@@ -244,10 +259,11 @@
     <!--    根据id查找二级为奖金的三级工资条-->
     <select id="applyByIdList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
         create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item=2
+        and status =1
         and second_level_item=4
         and delete_flag=0
         <if test="salaryItemId != null">
@@ -258,12 +274,13 @@
     <select id="selectSalaryItemByCompany"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
         create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item=2
         and second_level_item=4
         and scope =2
+        and status =1
         and delete_flag=0
         <if test="salaryItemId != null">
             and salary_item_id=#{salaryItemId}
@@ -272,9 +289,9 @@
     <!--新增工资项-->
     <insert id="insertSalaryItem" useGeneratedKeys="true" keyProperty="salaryItemId">
         INSERT INTO salary_item
-        (first_level_item,second_level_item,third_level_item,scope,sort,delete_flag,create_by,create_time,update_by,update_time)
+        (first_level_item,second_level_item,third_level_item,scope,sort,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{salaryItem.firstLevelItem},#{salaryItem.secondLevelItem},#{salaryItem.thirdLevelItem},#{salaryItem.scope},#{salaryItem.sort},#{salaryItem.deleteFlag},#{salaryItem.createBy},#{salaryItem.createTime},#{salaryItem.updateBy},#{salaryItem.updateTime})
+        (#{salaryItem.firstLevelItem},#{salaryItem.secondLevelItem},#{salaryItem.thirdLevelItem},#{salaryItem.scope},#{salaryItem.sort},#{salaryItem.status},#{salaryItem.deleteFlag},#{salaryItem.createBy},#{salaryItem.createTime},#{salaryItem.updateBy},#{salaryItem.updateTime})
     </insert>
     <!--修改工资项-->
     <update id="updateSalaryItem">
@@ -294,6 +311,9 @@
         </if>
         <if test="salaryItem.sort != null">
             sort=#{salaryItem.sort},
+        </if>
+        <if test="salaryItem.status != null">
+            sort=#{salaryItem.status},
         </if>
         <if test="salaryItem.deleteFlag != null">
             delete_flag=#{salaryItem.deleteFlag},
@@ -341,12 +361,12 @@
     <!--批量新增工资项-->
     <insert id="batchSalaryItem">
         INSERT INTO salary_item
-        (first_level_item,second_level_item,third_level_item,scope,sort,delete_flag,create_by,create_time,update_by,update_time)
+        (first_level_item,second_level_item,third_level_item,scope,sort,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="salaryItems"
                  separator=",">
-            (#{item.firstLevelItem},#{item.secondLevelItem},#{item.thirdLevelItem},#{item.scope},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.firstLevelItem},#{item.secondLevelItem},#{item.thirdLevelItem},#{item.scope},#{item.sort},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -404,6 +424,13 @@
                 <foreach collection="salaryItemList" item="item" index="index">
                     <if test="item.sort != null">
                         when salary_item_id=#{item.salaryItemId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="salaryItemList" item="item" index="index">
+                    <if test="item.status != null">
+                        when salary_item_id=#{item.salaryItemId} then #{item.status}
                     </if>
                 </foreach>
             </trim>

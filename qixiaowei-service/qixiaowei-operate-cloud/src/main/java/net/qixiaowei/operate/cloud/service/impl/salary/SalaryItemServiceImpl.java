@@ -121,6 +121,26 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     }
 
     /**
+     * 工资项编辑列表
+     *
+     * @param salaryItemDTO 工资项dto
+     * @return 结果
+     */
+    @Override
+    public List<SalaryItemDTO> selectSalaryItemEditList(SalaryItemDTO salaryItemDTO) {
+        SalaryItem salaryItem = new SalaryItem();
+        salaryItem.setStatus(0);
+        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemList(salaryItem);
+        Map<Integer, Map<Integer, List<SalaryItemDTO>>> groupSalaryItemDTOS = salaryItemDTOS.stream()
+                .sorted(Comparator.comparing(SalaryItemDTO::getFirstLevelItem).thenComparing(SalaryItemDTO::getSecondLevelItem))
+                .collect(Collectors.groupingBy(SalaryItemDTO::getFirstLevelItem, Collectors.groupingBy(SalaryItemDTO::getSecondLevelItem)));
+        for (Integer firstLevelItem : groupSalaryItemDTOS.keySet()) {
+            Map<Integer, List<SalaryItemDTO>> integerListMap = groupSalaryItemDTOS.get(firstLevelItem);
+        }
+        return salaryItemDTOS;
+    }
+
+    /**
      * 批量修改工资项
      *
      * @param salaryItemDTOSAfter 项目dto列表
@@ -404,8 +424,8 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     /**
      * 根据salaryId查询工资详情
      *
-     * @param salaryId
-     * @return
+     * @param salaryId 工资项ID
+     * @return 结果
      */
     @Override
     public SalaryItemDTO detailSalaryItemBySalaryId(Long salaryId) {
@@ -422,8 +442,8 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     /**
      * 导出工资条
      *
-     * @param salaryItemDTO
-     * @return
+     * @param salaryItemDTO 工资项
+     * @return 结果
      */
     @Override
     public List<SalaryItemExcel> exportSalaryExcel(SalaryItemDTO salaryItemDTO) {

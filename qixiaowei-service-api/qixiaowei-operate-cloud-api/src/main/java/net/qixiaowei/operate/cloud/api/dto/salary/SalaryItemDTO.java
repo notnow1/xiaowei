@@ -69,6 +69,10 @@ public class SalaryItemDTO extends BaseDTO {
      */
     private String thirdLevelItem;
     /**
+     * 状态:0失效;1生效
+     */
+    private Integer status;
+    /**
      * 作用范围：1部门;2公司
      */
     private Integer scope;
@@ -96,5 +100,9 @@ public class SalaryItemDTO extends BaseDTO {
      * 选中的工资条列表
      */
     private List<Long> selectSalaryItem;
+    /**
+     * 工资条列表
+     */
+    private List<SalaryItemDTO> salaryItemDTOS;
 }
 
