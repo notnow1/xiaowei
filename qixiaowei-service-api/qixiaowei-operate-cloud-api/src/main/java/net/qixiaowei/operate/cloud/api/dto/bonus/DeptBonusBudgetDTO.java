@@ -55,11 +55,11 @@ public class DeptBonusBudgetDTO extends BaseDTO {
      */
     private Boolean deptBonusAddFlag;
     /**
-    * 战略奖比例
+    * 战略奖比例 2023/5/6修改名称(公司级奖金占比)
     */
     private BigDecimal strategyAwardPercentage;
     /**
-     * 战略奖金额
+     * 战略奖金额 2023/5/6修改名称(公司级奖金包)
      */
     private BigDecimal strategyAwardAmount;
     /**
@@ -70,6 +70,10 @@ public class DeptBonusBudgetDTO extends BaseDTO {
      * 部门奖金预算明细表
      */
     private List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS;
+    /**
+     * 公司及预算明细表
+     */
+    private List<DeptBonusCompanyDTO> deptBonusCompanyDTOS;
     /**
     * 删除标记:0未删除;1已删除
     */

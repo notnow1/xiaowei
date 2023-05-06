@@ -214,6 +214,7 @@
         AND second_level_item =4
         and status =1
         and delete_flag=0
+        order by sort
     </select>
     <!--    所有二级工资项目为奖金且级别为部门级的三级工资项目-->
     <select id="selectSalaryItemByBonus" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">

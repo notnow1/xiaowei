@@ -2,7 +2,9 @@ package net.qixiaowei.operate.cloud.mapper.bonus;
 
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptBonusBudgetItems;
+import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetItemsDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusCompanyDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 
@@ -30,6 +32,21 @@ public interface DeptBonusBudgetItemsMapper{
     */
     List<DeptBonusBudgetItemsDTO> selectDeptBonusBudgetItemsByDeptBonusBudgetItemsIds(@Param("deptBonusBudgetItemsIds") List<Long> deptBonusBudgetItemsIds);
 
+    /**
+     * 根据部门奖金预算主表id查询公司奖金预算明细表
+     *
+     * @param deptBonusBudgetId 部门奖金预算主表主键
+     * @return
+     */
+    List<DeptBonusCompanyDTO> selectCompanyBonusBudgetDetailsByCompanyBonusBudgetId(@Param("deptBonusBudgetId")Long deptBonusBudgetId);
+
+    /**
+     * 根据部门奖金预算主表id集合查询公司奖金预算明细表
+     *
+     * @param deptBonusBudgetIds 部门奖金预算主表主键集合
+     * @return
+     */
+    List<DeptBonusCompanyDTO> selectCompanyBonusBudgetDetailsByCompanyBonusBudgetIds(@Param("deptBonusBudgetIds")List<Long> deptBonusBudgetIds);
     /**
      * 根据部门奖金预算明细表id集合批量查询部门奖金预算项目表
      *

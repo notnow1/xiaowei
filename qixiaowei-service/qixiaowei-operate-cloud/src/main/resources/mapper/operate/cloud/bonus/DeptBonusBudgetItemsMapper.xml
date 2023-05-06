@@ -96,6 +96,68 @@
         and dbbi.delete_flag=0
         order by dbbi.sort
     </select>
+    <!--    根据部门奖金预算主表id查询公司奖金预算明细表-->
+    <select id="selectCompanyBonusBudgetDetailsByCompanyBonusBudgetId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusCompanyDTO">
+        SELECT
+            si.third_level_item as salaryItemName,
+            dbbi.dept_bonus_budget_items_id,
+            dbbi.dept_bonus_budget_id,
+            dbbi.dept_bonus_budget_details_id,
+            dbbi.salary_item_id,
+            dbbi.bonus_percentage,
+            dbbi.sort,
+            dbbi.delete_flag,
+            dbbi.create_by,
+            dbbi.create_time,
+            dbbi.update_by,
+            dbbi.update_time
+        FROM
+            dept_bonus_budget_items dbbi
+                left join dept_bonus_budget dbb
+                          on dbb.dept_bonus_budget_id  =dbbi.dept_bonus_budget_id
+                              and dbbi.delete_flag =0
+                left join salary_item si
+                          on si.salary_item_id  =dbbi .salary_item_id
+                              and si.delete_flag =0
+        WHERE  dbbi.dept_bonus_budget_details_id =0
+          and dbbi.delete_flag=0
+          and dbbi.dept_bonus_budget_id=#{deptBonusBudgetId}
+        order by dbbi.sort
+    </select>
+<!--    根据部门奖金预算主表id集合查询公司奖金预算明细表-->
+    <select id="selectCompanyBonusBudgetDetailsByCompanyBonusBudgetIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusCompanyDTO">
+        SELECT
+            si.third_level_item as salaryItemName,
+            dbbi.dept_bonus_budget_items_id,
+            dbbi.dept_bonus_budget_id,
+            dbbi.dept_bonus_budget_details_id,
+            dbbi.salary_item_id,
+            dbbi.bonus_percentage,
+            dbbi.sort,
+            dbbi.delete_flag,
+            dbbi.create_by,
+            dbbi.create_time,
+            dbbi.update_by,
+            dbbi.update_time
+        FROM
+            dept_bonus_budget_items dbbi
+                left join dept_bonus_budget dbb
+                          on dbb.dept_bonus_budget_id  =dbbi.dept_bonus_budget_id
+                              and dbbi.delete_flag =0
+                left join salary_item si
+                          on si.salary_item_id  =dbbi .salary_item_id
+                              and si.delete_flag =0
+        WHERE  dbbi.dept_bonus_budget_details_id =0
+          and dbbi.delete_flag=0
+          and dbbi.dept_bonus_budget_id in
+        <foreach item="item"
+                 collection="deptBonusBudgetIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--新增部门奖金预算项目表-->
     <insert id="insertDeptBonusBudgetItems" useGeneratedKeys="true" keyProperty="deptBonusBudgetItemsId">
         INSERT INTO dept_bonus_budget_items (dept_bonus_budget_id,dept_bonus_budget_details_id,salary_item_id,bonus_percentage,sort,delete_flag,create_by,create_time,update_by,update_time)
