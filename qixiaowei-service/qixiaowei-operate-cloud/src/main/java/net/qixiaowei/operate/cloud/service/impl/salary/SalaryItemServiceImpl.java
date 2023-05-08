@@ -138,9 +138,9 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
             }
         }
         List<SalaryItemDTO> sortSalaryItemDTOS = salaryItemDTOS.stream().sorted(Comparator
-                .comparing(SalaryItemDTO::getFirstLevelItem)
-                .thenComparing(SalaryItemDTO::getSecondLevelItem)
-                .thenComparing(SalaryItemDTO::getSort))
+                        .comparing(SalaryItemDTO::getFirstLevelItem)
+                        .thenComparing(SalaryItemDTO::getSecondLevelItem)
+                        .thenComparing(SalaryItemDTO::getSort))
                 .collect(Collectors.toList());
         return getSalaryItemVOS(sortSalaryItemDTOS);
     }
@@ -216,6 +216,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         salaryItemVO.setSalaryItemDTOS(deductionDeduction);
         salaryItemVO.setSalaryItemName("deductionDeduction");
         salaryItemVOS.add(salaryItemVO);
+        salaryItemVOS.forEach(SalaryItemServiceImpl::salaryVOSetName);
         return salaryItemVOS;
     }
 
@@ -263,6 +264,47 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      */
     @Override
     public void salarySetName(SalaryItemDTO itemDTO) {
+        Integer firstLevelItem = itemDTO.getFirstLevelItem();
+        Integer secondLevelItem = itemDTO.getSecondLevelItem();
+        switch (firstLevelItem) {
+            case 1:
+                itemDTO.setFirstLevelItemValue("总工资包");
+                break;
+            case 2:
+                itemDTO.setFirstLevelItemValue("总奖金包");
+                break;
+            case 3:
+                itemDTO.setFirstLevelItemValue("总扣减项");
+                break;
+        }
+        switch (secondLevelItem) {
+            case 1:
+                itemDTO.setSecondLevelItemValue("工资");
+                break;
+            case 2:
+                itemDTO.setSecondLevelItemValue("津贴");
+                break;
+            case 3:
+                itemDTO.setSecondLevelItemValue("福利");
+                break;
+            case 4:
+                itemDTO.setSecondLevelItemValue("奖金");
+                break;
+            case 5:
+                itemDTO.setSecondLevelItemValue("代扣代缴");
+                break;
+            case 6:
+                itemDTO.setSecondLevelItemValue("其他扣款");
+                break;
+        }
+    }
+
+    /**
+     * 为一级工资二级工资附名称
+     *
+     * @param itemDTO 项目
+     */
+    public static void salaryVOSetName(SalaryItemVO itemDTO) {
         Integer firstLevelItem = itemDTO.getFirstLevelItem();
         Integer secondLevelItem = itemDTO.getSecondLevelItem();
         switch (firstLevelItem) {
