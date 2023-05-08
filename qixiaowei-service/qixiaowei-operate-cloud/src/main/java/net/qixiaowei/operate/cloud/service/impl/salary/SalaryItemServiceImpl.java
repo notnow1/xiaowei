@@ -132,8 +132,16 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         SalaryItem salaryItem = new SalaryItem();
         salaryItem.setStatus(0);
         List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemEditList(salaryItem);
-        List<SalaryItemDTO> sortSalaryItemDTOS = salaryItemDTOS.stream()
-                .sorted(Comparator.comparing(SalaryItemDTO::getFirstLevelItem).thenComparing(SalaryItemDTO::getSecondLevelItem)).collect(Collectors.toList());
+        for (SalaryItemDTO itemDTO : salaryItemDTOS) {
+            if (ThirdLevelSalaryCode.containThirdItems(itemDTO.getThirdLevelItem())) {
+                itemDTO.setIsPreset(1);
+            }
+        }
+        List<SalaryItemDTO> sortSalaryItemDTOS = salaryItemDTOS.stream().sorted(Comparator
+                .comparing(SalaryItemDTO::getFirstLevelItem)
+                .thenComparing(SalaryItemDTO::getSecondLevelItem)
+                .thenComparing(SalaryItemDTO::getSort))
+                .collect(Collectors.toList());
         return getSalaryItemVOS(sortSalaryItemDTOS);
     }
 

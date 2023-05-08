@@ -93,9 +93,9 @@ public class SalaryItemDTO extends BaseDTO {
      */
     private Integer deleteFlag;
     /**
-     * 是否被选中(1-选中，0-未选中)
+     * 默认表示（1-预置数据，0-非预置数据）
      */
-    private Integer isSelect;
+    private Integer isPreset;
     /**
      * 选中的工资条列表
      */

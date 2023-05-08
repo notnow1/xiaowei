@@ -162,15 +162,15 @@ public interface ISalaryItemService {
     /**
      * 查找二级为奖金的三级工资条
      *
-     * @param salaryItemDTO
-     * @return
+     * @param salaryItemDTO 工资项
+     * @return 结果
      */
     List<Map<String, String>> selectBonusItemList(SalaryItemDTO salaryItemDTO);
 
     /**
      * 查找二级为奖金的三级工资条
      *
-     * @return
+     * @return 结果
      */
     List<SalaryItemDTO> applyBonusList();
 
