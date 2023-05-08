@@ -155,6 +155,15 @@
         ${salaryItem.params.dataScope}
         ORDER BY si.create_time DESC
     </select>
+    <!--    查询工资项列表-->
+    <select id="selectSalaryItemEditList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
+        SELECT
+        si.salary_item_id, si.first_level_item, si.second_level_item, si.third_level_item, si.scope, si.sort,
+        si.delete_flag, si.create_by,
+        si.status, si.create_time, si.update_by, si.update_time
+        FROM salary_item si
+        WHERE si.delete_flag=0
+    </select>
     <!--根据id集合获取数据-->
     <select id="getSalaryItemByIds" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag,

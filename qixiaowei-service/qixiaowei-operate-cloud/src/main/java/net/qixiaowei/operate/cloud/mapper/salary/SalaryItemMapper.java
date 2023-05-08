@@ -39,12 +39,20 @@ public interface SalaryItemMapper {
     List<SalaryItemDTO> selectSalaryItemList(@Param("salaryItem") SalaryItem salaryItem);
 
     /**
+     * 查询工资项列表
+     *
+     * @param salaryItem 工资项
+     * @return 工资项集合
+     */
+    List<SalaryItemDTO> selectSalaryItemEditList(@Param("salaryItem") SalaryItem salaryItem);
+
+    /**
      * 新增工资项
      *
      * @param salaryItem 工资项
      * @return 结果
      */
-    int insertSalaryItem(@Param("salaryItem") SalaryItem salaryItem);
+    SalaryItemDTO insertSalaryItem(@Param("salaryItem") SalaryItem salaryItem);
 
     /**
      * 修改工资项
@@ -157,6 +165,7 @@ public interface SalaryItemMapper {
 
     /**
      * 查找二级为奖金的三级工资条
+     *
      * @return
      */
     List<SalaryItemDTO> applyBonusList();
@@ -164,6 +173,7 @@ public interface SalaryItemMapper {
 
     /**
      * 根据id查找二级为奖金的三级工资条
+     *
      * @return
      */
     List<SalaryItemDTO> applyByIdList(@Param("salaryItemId") Long salaryItemId);

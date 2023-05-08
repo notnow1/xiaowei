@@ -10,6 +10,7 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
+import net.qixiaowei.operate.cloud.api.vo.salary.SalaryItemVO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,10 +59,10 @@ public class SalaryItemController extends BaseController {
     /**
      * 工资项编辑列表
      */
-    @GetMapping("/edit-list")
+    @GetMapping("/editList")
     @RequiresPermissions("operate:cloud:salaryItem:edit")
     public AjaxResult editList(SalaryItemDTO salaryItemDTO) {
-        List<SalaryItemDTO> list = salaryItemService.selectSalaryItemEditList(salaryItemDTO);
+        List<SalaryItemVO> list = salaryItemService.selectSalaryItemEditList(salaryItemDTO);
         return AjaxResult.success(list);
     }
 
@@ -71,7 +72,7 @@ public class SalaryItemController extends BaseController {
     @RequiresPermissions("operate:cloud:salaryItem:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody SalaryItemDTO salaryItemDTO) {
-        return toAjax(salaryItemService.insertSalaryItem(salaryItemDTO));
+        return AjaxResult.success(salaryItemService.insertSalaryItem(salaryItemDTO));
     }
 
     /**

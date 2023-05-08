@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
+import net.qixiaowei.operate.cloud.api.vo.salary.SalaryItemVO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -60,7 +61,7 @@ public interface ISalaryItemService {
      * @param salaryItemDTO 工资项
      * @return 结果
      */
-    int insertSalaryItem(SalaryItemDTO salaryItemDTO);
+    SalaryItemDTO insertSalaryItem(SalaryItemDTO salaryItemDTO);
 
     /**
      * 初始化工资项
@@ -187,5 +188,5 @@ public interface ISalaryItemService {
      * @param salaryItemDTO 工资项dto
      * @return 结果
      */
-    List<SalaryItemDTO> selectSalaryItemEditList(SalaryItemDTO salaryItemDTO);
+    List<SalaryItemVO> selectSalaryItemEditList(SalaryItemDTO salaryItemDTO);
 }

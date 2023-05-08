@@ -15,6 +15,7 @@ import net.qixiaowei.operate.cloud.api.domain.salary.SalaryItem;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
+import net.qixiaowei.operate.cloud.api.vo.salary.SalaryItemVO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayApplicationMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
@@ -127,17 +128,87 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @return 结果
      */
     @Override
-    public List<SalaryItemDTO> selectSalaryItemEditList(SalaryItemDTO salaryItemDTO) {
+    public List<SalaryItemVO> selectSalaryItemEditList(SalaryItemDTO salaryItemDTO) {
         SalaryItem salaryItem = new SalaryItem();
         salaryItem.setStatus(0);
-        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemList(salaryItem);
-        Map<Integer, Map<Integer, List<SalaryItemDTO>>> groupSalaryItemDTOS = salaryItemDTOS.stream()
-                .sorted(Comparator.comparing(SalaryItemDTO::getFirstLevelItem).thenComparing(SalaryItemDTO::getSecondLevelItem))
-                .collect(Collectors.groupingBy(SalaryItemDTO::getFirstLevelItem, Collectors.groupingBy(SalaryItemDTO::getSecondLevelItem)));
-        for (Integer firstLevelItem : groupSalaryItemDTOS.keySet()) {
-            Map<Integer, List<SalaryItemDTO>> integerListMap = groupSalaryItemDTOS.get(firstLevelItem);
+        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemEditList(salaryItem);
+        List<SalaryItemDTO> sortSalaryItemDTOS = salaryItemDTOS.stream()
+                .sorted(Comparator.comparing(SalaryItemDTO::getFirstLevelItem).thenComparing(SalaryItemDTO::getSecondLevelItem)).collect(Collectors.toList());
+        return getSalaryItemVOS(sortSalaryItemDTOS);
+    }
+
+    /**
+     * 获取六个列表
+     *
+     * @param sortSalaryItemDTOS 分组后的工资项列表
+     * @return 结果
+     */
+    private static List<SalaryItemVO> getSalaryItemVOS(List<SalaryItemDTO> sortSalaryItemDTOS) {
+        List<SalaryItemDTO> wageWages = new ArrayList<>();
+        List<SalaryItemDTO> wageAllowance = new ArrayList<>();
+        List<SalaryItemDTO> wageWelfare = new ArrayList<>();
+        List<SalaryItemDTO> bonusBonus = new ArrayList<>();
+        List<SalaryItemDTO> deductionWithhold = new ArrayList<>();
+        List<SalaryItemDTO> deductionDeduction = new ArrayList<>();
+        for (SalaryItemDTO sortSalaryItemDTO : sortSalaryItemDTOS) {
+            Integer firstLevelItem = sortSalaryItemDTO.getFirstLevelItem();
+            Integer secondLevelItem = sortSalaryItemDTO.getSecondLevelItem();
+            if (firstLevelItem == 1) {
+                if (secondLevelItem == 1) {
+                    wageWages.add(sortSalaryItemDTO);
+                } else if (secondLevelItem == 2) {
+                    wageAllowance.add(sortSalaryItemDTO);
+                } else if (secondLevelItem == 3) {
+                    wageWelfare.add(sortSalaryItemDTO);
+                }
+            } else if (firstLevelItem == 2 && secondLevelItem == 4) {
+                bonusBonus.add(sortSalaryItemDTO);
+            } else if (firstLevelItem == 3) {
+                if (secondLevelItem == 5) {
+                    deductionWithhold.add(sortSalaryItemDTO);
+                } else if (secondLevelItem == 6) {
+                    deductionDeduction.add(sortSalaryItemDTO);
+                }
+            }
         }
-        return salaryItemDTOS;
+        List<SalaryItemVO> salaryItemVOS = new ArrayList<>();
+        SalaryItemVO salaryItemVO = new SalaryItemVO();
+        salaryItemVO.setFirstLevelItem(1);
+        salaryItemVO.setSecondLevelItem(1);
+        salaryItemVO.setSalaryItemDTOS(wageWages);
+        salaryItemVO.setSalaryItemName("wageWages");
+        salaryItemVOS.add(salaryItemVO);
+        salaryItemVO = new SalaryItemVO();
+        salaryItemVO.setFirstLevelItem(1);
+        salaryItemVO.setSecondLevelItem(2);
+        salaryItemVO.setSalaryItemDTOS(wageAllowance);
+        salaryItemVO.setSalaryItemName("wageAllowance");
+        salaryItemVOS.add(salaryItemVO);
+        salaryItemVO = new SalaryItemVO();
+        salaryItemVO.setFirstLevelItem(1);
+        salaryItemVO.setSecondLevelItem(3);
+        salaryItemVO.setSalaryItemDTOS(wageWelfare);
+        salaryItemVO.setSalaryItemName("wageWelfare");
+        salaryItemVOS.add(salaryItemVO);
+        salaryItemVO = new SalaryItemVO();
+        salaryItemVO.setFirstLevelItem(2);
+        salaryItemVO.setSecondLevelItem(4);
+        salaryItemVO.setSalaryItemDTOS(bonusBonus);
+        salaryItemVO.setSalaryItemName("bonusBonus");
+        salaryItemVOS.add(salaryItemVO);
+        salaryItemVO = new SalaryItemVO();
+        salaryItemVO.setFirstLevelItem(3);
+        salaryItemVO.setSecondLevelItem(5);
+        salaryItemVO.setSalaryItemDTOS(deductionWithhold);
+        salaryItemVO.setSalaryItemName("deductionWithhold");
+        salaryItemVOS.add(salaryItemVO);
+        salaryItemVO = new SalaryItemVO();
+        salaryItemVO.setFirstLevelItem(3);
+        salaryItemVO.setSecondLevelItem(6);
+        salaryItemVO.setSalaryItemDTOS(deductionDeduction);
+        salaryItemVO.setSalaryItemName("deductionDeduction");
+        salaryItemVOS.add(salaryItemVO);
+        return salaryItemVOS;
     }
 
     /**
@@ -227,7 +298,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      */
     @Transactional
     @Override
-    public int insertSalaryItem(SalaryItemDTO salaryItemDTO) {
+    public SalaryItemDTO insertSalaryItem(SalaryItemDTO salaryItemDTO) {
         String thirdLevelItem = salaryItemDTO.getThirdLevelItem();
         if (StringUtils.isEmpty(thirdLevelItem)) {
             throw new ServiceException("三级工资项目不可为空");
