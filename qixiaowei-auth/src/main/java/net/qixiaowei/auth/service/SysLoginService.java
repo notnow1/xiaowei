@@ -81,7 +81,7 @@ public class SysLoginService {
         }
         LoginUserVO userInfo = userResult.getData();
         UserDTO user = userInfo.getUserDTO();
-        if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag()) || UserStatus.DISABLE.getCode().equals(user.getStatus())) {
+        if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag()) || !UserStatus.OK.getCode().equals(user.getStatus())) {
             throw new ServiceException("账号或密码有误，请重新输入");
         }
         passwordService.validate(user, password);
