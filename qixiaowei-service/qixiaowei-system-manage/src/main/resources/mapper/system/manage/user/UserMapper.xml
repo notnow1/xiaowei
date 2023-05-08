@@ -22,12 +22,7 @@
         user_id, user_type, employee_id, user_account, mobile_phone, email
         FROM user
         WHERE delete_flag=0
-        AND (
-        mobile_phone=#{user.mobilePhone}
-        OR email=#{user.email}
-        <if test="user.employeeId != null">
-            OR employee_id = #{user.employeeId}
-        </if>
+        AND ( email=#{user.email}
         <if test="user.userAccount != null and user.userAccount != ''">
             OR user_account = #{user.userAccount}
         </if>
@@ -152,9 +147,11 @@
         u.user_id, u.user_type ,u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email,
         u.avatar, u.remark,
         u.status,
-        u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
+        u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name,GROUP_CONCAT(r.role_name) AS roleNames
         FROM user u
         LEFT JOIN employee e ON e.employee_id=u.employee_id AND e.delete_flag = 0
+        LEFT JOIN user_role ur ON ur.user_id = u.user_id AND ur.delete_flag = 0
+        LEFT JOIN role r ON r.role_id = ur.role_id AND ur.delete_flag = 0
         WHERE u.delete_flag=0
         <if test="user.userId != null">
             and u.user_id=#{user.userId}
@@ -397,6 +394,7 @@
         </if>
         <!-- 数据范围过滤 -->
         ${user.params.dataScope}
+        GROUP BY u.user_id
         ORDER BY u.create_time DESC
     </select>
 

@@ -54,7 +54,7 @@ public class User extends TenantEntity {
      */
     private String avatar;
     /**
-     * 状态:0失效;1生效
+     * 状态:0失效;1生效;2未激活
      */
     private Integer status;
 

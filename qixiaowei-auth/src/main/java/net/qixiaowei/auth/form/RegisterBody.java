@@ -22,6 +22,11 @@ public class RegisterBody extends LoginBody {
     @NotNull(message = "行业不能为空")
     private Long industryId;
     /**
+     * 姓名
+     */
+    @NotBlank(message = "姓名不能为空")
+    private String name;
+    /**
      * 验证码
      */
     @NotBlank(message = "验证码不能为空")

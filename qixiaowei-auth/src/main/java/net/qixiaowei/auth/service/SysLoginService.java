@@ -196,6 +196,7 @@ public class SysLoginService {
         //校验是否注册过
         this.checkUserAccountExists(userAccount);
         TenantDTO tenantDTO = new TenantDTO();
+        tenantDTO.setAdminName(registerBody.getName());
         tenantDTO.setAdminAccount(userAccount);
         tenantDTO.setAdminPassword(registerBody.getPassword());
         tenantDTO.setAdminEmail(registerBody.getEmail());

@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.UserConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
+import net.qixiaowei.integration.common.enums.user.UserStatus;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -49,6 +50,7 @@ import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
+import net.qixiaowei.system.manage.logic.basic.EmployeeLogic;
 import net.qixiaowei.system.manage.logic.user.UserLogic;
 import net.qixiaowei.system.manage.mapper.basic.*;
 import net.qixiaowei.system.manage.mapper.system.RegionMapper;
@@ -129,6 +131,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Autowired
     private UserLogic userLogic;
+
+    @Autowired
+    private EmployeeLogic employeeLogic;
 
     /**
      * 查询员工表
@@ -371,32 +376,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      */
     @Override
     public String generateEmployeeCode() {
-        String employeeCode;
-        int number = 1;
-        String prefixCodeRule = PrefixCodeRule.EMPLOYEE.getCode();
-        List<String> employeeCodes = employeeMapper.getEmployeeCodes(prefixCodeRule);
-        if (StringUtils.isNotEmpty(employeeCodes)) {
-            for (String code : employeeCodes) {
-                if (StringUtils.isEmpty(code) || code.length() != 8) {
-                    continue;
-                }
-                code = code.replaceFirst(prefixCodeRule, "");
-                try {
-                    int codeOfNumber = Integer.parseInt(code);
-                    if (number != codeOfNumber) {
-                        break;
-                    }
-                    number++;
-                } catch (Exception ignored) {
-                }
-            }
-        }
-        if (number > 1000000) {
-            throw new ServiceException("流水号溢出，请联系管理员");
-        }
-        employeeCode = "000000" + number;
-        employeeCode = prefixCodeRule + employeeCode.substring(employeeCode.length() - 6);
-        return employeeCode;
+        return employeeLogic.generateEmployeeCode();
     }
 
     /**
@@ -558,7 +538,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
             throw new ServiceException("修改员工信息失败");
         }
         //销售云同步
-        this.syncSaleEditUser(employee);
+        Integer status = employeeDTO.getStatus();
+        if(BusinessConstants.NORMAL.equals(status)){
+            this.syncSaleEditUser(employee);
+        }
         return i;
     }
 
@@ -953,7 +936,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
         }
         //不能修改身份证号和出生日期
-        if (!employeeCodes.contains(employeeExcel.getEmployeeCode()) || (employeeCodes.contains(employeeExcel.getEmployeeCode()) && employeeDTO.getStatus() ==0)) {
+        if (!employeeCodes.contains(employeeExcel.getEmployeeCode()) || (employeeCodes.contains(employeeExcel.getEmployeeCode()) && employeeDTO.getStatus() == 0)) {
             //用工关系状态
             if (StringUtils.isNotBlank(employmentStatus)) {
                 if (StringUtils.equals(employmentStatus, "在职")) {
@@ -2202,7 +2185,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         userAccount = userDTO.getUserAccount();
                     }
                     //销售云同步
-                    syncSalesAddUser(userId, userAccount, UserConstants.DEFAULT_PASSWORD, employee);
+                    employeeLogic.syncSalesAddUser(userId, userAccount, UserConstants.DEFAULT_PASSWORD, employee);
                 }
             }
         }
@@ -2362,47 +2345,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
             userDTO.setUserName(employee.getEmployeeName());
             userDTO.setMobilePhone(employeeMobile);
             userDTO.setEmail(employee.getEmployeeEmail());
+            userDTO.setStatus(UserStatus.UNACTIVATED.getCode());
             userLogic.insertUser(userDTO);
             //销售云帐号同步
-            this.syncSalesAddUser(userDTO.getUserId(), employeeMobile, password, employee);
-        }
-    }
-
-    /**
-     * @description: 同步销售云用户
-     * @Author: hzk
-     * @date: 2023/4/12 18:13
-     * @param: [userId, userAccount, password, employee]
-     * @return: void
-     **/
-    private void syncSalesAddUser(Long userId, String userAccount, String password, Employee employee) {
-        String salesToken = SecurityUtils.getSalesToken();
-        if (StringUtils.isNotEmpty(salesToken)) {
-            SyncUserDTO syncUserDTO = new SyncUserDTO();
-            String userName = employee.getEmployeeName() + "（" + employee.getEmployeeCode() + "）";
-            syncUserDTO.setUserId(userId);
-            syncUserDTO.setRealname(userName);
-            syncUserDTO.setUsername(Optional.ofNullable(userAccount).orElse(employee.getEmployeeMobile()));
-            syncUserDTO.setSex(employee.getEmployeeGender());
-            syncUserDTO.setMobile(employee.getEmployeeMobile());
-            syncUserDTO.setPassword(password);
-            syncUserDTO.setEmail(employee.getEmployeeEmail());
-            syncUserDTO.setDeptId(employee.getEmployeeDepartmentId());
-            syncUserDTO.setStatus(1);
-            syncUserDTO.setNum(employee.getEmployeeCode());
-            Long employeePostId = employee.getEmployeePostId();
-            //处理岗位
-            if (StringUtils.isNotNull(employeePostId)) {
-                PostDTO postDTO = postMapper.selectPostByPostId(employeePostId);
-                if (StringUtils.isNotNull(postDTO)) {
-                    syncUserDTO.setPost(postDTO.getPostName());
-                }
-            }
-            R<?> r = remoteSyncAdminService.syncUserAdd(syncUserDTO, salesToken);
-            if (0 != r.getCode()) {
-                log.error("同步销售云用户新增失败:{}", r.getMsg());
-                throw new ServiceException("人员新增失败");
-            }
+            employeeLogic.syncSalesAddUser(userDTO.getUserId(), employeeMobile, password, employee);
         }
     }
 
@@ -2421,37 +2367,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 this.addUser(employee);
                 return;
             }
-            this.syncSaleEditUser(userDTO.getUserId(), employee);
-        }
-    }
-
-    /**
-     * @description: 销售云同步编辑用户
-     * @Author: hzk
-     * @date: 2023/4/12 18:14
-     * @param: [userId, employee]
-     * @return: void
-     **/
-    private void syncSaleEditUser(Long userId, Employee employee) {
-        String salesToken = SecurityUtils.getSalesToken();
-        if (StringUtils.isNotEmpty(salesToken)) {
-            SyncUserDTO syncUserDTO = new SyncUserDTO();
-            syncUserDTO.setUserId(userId);
-            syncUserDTO.setSex(employee.getEmployeeGender());
-            syncUserDTO.setDeptId(employee.getEmployeeDepartmentId());
-            Long employeePostId = employee.getEmployeePostId();
-            //处理岗位
-            if (StringUtils.isNotNull(employeePostId)) {
-                PostDTO postDTO = postMapper.selectPostByPostId(employeePostId);
-                if (StringUtils.isNotNull(postDTO)) {
-                    syncUserDTO.setPost(postDTO.getPostName());
-                }
-            }
-            R<?> r = remoteSyncAdminService.syncUserEdit(syncUserDTO, salesToken);
-            if (0 != r.getCode()) {
-                log.error("同步销售云用户编辑失败:{}", r.getMsg());
-                throw new ServiceException("人员编辑失败");
-            }
+            employeeLogic.syncSaleEditUser(userDTO.getUserId(), employee);
         }
     }
 }

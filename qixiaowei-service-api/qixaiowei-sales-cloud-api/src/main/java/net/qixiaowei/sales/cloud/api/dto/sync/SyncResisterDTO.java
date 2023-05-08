@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -52,6 +53,10 @@ public class SyncResisterDTO {
      */
     @NotNull(message = "角色ID不能为空！")
     private Long roleId;
+    /**
+     * 同步的角色
+     */
+    private List<SyncRoleDTO> roles;
 
 
 }
