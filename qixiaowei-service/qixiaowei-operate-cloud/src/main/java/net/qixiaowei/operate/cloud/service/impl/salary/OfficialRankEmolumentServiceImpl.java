@@ -276,18 +276,18 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             return insertOfficialRankEmoluments(officialRankEmolumentDTOList);
         }
         // 处理脏数据-新增
-        List<OfficialRankEmolumentDTO> addRankEmolumentDTOList = new ArrayList<>();
-        for (int i = officialRankEmolumentDTOList.size() - 1; i >= 0; i--) {
-            OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentDTOList.get(i);
-            if (StringUtils.isNull(emolumentDTO.getOfficialRankEmolumentId())) {
-                emolumentDTO.setOfficialRankSystemId(officialRankSystemId);
-                addRankEmolumentDTOList.add(emolumentDTO);
-                officialRankEmolumentDTOList.remove(i);
-            }
-        }
-        if (StringUtils.isNotEmpty(addRankEmolumentDTOList)) {
-            insertOfficialRankEmoluments(addRankEmolumentDTOList);
-        }
+//        List<OfficialRankEmolumentDTO> addRankEmolumentDTOList = new ArrayList<>();
+//        for (int i = officialRankEmolumentDTOList.size() - 1; i >= 0; i--) {
+//            OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentDTOList.get(i);
+//            if (StringUtils.isNull(emolumentDTO.getOfficialRankEmolumentId())) {
+//                emolumentDTO.setOfficialRankSystemId(officialRankSystemId);
+//                addRankEmolumentDTOList.add(emolumentDTO);
+//                officialRankEmolumentDTOList.remove(i);
+//            }
+//        }
+//        if (StringUtils.isNotEmpty(addRankEmolumentDTOList)) {
+//            insertOfficialRankEmoluments(addRankEmolumentDTOList);
+//        }
         // 更新
         List<OfficialRankEmolumentDTO> officialRankEmolumentList = new ArrayList<>();
         for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOList) {
