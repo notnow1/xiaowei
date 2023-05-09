@@ -137,7 +137,7 @@ public class SysPasswordService {
             this.incrementRetryCount(cacheKey, retryCount);
             throw new ServiceException("账号或密码有误，请重新输入");
         } else {
-            if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag()) || UserStatus.DISABLE.getCode().equals(user.getStatus())) {
+            if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag()) || !UserStatus.OK.getCode().equals(user.getStatus())) {
                 this.incrementRetryCount(cacheKey, retryCount);
                 throw new ServiceException("账号或密码有误，请重新输入");
             }
