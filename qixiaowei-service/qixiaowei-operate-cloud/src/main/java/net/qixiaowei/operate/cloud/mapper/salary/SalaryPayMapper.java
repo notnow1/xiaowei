@@ -274,5 +274,5 @@ public interface SalaryPayMapper {
      * @param year
      * @return
      */
-    BigDecimal selectAfterYearBonusActualNum(int year);
+    BigDecimal selectAfterYearBonusActualNum(@Param("year")int year);
 }
