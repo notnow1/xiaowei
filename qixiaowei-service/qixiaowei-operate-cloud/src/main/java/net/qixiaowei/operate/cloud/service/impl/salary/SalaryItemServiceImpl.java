@@ -363,6 +363,10 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         Integer maxSort = salaryItemMapper.selectMaxSort();
         SalaryItem salaryItem = new SalaryItem();
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);
+        if (StringUtils.isNull(salaryItemDTO.getScope())) {
+            salaryItem.setScope(1);
+        }
+        salaryItem.setStatus(0);
         salaryItem.setSort(maxSort + 1);
         salaryItem.setCreateBy(SecurityUtils.getUserId());
         salaryItem.setCreateTime(DateUtils.getNowDate());
