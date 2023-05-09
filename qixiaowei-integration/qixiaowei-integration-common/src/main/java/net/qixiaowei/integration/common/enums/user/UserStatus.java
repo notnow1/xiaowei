@@ -4,7 +4,9 @@ package net.qixiaowei.integration.common.enums.user;
  * 用户状态
  */
 public enum UserStatus {
-    OK(1, "正常"), DISABLE(0, "停用");
+    DISABLE(0, "停用"),
+    OK(1, "正常"),
+    UNACTIVATED(2, "未激活");
 
     private final Integer code;
     private final String info;

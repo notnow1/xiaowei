@@ -85,6 +85,11 @@ public class TenantDTO {
     @NotBlank(message = "域名不能为空", groups = {TenantDTO.AddTenantDTO.class, TenantDTO.UpdateTenantDTO.class, TenantDTO.UpdateTenantInfoDTO.class})
     private String domain;
     /**
+    * 管理员姓名
+    */
+    @NotBlank(message = "管理员姓名不能为空", groups = {TenantDTO.AddTenantDTO.class, TenantDTO.UpdateTenantDTO.class})
+    private  String  adminName;
+    /**
      * 管理员帐号
      */
     @NotBlank(message = "管理员帐号不能为空", groups = {TenantDTO.AddTenantDTO.class, TenantDTO.UpdateTenantDTO.class})

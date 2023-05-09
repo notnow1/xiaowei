@@ -1,13 +1,11 @@
 package net.qixiaowei.integration.common.enums.field.system;
 
 public enum UserField {
-
-    USER_ACCOUNT("user_account", "账号"),
-    EMPLOYEE_ID("employee_id", "关联员工"),
-    MOBILE_PHONE("mobile_phone", "手机号码"),
-    EMAIL("email", "邮箱"),
-    USER_NAME("user_name", "账号姓名"),
+    EMPLOYEE_NAME("employee_name", "姓名"),
+    USER_ACCOUNT("user_account", "账号（手机号）"),
     STATUS("status", "账号状态"),
+    ROLES("role_names", "角色"),
+    EMAIL("email", "邮箱"),
     ;
 
     private final String code;

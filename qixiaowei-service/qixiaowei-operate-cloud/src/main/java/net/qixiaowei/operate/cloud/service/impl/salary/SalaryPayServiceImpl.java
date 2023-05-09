@@ -278,6 +278,12 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 case "employeePostIdNotEqual":
                     params2.put("employeePostIdNotEqual", params.get("employeePostIdNotEqual"));
                     break;
+                case "employeePostIdNull":
+                    params2.put("employeePostIdNull", params.get("employeePostIdNull"));
+                    break;
+                case "employeePostIdNotNull":
+                    params2.put("employeePostIdNotNull", params.get("employeePostIdNotNull"));
+                    break;
             }
         }
         // 人员

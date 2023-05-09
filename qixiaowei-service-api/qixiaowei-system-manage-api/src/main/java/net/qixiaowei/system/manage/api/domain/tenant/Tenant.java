@@ -48,7 +48,11 @@ public class Tenant extends BaseEntity {
      * 域名
      */
     private String domain;
-    /**
+     /**
+     * 管理员姓名
+     */
+     private  String  adminName;
+     /**
      * 管理员帐号
      */
     private String adminAccount;

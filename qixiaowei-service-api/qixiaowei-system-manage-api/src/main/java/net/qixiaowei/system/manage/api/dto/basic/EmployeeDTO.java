@@ -203,6 +203,8 @@ public class EmployeeDTO extends BaseDTO {
      */
     //@NotNull(message = "员工岗位不能为空", groups = {EmployeeDTO.AddEmployeeDTO.class, EmployeeDTO.UpdateEmployeeDTO.class})
     private Long employeePostId;
+    private Long employeePostIdNull;
+    private Long employeePostIdNotNull;
 
     /**
      * 员工岗位名称

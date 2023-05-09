@@ -18,12 +18,18 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncUserDTO;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncUserStatusDTO;
 import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
+import net.qixiaowei.system.manage.api.domain.basic.Employee;
+import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.domain.user.User;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
+import net.qixiaowei.system.manage.logic.basic.EmployeeLogic;
+import net.qixiaowei.system.manage.mapper.basic.EmployeeInfoMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
+import net.qixiaowei.system.manage.mapper.basic.PostMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.user.IUserConfigService;
@@ -45,27 +51,66 @@ public class UserLogic {
 
     @Autowired
     private UserMapper userMapper;
-
     @Autowired
     private EmployeeMapper employeeMapper;
-
+    @Autowired
+    private EmployeeInfoMapper employeeInfoMapper;
+    @Autowired
+    private EmployeeLogic employeeLogic;
     @Autowired
     private IUserConfigService userConfigService;
-
     @Autowired
     private RedisService redisService;
-
     @Autowired
     private UserRoleMapper userRoleMapper;
-
     @Autowired
     private RemoteSyncAdminService remoteSyncAdminService;
+    @Autowired
+    private PostMapper postMapper;
 
     /**
      * 查询未分配用户员工列表
      */
     public List<EmployeeDTO> unallocatedEmployees(Long userId) {
         return employeeMapper.unallocatedUserList(userId);
+    }
+
+    public Employee insertEmployee(UserDTO userDTO) {
+        String employeeName = userDTO.getEmployeeName();
+        String userAccount = userDTO.getUserAccount();
+        //查询是否已经存在员工
+        List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeMobile(userAccount);
+        if (StringUtils.isNotEmpty(employeeDTOList)) {
+            throw new ServiceException("手机号已存在");
+        }
+        Date nowDate = DateUtils.getNowDate();
+        Long userId = SecurityUtils.getUserId();
+        String employeeCode = employeeLogic.generateEmployeeCode();
+        //员工表
+        Employee employee = new Employee();
+        employee.setEmployeeCode(employeeCode);
+        employee.setEmployeeName(employeeName);
+        employee.setEmployeeMobile(userAccount);
+        employee.setEmploymentStatus(1);
+        employee.setStatus(2);
+        employee.setCreateBy(userId);
+        employee.setCreateTime(nowDate);
+        employee.setUpdateTime(nowDate);
+        employee.setUpdateBy(userId);
+        employee.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        employeeMapper.insertEmployee(employee);
+        Long employeeId = employee.getEmployeeId();
+        //员工信息表
+        EmployeeInfo employeeInfo = new EmployeeInfo();
+        employeeInfo.setEmployeeId(employeeId);
+        employeeInfo.setCreateBy(userId);
+        employeeInfo.setCreateTime(nowDate);
+        employeeInfo.setUpdateTime(nowDate);
+        employeeInfo.setUpdateBy(userId);
+        employeeInfo.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        employeeInfoMapper.insertEmployeeInfo(employeeInfo);
+        userDTO.setEmployeeId(employeeId);
+        return employee;
     }
 
     public UserDTO insertUser(UserDTO userDTO) {
@@ -160,18 +205,10 @@ public class UserLogic {
             }
             if (StringUtils.isNotEmpty(userDTOS)) {
                 userDTOS.forEach(user -> {
-                    Long employeeId = user.getEmployeeId();
                     String userAccount = user.getUserAccount();
-                    String mobilePhone = user.getMobilePhone();
                     String email = user.getEmail();
-                    if (StringUtils.isNotNull(employeeId) && employeeId.equals(userDTO.getEmployeeId())) {
-                        throw new ServiceException("账号已存在");
-                    }
                     if (StringUtils.isNotEmpty(userAccount) && userAccount.equals(userDTO.getUserAccount())) {
                         throw new ServiceException("账号已存在");
-                    }
-                    if (StringUtils.isNotEmpty(mobilePhone) && mobilePhone.equals(userDTO.getMobilePhone())) {
-                        throw new ServiceException("手机号码已存在");
                     }
                     if (StringUtils.isNotEmpty(email) && email.equals(userDTO.getEmail())) {
                         throw new ServiceException("邮箱已存在");
@@ -284,6 +321,44 @@ public class UserLogic {
             if (0 != r.getCode()) {
                 log.error("同步销售云用户密码失败:{}", r.getMsg());
                 throw new ServiceException("用户密码修改失败");
+            }
+        }
+    }
+
+    /**
+     * @description: 同步销售云用户
+     * @Author: hzk
+     * @date: 2023/4/12 18:13
+     * @param: [userId, userAccount, status , password, employee]
+     * @return: void
+     **/
+    public void syncSalesAddUser(Long userId, String userAccount, Integer status, String password, Employee employee) {
+        String salesToken = SecurityUtils.getSalesToken();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            SyncUserDTO syncUserDTO = new SyncUserDTO();
+            String userName = employee.getEmployeeName() + "（" + employee.getEmployeeCode() + "）";
+            syncUserDTO.setUserId(userId);
+            syncUserDTO.setRealname(userName);
+            syncUserDTO.setUsername(Optional.ofNullable(userAccount).orElse(employee.getEmployeeMobile()));
+            syncUserDTO.setSex(employee.getEmployeeGender());
+            syncUserDTO.setMobile(employee.getEmployeeMobile());
+            syncUserDTO.setPassword(password);
+            syncUserDTO.setEmail(employee.getEmployeeEmail());
+            syncUserDTO.setDeptId(employee.getEmployeeDepartmentId());
+            syncUserDTO.setStatus(status);
+            syncUserDTO.setNum(employee.getEmployeeCode());
+            Long employeePostId = employee.getEmployeePostId();
+            //处理岗位
+            if (StringUtils.isNotNull(employeePostId)) {
+                PostDTO postDTO = postMapper.selectPostByPostId(employeePostId);
+                if (StringUtils.isNotNull(postDTO)) {
+                    syncUserDTO.setPost(postDTO.getPostName());
+                }
+            }
+            R<?> r = remoteSyncAdminService.syncUserAdd(syncUserDTO, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云用户新增失败:{}", r.getMsg());
+                throw new ServiceException("人员新增失败");
             }
         }
     }

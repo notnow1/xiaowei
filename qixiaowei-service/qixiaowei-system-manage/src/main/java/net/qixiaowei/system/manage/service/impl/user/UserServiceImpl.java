@@ -3,6 +3,8 @@ package net.qixiaowei.system.manage.service.impl.user;
 import java.io.InputStream;
 import java.util.*;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.file.api.RemoteFileService;
 import net.qixiaowei.file.api.dto.FileDTO;
@@ -22,6 +24,7 @@ import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
+import net.qixiaowei.system.manage.api.domain.basic.Employee;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
@@ -291,8 +294,6 @@ public class UserServiceImpl implements IUserService {
         userDTO.setUserId(userId);
         userLogic.checkUserUnique(userDTO);
         Date nowDate = DateUtils.getNowDate();
-        String userName = userDTO.getUserName();
-        String mobilePhone = userDTO.getMobilePhone();
         String email = userDTO.getEmail();
         String avatar = userDTO.getAvatar();
         String pathOfRemoveDomain = fileConfig.getPathOfRemoveDomain(avatar);
@@ -300,8 +301,6 @@ public class UserServiceImpl implements IUserService {
         user.setUserId(userId);
         user.setAvatar(pathOfRemoveDomain);
         user.setEmail(email);
-        user.setMobilePhone(mobilePhone);
-        user.setUserName(userName);
         user.setUpdateBy(userId);
         user.setUpdateTime(nowDate);
         int i = userMapper.updateUser(user);
@@ -310,11 +309,9 @@ public class UserServiceImpl implements IUserService {
             //同步销售云
             userLogic.syncSaleEditUser(userDTO);
             LoginUserVO loginUser = SecurityUtils.getLoginUser();
-            loginUser.getUserDTO().setUserName(userName);
             if (StringUtils.isNotEmpty(avatar)) {
                 loginUser.getUserDTO().setAvatar(avatar);
             }
-            loginUser.getUserDTO().setMobilePhone(mobilePhone);
             loginUser.getUserDTO().setEmail(email);
             tokenService.setLoginUser(loginUser);
             return i;
@@ -337,6 +334,18 @@ public class UserServiceImpl implements IUserService {
         }
         List<RoleDTO> roleList = roleMapper.selectRolesByUserId(userId);
         userDTO.setRoles(roleList);
+        if (StringUtils.isNotEmpty(roleList)) {
+            Set<Long> roleIds = new HashSet<>();
+            List<String> roleNames = new ArrayList<>();
+            for (RoleDTO roleDTO : roleList) {
+                Long roleId = roleDTO.getRoleId();
+                String roleName = roleDTO.getRoleName();
+                roleIds.add(roleId);
+                roleNames.add(roleName);
+            }
+            userDTO.setRoleIds(roleIds);
+            userDTO.setRoleNames(CollUtil.join(roleNames, StrUtil.COMMA));
+        }
         return userDTO;
     }
 
@@ -429,7 +438,12 @@ public class UserServiceImpl implements IUserService {
     @Transactional
     @Override
     public UserDTO insertUser(UserDTO userDTO) {
-        return userLogic.insertUser(userDTO);
+        //新增人员
+        Employee employee = userLogic.insertEmployee(userDTO);
+        //新增帐号
+        UserDTO userResult = userLogic.insertUser(userDTO);
+        userLogic.syncSalesAddUser(userResult.getUserId(), userDTO.getUserAccount(), BusinessConstants.NORMAL, userDTO.getPassword(), employee);
+        return userResult;
     }
 
     /**

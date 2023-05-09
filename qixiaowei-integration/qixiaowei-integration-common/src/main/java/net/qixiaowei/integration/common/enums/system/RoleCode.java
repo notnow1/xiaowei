@@ -7,16 +7,21 @@ package net.qixiaowei.integration.common.enums.system;
  **/
 public enum RoleCode {
 
-    SUPER_ADMIN("admin", "超级管理员"),
+    SUPER_ADMIN("admin", "超级管理员", "super_admin"),
 
-    TENANT_ADMIN("JS001", "系统管理员");
+    TENANT_ADMIN("JS001", "系统管理员", "admin"),
+
+    TENANT_DEFAULT("JS002", "默认角色", "default");
 
     private final String code;
     private final String info;
 
-    RoleCode(String code, String info) {
+    private final String remark;
+
+    RoleCode(String code, String info, String remark) {
         this.code = code;
         this.info = info;
+        this.remark = remark;
     }
 
     public String getCode() {
@@ -25,6 +30,10 @@ public enum RoleCode {
 
     public String getInfo() {
         return info;
+    }
+
+    public String getRemark() {
+        return remark;
     }
 }
 
