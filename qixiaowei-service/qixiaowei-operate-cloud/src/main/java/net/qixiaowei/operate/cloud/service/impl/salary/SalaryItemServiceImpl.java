@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
+import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -389,6 +390,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         List<SalaryItem> salaryItems = new ArrayList<>();
         for (SalaryItem salaryItem : INIT_SALARY_ITEM) {
             salaryItem.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            salaryItem.setStatus(BusinessConstants.NORMAL);
             salaryItem.setCreateBy(userId);
             salaryItem.setUpdateBy(userId);
             salaryItem.setCreateTime(nowDate);
