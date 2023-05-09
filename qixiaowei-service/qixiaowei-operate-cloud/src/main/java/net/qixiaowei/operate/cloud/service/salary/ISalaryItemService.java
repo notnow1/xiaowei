@@ -189,4 +189,10 @@ public interface ISalaryItemService {
      * @return 结果
      */
     List<SalaryItemVO> selectSalaryItemEditList(SalaryItemDTO salaryItemDTO);
+
+    /**
+     * 查找公司级奖项类别
+     * @return
+     */
+    List<SalaryItemDTO> selectCompanyBonusList();
 }

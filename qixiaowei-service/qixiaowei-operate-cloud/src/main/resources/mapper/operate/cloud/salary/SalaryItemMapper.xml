@@ -213,7 +213,7 @@
         AND delete_flag=0
     </select>
     <!--    查询战略奖的工资项id-->
-    <select id="selectSalaryItemByAward" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
+    <select id="selectCompanyBonusList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
         salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag,
         create_by,

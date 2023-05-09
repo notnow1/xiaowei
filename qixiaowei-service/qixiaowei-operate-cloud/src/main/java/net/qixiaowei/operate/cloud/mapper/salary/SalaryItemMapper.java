@@ -141,7 +141,7 @@ public interface SalaryItemMapper {
      *
      * @return
      */
-    List<SalaryItemDTO> selectSalaryItemByAward();
+    List<SalaryItemDTO> selectCompanyBonusList();
 
     /**
      * 所有二级工资项目为奖金且级别为部门级的三级工资项目

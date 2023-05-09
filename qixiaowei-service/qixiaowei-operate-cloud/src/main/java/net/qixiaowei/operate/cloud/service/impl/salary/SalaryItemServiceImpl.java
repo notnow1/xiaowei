@@ -1,8 +1,5 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONParser;
-import com.alibaba.fastjson2.JSON;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -147,6 +144,15 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
                         .thenComparing(SalaryItemDTO::getSort))
                 .collect(Collectors.toList());
         return getSalaryItemVOS(sortSalaryItemDTOS);
+    }
+
+    /**
+     * 查找公司级奖项类别
+     * @return
+     */
+    @Override
+    public List<SalaryItemDTO> selectCompanyBonusList() {
+        return salaryItemMapper.selectCompanyBonusList();
     }
 
     /**

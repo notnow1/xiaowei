@@ -673,7 +673,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         DeptBonusBudgetDTO deptBonusBudgetDTO = new DeptBonusBudgetDTO();
         //公司级奖金预算明细表集合
         List<DeptBonusCompanyDTO> deptBonusCompanyDTOList = new ArrayList<>();
-        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemByAward();
+        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectCompanyBonusList();
         if (StringUtils.isNotEmpty(salaryItemDTOS)){
             for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
                 DeptBonusCompanyDTO deptBonusCompanyDTO = new DeptBonusCompanyDTO();
