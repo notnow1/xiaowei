@@ -373,7 +373,8 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         salaryItem.setUpdateTime(DateUtils.getNowDate());
         salaryItem.setUpdateBy(SecurityUtils.getUserId());
         salaryItem.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        return salaryItemMapper.insertSalaryItem(salaryItem);
+        salaryItemMapper.insertSalaryItem(salaryItem);
+        return salaryItemDTO.setSalaryItemId(salaryItem.getSalaryItemId());
     }
 
     /**

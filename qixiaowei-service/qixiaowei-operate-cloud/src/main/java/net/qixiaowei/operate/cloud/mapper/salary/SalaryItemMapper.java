@@ -52,7 +52,7 @@ public interface SalaryItemMapper {
      * @param salaryItem 工资项
      * @return 结果
      */
-    SalaryItemDTO insertSalaryItem(@Param("salaryItem") SalaryItem salaryItem);
+    int insertSalaryItem(@Param("salaryItem") SalaryItem salaryItem);
 
     /**
      * 修改工资项
