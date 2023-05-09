@@ -16,9 +16,7 @@ import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayBudgetDept;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayObjects;
 import net.qixiaowei.operate.cloud.api.dto.bonus.*;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
-import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayApplicationMapper;
-import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayBudgetDeptMapper;
-import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayObjectsMapper;
+import net.qixiaowei.operate.cloud.mapper.bonus.*;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusPayApplicationService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
@@ -60,6 +58,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
     private RemoteUserService remoteUserService;
     @Autowired
     private SalaryItemMapper salaryItemMapper;
+    @Autowired
+    private DeptBonusBudgetMapper deptBonusBudgetMapper;
 
     /**
      * 查询奖金发放申请表
@@ -919,7 +919,10 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
         //所有二级工资项目为奖金且级别为部门级的三级工资项目
         //List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemByBonusId(bonusPayApplicationDTO.getSalaryItemId());
         //查找二级为奖金的三级工资条包含公司
-        List<SalaryItemDTO> salaryItemDTOS1 = salaryItemMapper.applyByIdList(bonusPayApplicationDTO.getSalaryItemId());
+        List<SalaryItemDTO> salaryItemDTOS1 = salaryItemMapper.applyByYear(bonusPayApplicationDTO);
+        if (StringUtils.isEmpty(salaryItemDTOS1)){
+            return bonusPayStandingDTOList;
+        }
 
         Integer departmentType = bonusPayApplicationDTO.getDepartmentType();
         if (null != departmentType) {
@@ -1028,14 +1031,6 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 }
                 //封装预算部门
                 packBudget(bonusPayStandingDTOList, bonusPayApplicationDTO);
-            } else {
-                //根据id查询所有二级工资项目为奖金且级别为公司级的三级工资项目
-                List<SalaryItemDTO> salaryItemDTOS1 = salaryItemMapper.selectSalaryItemByCompany(bonusPayApplicationDTO.getSalaryItemId());
-                for (SalaryItemDTO salaryItemDTO : salaryItemDTOS1) {
-                    //封装公司工资项目
-                    this.packSalaryItemCompany(bonusPayStandingDTOList, salaryItemId, salaryItemDTO);
-                }
-                packBudget(bonusPayStandingDTOList, bonusPayApplicationDTO);
             }
         }
     }
@@ -1115,6 +1110,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @param bonusPayApplicationDTO
      */
     private void bonusGrantStandingApplyList(List<SalaryItemDTO> salaryItemDTOS, List<DepartmentDTO> data, List<BonusPayStandingDTO> bonusPayStandingDTOList, BonusPayApplicationDTO bonusPayApplicationDTO) {
+        //前台传入查询奖项类别id
         Long salaryItemId = bonusPayApplicationDTO.getSalaryItemId();
 
         if (StringUtils.isNotEmpty(data)) {
@@ -1170,6 +1166,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             bonusPayStandingDTO.setSalaryItemId(salaryItemDTO.getSalaryItemId());
             //三级项目(奖项名称)
             bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
+            //年初预算
+            //bonusPayStandingDTO.setBeYearAmountBonusBudget();
             bonusPayStandingDTOList.add(bonusPayStandingDTO);
         } else {
             if (salaryItemDTO.getSalaryItemId().equals(salaryItemId)) {

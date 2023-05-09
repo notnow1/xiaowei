@@ -268,31 +268,72 @@
         </if>
     </select>
     <!--    根据id查找二级为奖金的三级工资条-->
-    <select id="applyByIdList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
+    <select id="applyByYear" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
-        create_time, update_by, update_time
-        FROM salary_item
-        WHERE first_level_item=2
-        and status =1
+        si.salary_item_id,
+        si.first_level_item,
+        si.second_level_item,
+        si.scope,
+        si.sort,
+        si.status,
+        si.third_level_item as salaryItemName,
+        dbbi.dept_bonus_budget_items_id,
+        dbbi.dept_bonus_budget_id,
+        dbbi.dept_bonus_budget_details_id,
+        dbbi.salary_item_id,
+        dbbi.bonus_percentage,
+        dbbi.sort,
+        dbbi.delete_flag,
+        dbbi.create_by,
+        dbbi.create_time,
+        dbbi.update_by,
+        dbbi.update_time
+        FROM
+        dept_bonus_budget_items dbbi
+        left join dept_bonus_budget dbb
+        on dbb.dept_bonus_budget_id  =dbbi.dept_bonus_budget_id
+        and dbbi.delete_flag =0
+        left join salary_item si
+        on si.salary_item_id  =dbbi .salary_item_id
+        and si.delete_flag =0
+        and first_level_item=2
         and second_level_item=4
-        and delete_flag=0
-        <if test="salaryItemId != null">
-            and salary_item_id=#{salaryItemId}
+        WHERE  dbbi.dept_bonus_budget_details_id =0
+        and dbbi.delete_flag=0
+        and dbb.budget_year =#{bonusPayApplicationDTO.awardYear}
+        <if test="bonusPayApplicationDTO.salaryItemId != null">
+            and dbbi.salary_item_id=#{bonusPayApplicationDTO.salaryItemId}
         </if>
+        order by dbbi.sort
     </select>
     <!--    根据id查询所有二级工资项目为奖金且级别为公司级的三级工资项目-->
     <select id="selectSalaryItemByCompany"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
-        create_time, update_by, update_time
-        FROM salary_item
-        WHERE first_level_item=2
-        and second_level_item=4
-        and scope =2
-        and status =1
-        and delete_flag=0
+        si.third_level_item as salaryItemName,
+        dbbi.dept_bonus_budget_items_id,
+        dbbi.dept_bonus_budget_id,
+        dbbi.dept_bonus_budget_details_id,
+        dbbi.salary_item_id,
+        dbbi.bonus_percentage,
+        dbbi.sort,
+        dbbi.delete_flag,
+        dbbi.create_by,
+        dbbi.create_time,
+        dbbi.update_by,
+        dbbi.update_time
+        FROM
+        dept_bonus_budget_items dbbi
+        left join dept_bonus_budget dbb
+        on dbb.dept_bonus_budget_id  =dbbi.dept_bonus_budget_id
+        and dbbi.delete_flag =0
+        left join salary_item si
+        on si.salary_item_id  =dbbi .salary_item_id
+        and si.delete_flag =0
+        WHERE  dbbi.dept_bonus_budget_details_id =0
+        and dbbi.delete_flag=0
+        and dbb.budget_year =2020
+        order by dbbi.sort
         <if test="salaryItemId != null">
             and salary_item_id=#{salaryItemId}
         </if>

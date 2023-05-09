@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.mapper.salary;
 import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryItem;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -172,11 +173,11 @@ public interface SalaryItemMapper {
 
 
     /**
-     * 根据id查找二级为奖金的三级工资条
+     * 根据年份查询和奖项类别id查询部门奖金预算的奖项类别
      *
      * @return
      */
-    List<SalaryItemDTO> applyByIdList(@Param("salaryItemId") Long salaryItemId);
+    List<SalaryItemDTO> applyByYear(@Param("bonusPayApplicationDTO") BonusPayApplicationDTO bonusPayApplicationDTO);
 
     /**
      * 根据id查询所有二级工资项目为奖金且级别为公司级的三级工资项目

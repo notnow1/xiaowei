@@ -531,7 +531,10 @@
         left join salary_item si
         on si.salary_item_id = bpa.salary_item_id
         and si.delete_flag =0
-        WHERE bpa.award_code = #{bonusPayApplication.awardCode}
+        WHERE bpa.delete_flag = 0
+        <if test="bonusPayApplication.awardCode != null">
+            and bpa.award_code = #{bonusPayApplication.awardCode}
+        </if>
         <if test="bonusPayApplication.salaryItemId != null">
             and bpa.salary_item_id = #{bonusPayApplication.salaryItemId}
         </if>
@@ -544,7 +547,6 @@
         <if test="bonusPayApplication.awardMonth != null">
             and bpa.award_month = #{bonusPayApplication.awardMonth}
         </if>
-        and bpa.delete_flag = 0
     </select>
     <!--根据工资项ID集合查询奖金发放申-->
     <select id="selectBonusPayApplicationBySalaryItemId"
