@@ -367,7 +367,7 @@
         WHERE delete_flag=0
         AND employee_id =#{employeeId}
         AND pay_year &lt;=#{payYear}
-        order by pay_year desc
+        order by pay_year desc,pay_month desc
         limit 12
     </select>
     <!--    当前月份倒推12个月的“奖金”部分合计-->

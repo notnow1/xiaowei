@@ -1083,11 +1083,9 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             deptAnnualBonusDTO.setCompanyAnnualBonus(endYearSalaryAmountBonus);
         }
         //查询战略奖的工资项id
-        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemByAward();
-        if (StringUtils.isEmpty(salaryItemDTOS)) {
-            throw new ServiceException("工资项公司级未配置 请联系管理员！");
-        }
-
+        BonusPayApplicationDTO bonusPayApplicationDTO = new BonusPayApplicationDTO();
+        bonusPayApplicationDTO.setAwardYear(annualBonusYear);
+        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.applyByYear(bonusPayApplicationDTO);
         BigDecimal strategyDeveAward = bonusPayApplicationMapper.selectBonusPayApplicationAddDeptAnnual(annualBonusYear, salaryItemDTOS.stream().map(SalaryItemDTO::getSalaryItemId).collect(Collectors.toList()));
         if (strategyDeveAward.compareTo(new BigDecimal("0")) != 0) {
             strategyDeveAward = strategyDeveAward.divide(new BigDecimal("10000")).setScale(10, BigDecimal.ROUND_HALF_UP);

@@ -8,6 +8,7 @@ import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayStandingDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -115,6 +116,14 @@ public class BonusPayApplicationController extends BaseController {
     }
 
 
+    /**
+     * 查询奖金发放申请奖项类别下拉框
+     */
+    @GetMapping("/applyByYear")
+    public AjaxResult applyByYear(BonusPayApplicationDTO bonusPayApplicationDTO) {
+        List<SalaryItemDTO> list = bonusPayApplicationService.applyByYear(bonusPayApplicationDTO);
+        return AjaxResult.success(list);
+    }
     /**
      * 分页查询奖金发放台账
      */

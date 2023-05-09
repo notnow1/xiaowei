@@ -125,7 +125,7 @@ public interface BonusPayApplicationMapper {
 
     /**
      * 取相同年度下，奖项类别为公司级的所有奖金发放申请单中，奖金总金额的合计
-     *
+     * @param annualBonusYear
      * @param salaryItemIds
      * @return
      */
