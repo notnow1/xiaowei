@@ -1,6 +1,5 @@
 package net.qixiaowei.operate.cloud.service.impl.bonus;
 
-import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -275,11 +274,12 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
     /**
      * 检验指标重复数据
+     *
      * @param bonusBudgetParametersDTOS
      */
     private void checkoutIndicatorList(List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS) {
-        if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)){
-            List<BonusBudgetParametersDTO> bonusBudgetParametersAllList =new ArrayList<>();
+        if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)) {
+            List<BonusBudgetParametersDTO> bonusBudgetParametersAllList = new ArrayList<>();
             bonusBudgetParametersAllList.addAll(bonusBudgetParametersDTOS);
             //根据属性去重
             ArrayList<BonusBudgetParametersDTO> bonusBudgetParametersDistinct = bonusBudgetParametersDTOS.stream().collect(Collectors.collectingAndThen(
@@ -287,13 +287,13 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                             Comparator.comparing(
                                     BonusBudgetParametersDTO::getIndicatorId))), ArrayList::new));
             bonusBudgetParametersAllList.removeAll(bonusBudgetParametersDistinct);
-            if (StringUtils.isNotEmpty(bonusBudgetParametersAllList)){
+            if (StringUtils.isNotEmpty(bonusBudgetParametersAllList)) {
                 List<Long> indicatorIds = bonusBudgetParametersAllList.stream().map(BonusBudgetParametersDTO::getIndicatorId).collect(Collectors.toList());
-                if (StringUtils.isNotEmpty(indicatorIds)){
+                if (StringUtils.isNotEmpty(indicatorIds)) {
                     R<List<IndicatorDTO>> IndicatorList = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
                     List<IndicatorDTO> data = IndicatorList.getData();
-                    if (StringUtils.isNotEmpty(data)){
-                        throw new ServiceException("请删除重复指标"+String.join(";",data.stream().map(IndicatorDTO::getIndicatorName).collect(Collectors.toList())));
+                    if (StringUtils.isNotEmpty(data)) {
+                        throw new ServiceException("请删除重复指标" + String.join(";", data.stream().map(IndicatorDTO::getIndicatorName).collect(Collectors.toList())));
                     }
                 }
             }
@@ -364,12 +364,13 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             throw new ServiceException("新增总奖金预算失败");
         }
         //修改总奖金预算参数表
-        updateParametersDTOS(bonusBudgetParametersUpdateList,bonusBudgetParametersAddList, bonusBudgetParametersDTOS,bonusBudgetDTO);
+        updateParametersDTOS(bonusBudgetParametersUpdateList, bonusBudgetParametersAddList, bonusBudgetParametersDTOS, bonusBudgetDTO);
         return i;
     }
 
     /**
      * 修改总奖金预算参数表
+     *
      * @param bonusBudgetParametersUpdateList
      * @param bonusBudgetParametersAddList
      * @param bonusBudgetParametersDTOS
@@ -382,9 +383,9 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             List<Long> bonusBudgetParametersIds = bonusBudgetParametersListData.stream().filter(a ->
                     !bonusBudgetParametersDTOS.stream().map(BonusBudgetParametersDTO::getBonusBudgetParametersId).collect(Collectors.toList()).contains(a.getBonusBudgetParametersId())
             ).collect(Collectors.toList()).stream().map(BonusBudgetParametersDTO::getBonusBudgetParametersId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(bonusBudgetParametersIds)){
+            if (StringUtils.isNotEmpty(bonusBudgetParametersIds)) {
                 try {
-                    bonusBudgetParametersMapper.logicDeleteBonusBudgetParametersByBonusBudgetParametersIds(bonusBudgetParametersIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                    bonusBudgetParametersMapper.logicDeleteBonusBudgetParametersByBonusBudgetParametersIds(bonusBudgetParametersIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
                 } catch (Exception e) {
                     throw new ServiceException("逻辑批量删除奖金预算参数不变");
                 }
@@ -392,7 +393,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
             for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
                 Long bonusBudgetParametersId = bonusBudgetParametersDTO.getBonusBudgetParametersId();
-                if (null == bonusBudgetParametersId){
+                if (null == bonusBudgetParametersId) {
                     BonusBudgetParameters bonusBudgetParameters = new BonusBudgetParameters();
                     BeanUtils.copyProperties(bonusBudgetParametersDTO, bonusBudgetParameters);
                     //奖金预算ID
@@ -403,7 +404,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     bonusBudgetParameters.setUpdateBy(SecurityUtils.getUserId());
                     bonusBudgetParameters.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                     bonusBudgetParametersAddList.add(bonusBudgetParameters);
-                }else {
+                } else {
                     BonusBudgetParameters bonusBudgetParameters = new BonusBudgetParameters();
                     BeanUtils.copyProperties(bonusBudgetParametersDTO, bonusBudgetParameters);
                     bonusBudgetParameters.setUpdateTime(DateUtils.getNowDate());
@@ -635,7 +636,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         EmployeeBudgetDTO employeeBudgetDTO = new EmployeeBudgetDTO();
         employeeBudgetDTO.setBudgetYear(budgetYear);
         BigDecimal increaseAndDecreasePaySum = this.salaryPackageList(employeeBudgetDTO);
-       // log.info("增人/减人工资包值====================================" + JSONUtil.toJsonStr(increaseAndDecreasePaySum));
+        // log.info("增人/减人工资包值====================================" + JSONUtil.toJsonStr(increaseAndDecreasePaySum));
         if (null != increaseAndDecreasePaySum) {
             basicWageBonusBudget = increaseAndDecreasePaySum;
         }
@@ -801,8 +802,40 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             year = bonusBudgetDTO.getBudgetYear();
             month = 13;
         }
+        BigDecimal bonusActualSum = new BigDecimal("0");
         //当前月份倒推12个月的“奖金”部分合计
-        BigDecimal bonusActualSum = salaryPayMapper.selectBonusActualNum(year, month);
+        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectBonusActualNum(year, month);
+        if (StringUtils.isNotEmpty(salaryPayDTOS)) {
+            List<SalaryPayDTO> salaryPayList = new ArrayList<>();
+            int count = 12;
+            Map<Integer, List<SalaryPayDTO>> salaryPayYearMap = salaryPayDTOS.stream().collect(Collectors.groupingBy(SalaryPayDTO::getPayYear, LinkedHashMap::new, Collectors.toList()));
+            for (Integer key : salaryPayYearMap.keySet()) {
+                List<SalaryPayDTO> salaryPayDTOS1 = salaryPayYearMap.get(key);
+                LinkedHashMap<Integer, List<SalaryPayDTO>> salaryPayMonthMap = salaryPayDTOS1.stream().collect(Collectors.groupingBy(SalaryPayDTO::getPayMonth, LinkedHashMap::new, Collectors.toList()));
+                if (StringUtils.isNotEmpty(salaryPayMonthMap)) {
+                    count = count - salaryPayMonthMap.size();
+                    int count2 = 0;
+                    if (count<0){
+                        count2 = count + salaryPayMonthMap.size();
+                    }
+
+                    for (Integer key2 : salaryPayMonthMap.keySet()) {
+                        if (count == 0) {
+                            salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                        } else if (count > 0) {
+                            salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                        } else {
+                            if (count2 > 0) {
+                                salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                            }
+                            count2--;
+                        }
+                    }
+                }
+
+            }
+            bonusActualSum = salaryPayList.stream().map(SalaryPayDTO::getBonusAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
         //指标id
         bonusBudgetParametersDTO.setIndicatorId(bonusBudgetDTO.getIndicatorId());
         //奖金占比基准值(%)
@@ -1252,10 +1285,40 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             year = budgetYear;
             month = 12;
         }
+        BigDecimal bonusActualSum = new BigDecimal("0");
         //当前月份倒推12个月的“奖金”部分合计
-        BigDecimal bonusActualSum = salaryPayMapper.selectBonusActualNum(year, month);
+        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectBonusActualNum(year, month);
+        if (StringUtils.isNotEmpty(salaryPayDTOS)) {
+            List<SalaryPayDTO> salaryPayList = new ArrayList<>();
+            int count = 12;
+            Map<Integer, List<SalaryPayDTO>> salaryPayYearMap = salaryPayDTOS.stream().collect(Collectors.groupingBy(SalaryPayDTO::getPayYear, LinkedHashMap::new, Collectors.toList()));
+            for (Integer key : salaryPayYearMap.keySet()) {
+                List<SalaryPayDTO> salaryPayDTOS1 = salaryPayYearMap.get(key);
+                LinkedHashMap<Integer, List<SalaryPayDTO>> salaryPayMonthMap = salaryPayDTOS1.stream().collect(Collectors.groupingBy(SalaryPayDTO::getPayMonth, LinkedHashMap::new, Collectors.toList()));
+                if (StringUtils.isNotEmpty(salaryPayMonthMap)) {
+                    count = count - salaryPayMonthMap.size();
+                    int count2 = 0;
+                    if (count<0){
+                       count2 = count + salaryPayMonthMap.size();
+                    }
 
+                    for (Integer key2 : salaryPayMonthMap.keySet()) {
+                        if (count == 0) {
+                            salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                        } else if (count > 0) {
+                            salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                        } else {
+                            if (count2 > 0) {
+                                salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                            }
+                            count2--;
+                        }
+                    }
+                }
 
+            }
+            bonusActualSum = salaryPayList.stream().map(SalaryPayDTO::getBonusAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
         //远程调用指标是否驱动因素为“是”列表
         R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIsDriverList(SecurityConstants.INNER);
         //封装奖金驱动因素实际数

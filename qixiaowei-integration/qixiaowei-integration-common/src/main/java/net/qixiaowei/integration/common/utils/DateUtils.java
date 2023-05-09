@@ -68,6 +68,23 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         return instant.atZone(zoneId).toLocalDate();
     }
 
+    //将月粒度日期格式yyyy-MM-dd格式向前推X个月或向后推X个月的方法
+    public static String getBeforeXMonthDate(String date, int month) {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        try {
+            //将传过来的日期设置给calendar
+            calendar.setTime(sdf.parse(date));
+            //System.out.println("当前日期="+sdf.format(calendar.getTime()));
+            //将传过来的月份减去X个月或者加上X个月
+            calendar.add(Calendar.MONTH, month);
+            //System.out.println("向前推12月之前的日期="+sdf.format(calendar.getTime()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sdf.format(calendar.getTime());
+    }
+
     /**
      * 获取中文当前日期, 默认格式为yyyy年MM月dd日 00:00
      *

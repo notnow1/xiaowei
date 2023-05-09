@@ -167,7 +167,7 @@ public interface SalaryPayMapper {
      * @param month
      * @return
      */
-    BigDecimal selectBonusActualNum(@Param("budgetYear") int budgetYear, @Param("month") int month);
+    List<SalaryPayDTO> selectBonusActualNum(@Param("budgetYear") int budgetYear, @Param("month") int month);
 
     /**
      * 当前月份倒推12个月的工资总计
