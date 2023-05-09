@@ -176,7 +176,6 @@
             #{item}
         </foreach>
         AND delete_flag = 0
-        and status =1
     </select>
     <select id="getSalaryItemByThirdLevelItem"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
@@ -216,7 +215,8 @@
     <!--    查询战略奖的工资项id-->
     <select id="selectSalaryItemByAward" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag,
+        create_by,
         create_time, update_by, update_time
         FROM salary_item
         WHERE scope=2
@@ -228,7 +228,8 @@
     <!--    所有二级工资项目为奖金且级别为部门级的三级工资项目-->
     <select id="selectSalaryItemByBonus" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag,
+        create_by,
         create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item=2
@@ -243,7 +244,8 @@
     <!--    查找二级为奖金的三级工资条-->
     <select id="applyBonusList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag,
+        create_by,
         create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item=2
@@ -255,7 +257,8 @@
     <select id="selectSalaryItemByBonusId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag, create_by,
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, status, delete_flag,
+        create_by,
         create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item=2
@@ -291,14 +294,14 @@
         FROM
         dept_bonus_budget_items dbbi
         left join dept_bonus_budget dbb
-        on dbb.dept_bonus_budget_id  =dbbi.dept_bonus_budget_id
+        on dbb.dept_bonus_budget_id =dbbi.dept_bonus_budget_id
         and dbbi.delete_flag =0
         left join salary_item si
-        on si.salary_item_id  =dbbi .salary_item_id
+        on si.salary_item_id =dbbi .salary_item_id
         and si.delete_flag =0
         and first_level_item=2
         and second_level_item=4
-        WHERE  dbbi.dept_bonus_budget_details_id =0
+        WHERE dbbi.dept_bonus_budget_details_id =0
         and dbbi.delete_flag=0
         and dbb.budget_year =#{bonusPayApplicationDTO.awardYear}
         <if test="bonusPayApplicationDTO.salaryItemId != null">
@@ -325,12 +328,12 @@
         FROM
         dept_bonus_budget_items dbbi
         left join dept_bonus_budget dbb
-        on dbb.dept_bonus_budget_id  =dbbi.dept_bonus_budget_id
+        on dbb.dept_bonus_budget_id =dbbi.dept_bonus_budget_id
         and dbbi.delete_flag =0
         left join salary_item si
-        on si.salary_item_id  =dbbi .salary_item_id
+        on si.salary_item_id =dbbi .salary_item_id
         and si.delete_flag =0
-        WHERE  dbbi.dept_bonus_budget_details_id =0
+        WHERE dbbi.dept_bonus_budget_details_id =0
         and dbbi.delete_flag=0
         and dbb.budget_year =2020
         order by dbbi.sort
@@ -467,9 +470,7 @@
             </trim>
             <trim prefix="scope=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                    <if test="item.scope != null">
-                        when salary_item_id=#{item.salaryItemId} then #{item.scope}
-                    </if>
+                    when salary_item_id=#{item.salaryItemId} then #{item.scope}
                 </foreach>
             </trim>
             <trim prefix="sort=case" suffix="end,">
@@ -490,20 +491,6 @@
                 <foreach collection="salaryItemList" item="item" index="index">
                     <if test="item.deleteFlag != null">
                         when salary_item_id=#{item.salaryItemId} then #{item.deleteFlag}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_by=case" suffix="end,">
-                <foreach collection="salaryItemList" item="item" index="index">
-                    <if test="item.createBy != null">
-                        when salary_item_id=#{item.salaryItemId} then #{item.createBy}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_time=case" suffix="end,">
-                <foreach collection="salaryItemList" item="item" index="index">
-                    <if test="item.createTime != null">
-                        when salary_item_id=#{item.salaryItemId} then #{item.createTime}
                     </if>
                 </foreach>
             </trim>
