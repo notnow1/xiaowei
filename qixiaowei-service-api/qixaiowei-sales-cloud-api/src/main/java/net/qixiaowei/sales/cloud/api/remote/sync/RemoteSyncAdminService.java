@@ -6,7 +6,9 @@ import net.qixiaowei.sales.cloud.api.dto.sync.*;
 import net.qixiaowei.sales.cloud.api.factory.sync.RemoteSyncAdminFallbackFactory;
 import net.qixiaowei.sales.cloud.api.vo.sync.SalesLoginVO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -38,6 +40,12 @@ public interface RemoteSyncAdminService {
      */
     @PostMapping("/adminUser/sync/resetPassword")
     R<?> syncResetPassword(@RequestBody SyncUserStatusDTO syncUserStatusDTO, @RequestHeader(SecurityConstants.SALES_TOKEN_NAME) String salesToken);
+
+    /**
+     * 用户-修改头像
+     */
+    @PostMapping(value = "/adminUser/updateImg", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    R<?> syncUserImg(@RequestPart("file") MultipartFile file, @RequestHeader(SecurityConstants.SALES_TOKEN_NAME) String salesToken);
 
     /**
      * 同步注册

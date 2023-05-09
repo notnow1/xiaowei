@@ -4,13 +4,12 @@ import net.qixiaowei.file.api.dto.FileDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.file.service.IFileService;
+
+import java.io.InputStream;
 
 /**
  * 文件请求处理
@@ -34,4 +33,13 @@ public class FileController {
             return R.fail(e.getMessage());
         }
     }
+
+    /**
+     * 下载文件
+     */
+    @GetMapping("/download/{filePath}")
+    public R<InputStream> download(@RequestParam(value = "filePath") String filePath) {
+        return R.ok(fileService.downloadFile(filePath));
+    }
+
 }

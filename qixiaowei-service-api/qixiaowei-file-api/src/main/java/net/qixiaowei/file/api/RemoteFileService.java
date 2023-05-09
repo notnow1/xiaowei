@@ -7,11 +7,10 @@ import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
 
 /**
  * 文件服务
@@ -24,12 +23,19 @@ public interface RemoteFileService {
     /**
      * 上传文件
      *
-     * @param file 文件信息
+     * @param file         文件信息
      * @param uploadSource 上传的来源
      * @return 结果
      */
     @PostMapping(value = API_PREFIX_FILE + "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     R<FileDTO> upLoad(@RequestPart(value = "file") MultipartFile file, @RequestParam(name = "uploadSource", required = false, defaultValue = "common") String uploadSource, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
-
+    /**
+     * 下载文件
+     *
+     * @param filePath 文件路径
+     * @return 结果
+     */
+    @GetMapping(value = API_PREFIX_FILE + "/downloadByFilePath")
+    R<InputStream> downloadByFilePath(@RequestParam(value = "filePath") String filePath, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

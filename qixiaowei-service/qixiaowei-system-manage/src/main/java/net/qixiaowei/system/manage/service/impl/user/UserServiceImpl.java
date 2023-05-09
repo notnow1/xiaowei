@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.impl.user;
 
+import java.io.InputStream;
 import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -225,11 +226,10 @@ public class UserServiceImpl implements IUserService {
      * 修改用户资料
      *
      * @param avatarFile 头像文件
-     * @param userDTO    用户修改对象
      * @return 结果
      */
     @Override
-    public UserProfileVO editProfile(MultipartFile avatarFile, UserDTO userDTO) {
+    public UserProfileVO editAvatar(MultipartFile avatarFile) {
         Long userId = SecurityUtils.getUserId();
         UserDTO userOfDB = userMapper.selectUserByUserId(userId);
         if (StringUtils.isNull(userOfDB)) {
@@ -238,8 +238,6 @@ public class UserServiceImpl implements IUserService {
         Date nowDate = DateUtils.getNowDate();
         User user = new User();
         user.setUserId(userId);
-        String userName = userDTO.getUserName();
-        user.setUserName(userName);
         String avatar = null;
         if (StringUtils.isNotNull(avatarFile) && !avatarFile.isEmpty()) {
             String extension = FileTypeUtils.getExtension(avatarFile);
@@ -258,18 +256,18 @@ public class UserServiceImpl implements IUserService {
         user.setUpdateBy(userId);
         user.setUpdateTime(nowDate);
         int i = userMapper.updateUser(user);
+        //同步销售云头像
+        userLogic.syncSaleUserAvatar(avatarFile);
         // 更新缓存用户信息
         if (i > 0) {
             LoginUserVO loginUser = SecurityUtils.getLoginUser();
             UserProfileVO userProfileVO = new UserProfileVO();
             BeanUtils.copyProperties(userOfDB, userProfileVO);
-            userProfileVO.setUserName(userName);
-            loginUser.getUserDTO().setUserName(userName);
+            String fullDomain = fileConfig.getFullDomain(userProfileVO.getAvatar());
             if (StringUtils.isNotEmpty(user.getAvatar())) {
-                loginUser.getUserDTO().setAvatar(user.getAvatar());
-                userProfileVO.setAvatar(user.getAvatar());
+                loginUser.getUserDTO().setAvatar(fullDomain);
+                userProfileVO.setAvatar(fullDomain);
             }
-            userProfileVO.setAvatar(fileConfig.getFullDomain(userProfileVO.getAvatar()));
             tokenService.setLoginUser(loginUser);
             return userProfileVO;
         } else {
@@ -297,9 +295,10 @@ public class UserServiceImpl implements IUserService {
         String mobilePhone = userDTO.getMobilePhone();
         String email = userDTO.getEmail();
         String avatar = userDTO.getAvatar();
+        String pathOfRemoveDomain = fileConfig.getPathOfRemoveDomain(avatar);
         User user = new User();
         user.setUserId(userId);
-        user.setAvatar(fileConfig.getPathOfRemoveDomain(avatar));
+        user.setAvatar(pathOfRemoveDomain);
         user.setEmail(email);
         user.setMobilePhone(mobilePhone);
         user.setUserName(userName);

@@ -2,12 +2,14 @@ package net.qixiaowei.file.service.impl;
 
 import io.minio.GetObjectArgs;
 import io.minio.RemoveObjectArgs;
+import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.file.api.dto.FileDTO;
 import net.qixiaowei.file.config.MinioConfig;
 import net.qixiaowei.file.logic.FileLogic;
 import net.qixiaowei.file.service.IFileService;
 import net.qixiaowei.file.utils.FileUploadUtils;
 import net.qixiaowei.integration.common.config.FileConfig;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -24,6 +26,7 @@ import java.io.InputStream;
  */
 @Service
 @Primary
+@Slf4j
 public class MinioFileServiceImpl implements IFileService {
     @Autowired
     private MinioConfig minioConfig;
@@ -62,23 +65,24 @@ public class MinioFileServiceImpl implements IFileService {
     }
 
     /**
-     * @description: x下载文件
+     * @description: 下载文件
      * @Author: hzk
      * @date: 2022/11/10 19:50
-     * @param: [fileDTO]
+     * @param: [filePath]
      * @return: java.io.InputStream
      **/
-    public InputStream downloadFile(FileDTO fileDTO) {
+    @Override
+    public InputStream downloadFile(String filePath) {
         try {
             GetObjectArgs getObjectArgs = GetObjectArgs.builder()
                     .bucket(minioConfig.getBucketName())
-                    .object(fileDTO.getFilePath())
+                    .object(filePath)
                     .build();
             return client.getObject(getObjectArgs);
         } catch (Exception e) {
-
+            log.error("minio download file error:{}", e.getMessage());
+            throw new ServiceException("文件下载异常");
         }
-        return null;
     }
 
     /**

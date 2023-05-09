@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+
 /**
  * 本地文件存储
  */
@@ -51,4 +53,10 @@ public class LocalFileServiceImpl implements IFileService {
         String url = domain + localFilePrefix + name;
         return fileLogic.saveFileRecord(file, source, url);
     }
+
+    @Override
+    public InputStream downloadFile(String filePath) {
+        return null;
+    }
+
 }

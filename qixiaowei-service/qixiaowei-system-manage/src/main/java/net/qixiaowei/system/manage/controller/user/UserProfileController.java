@@ -48,12 +48,12 @@ public class UserProfileController extends BaseController {
     }
 
     /**
-     * 修改用户资料
-     *
-     @PostMapping("/edit") public AjaxResult editProfile(@RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile, UserDTO userDTO) {
-     return AjaxResult.success(userService.editProfile(avatarFile, userDTO));
-     }
-     */
+     * 修改用户头像
+     **/
+    @PostMapping("/avatar")
+    public AjaxResult editProfile(@RequestParam(value = "avatarFile") MultipartFile avatarFile) {
+        return AjaxResult.success(userService.editAvatar(avatarFile));
+    }
 
 
 }

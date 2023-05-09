@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+
 
 /**
  * 文件服务降级处理
@@ -33,6 +35,11 @@ public class RemoteFileFallbackFactory implements FallbackFactory<RemoteFileServ
             @Override
             public R<FileDTO> upLoad(MultipartFile file, String uploadSource, String source) {
                 return R.fail("上传文件失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<InputStream> downloadByFilePath(String filePath, String source) {
+                return R.fail("下载文件失败:" + throwable.getMessage());
             }
         };
     }

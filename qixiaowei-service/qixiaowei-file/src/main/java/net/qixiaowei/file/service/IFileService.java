@@ -3,6 +3,8 @@ package net.qixiaowei.file.service;
 import net.qixiaowei.file.api.dto.FileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+
 /**
  * 文件上传接口
  */
@@ -15,4 +17,6 @@ public interface IFileService {
      * @throws Exception
      */
     FileDTO uploadFile(MultipartFile file, String source) throws Exception;
+
+    InputStream downloadFile(String filePath);
 }

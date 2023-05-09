@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+
 /**
  * @Author hzk
  * @Date 2022-10-28 13:52
@@ -23,6 +25,7 @@ public class RemoteFile implements RemoteFileService {
 
     @InnerAuth
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Override
     public R<FileDTO> upLoad(@RequestPart(value = "file") MultipartFile file, String uploadSource, @RequestParam(name = "source", required = false, defaultValue = "common") String source) {
         try {
             return R.ok(fileService.uploadFile(file, uploadSource));
@@ -30,4 +33,12 @@ public class RemoteFile implements RemoteFileService {
             return R.fail(e.getMessage());
         }
     }
+
+    @InnerAuth
+    @GetMapping(value = "/downloadByFilePath")
+    @Override
+    public R<InputStream> downloadByFilePath(@RequestParam(value = "filePath") String filePath, String source) {
+        return R.ok(fileService.downloadFile(filePath));
+    }
+
 }

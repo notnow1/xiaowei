@@ -40,10 +40,9 @@ public interface IUserService {
      * 修改用户资料
      *
      * @param avatarFile 头像文件
-     * @param userDTO    用户修改对象
      * @return 结果
      */
-    UserProfileVO editProfile(MultipartFile avatarFile, UserDTO userDTO);
+    UserProfileVO editAvatar(MultipartFile avatarFile);
 
     /**
      * 修改用户资料

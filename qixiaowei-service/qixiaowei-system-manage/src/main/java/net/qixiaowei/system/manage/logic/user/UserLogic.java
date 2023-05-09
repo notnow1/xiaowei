@@ -29,6 +29,7 @@ import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.user.IUserConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -204,6 +205,24 @@ public class UserLogic {
             if (0 != r.getCode()) {
                 log.error("同步销售云用户编辑失败:{}", r.getMsg());
                 throw new ServiceException("用户编辑失败");
+            }
+        }
+    }
+
+    /**
+     * @description: 同步销售云用户头像
+     * @Author: hzk
+     * @date: 2023/5/8 18:45
+     * @param: [avatarFile]
+     * @return: void
+     **/
+    public void syncSaleUserAvatar(MultipartFile avatarFile) {
+        String salesToken = SecurityUtils.getSalesToken();
+        if (StringUtils.isNotEmpty(salesToken)) {
+            R<?> r = remoteSyncAdminService.syncUserImg(avatarFile, salesToken);
+            if (0 != r.getCode()) {
+                log.error("同步销售云用户头像失败:{}", r.getMsg());
+                throw new ServiceException("用户头像编辑失败");
             }
         }
     }

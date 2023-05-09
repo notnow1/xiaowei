@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -40,6 +41,11 @@ public class RemoteSyncAdminFallbackFactory implements FallbackFactory<RemoteSyn
             @Override
             public R<?> syncResetPassword(SyncUserStatusDTO syncUserStatusDTO, String salesToken) {
                 return R.fail("远程同步用户修改密码失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<?> syncUserImg(MultipartFile file, String salesToken) {
+                return R.fail("远程同步用户修改头像失败:" + throwable.getMessage());
             }
 
             @Override
