@@ -895,7 +895,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         //奖金占比基准值 公式=奖金包实际数÷奖金驱动因素实际数
         if (null != bonusProportionDrivingFactor && bonusProportionDrivingFactor.compareTo(new BigDecimal("0")) != 0 &&
                 null != bonusActualSum && bonusActualSum.compareTo(new BigDecimal("0")) != 0) {
-            bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor.multiply(new BigDecimal("10000")), 10, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP);
+            bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor.multiply(new BigDecimal("10000")), 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
             //奖金占比基准值(%)
             bonusBudgetParametersDTO.setBonusProportionStandard(bonusProportionStandard);
         }
@@ -1392,7 +1392,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     //奖金占比基准值 公式=奖金包实际数÷奖金驱动因素实际数
                     if (null != bonusProportionDrivingFactor && bonusProportionDrivingFactor.compareTo(new BigDecimal("0")) != 0 &&
                             null != bonusActualSum && bonusActualSum.compareTo(new BigDecimal("0")) != 0) {
-                        bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor, 10, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP);
+                        bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor.multiply(new BigDecimal("10000")), 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                         //奖金占比基准值(%)
                         bonusBudgetParametersDTO.setBonusProportionStandard(bonusProportionStandard);
                     }
