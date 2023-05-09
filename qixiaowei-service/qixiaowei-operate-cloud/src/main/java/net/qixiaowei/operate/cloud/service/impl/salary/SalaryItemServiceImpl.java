@@ -1,5 +1,8 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONParser;
+import com.alibaba.fastjson2.JSON;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -45,10 +48,10 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     private static final List<SalaryItem> INIT_SALARY_ITEM = new ArrayList<>(4);
 
     static {
-        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(1).secondLevelItem(1).thirdLevelItem("基本工资").scope(1).sort(1).build());
-        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(2).secondLevelItem(4).thirdLevelItem("战略奖").scope(2).sort(2).build());
-        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(2).secondLevelItem(4).thirdLevelItem("项目奖").scope(1).sort(3).build());
-        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(2).secondLevelItem(4).thirdLevelItem("绩效奖金").scope(1).sort(4).build());
+        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(1).secondLevelItem(1).thirdLevelItem("基本工资").scope(null).status(1).sort(1).build());
+        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(2).secondLevelItem(4).thirdLevelItem("战略奖").scope(2).status(1).sort(2).build());
+        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(2).secondLevelItem(4).thirdLevelItem("项目奖").scope(1).status(1).sort(3).build());
+        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(2).secondLevelItem(4).thirdLevelItem("绩效奖金").scope(1).status(1).sort(4).build());
     }
 
     @Autowired
@@ -224,28 +227,43 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     /**
      * 批量修改工资项
      *
-     * @param salaryItemDTOSAfter 项目dto列表
+     * @param salaryItemVOS 项目dto列表
      * @return 结果
      */
     @Override
     @Transactional
-    public int editSalaryItems(List<SalaryItemDTO> salaryItemDTOSAfter) {
+    public int editSalaryItems(List<SalaryItemVO> salaryItemVOS) {
+        List<SalaryItemDTO> salaryItemDTOSAfter = new ArrayList<>();
+        for (SalaryItemVO salaryItemVO : salaryItemVOS) {
+            List<SalaryItemDTO> salaryItemDTOS = salaryItemVO.getSalaryItemDTOS();
+            salaryItemDTOSAfter.addAll(salaryItemDTOS);
+        }
         for (SalaryItemDTO salaryItemDTO : salaryItemDTOSAfter) {
             if (StringUtils.isNull(salaryItemDTO.getThirdLevelItem())) {
                 throw new ServiceException("请录入三级薪酬项目");
             }
-            if (salaryItemDTO.getSecondLevelItem() != 2 && StringUtils.isNotNull(salaryItemDTO.getScope())) {
-                throw new ServiceException("只有奖金包才可以选择级别");
+            if (salaryItemDTO.getSecondLevelItem() == 4) {
+                salaryItemDTO.setScope(1);
+            } else {
+                salaryItemDTO.setScope(null);
             }
         }
-        List<SalaryItemDTO> salaryItemDTOSBefore = salaryItemMapper.selectSalaryItemList(new SalaryItem());
+        List<SalaryItemDTO> salaryItemDTOSBefore = salaryItemMapper.selectSalaryItemEditList(new SalaryItem());
         List<SalaryItemDTO> editSalaryItemDTOS = salaryItemDTOSAfter.stream().filter(s -> salaryItemDTOSBefore.stream().map(SalaryItemDTO::getSalaryItemId)
                 .collect(Collectors.toList()).contains(s.getSalaryItemId())).collect(Collectors.toList());
         List<SalaryItemDTO> addSalaryItemDTOS = salaryItemDTOSAfter.stream().filter(s -> !salaryItemDTOSBefore.stream().map(SalaryItemDTO::getSalaryItemId)
                 .collect(Collectors.toList()).contains(s.getSalaryItemId())).collect(Collectors.toList());
-        List<SalaryItemDTO> delSalaryItemDTOS = salaryItemDTOSAfter.stream().filter(s -> !salaryItemDTOSBefore.stream().map(SalaryItemDTO::getSalaryItemId)
+        List<SalaryItemDTO> delSalaryItemDTOS = salaryItemDTOSBefore.stream().filter(s -> !salaryItemDTOSAfter.stream().map(SalaryItemDTO::getSalaryItemId)
                 .collect(Collectors.toList()).contains(s.getSalaryItemId())).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(editSalaryItemDTOS)) {
+            for (SalaryItemDTO salaryItemDTO : editSalaryItemDTOS) {
+                for (SalaryItemDTO itemDTO : salaryItemDTOSBefore) {
+                    if (salaryItemDTO.getSort().equals(itemDTO.getSort())) {
+                        salaryItemDTO.setSalaryItemId(itemDTO.getSalaryItemId());
+                        break;
+                    }
+                }
+            }
             this.updateSalaryItems(editSalaryItemDTOS);
         }
         if (StringUtils.isNotEmpty(addSalaryItemDTOS)) {
@@ -362,20 +380,23 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
             throw new ServiceException("三级项目名称不能重复");
         }
         Integer maxSort = salaryItemMapper.selectMaxSort();
+        if (StringUtils.isNull(salaryItemDTO.getScope())) {
+            salaryItemDTO.setScope(1);
+        }
+        salaryItemDTO.setStatus(0);
+        salaryItemDTO.setSort(maxSort + 1);
         SalaryItem salaryItem = new SalaryItem();
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);
-        if (StringUtils.isNull(salaryItemDTO.getScope())) {
-            salaryItem.setScope(1);
-        }
-        salaryItem.setStatus(0);
-        salaryItem.setSort(maxSort + 1);
         salaryItem.setCreateBy(SecurityUtils.getUserId());
         salaryItem.setCreateTime(DateUtils.getNowDate());
         salaryItem.setUpdateTime(DateUtils.getNowDate());
         salaryItem.setUpdateBy(SecurityUtils.getUserId());
         salaryItem.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         salaryItemMapper.insertSalaryItem(salaryItem);
-        return salaryItemDTO.setSalaryItemId(salaryItem.getSalaryItemId());
+        salaryItemDTO.setSalaryItemId(salaryItem.getSalaryItemId());
+        salaryItemDTO.setCreateBy(salaryItem.getCreateBy());
+        salaryItemDTO.setCreateTime(salaryItem.getCreateTime());
+        return salaryItemDTO;
     }
 
     /**
@@ -733,6 +754,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
             BeanUtils.copyProperties(salaryItemDTO, salaryItem);
             salaryItem.setUpdateTime(DateUtils.getNowDate());
             salaryItem.setUpdateBy(SecurityUtils.getUserId());
+            salaryItem.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             salaryItemList.add(salaryItem);
         }
         return salaryItemMapper.updateSalaryItems(salaryItemList);

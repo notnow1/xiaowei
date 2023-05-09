@@ -177,10 +177,10 @@ public interface ISalaryItemService {
     /**
      * 批量修改工资项
      *
-     * @param salaryItemDTOS 项目dto列表
+     * @param salaryItemVOS 项目dto列表
      * @return 结果
      */
-    int editSalaryItems(List<SalaryItemDTO> salaryItemDTOS);
+    int editSalaryItems(List<SalaryItemVO> salaryItemVOS);
 
     /**
      * 工资项编辑列表

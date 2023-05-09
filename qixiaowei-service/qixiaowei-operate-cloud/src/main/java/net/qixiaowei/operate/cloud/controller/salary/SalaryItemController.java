@@ -89,8 +89,8 @@ public class SalaryItemController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:salaryItem:edit")
     @PostMapping("/edits")
-    public AjaxResult edits(@RequestBody List<SalaryItemDTO> salaryItemDTOS) {
-        return toAjax(salaryItemService.editSalaryItems(salaryItemDTOS));
+    public AjaxResult edits(@RequestBody List<SalaryItemVO> salaryItemVOS) {
+        return toAjax(salaryItemService.editSalaryItems(salaryItemVOS));
     }
 
     /**
