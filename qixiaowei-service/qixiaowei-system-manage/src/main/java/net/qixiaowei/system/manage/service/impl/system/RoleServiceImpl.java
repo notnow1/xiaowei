@@ -165,11 +165,10 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public RoleDTO insertRole(RoleDTO roleDTO) {
         String roleCode = roleDTO.getRoleCode();
+        String roleName = roleDTO.getRoleName();
         Set<Long> menuIds = roleDTO.getMenuIds();
-        RoleDTO roleByCode = roleMapper.selectRoleByRoleCode(roleCode);
-        if (StringUtils.isNotNull(roleByCode)) {
-            throw new ServiceException("角色编码已存在");
-        }
+        List<RoleDTO> roleByRoleCodeOrName = roleMapper.selectRoleByRoleCodeOrName(roleCode, roleName);
+        checkRoleUnique(roleCode, roleName, roleByRoleCodeOrName);
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
         role.setRoleType(RoleType.CUSTOM.getCode());
@@ -188,6 +187,7 @@ public class RoleServiceImpl implements IRoleService {
         return roleDTO;
     }
 
+
     /**
      * 修改角色表
      *
@@ -198,18 +198,21 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public int updateRole(RoleDTO roleDTO) {
         Long roleId = roleDTO.getRoleId();
-        Set<Long> menuIds = roleDTO.getMenuIds();
-        String roleCode = roleDTO.getRoleCode();
-        RoleDTO roleByCode = roleMapper.selectRoleByRoleCode(roleCode);
-        if (StringUtils.isNotNull(roleByCode) && !roleByCode.getRoleId().equals(roleId)) {
-            throw new ServiceException("角色编码已存在");
-        }
         RoleDTO roleByRoleId = roleMapper.selectRoleByRoleId(roleId);
         if (StringUtils.isNull(roleByRoleId)) {
             throw new ServiceException("角色不存在");
         }
         if (roleByRoleId.isAdmin()) {
             throw new ServiceException("系统管理员角色不可操作。");
+        }
+        Set<Long> menuIds = roleDTO.getMenuIds();
+        String roleCode = roleDTO.getRoleCode();
+        String roleName = roleDTO.getRoleName();
+        List<RoleDTO> roleByRoleCodeOrName = roleMapper.selectRoleByRoleCodeOrName(roleCode, roleName);
+        if (StringUtils.isNotEmpty(roleByRoleCodeOrName)) {
+            //过滤掉自己本身
+            roleByRoleCodeOrName = roleByRoleCodeOrName.stream().filter(role -> !roleId.equals(role.getRoleId())).collect(Collectors.toList());
+            checkRoleUnique(roleCode, roleName, roleByRoleCodeOrName);
         }
         //查找当前角色菜单
         List<RoleMenuDTO> roleMenuDTOS = roleMenuMapper.selectRoleMenuListByRoleId(roleId);
@@ -588,6 +591,26 @@ public class RoleServiceImpl implements IRoleService {
             }
         }
         return salesMenuIds;
+    }
+
+    /**
+     * @description: 校验角色唯一性
+     * @Author: hzk
+     * @date: 2023/5/9 14:17
+     * @param: [roleCode, roleName, roleDTOS]
+     * @return: void
+     **/
+    private static void checkRoleUnique(String roleCode, String roleName, List<RoleDTO> roleDTOS) {
+        if (StringUtils.isNotEmpty(roleDTOS)) {
+            roleDTOS.forEach(roleDTO -> {
+                if (StringUtils.isNotEmpty(roleCode) && roleCode.equals(roleDTO.getRoleCode())) {
+                    throw new ServiceException("角色编码已存在");
+                }
+                if (StringUtils.isNotEmpty(roleName) && roleName.equals(roleDTO.getRoleName())) {
+                    throw new ServiceException("角色名称已存在");
+                }
+            });
+        }
     }
 
 }

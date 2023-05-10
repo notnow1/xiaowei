@@ -54,7 +54,7 @@ public interface RoleMapper {
      * @param roleCode 角色编码
      * @return 角色表
      */
-    RoleDTO selectRoleByRoleCode(@Param("roleCode") String roleCode);
+    List<RoleDTO> selectRoleByRoleCodeOrName(@Param("roleCode") String roleCode, @Param("roleName") String roleName);
 
     /**
      * 查询角色表列表
