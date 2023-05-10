@@ -371,7 +371,7 @@
         limit 12
     </select>
     <!--    当前月份倒推12个月的“奖金”部分合计-->
-    <select id="selectBonusActualNum"  resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
+    <select id="selectBonusActualNum" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT
             sp.salary_pay_id,
             sp.employee_id,
@@ -386,7 +386,7 @@
             sp.pay_amount
         from salary_pay sp
         WHERE sp.pay_year &lt;= #{budgetYear}
-        and sp.delete_flag = 0
+          and sp.delete_flag = 0
         ORDER by pay_year desc, pay_month desc
     </select>
     <!--    返回上年总工资包实际数：从月度工资数据管理取值（总计值）-->
