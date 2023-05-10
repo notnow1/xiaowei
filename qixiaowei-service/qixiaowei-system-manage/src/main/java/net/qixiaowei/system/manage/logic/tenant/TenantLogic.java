@@ -17,8 +17,8 @@ import net.qixiaowei.integration.common.enums.system.RoleType;
 import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
-import net.qixiaowei.integration.common.utils.ServletUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.common.utils.sign.SalesSignUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
@@ -27,25 +27,31 @@ import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.operate.cloud.api.remote.RemoteOperateCloudInitDataService;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncResisterDTO;
+import net.qixiaowei.sales.cloud.api.dto.sync.SyncRoleDTO;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncTenantUpdateDTO;
 import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
 import net.qixiaowei.sales.cloud.api.vo.sync.SalesLoginVO;
 import net.qixiaowei.strategy.cloud.api.remote.RemoteStrategyCloudInitDataService;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
+import net.qixiaowei.system.manage.api.domain.basic.Employee;
+import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
 import net.qixiaowei.system.manage.api.domain.system.Role;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.domain.user.User;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
+import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.mapper.basic.ConfigMapper;
+import net.qixiaowei.system.manage.mapper.basic.EmployeeInfoMapper;
+import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
-import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IDictionaryTypeService;
@@ -66,6 +72,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Component
 @Slf4j
 public class TenantLogic {
+
+    private static final String EMPLOYEE_CODE_FIRST = "YG000001";
 
     public static final List<Long> SALES_MENUS = Arrays.asList(55L,
             //应用管理-查看应用,停用/启用应用
@@ -319,6 +327,13 @@ public class TenantLogic {
     @Autowired
     private RemoteSyncAdminService remoteSyncAdminService;
 
+    @Autowired
+    private TenantConfig tenantConfig;
+    @Autowired
+    private EmployeeMapper employeeMapper;
+    @Autowired
+    private EmployeeInfoMapper employeeInfoMapper;
+
     /**
      * @description: 初始化租户数据
      * @Author: hzk
@@ -418,7 +433,7 @@ public class TenantLogic {
             UserDTO userDTO = userMapper.selectUserOfAdmin();
             if (StringUtils.isNotNull(userDTO)) {
                 Long roleIdOfAdmin = roleMapper.selectRoleIdOfAdmin();
-                this.syncSales(tenant, userDTO.getUserId(), roleIdOfAdmin, endTime, null);
+                this.syncSales(tenant, userDTO.getUserId(), roleIdOfAdmin, endTime, null, null);
             }
         });
 
@@ -498,30 +513,62 @@ public class TenantLogic {
             throw new ServiceException("用户初始化异常，请联系管理员");
         }
         Long userIdOfInit = user.getUserId();
+        this.saveEmployee(tenant, nowDate, userIdOfInit);
         //新增用户配置
         userConfigService.initUserConfig(userIdOfInit);
         //新增租户角色
-        Role role = new Role();
-        role.setRoleType(RoleType.BUILT_IN.getCode());
-        role.setDataScope(RoleDataScope.ALL.getCode());
-        role.setRoleCode(RoleCode.TENANT_ADMIN.getCode());
-        role.setRoleName(RoleCode.TENANT_ADMIN.getInfo());
-        role.setStatus(BusinessConstants.NORMAL);
-        role.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        role.setCreateBy(userIdOfInit);
-        role.setUpdateBy(userIdOfInit);
-        role.setCreateTime(nowDate);
-        role.setUpdateTime(nowDate);
-        boolean roleSuccess = roleMapper.insertRole(role) > 0;
+        Role adminRole = new Role();
+        adminRole.setRoleType(RoleType.BUILT_IN.getCode());
+        adminRole.setDataScope(RoleDataScope.ALL.getCode());
+        adminRole.setRoleCode(RoleCode.TENANT_ADMIN.getCode());
+        adminRole.setRoleName(RoleCode.TENANT_ADMIN.getInfo());
+        adminRole.setSort(1);
+        adminRole.setStatus(BusinessConstants.NORMAL);
+        adminRole.setRemark(RoleCode.TENANT_ADMIN.getRemark());
+        adminRole.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        adminRole.setCreateBy(userIdOfInit);
+        adminRole.setUpdateBy(userIdOfInit);
+        adminRole.setCreateTime(nowDate);
+        adminRole.setUpdateTime(nowDate);
+        boolean adminRoleSuccess = roleMapper.insertRole(adminRole) > 0;
+        //默认租户默认角色
+        Role defaultRole = new Role();
+        defaultRole.setRoleType(RoleType.BUILT_IN.getCode());
+        defaultRole.setDataScope(RoleDataScope.SELF.getCode());
+        defaultRole.setRoleCode(RoleCode.TENANT_DEFAULT.getCode());
+        defaultRole.setRoleName(RoleCode.TENANT_DEFAULT.getInfo());
+        defaultRole.setStatus(BusinessConstants.NORMAL);
+        defaultRole.setSort(0);
+        defaultRole.setRemark(RoleCode.TENANT_DEFAULT.getRemark());
+        defaultRole.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        defaultRole.setCreateBy(userIdOfInit);
+        defaultRole.setUpdateBy(userIdOfInit);
+        defaultRole.setCreateTime(nowDate);
+        defaultRole.setUpdateTime(nowDate);
+        boolean defaultRoleSuccess = roleMapper.insertRole(defaultRole) > 0;
         //角色赋权
-        Long roleId = role.getRoleId();
-        boolean initRoleMenuSuccess = this.initRoleMenu(initMenuIds, roleId, userIdOfInit);
+        Long adminRoleId = adminRole.getRoleId();
+        Long defaultRoleId = defaultRole.getRoleId();
+        Set<Long> configManageMenuIds = tenantConfig.getConfigManageMenuIds();
+        Set<Long> initDefaultMenuIds = new HashSet<>();
+        for (Long initMenuId : initMenuIds) {
+            if (!configManageMenuIds.contains(initMenuId)) {
+                initDefaultMenuIds.add(initMenuId);
+            }
+        }
+        List<RoleDTO> roles = new ArrayList<>();
+        RoleDTO roleDTO = new RoleDTO();
+        BeanUtils.copyProperties(defaultRole, roleDTO);
+        Set<Long> salesInitMenuIdsOfDefault = this.getSalesInitMenuIds(initDefaultMenuIds);
+        roleDTO.setMenuIds(salesInitMenuIdsOfDefault);
+        roles.add(roleDTO);
+        boolean initRoleMenuSuccess = this.initRoleMenu(initMenuIds, adminRoleId, userIdOfInit) && this.initRoleMenu(initDefaultMenuIds, defaultRoleId, userIdOfInit);
         //新增用户角色关联
-        boolean userRoleSuccess = this.initUserRole(userIdOfInit, nowDate, userIdOfInit, roleId);
+        boolean userRoleSuccess = this.initUserRole(userIdOfInit, nowDate, userIdOfInit, adminRoleId);
         //初始化销售云-企业信息、用户、角色菜单
         Set<Long> salesInitMenuIds = this.getSalesInitMenuIds(initMenuIds);
-        this.syncSales(tenant, userIdOfInit, roleId, endTime, salesInitMenuIds);
-        if (!roleSuccess || !initRoleMenuSuccess || !userRoleSuccess) {
+        this.syncSales(tenant, userIdOfInit, adminRoleId, endTime, salesInitMenuIds, roles);
+        if (!adminRoleSuccess || !defaultRoleSuccess || !initRoleMenuSuccess || !userRoleSuccess) {
             throw new ServiceException("用户角色初始化异常，请联系管理员");
         }
         return userIdOfInit;
@@ -746,7 +793,7 @@ public class TenantLogic {
      * @param: [tenant, userId, roleId, endTime, salesInitMenuIds]
      * @return: void
      **/
-    private void syncSales(Tenant tenant, Long userId, Long roleId, Date endTime, Set<Long> salesInitMenuIds) {
+    private void syncSales(Tenant tenant, Long userId, Long roleId, Date endTime, Set<Long> salesInitMenuIds, List<RoleDTO> roles) {
         String adminAccount = tenant.getAdminAccount();
         String adminPassword = tenant.getAdminPassword();
         SyncResisterDTO syncResisterDTO = new SyncResisterDTO();
@@ -758,6 +805,19 @@ public class TenantLogic {
         syncResisterDTO.setInitMenuIds(salesInitMenuIds);
         syncResisterDTO.setRoleId(roleId);
         syncResisterDTO.setUserId(userId);
+        if (StringUtils.isNotEmpty(roles)) {
+            List<SyncRoleDTO> syncRoleDTOS = new ArrayList<>();
+            for (RoleDTO role : roles) {
+                SyncRoleDTO syncRoleDTO = new SyncRoleDTO();
+                syncRoleDTO.setRoleId(role.getRoleId());
+                syncRoleDTO.setRoleName(role.getRoleName());
+                syncRoleDTO.setRoleType(2);
+                syncRoleDTO.setDataType(RoleDataScope.convertSalesCode(role.getDataScope()));
+                syncRoleDTO.setMenuIds(role.getMenuIds());
+                syncRoleDTOS.add(syncRoleDTO);
+            }
+            syncResisterDTO.setRoles(syncRoleDTOS);
+        }
         String salesSign = SalesSignUtils.buildSaleSign(adminAccount, endTime);
         R<?> r = remoteSyncAdminService.syncRegister(syncResisterDTO, salesSign);
         if (0 != r.getCode()) {
@@ -813,6 +873,48 @@ public class TenantLogic {
             log.error("同步销售云更新租户失败:{}", r.getMsg());
             throw new ServiceException("编辑租户失败，销售云同步异常");
         }
+    }
+
+    /**
+     * @description: 保存人员
+     * @Author: hzk
+     * @date: 2023/5/5 20:11
+     * @param: [tenant, nowDate, userIdOfInit]
+     * @return: void
+     **/
+    private void saveEmployee(Tenant tenant, Date nowDate, Long userIdOfInit) {
+        //人员
+        String employeeName = tenant.getAdminName();
+        String userAccount = tenant.getAdminAccount();
+        //员工表
+        Employee employee = new Employee();
+        employee.setEmployeeCode(EMPLOYEE_CODE_FIRST);
+        employee.setEmployeeName(employeeName);
+        employee.setEmployeeMobile(userAccount);
+        employee.setEmploymentStatus(1);
+        employee.setStatus(2);
+        employee.setCreateBy(userIdOfInit);
+        employee.setCreateTime(nowDate);
+        employee.setUpdateTime(nowDate);
+        employee.setUpdateBy(userIdOfInit);
+        employee.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        employeeMapper.insertEmployee(employee);
+        User updateUser = new User();
+        updateUser.setUserId(userIdOfInit);
+        updateUser.setEmployeeId(employee.getEmployeeId());
+        updateUser.setUpdateBy(userIdOfInit);
+        updateUser.setUpdateTime(nowDate);
+        userMapper.updateUser(updateUser);
+        Long employeeId = employee.getEmployeeId();
+        //员工信息表
+        EmployeeInfo employeeInfo = new EmployeeInfo();
+        employeeInfo.setEmployeeId(employeeId);
+        employeeInfo.setCreateBy(userIdOfInit);
+        employeeInfo.setCreateTime(nowDate);
+        employeeInfo.setUpdateTime(nowDate);
+        employeeInfo.setUpdateBy(userIdOfInit);
+        employeeInfo.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        employeeInfoMapper.insertEmployeeInfo(employeeInfo);
     }
 
 }

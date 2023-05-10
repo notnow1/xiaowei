@@ -5,7 +5,11 @@ import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalOb
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
@@ -17,6 +21,7 @@ import java.util.List;
  * @author Graves
  * @since 2022-12-05
  */
+@Mapper
 public interface PerformanceAppraisalMapper {
     /**
      * 查询绩效考核表

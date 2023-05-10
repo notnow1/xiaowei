@@ -1,5 +1,7 @@
 package net.qixiaowei.gateway.filter;
 
+import cn.hutool.core.date.DateUtil;
+import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,18 +61,33 @@ public class AuthFilter implements GlobalFilter, Ordered {
         if (!islogin) {
             return unauthorizedResponse(exchange, "登录状态已过期");
         }
-        String userid = JwtUtils.getUserId(claims);
+        String userId = JwtUtils.getUserId(claims);
         String userAccount = JwtUtils.getUserAccount(claims);
         String salesToken = JwtUtils.getUserSalesToken(claims);
         String tenantId = JwtUtils.getTenantId(claims);
         String employeeId = JwtUtils.getEmployeeId(claims);
-        if (StringUtils.isEmpty(userid) || StringUtils.isEmpty(userAccount)) {
+        if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(userAccount)) {
             return unauthorizedResponse(exchange, "令牌验证失败");
+        }
+        //被挤掉提示
+        String userNewToken = redisService.getCacheObject(getUserTokenKey(userId));
+        if (StringUtils.isNotEmpty(userNewToken)) {
+            if (!userNewToken.equals(userkey)) {
+                LoginUserVO user = redisService.getCacheObject(getTokenKey(userkey));
+                long expireTime = System.currentTimeMillis();
+                if (StringUtils.isNotNull(user) && StringUtils.isNotNull(user.getLoginTime())) {
+                    expireTime = user.getLoginTime();
+                }
+                ///删掉key，返回过期
+                redisService.deleteObject(userkey);
+                String errorMsg = "您的账号" + DateUtil.formatDateTime(DateUtil.date(expireTime)) + "在别处登录。如非本人操作，则密码可能已泄露，建议修改密码";
+                return unauthorizedResponse(exchange, errorMsg);
+            }
         }
 
         // 设置用户信息到请求
         addHeader(mutate, SecurityConstants.USER_KEY, userkey);
-        addHeader(mutate, SecurityConstants.DETAILS_USER_ID, userid);
+        addHeader(mutate, SecurityConstants.DETAILS_USER_ID, userId);
         addHeader(mutate, SecurityConstants.DETAILS_USER_ACCOUNT, userAccount);
         addHeader(mutate, SecurityConstants.DETAILS_TENANT_ID, tenantId);
         addHeader(mutate, SecurityConstants.DETAILS_EMPLOYEE_ID, employeeId);
@@ -97,6 +114,13 @@ public class AuthFilter implements GlobalFilter, Ordered {
     private Mono<Void> unauthorizedResponse(ServerWebExchange exchange, String msg) {
         log.error("[鉴权异常处理]请求路径:{}", exchange.getRequest().getPath());
         return ServletUtils.webFluxResponseWriter(exchange.getResponse(), msg, HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * 获取用户缓存key
+     */
+    private String getUserTokenKey(String userId) {
+        return CacheConstants.LOGIN_USER_TOKEN_KEY + userId;
     }
 
     /**

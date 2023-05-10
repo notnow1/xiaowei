@@ -58,6 +58,11 @@ public class ProductDTO extends BaseDTO {
      */
     private  String parentProductName;
     /**
+     * excel产品名称下拉框
+     */
+    private  String parentProductExcelName;
+
+    /**
     * 祖级列表ID，按层级用英文逗号隔开
     */
     private  String ancestors;
@@ -109,6 +114,15 @@ public class ProductDTO extends BaseDTO {
     */
     @NotNull(message = "是否上下架不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  Integer listingFlag;
+
+    /**
+     * 上级产品上架标记：0下架;1上架
+     */
+    private  Integer parentListingFlag;
+    /**
+     * 状态是否生效失效
+     */
+    private boolean statusFlag;
 
     private  String listingFlagName;
     /**

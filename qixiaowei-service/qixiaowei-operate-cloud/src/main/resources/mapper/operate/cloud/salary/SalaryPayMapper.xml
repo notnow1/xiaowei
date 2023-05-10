@@ -367,17 +367,27 @@
         WHERE delete_flag=0
         AND employee_id =#{employeeId}
         AND pay_year &lt;=#{payYear}
-        order by pay_year desc
+        order by pay_year desc,pay_month desc
         limit 12
     </select>
     <!--    当前月份倒推12个月的“奖金”部分合计-->
-    <select id="selectBonusActualNum" resultType="java.math.BigDecimal">
-        SELECT SUM(bonus_amount) as bonus_actual_sum
+    <select id="selectBonusActualNum" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
+        SELECT
+            sp.salary_pay_id,
+            sp.employee_id,
+            sp.pay_year,
+            sp.pay_month,
+            sp.salary_amount,
+            sp.allowance_amount,
+            sp.welfare_amount,
+            sp.bonus_amount,
+            sp.withhold_remit_tax,
+            sp.other_deductions,
+            sp.pay_amount
         from salary_pay sp
-        WHERE sp.pay_year = #{budgetYear}
-        and sp.pay_month &lt; #{month}
-        and sp.delete_flag = 0
-        ORDER by pay_year desc, pay_month desc LIMIT 12
+        WHERE sp.pay_year &lt;= #{budgetYear}
+          and sp.delete_flag = 0
+        ORDER by pay_year desc, pay_month desc
     </select>
     <!--    返回上年总工资包实际数：从月度工资数据管理取值（总计值）-->
     <select id="selectSalaryBounsAmount" resultType="java.math.BigDecimal">
@@ -775,6 +785,14 @@
         WHERE employee_id = #{employeeId}
         and delete_flag = 0
         GROUP BY employee_id
+    </select>
+<!--    对于历史年份，取历史年份对应整年的奖金数据-->
+    <select id="selectAfterYearBonusActualNum" resultType="java.math.BigDecimal">
+        SELECT SUM(bonus_amount) as bonus_actual_sum
+        from salary_pay sp
+        WHERE sp.pay_year = #{year}
+          and sp.delete_flag = 0
+        ORDER by pay_year desc, pay_month desc
     </select>
     <!--新增工资发薪表-->
     <insert id="insertSalaryPay" useGeneratedKeys="true" keyProperty="salaryPayId">

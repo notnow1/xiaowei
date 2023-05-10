@@ -185,5 +185,9 @@ public class TargetDecomposeDTO extends BaseDTO {
      * 是否提交（0-保存/1-提交通知）
      */
     private Integer isSubmit;
+    /**
+     * 关键经营结果迁移数据
+     */
+    private List<BigDecimal> monthValue;
 }
 

@@ -412,21 +412,18 @@ public class IndicatorServiceImpl implements IIndicatorService {
             }
         }
         String ancestors = "";//仅在非一级指标时有用
-        Long parentIndicatorId = 0L;
-        if (StringUtils.isNotNull(indicatorDTO.getParentIndicatorId())) {
+        Long parentIndicatorId = Constants.TOP_PARENT_ID;
+        if (StringUtils.isNotNull(indicatorDTO.getParentIndicatorId()) && !indicatorDTO.getParentIndicatorId().equals(0L)) {
             parentIndicatorId = indicatorDTO.getParentIndicatorId();
             IndicatorDTO parentIndicator = indicatorMapper.selectIndicatorByIndicatorId(parentIndicatorId);
-            if (parentIndicator == null && !parentIndicatorId.equals(0L)) {
+            if (StringUtils.isNull(parentIndicator) && !parentIndicatorId.equals(Constants.TOP_PARENT_ID)) {
                 throw new ServiceException("上级指标不存在");
             }
-            if (!indicatorById.getParentIndicatorId().equals(parentIndicatorId) && !parentIndicatorId.equals(0L)) {
-                // 路径修改
-                ancestors = parentIndicator.getAncestors();
-                if (StringUtils.isNotEmpty(ancestors)) {
-                    ancestors = ancestors + ",";
-                }
-                ancestors = ancestors + parentIndicatorId;
+            // 路径修改
+            if (StringUtils.isNotEmpty(parentIndicator.getAncestors())) {
+                ancestors = ancestors + ",";
             }
+            ancestors = ancestors + parentIndicatorId;
         }
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
@@ -435,14 +432,14 @@ public class IndicatorServiceImpl implements IIndicatorService {
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());
         indicatorMapper.updateIndicator(indicator);
-        List<Indicator> indicatorUpdateList = this.changeSonAncestor(indicatorId, indicator);
-        if (StringUtils.isNotEmpty(indicatorUpdateList)) {
-            try {
-                indicatorMapper.updateIndicators(indicatorUpdateList);
-            } catch (Exception e) {
-                throw new ServiceException("批量修改指标子级信息失败");
-            }
-        }
+//        List<Indicator> indicatorUpdateList = this.changeSonAncestor(indicatorId, indicator);
+//        if (StringUtils.isNotEmpty(indicatorUpdateList)) {
+//            try {
+//                indicatorMapper.updateIndicators(indicatorUpdateList);
+//            } catch (Exception e) {
+//                throw new ServiceException("批量修改指标子级信息失败");
+//            }
+//        }
         return 1;
     }
 

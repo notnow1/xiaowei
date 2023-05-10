@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.targetManager;
 
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
@@ -148,28 +149,27 @@ public interface ITargetOutcomeService {
     TargetOutcomeDTO selectTargetOutcomeByTargetYear(Integer targetYear);
 
     /**
-     * 通过targetSetting列表更新目标结果表
-     *
-     * @param updateTargetSetting
-     * @param targetYear
-     * @return
-     */
-    int changeTargetOutcome(List<TargetSettingDTO> updateTargetSetting, Integer targetYear);
-
-    /**
      * 通过targetYear列表查找Target Outcome DTO
      *
      * @param targetYears 目标年度列表
-     * @param indicatorId
-     * @return
+     * @param indicatorId 指标id
+     * @return 结果
      */
     List<TargetOutcomeDetailsDTO> selectTargetOutcomeByTargetYears(List<Integer> targetYears, Long indicatorId);
 
     /**
      * 战略云获取指标实际值
      *
-     * @param strategyIntentOperateVOS
-     * @return
+     * @param strategyIntentOperateVOS 战略vos
+     * @return 结果
      */
     List<StrategyIntentOperateVO> getResultIndicator(List<StrategyIntentOperateVO> strategyIntentOperateVOS);
+
+    /**
+     * 迁移数据
+     *
+     * @param targetYear 目标年度
+     * @return 结果
+     */
+    List<TargetDecomposeDTO> migrationData(Integer targetYear);
 }

@@ -1,5 +1,7 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -21,6 +23,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemotePostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -273,18 +276,18 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             return insertOfficialRankEmoluments(officialRankEmolumentDTOList);
         }
         // 处理脏数据-新增
-        List<OfficialRankEmolumentDTO> addRankEmolumentDTOList = new ArrayList<>();
-        for (int i = officialRankEmolumentDTOList.size() - 1; i >= 0; i--) {
-            OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentDTOList.get(i);
-            if (StringUtils.isNull(emolumentDTO.getOfficialRankEmolumentId())) {
-                emolumentDTO.setOfficialRankSystemId(officialRankSystemId);
-                addRankEmolumentDTOList.add(emolumentDTO);
-                officialRankEmolumentDTOList.remove(i);
-            }
-        }
-        if (StringUtils.isNotEmpty(addRankEmolumentDTOList)) {
-            insertOfficialRankEmoluments(addRankEmolumentDTOList);
-        }
+//        List<OfficialRankEmolumentDTO> addRankEmolumentDTOList = new ArrayList<>();
+//        for (int i = officialRankEmolumentDTOList.size() - 1; i >= 0; i--) {
+//            OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentDTOList.get(i);
+//            if (StringUtils.isNull(emolumentDTO.getOfficialRankEmolumentId())) {
+//                emolumentDTO.setOfficialRankSystemId(officialRankSystemId);
+//                addRankEmolumentDTOList.add(emolumentDTO);
+//                officialRankEmolumentDTOList.remove(i);
+//            }
+//        }
+//        if (StringUtils.isNotEmpty(addRankEmolumentDTOList)) {
+//            insertOfficialRankEmoluments(addRankEmolumentDTOList);
+//        }
         // 更新
         List<OfficialRankEmolumentDTO> officialRankEmolumentList = new ArrayList<>();
         for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOList) {
@@ -416,25 +419,85 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
     /**
      * 导入Excel
      *
-     * @param list
+     * @param officialRankEmolumentDTO 职级DTO
+     * @param file                     文件
      */
     @Override
-    public void importOfficialRankEmolument(List<OfficialRankEmolumentExcel> list) {
-        List<OfficialRankEmolument> officialRankEmolumentList = new ArrayList<>();
-        list.forEach(l -> {
-            OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
-            BeanUtils.copyProperties(l, officialRankEmolument);
-            officialRankEmolument.setCreateBy(SecurityUtils.getUserId());
-            officialRankEmolument.setCreateTime(DateUtils.getNowDate());
-            officialRankEmolument.setUpdateTime(DateUtils.getNowDate());
-            officialRankEmolument.setUpdateBy(SecurityUtils.getUserId());
-            officialRankEmolument.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            officialRankEmolumentList.add(officialRankEmolument);
-        });
+    public int importOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO, MultipartFile file) {
+        String filename = file.getOriginalFilename();
+        if (StringUtils.isBlank(filename)) {
+            throw new RuntimeException("请上传文件!");
+        }
+        if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
+            throw new RuntimeException("请上传正确的excel文件!");
+        }
+        Long officialRankSystemId = officialRankEmolumentDTO.getOfficialRankSystemId();
+        if (StringUtils.isNull(officialRankSystemId)) {
+            throw new ServiceException("职级等级ID为空");
+        }
+        OfficialRankSystemDTO officialRankSystemById = getOfficialRankSystemById(officialRankSystemId);
         try {
-            officialRankEmolumentMapper.batchOfficialRankEmolument(officialRankEmolumentList);
+            ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+            List<Map<Integer, String>> listMap = read.sheet(0).doReadSync();
+            if (StringUtils.isEmpty(listMap)) {
+                throw new ServiceException("职级确定薪酬Excel没有数据 请检查");
+            }
+            List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
+            Map<Integer, String> head = listMap.get(2);
+            if (head.size() != 4) {
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            }
+            listMap.remove(1);
+            listMap.remove(0);
+            for (int i = 0; i < listMap.size(); i++) {
+                Map<Integer, String> map = listMap.get(i);
+                String rankPrefixCode = officialRankSystemById.getRankPrefixCode();
+                if (!map.get(0).contains(rankPrefixCode)) {
+                    throw new ServiceException("第" + i + 4 + "行职级不正确 请检查");
+                }
+                Integer rank = Integer.valueOf(map.get(0).replace(rankPrefixCode, ""));
+                OfficialRankEmolumentDTO emolumentDTO = new OfficialRankEmolumentDTO();
+                emolumentDTO.setOfficialRank(rank);
+                emolumentDTO.setOfficialRankSystemId(officialRankSystemById.getOfficialRankSystemId());
+                emolumentDTO.setSalaryCap(new BigDecimal(Optional.ofNullable(map.get(1)).orElse("0")));
+                emolumentDTO.setSalaryFloor(new BigDecimal(Optional.ofNullable(map.get(2)).orElse("0")));
+                emolumentDTO.setSalaryMedian(new BigDecimal(Optional.ofNullable(map.get(3)).orElse("0")));
+                officialRankEmolumentDTOList.add(emolumentDTO);
+            }
+            for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
+                if (Optional.ofNullable(emolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO)
+                        .compareTo(Optional.ofNullable(emolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO)) < 0) {
+                    throw new ServiceException("工资上限应大于等于工资下限");
+                }
+                if (Optional.ofNullable(emolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO).compareTo(Optional.ofNullable(emolumentDTO.getSalaryMedian()).orElse(BigDecimal.ZERO)) < 0
+                        || Optional.ofNullable(emolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO).compareTo(Optional.ofNullable(emolumentDTO.getSalaryMedian()).orElse(BigDecimal.ZERO)) > 0) {
+                    throw new ServiceException("工资中位值应在工资上下限范围内");
+                }
+            }
+            List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
+            if (StringUtils.isEmpty(officialRankEmolumentDTOS)) {// 新增
+                return this.insertOfficialRankEmoluments(officialRankEmolumentDTOList);
+            }
+            if (officialRankEmolumentDTOList.size() != officialRankEmolumentDTOS.size()) {
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            }
+            // 更新
+            for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOS) {
+                for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
+                    if (rankEmolumentDTO.getOfficialRank().equals(emolumentDTO.getOfficialRank())) {
+                        emolumentDTO.setOfficialRankEmolumentId(rankEmolumentDTO.getOfficialRankEmolumentId());
+                        break;
+                    }
+                }
+            }
+            if (StringUtils.isNotEmpty(officialRankEmolumentDTOList)) {
+                this.updateOfficialRankEmoluments(officialRankEmolumentDTOList);//批量更新
+            }
+            return 1;
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
-            throw new ServiceException("导入职级薪酬表失败");
+            throw new ServiceException("导入绩效考核表Excel失败");
         }
     }
 

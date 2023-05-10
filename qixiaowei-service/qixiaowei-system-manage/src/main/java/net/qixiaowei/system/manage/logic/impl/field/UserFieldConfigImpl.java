@@ -26,12 +26,11 @@ public class UserFieldConfigImpl implements IFieldConfigStrategy {
     private static final Map<String, FieldConfig> INIT_USER = new HashMap<>();
 
     static {
+        INIT_USER.put(UserField.EMPLOYEE_NAME.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.EMPLOYEE_NAME.getCode()).fieldLabel(UserField.EMPLOYEE_NAME.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
         INIT_USER.put(UserField.USER_ACCOUNT.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.USER_ACCOUNT.getCode()).fieldLabel(UserField.USER_ACCOUNT.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
-        INIT_USER.put(UserField.EMPLOYEE_ID.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.EMPLOYEE_ID.getCode()).fieldLabel(UserField.EMPLOYEE_ID.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
-        INIT_USER.put(UserField.MOBILE_PHONE.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.MOBILE_PHONE.getCode()).fieldLabel(UserField.MOBILE_PHONE.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
-        INIT_USER.put(UserField.EMAIL.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.EMAIL.getCode()).fieldLabel(UserField.EMAIL.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
-        INIT_USER.put(UserField.USER_NAME.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.USER_NAME.getCode()).fieldLabel(UserField.USER_NAME.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
         INIT_USER.put(UserField.STATUS.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.STATUS.getCode()).fieldLabel(UserField.STATUS.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_USER.put(UserField.ROLES.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.ROLES.getCode()).fieldLabel(UserField.ROLES.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_USER.put(UserField.EMAIL.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.EMAIL.getCode()).fieldLabel(UserField.EMAIL.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
     }
 
 

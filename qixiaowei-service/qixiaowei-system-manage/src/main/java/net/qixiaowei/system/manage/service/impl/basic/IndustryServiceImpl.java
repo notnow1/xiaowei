@@ -155,12 +155,13 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public List<IndustryDTO> selectIndustryList(IndustryDTO industryDTO) {
         Integer enableType = getInteger();
+        List<IndustryDTO> industryDTOList = new ArrayList<>();
         if (enableType == 2) {
             Industry industry = new Industry();
             BeanUtils.copyProperties(industryDTO, industry);
             Map<String, Object> params = industryDTO.getParams();
             industry.setParams(params);
-            return industryMapper.selectIndustryList(industry);
+            industryDTOList = industryMapper.selectIndustryList(industry);
         } else {
             IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
             BeanUtils.copyProperties(industryDTO, industryDefaultDTO);
@@ -168,14 +169,65 @@ public class IndustryServiceImpl implements IIndustryService {
             if (StringUtils.isEmpty(industryDefaultDTOS)) {
                 return new ArrayList<>();
             }
-            List<IndustryDTO> industryDTOList = new ArrayList<>();
             for (IndustryDefaultDTO defaultDTO : industryDefaultDTOS) {
                 IndustryDTO industryDTO1 = new IndustryDTO();
                 BeanUtils.copyProperties(defaultDTO, industryDTO1);
                 industryDTOList.add(industryDTO1);
             }
-            return industryDTOList;
         }
+        if (StringUtils.isNotEmpty(industryDTOList)) {
+            List<IndustryDTO> tree = new ArrayList<>();
+            tree.addAll(this.createTree(industryDTOList, 0));
+            industryDTOList.clear();
+            industryDTOList.addAll(treeToList(tree));
+        }
+        return industryDTOList;
+    }
+
+    /**
+     * 树形结构
+     *
+     * @param lists
+     * @param pid
+     * @return
+     */
+    private List<IndustryDTO> createTree(List<IndustryDTO> lists, int pid) {
+        List<IndustryDTO> tree = new ArrayList<>();
+        for (IndustryDTO catelog : lists) {
+            if (catelog.getParentIndustryId() == pid) {
+                if (pid == 0) {
+                    catelog.setParentIndustryExcelName(catelog.getIndustryName());
+                } else {
+                    List<IndustryDTO> industryDTOList = lists.stream().filter(f -> f.getIndustryId() == pid).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(industryDTOList)) {
+                        catelog.setParentIndustryExcelName(industryDTOList.get(0).getParentIndustryExcelName() + "/" + catelog.getIndustryName());
+
+                    }
+                }
+                catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getIndustryId().toString())));
+                tree.add(catelog);
+            }
+        }
+        return tree;
+    }
+
+    /**
+     * 树形数据转list
+     *
+     * @param industryDTOList
+     * @return
+     */
+    private List<IndustryDTO> treeToList(List<IndustryDTO> industryDTOList) {
+        List<IndustryDTO> allSysMenuDto = new ArrayList<>();
+        for (IndustryDTO industryDTO : industryDTOList) {
+            List<IndustryDTO> children = industryDTO.getChildren();
+            allSysMenuDto.add(industryDTO);
+            if (children != null && children.size() > 0) {
+                allSysMenuDto.addAll(treeToList(children));
+                industryDTO.setChildren(null);
+            }
+        }
+        return allSysMenuDto;
     }
 
     /**
@@ -333,7 +385,7 @@ public class IndustryServiceImpl implements IIndustryService {
         }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
-        String ancestors ;//仅在非一级指标时有用
+        String ancestors;//仅在非一级指标时有用
         int parentLevel = 1;
         Integer status = industryDTO.getStatus();
         Long parentIndustryId = industryDTO.getParentIndustryId();

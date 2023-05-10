@@ -73,6 +73,10 @@ public class SalaryItemDTO extends BaseDTO {
      */
     private Integer scope;
     /**
+     * 作用范围：1部门;2公司
+     */
+    private String scopeName;
+    /**
      * 排序
      */
     private Integer sort;

@@ -17,13 +17,22 @@ import net.qixiaowei.integration.common.utils.PageUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalItems;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDimension;
 import net.qixiaowei.operate.cloud.api.dto.performance.*;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
+import net.qixiaowei.operate.cloud.api.vo.target.DecomposeDetailCyclesVO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalMapper;
+import net.qixiaowei.operate.cloud.mapper.targetManager.DecomposeDetailCyclesMapper;
+import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeDimensionMapper;
+import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeMapper;
 import net.qixiaowei.operate.cloud.service.performance.*;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
@@ -60,6 +69,15 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     private IPerformanceAppraisalObjectsService performanceAppraisalObjectsService;
 
     @Autowired
+    private TargetDecomposeMapper targetDecomposeMapper;
+
+    @Autowired
+    private TargetDecomposeDimensionMapper targetDecomposeDimensionMapper;
+
+    @Autowired
+    private DecomposeDetailCyclesMapper decomposeDetailCyclesMapper;
+
+    @Autowired
     private RemoteDepartmentService departmentService;
 
     @Autowired
@@ -86,6 +104,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
 
     @Autowired
     private IPerformAppraisalEvaluateService performAppraisalEvaluateService;
+
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 查询绩效考核表详情
@@ -428,6 +449,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 entity.setCreateByName(employeeNameMap.get(userId));
                 setObjectFieldName(entity);
             });
+            // 排序
+            result.sort(Comparator.comparing(PerformanceAppraisalObjectsDTO::getCreateTime).reversed()
+//                    .thenComparing(PerformanceAppraisalObjectsDTO::getCycleNumber)
+            );
         }
     }
 
@@ -932,9 +957,328 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     }
 
     /**
+     * 同步数据-制定
+     *
+     * @param performAppraisalObjectsId 对象ID
+     * @param appraisalObject           考核对象?1组织:2员工
+     * @return 结果
+     */
+    @Override
+    public List<PerformanceAppraisalItemsDTO> migrationDevelopData(Long performAppraisalObjectsId, Integer appraisalObject) {
+        PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalObjectsId(performAppraisalObjectsId);
+        if (StringUtils.isNull(performanceAppraisalObjectsDTO)) {
+            throw new ServiceException("当前组织目标制定已不存在");
+        }
+        Integer appraisalYear = performanceAppraisalObjectsDTO.getAppraisalYear();
+        Integer cycleType = performanceAppraisalObjectsDTO.getCycleType();
+        Integer cycleNumber = performanceAppraisalObjectsDTO.getCycleNumber();
+        Long objectId = performanceAppraisalObjectsDTO.getAppraisalObjectId();
+        int timeDimension;
+        switch (cycleType) {
+            case 1:
+                timeDimension = 4;
+                break;
+            case 2:
+                timeDimension = 3;
+                break;
+            case 3:
+                timeDimension = 2;
+                break;
+            case 4:
+                timeDimension = 1;
+                break;
+            default:
+                throw new ServiceException("当前数据异常 考核周期类型不匹配");
+        }
+        TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
+        Map<String, Object> params = new HashMap<>();
+        //1组织;2员工
+        if (appraisalObject == 1) {
+            params.put("decompositionDimension", "department");
+        } else if (appraisalObject == 2) {
+            params.put("decompositionDimension", "salesman");
+        } else {
+            throw new ServiceException("请传入正确的考核对象参数");
+        }
+        targetDecomposeDimension.setParams(params);
+        List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTOS = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionList(targetDecomposeDimension);
+        if (StringUtils.isEmpty(targetDecomposeDimensionDTOS)) {
+            throw new ServiceException("当前还没有" + (appraisalObject == 1 ? "部门" : "销售员") + "的分解维度");
+        }
+        Long targetDecomposeDimensionId = targetDecomposeDimensionDTOS.get(0).getTargetDecomposeDimensionId();
+        TargetDecompose targetDecompose = new TargetDecompose();
+        targetDecompose.setTargetYear(appraisalYear);
+        targetDecompose.setTimeDimension(timeDimension);
+        targetDecompose.setTargetDecomposeDimensionId(targetDecomposeDimensionId);
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+        if (StringUtils.isEmpty(targetDecomposeDTOS)) {
+            return new ArrayList<>();
+        }
+        List<Long> targetDecomposeIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList());
+        List<DecomposeDetailCyclesVO> decomposeDetailCyclesVOS = decomposeDetailCyclesMapper.selectTargetDecomposeCyclesByTargetDecomposeIds(targetDecomposeIds);
+        List<Long> indicatorIds = decomposeDetailCyclesVOS.stream().map(DecomposeDetailCyclesVO::getIndicatorId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
+        List<IndicatorDTO> indicatorDTOS = getIndicator(indicatorIds);
+        LinkedHashMap<Long, Map<Long, List<DecomposeDetailCyclesVO>>> groupDecomposeDetailCyclesVOS = decomposeDetailCyclesVOS.stream().collect(
+                Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeId, LinkedHashMap::new,
+                        Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeDetailsId)));
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS = new ArrayList<>();
+        for (Long targetDecomposeId : groupDecomposeDetailCyclesVOS.keySet()) {
+            Map<Long, List<DecomposeDetailCyclesVO>> groupDetailCyclesVOS = groupDecomposeDetailCyclesVOS.get(targetDecomposeId);
+            List<Long> objectIds = new ArrayList<>();
+            for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
+                List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
+                DecomposeDetailCyclesVO detailCyclesVO = detailCyclesVOS.get(0);
+                objectIds.add(appraisalObject == 1 ? detailCyclesVO.getDepartmentId() : detailCyclesVO.getEmployeeId());
+            }
+            if (!objectIds.contains(objectId)) {
+                continue;
+            }
+            PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO = new PerformanceAppraisalItemsDTO();
+            for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
+                List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
+                DecomposeDetailCyclesVO decomposeDetailCyclesVO = detailCyclesVOS.get(0);
+                if (!Objects.equals(appraisalObject == 1 ? decomposeDetailCyclesVO.getDepartmentId() : decomposeDetailCyclesVO.getEmployeeId(), objectId)) {
+                    continue;
+                }
+                boolean isTure = false;
+                for (DecomposeDetailCyclesVO detailCyclesVO : detailCyclesVOS) {
+                    if (detailCyclesVO.getCycleNumber().equals(cycleNumber)) {
+                        isTure = true;
+                        Long indicatorId = detailCyclesVO.getIndicatorId();
+                        BigDecimal cycleTarget = detailCyclesVO.getCycleTarget();
+                        String indicatorName = indicatorDTOS.stream().filter(indicatorDTO ->
+                                indicatorDTO.getIndicatorId().equals(indicatorId)).collect(Collectors.toList()).get(0).getIndicatorName();
+                        performanceAppraisalItemsDTO.setIndicatorId(indicatorId);
+                        performanceAppraisalItemsDTO.setIndicatorName(indicatorName);
+                        performanceAppraisalItemsDTO.setTargetValue(cycleTarget);
+                        break;
+                    }
+                }
+                if (isTure) {
+                    break;
+                }
+            }
+            performanceAppraisalItemsDTOS.add(performanceAppraisalItemsDTO);
+        }
+        return performanceAppraisalItemsDTOS;
+    }
+
+    /**
+     * 同步数据-评议
+     *
+     * @param performAppraisalObjectsId 对象ID
+     * @param appraisalObject           考核对象?1组织:2员工
+     * @return 结果
+     */
+    @Override
+    public List<PerformanceAppraisalItemsDTO> migrationReviewData(Long performAppraisalObjectsId, Integer appraisalObject) {
+        PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalObjectsId(performAppraisalObjectsId);
+        if (StringUtils.isNull(performanceAppraisalObjectsDTO)) {
+            throw new ServiceException("当前组织目标制定已不存在");
+        }
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOList = performanceAppraisalItemsService.selectPerformanceAppraisalItemsByPerformAppraisalObjectId(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
+        if (StringUtils.isEmpty(performanceAppraisalItemsDTOList)) {
+            return new ArrayList<>();
+        }
+        List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOS = performAppraisalEvaluateService.selectPerformAppraisalEvaluateByPerformAppraisalObjectId(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
+        Map<Long, List<PerformAppraisalEvaluateDTO>> evaluateMap = performAppraisalEvaluateDTOS.stream().collect(Collectors.groupingBy(PerformAppraisalEvaluateDTO::getPerformAppraisalItemsId));
+        Integer appraisalYear = performanceAppraisalObjectsDTO.getAppraisalYear();
+        Integer evaluationType = performanceAppraisalObjectsDTO.getEvaluationType();
+        Integer cycleNumber = performanceAppraisalObjectsDTO.getCycleNumber();
+        Integer cycleType = performanceAppraisalObjectsDTO.getCycleType();
+        Long objectId = performanceAppraisalObjectsDTO.getAppraisalObjectId();
+        int timeDimension;
+        switch (evaluationType) {
+            case 1:
+                timeDimension = 4;
+                break;
+            case 2:
+                timeDimension = 3;
+                break;
+            case 3:
+                timeDimension = 2;
+                break;
+            case 4:
+                timeDimension = 1;
+                break;
+            default:
+                throw new ServiceException("当前数据异常 评议周期类型不匹配");
+        }
+        TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
+        Map<String, Object> params = new HashMap<>();
+        //1组织;2员工
+        if (appraisalObject == 1) {
+            params.put("decompositionDimension", "department");
+        } else if (appraisalObject == 2) {
+            params.put("decompositionDimension", "salesman");
+        } else {
+            throw new ServiceException("请传入正确的考核对象参数");
+        }
+        targetDecomposeDimension.setParams(params);
+        List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTOS = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionList(targetDecomposeDimension);
+        if (StringUtils.isEmpty(targetDecomposeDimensionDTOS)) {
+            throw new ServiceException("当前还没有" + (appraisalObject == 1 ? "部门" : "销售员") + "的分解维度");
+        }
+        Long targetDecomposeDimensionId = targetDecomposeDimensionDTOS.get(0).getTargetDecomposeDimensionId();
+        TargetDecompose targetDecompose = new TargetDecompose();
+        targetDecompose.setTargetYear(appraisalYear);
+        targetDecompose.setTimeDimension(timeDimension);
+        targetDecompose.setTargetDecomposeDimensionId(targetDecomposeDimensionId);
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+        if (StringUtils.isEmpty(targetDecomposeDTOS)) {
+            return new ArrayList<>();
+        }
+        List<Long> targetDecomposeIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList());
+        List<DecomposeDetailCyclesVO> decomposeDetailCyclesVOS = decomposeDetailCyclesMapper.selectTargetDecomposeCyclesByTargetDecomposeIds(targetDecomposeIds);
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS = new ArrayList<>();
+        if (StringUtils.isEmpty(evaluateMap)) {
+            for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsDTOList) {
+                Long indicatorId = performanceAppraisalItemsDTO.getIndicatorId();
+                String indicatorName = performanceAppraisalItemsDTO.getIndicatorName();
+                List<DecomposeDetailCyclesVO> decomposeDetailCyclesVOList = decomposeDetailCyclesVOS.stream()
+                        .filter(d -> d.getCycleNumber().equals(cycleNumber))
+                        .filter(d -> d.getIndicatorId().equals(indicatorId))
+                        .collect(Collectors.toList());
+                if (StringUtils.isEmpty(decomposeDetailCyclesVOList)) {
+                    break;
+                }
+                PerformanceAppraisalItemsDTO performanceAppraisalItems = new PerformanceAppraisalItemsDTO();
+                performanceAppraisalItems.setIndicatorId(indicatorId);
+                performanceAppraisalItems.setIndicatorName(indicatorName);
+                performanceAppraisalItems.setActualValue(Optional.ofNullable(decomposeDetailCyclesVOList.get(0).getCycleActual()).orElse(BigDecimal.ZERO));
+                performanceAppraisalItemsDTOS.add(performanceAppraisalItems);
+            }
+            return performanceAppraisalItemsDTOS;
+        }
+        LinkedHashMap<Long, Map<Long, List<DecomposeDetailCyclesVO>>> groupDecomposeDetailCyclesVOS = decomposeDetailCyclesVOS.stream().collect(
+                Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeId, LinkedHashMap::new,
+                        Collectors.groupingBy(DecomposeDetailCyclesVO::getTargetDecomposeDetailsId)));
+        for (Long performAppraisalItemsId : evaluateMap.keySet()) {
+            List<PerformAppraisalEvaluateDTO> performAppraisalEvaluateDTOList = evaluateMap.get(performAppraisalItemsId);
+            List<Integer> evaluateNumbers = performAppraisalEvaluateDTOList.stream().map(PerformAppraisalEvaluateDTO::getEvaluateNumber).collect(Collectors.toList());
+            PerformAppraisalEvaluateDTO appraisalEvaluateDTO = performAppraisalEvaluateDTOList.get(0);
+            Long indicatorId = appraisalEvaluateDTO.getIndicatorId();
+            String indicatorName = appraisalEvaluateDTO.getIndicatorName();
+            for (Long targetDecomposeId : groupDecomposeDetailCyclesVOS.keySet()) {
+                Map<Long, List<DecomposeDetailCyclesVO>> groupDetailCyclesVOS = groupDecomposeDetailCyclesVOS.get(targetDecomposeId);
+                List<Long> objectIds = new ArrayList<>();
+                boolean isContinue = false;
+                for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
+                    List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
+                    DecomposeDetailCyclesVO detailCyclesVO = detailCyclesVOS.get(0);
+                    Long cyclesIndicatorId = detailCyclesVO.getIndicatorId();
+                    if (!Objects.equals(cyclesIndicatorId, indicatorId)) {
+                        isContinue = true;
+                    }
+                    objectIds.add(appraisalObject == 1 ? detailCyclesVO.getDepartmentId() : detailCyclesVO.getEmployeeId());
+                }
+                if (isContinue) {
+                    continue;
+                }
+                if (!objectIds.contains(objectId)) {
+                    continue;
+                }
+                // 创建对象
+                boolean isTure = false;
+                PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO = new PerformanceAppraisalItemsDTO();
+                performanceAppraisalItemsDTO.setIndicatorId(indicatorId);
+                performanceAppraisalItemsDTO.setIndicatorName(indicatorName);
+                for (Long targetDecomposeDetailsId : groupDetailCyclesVOS.keySet()) {
+                    List<DecomposeDetailCyclesVO> detailCyclesVOS = groupDetailCyclesVOS.get(targetDecomposeDetailsId);
+                    DecomposeDetailCyclesVO decomposeDetailCyclesVO = detailCyclesVOS.get(0);
+                    if (!Objects.equals(appraisalObject == 1 ? decomposeDetailCyclesVO.getDepartmentId() : decomposeDetailCyclesVO.getEmployeeId(), objectId)) {
+                        continue;
+                    }
+                    if (StringUtils.isEmpty(performAppraisalEvaluateDTOList) || evaluationType.equals(cycleType)) {
+                        for (DecomposeDetailCyclesVO detailCyclesVO : detailCyclesVOS) {
+                            if (Objects.equals(cycleNumber, detailCyclesVO.getCycleNumber())) {
+                                performanceAppraisalItemsDTO.setActualValue(detailCyclesVO.getCycleActual());
+                                isTure = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        BigDecimal sum = new BigDecimal(0);
+                        List<Map<String, Object>> evaluateList = new ArrayList<>();
+                        for (PerformAppraisalEvaluateDTO performAppraisalEvaluateDTO : performAppraisalEvaluateDTOList) {
+                            Integer evaluateNumber = performAppraisalEvaluateDTO.getEvaluateNumber();
+                            Long performAppraisalEvaluateId = performAppraisalEvaluateDTO.getPerformAppraisalEvaluateId();
+                            for (DecomposeDetailCyclesVO detailCyclesVO : detailCyclesVOS) {
+                                if (Objects.equals(evaluateNumber, detailCyclesVO.getCycleNumber())) {
+                                    Map<String, Object> map = new HashMap<>();
+                                    String name = getName(evaluationType, evaluateNumber);
+                                    BigDecimal cycleActual = Optional.ofNullable(detailCyclesVO.getCycleActual()).orElse(BigDecimal.ZERO);
+                                    map.put("name", name);
+                                    map.put("value", cycleActual);
+                                    map.put("performAppraisalEvaluateId", performAppraisalEvaluateId);
+                                    sum = sum.add(cycleActual);
+                                    evaluateList.add(map);
+                                    isTure = true;
+                                }
+                            }
+                        }
+                        if (isTure) {
+                            performanceAppraisalItemsDTO.setActualValue(sum);
+                            performanceAppraisalItemsDTO.setEvaluateList(evaluateList);
+                        }
+                    }
+                    if (isTure) {
+                        break;
+                    }
+                }
+                if (isTure) {
+                    performanceAppraisalItemsDTOS.add(performanceAppraisalItemsDTO);
+                    break;
+                }
+            }
+        }
+        return performanceAppraisalItemsDTOS;
+    }
+
+    /**
+     * 获取评议周期名称
+     *
+     * @param evaluationType 评议类型
+     * @param evaluateNumber 评议周期
+     * @return 结果
+     */
+    private static String getName(Integer evaluationType, Integer evaluateNumber) {
+        String name;
+        switch (evaluationType) {
+            case 1:
+                name = evaluateNumber + "月";
+                break;
+            case 2:
+                if (evaluateNumber == 1) {
+                    name = "一季度";
+                } else if (evaluateNumber == 2) {
+                    name = "二季度";
+                } else if (evaluateNumber == 3) {
+                    name = "三季度";
+                } else {
+                    name = "四季度";
+                }
+                break;
+            case 3:
+                if (evaluateNumber == 1) {
+                    name = "上半年";
+                } else {
+                    name = "下半年";
+                }
+                break;
+            case 4:
+                name = "整年度";
+                break;
+            default:
+                throw new ServiceException("当前数据异常 评议周期类型不匹配");
+        }
+        return name;
+    }
+
+    /**
      * 获取部门信息
      *
-     * @return
+     * @return 结果
      */
     private List<DepartmentDTO> getDepartmentData() {
         //远程查找部门列表
@@ -1393,6 +1737,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             //2.更新绩效考核对象表
             List<EmployeeDTO> employeeListByCode = getEmployeeDTOS(listMap, 3);
             List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = new ArrayList<>();//需要更新的对象表lIst
+            if (performanceAppraisalObjectsDTOList.size() != listMap.size()) {
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            }
             for (Map<Integer, String> map : listMap) {
                 if (StringUtils.isNull(map.get(0))) {
                     break;
@@ -1435,6 +1782,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
             }
             performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ServiceException("导入绩效考核表Excel失败");
         }
@@ -1449,7 +1798,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Collection<String> valueCollection = head.values();
         List<String> headValueList = new ArrayList<>(valueCollection);
         if (!headValueList.contains("评议总分数")) {
-            throw new ServiceException("请导入正确的系统绩效考核模板");
+            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
         }
     }
 
@@ -1462,7 +1811,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Collection<String> valueCollection = head.values();
         List<String> headValueList = new ArrayList<>(valueCollection);
         if (headValueList.contains("评议总分")) {
-            throw new ServiceException("请导入正确的自定义绩效考核模板");
+            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
         }
     }
 
@@ -1518,11 +1867,14 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             if (StringUtils.isEmpty(listMap)) {
                 throw new ServiceException("绩效考核Excel没有数据 请检查");
             }
-//        Map<Integer, String> head = listMap.get(0);
-//        judgmentSysTemplate(head);
+//          Map<Integer, String> head = listMap.get(0);
+//          judgmentSysTemplate(head);
             //2.更新绩效考核对象表
             List<EmployeeDTO> employeeListByCode = getEmployeeDTOS(listMap, 7);
             List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = new ArrayList<>();//需要更新的对象表lIst
+            if (performanceAppraisalObjectsDTOList.size() != listMap.size()) {
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            }
             for (Map<Integer, String> map : listMap) {
                 if (StringUtils.isNull(map.get(0))) {
                     break;
@@ -1563,6 +1915,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
             }
             performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ServiceException("导入绩效考核表Excel失败");
         }
@@ -1656,7 +2010,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         List<Map<Integer, String>> listMap = read.doReadAllSync();
         Map<Integer, String> head = listMap.get(2);
         if (head.containsValue(null)) {
-            throw new ServiceException("导入失败 请导入正确的自定义绩效考核模板");
+            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
         }
         judgmentCustomTemplate(head);
         listMap.remove(2);

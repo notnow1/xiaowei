@@ -114,4 +114,11 @@ public interface PerformAppraisalEvaluateMapper {
      */
     List<PerformAppraisalEvaluateDTO> selectPerformAppraisalEvaluateByPerformAppraisalItemIds(@Param("delPerformanceAppraisalItemIds") List<Long> delPerformanceAppraisalItemIds);
 
+    /**
+     * 根据对象id获取评议周期列表
+     *
+     * @param performAppraisalObjectsId 对象id
+     * @return 结果
+     */
+    List<PerformAppraisalEvaluateDTO> selectPerformAppraisalEvaluateByPerformAppraisalObjectId(@Param("performAppraisalObjectsId") Long performAppraisalObjectsId);
 }

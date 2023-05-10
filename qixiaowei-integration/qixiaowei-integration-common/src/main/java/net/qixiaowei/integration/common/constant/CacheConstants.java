@@ -17,7 +17,7 @@ public interface CacheConstants {
     /**
      * 密码最大错误次数
      */
-    int PASSWORD_MAX_RETRY_COUNT = 5;
+    int PASSWORD_MAX_RETRY_COUNT = 10;
 
     /**
      * 密码重置最大错误次数
@@ -25,9 +25,9 @@ public interface CacheConstants {
     int PASSWORD_MAX_RESET_COUNT = 5;
 
     /**
-     * 密码锁定时间，默认10（分钟）
+     * 密码锁定时间，默认10（分钟）=600s
      */
-    long PASSWORD_LOCK_TIME = 10;
+    long PASSWORD_LOCK_TIME = 600;
 
     /**
      * 权限缓存前缀
@@ -83,4 +83,9 @@ public interface CacheConstants {
      * 用户 redis key
      */
     String USER_KEY = "user:";
+
+    /**
+     * 登录用户缓存前缀
+     */
+    String LOGIN_USER_TOKEN_KEY = LOGIN_TOKEN_KEY + USER_KEY;
 }

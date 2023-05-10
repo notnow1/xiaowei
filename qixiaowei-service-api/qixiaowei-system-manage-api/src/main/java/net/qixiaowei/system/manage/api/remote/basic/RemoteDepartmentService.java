@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.api.remote.basic;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.factory.basic.RemoteDepartmentFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -101,4 +102,14 @@ public interface RemoteDepartmentService {
      */
     @PostMapping(API_PREFIX_DEPARTMEN + "/selectByLevel")
     R<List<DepartmentDTO>> depAdvancedSearch(@RequestBody Map<String, Object> params, @RequestHeader(SecurityConstants.FROM_SOURCE) String inner);
+
+    /**
+     * 组织远程Excel下拉框
+     * @param department
+     * @param inner
+     * @return
+     */
+    @PostMapping(API_PREFIX_DEPARTMEN + "/selectExcelList")
+    R<List<DepartmentDTO>> selectDepartmentExcelAllListName(@RequestBody Department department, @RequestHeader(SecurityConstants.FROM_SOURCE) String inner);
+
 }

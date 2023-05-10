@@ -824,6 +824,7 @@ public class TenantServiceImpl implements ITenantService {
                         if (null != initMenuIds) {
                             initMenuIds.addAll(menuIds);
                         }
+                        tenantContractDTO.setMenuIds(menuIds);
                     }
                 }
             }
@@ -836,9 +837,8 @@ public class TenantServiceImpl implements ITenantService {
                 updateTenant.setUpdateTime(nowDate);
                 tenantMapper.updateTenant(updateTenant);
             }
-            Date endTime = this.getSalesEndTime(tenantContractDTOS, nowDate);
             //处理租户合同授权
-            tenantLogic.updateTenantAuth(updateTenant, initMenuIds, endTime);
+            tenantLogic.updateTenantAuth(updateTenant, initMenuIds, null);
         }
     }
 
@@ -1164,7 +1164,7 @@ public class TenantServiceImpl implements ITenantService {
         //租户合同
         if (StringUtils.isNotEmpty(tenantContractDTOList)) {
             for (TenantContractDTO tenantContractDTO : tenantContractDTOList) {
-                //保存合同授权
+                //获取合同授权
                 Set<Long> menuIds = tenantContractDTO.getMenuIds();
                 if (StringUtils.isNotEmpty(menuIds)) {
                     for (Long menuId : menuIds) {
@@ -1175,6 +1175,7 @@ public class TenantServiceImpl implements ITenantService {
                             if (this.containContractTime(nowDate, contractStartTime, contractEndTime)) {
                                 if (endTime.before(contractEndTime)) {
                                     endTime = contractEndTime;
+                                    break;
                                 }
                             }
                         }

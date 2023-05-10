@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -938,8 +939,18 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         //导出增人/减人工资包
         List<EmployeeBudgetDetailsExcel> employeeBudgetDetailsExcelList = new ArrayList<>();
         for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+            if (null != employeeBudgetDetailsDTO.getAverageAdjust()){
+                employeeBudgetDetailsDTO.setAverageAdjust(employeeBudgetDetailsDTO.getAverageAdjust().setScale(2, RoundingMode.HALF_UP));
+            }
+            if (null != employeeBudgetDetailsDTO.getAgePayAmountLastYear()){
+                employeeBudgetDetailsDTO.setAgePayAmountLastYear(employeeBudgetDetailsDTO.getAgePayAmountLastYear().setScale(2, RoundingMode.HALF_UP));
+            }
+            if (null != employeeBudgetDetailsDTO.getIncreaseAndDecreasePay()){
+                employeeBudgetDetailsDTO.setIncreaseAndDecreasePay(employeeBudgetDetailsDTO.getIncreaseAndDecreasePay().setScale(2, RoundingMode.HALF_UP));
+            }
             EmployeeBudgetDetailsExcel employeeBudgetDetailsExcel = new EmployeeBudgetDetailsExcel();
             BeanUtils.copyProperties(employeeBudgetDetailsDTO, employeeBudgetDetailsExcel);
+
             employeeBudgetDetailsExcelList.add(employeeBudgetDetailsExcel);
         }
         return employeeBudgetDetailsExcelList;

@@ -217,7 +217,7 @@ public class ProductController extends BaseController {
                 .head(head)
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
                 .sheet("产品配置")
                 // 设置 sheet 的名字
                 .registerWriteHandler(new SheetWriteHandler() {

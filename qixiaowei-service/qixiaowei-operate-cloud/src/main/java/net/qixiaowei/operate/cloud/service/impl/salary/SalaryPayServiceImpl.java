@@ -270,6 +270,12 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 case "employeePostIdNotEqual":
                     params2.put("employeePostIdNotEqual", params.get("employeePostIdNotEqual"));
                     break;
+                case "employeePostIdNull":
+                    params2.put("employeePostIdNull", params.get("employeePostIdNull"));
+                    break;
+                case "employeePostIdNotNull":
+                    params2.put("employeePostIdNotNull", params.get("employeePostIdNotNull"));
+                    break;
             }
         }
         // 人员
@@ -723,14 +729,17 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 throw new ServiceException("请输入 " + employeeCode + " 员工工号发薪年月");
             }
             //发薪年月校验
-            List<String> yearAndMonth = StrUtil.splitTrim(salaryYearAndMonth, StrUtil.SLASH, -1);
-            if (StringUtils.isEmpty(yearAndMonth) || 2 != yearAndMonth.size()) {
-                throw new ServiceException("员工编码(" + employeeCode + ")的发薪年月格式错误[" + salaryYearAndMonth + "],请检查.");
+            if (StringUtils.isEmpty(salaryYearAndMonth)) {
+                throw new ServiceException("员工编码(" + employeeCode + ")的发薪年月未输入,请检查.");
             }
             int year;
             try {
-                year = Integer.parseInt(yearAndMonth.get(0));
-                Integer.parseInt(yearAndMonth.get(1));
+                Date date = DateUtils.parseAnalysisExcelDate(salaryYearAndMonth);
+                if (StringUtils.isNull(date)) {
+                    throw new ServiceException("请输入时间格式");
+                }
+                year = Integer.parseInt(String.valueOf(DateUtils.getYear(date)));
+                int month = Integer.parseInt(String.valueOf(DateUtils.getMonth(date)));
             } catch (Exception e) {
                 log.error("导入员工薪酬报错，发薪年月格式错误:{}", e.getMessage());
                 throw new ServiceException("员工编码(" + employeeCode + ")的发薪年月格式错误[" + salaryYearAndMonth + "],请检查.");
@@ -767,9 +776,12 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             SalaryPayImportOfEmpDataVO salaryPayImportOfEmpDataVO = employeeTempDataOfCode.get(employeeCode);
             Long employeeId = salaryPayImportOfEmpDataVO.getEmployeeId();
             String salaryYearAndMonth = map.get(2);
-            List<String> yearAndMonth = StrUtil.splitTrim(salaryYearAndMonth, StrUtil.SLASH, -1);
-            int year = Integer.parseInt(yearAndMonth.get(0));
-            int month = Integer.parseInt(yearAndMonth.get(1));
+            Date date = DateUtils.parseAnalysisExcelDate(salaryYearAndMonth);
+            if (StringUtils.isNull(date)) {
+                throw new ServiceException("请输入时间格式");
+            }
+            int year = Integer.parseInt(String.valueOf(DateUtils.getYear(date)));
+            int month = Integer.parseInt(String.valueOf(DateUtils.getMonth(date)));
             BigDecimal salaryAmount = BigDecimal.ZERO;//工资金额
             BigDecimal allowanceAmount = BigDecimal.ZERO;//津贴金额
             BigDecimal welfareAmount = BigDecimal.ZERO;//福利金额
@@ -927,7 +939,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * @param: [employeeTempDataOfCode, employeeCodes, employeeCodeAndPayYearSet, employeeCodeList, employeeIdsOfThisCycle, employeeCode, employeeName, employeeCodeAndPayYear]
      * @return: void
      **/
-    private static void handleEmployeeImportData(Map<String, SalaryPayImportOfEmpDataVO> employeeTempDataOfCode, Set<String> employeeCodes, Set<String> employeeCodeAndPayYearSet, List<String> employeeCodeList, Set<Long> employeeIdsOfThisCycle, String employeeCode, String employeeName, String employeeCodeAndPayYear) {
+    private static void handleEmployeeImportData(Map<String, SalaryPayImportOfEmpDataVO> employeeTempDataOfCode, Set<String> employeeCodes, Set<String> employeeCodeAndPayYearSet,
+                                                 List<String> employeeCodeList, Set<Long> employeeIdsOfThisCycle, String employeeCode, String employeeName, String employeeCodeAndPayYear) {
         if (!employeeCodes.contains(employeeCode)) {
             //如果不存在则添加进员工code的set集合
             employeeCodes.add(employeeCode);

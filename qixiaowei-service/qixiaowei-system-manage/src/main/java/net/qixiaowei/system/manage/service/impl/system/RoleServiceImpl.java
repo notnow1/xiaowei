@@ -177,7 +177,7 @@ public class RoleServiceImpl implements IRoleService {
         role.setCreateTime(DateUtils.getNowDate());
         role.setUpdateTime(DateUtils.getNowDate());
         role.setUpdateBy(SecurityUtils.getUserId());
-        role.setSort(1);
+        role.setSort(2);
         role.setStatus(1);
         role.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         roleMapper.insertRole(role);

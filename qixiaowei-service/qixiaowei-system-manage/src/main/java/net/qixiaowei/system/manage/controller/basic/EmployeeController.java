@@ -18,6 +18,7 @@ import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
@@ -162,10 +163,14 @@ public class EmployeeController extends BaseController {
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         ExcelReaderSheetBuilder sheet = read.sheet(0);
         List<Map<Integer, String>> listMap = sheet.doReadSync();
-        if (listMap.size()>1000){
-            throw new RuntimeException("数据量过大(峰值1000) 请重新导入");
+        if (listMap.size()>10000){
+            throw new ServiceException("数据量过大(峰值10000) 请重新导入");
         }
-
+        if (StringUtils.isNotEmpty(listMap)){
+            if (listMap.get(0).size() != 24){
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            }
+        }
         EmployeeExcel employeeExcel = new EmployeeExcel();
         ExcelUtils.mapToListModel(1, 0, listMap, employeeExcel, list);
         // 调用importer方法
@@ -185,11 +190,14 @@ public class EmployeeController extends BaseController {
     @RequiresPermissions("system:manage:employee:export")
     @GetMapping("export")
     public void exportEmployee(@RequestParam Map<String, Object> employee, EmployeeDTO employeeDTO, HttpServletResponse response) {
+         DepartmentDTO departmentDTO = new DepartmentDTO();
+        departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName(new DepartmentDTO());
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
         //岗位名称
         List<String> postNames = new ArrayList<>();
         PostDTO postDTO = new PostDTO();
+        postDTO.setStatus(1);
         //查询岗位信息
         List<PostDTO> postDTOS = postService.selectPostList(postDTO);
         if (StringUtils.isNotEmpty(postDTOS)) {
@@ -312,7 +320,7 @@ public class EmployeeController extends BaseController {
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName(departmentDTO);
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
         //岗位名称
         List<String> postNames = new ArrayList<>();
         PostDTO postDTO = new PostDTO();
@@ -336,7 +344,7 @@ public class EmployeeController extends BaseController {
                 .excelType(ExcelTypeEnum.XLSX)
                 .inMemory(true)
                 .useDefaultStyle(false)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
                 .head(head)
                 .sheet("人员信息配置")// 设置 sheet 的名字
                 .registerWriteHandler(new SheetWriteHandler() {
@@ -421,7 +429,7 @@ public class EmployeeController extends BaseController {
                             writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
                             //垂直居中
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-                            if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 4 || columnIndex == 11 || columnIndex == 13 || columnIndex == 14 || columnIndex == 15 || columnIndex == 17 || columnIndex == 23) {
+                            if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 4 || columnIndex == 11   || columnIndex == 15 || columnIndex == 17 || columnIndex == 23) {
                                 //设置 自动换行
                                 writeCellStyle.setWrapped(true);
                                 headWriteFont.setColor(IndexedColors.RED.getIndex());

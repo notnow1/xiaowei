@@ -33,10 +33,7 @@ import net.qixiaowei.strategy.cloud.api.remote.marketInsight.*;
 import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteAnnualKeyWorkService;
 import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMeasureService;
 import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMetricsService;
-import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
-import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
-import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
@@ -278,7 +275,14 @@ public class ProductServiceImpl implements IProductService {
     public List<ProductDTO> selectDropList(ProductDTO productDTO) {
         Product product = new Product();
         BeanUtils.copyProperties(productDTO, product);
-        return productMapper.selectProductList(product);
+        List<ProductDTO> productDTOList = productMapper.selectProductList(product);
+        if (StringUtils.isNotEmpty(productDTOList)){
+            List<ProductDTO> tree = new ArrayList<>();
+            tree.addAll(this.createTree(productDTOList,0));
+            productDTOList.clear();
+            productDTOList.addAll(this.treeToList(tree));
+        }
+        return productDTOList;
     }
 
     /**
@@ -292,6 +296,16 @@ public class ProductServiceImpl implements IProductService {
         List<ProductDTO> tree = new ArrayList<>();
         for (ProductDTO catelog : lists) {
             if (catelog.getParentProductId() == pid) {
+                if (pid == 0) {
+                    catelog.setStatusFlag(catelog.getListingFlag()==0);
+                    catelog.setParentProductExcelName(catelog.getProductName());
+                } else {
+                    List<ProductDTO> productDTOList = lists.stream().filter(f -> f.getProductId() == pid).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(productDTOList)) {
+                        catelog.setParentProductExcelName(productDTOList.get(0).getParentProductExcelName() + "/" + catelog.getProductName());
+                        catelog.setStatusFlag(catelog.getListingFlag()==0);
+                    }
+                }
                 catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getProductId().toString())));
                 tree.add(catelog);
             }
@@ -678,7 +692,9 @@ public class ProductServiceImpl implements IProductService {
                         productDTOList.get(i1).setAncestors(product.getAncestors() + "," + product.getProductId());
                     }
                     productDTOList.get(i1).setLevel(product.getLevel() + 1);
-
+                    if (null != product.getListingFlag() && product.getListingFlag() == 0) {
+                        productDTOList.get(i1).setListingFlag(product.getListingFlag());
+                    }
                     productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                     productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                     productDTOList.get(i1).setParentProductId(product.getProductId());
@@ -695,6 +711,9 @@ public class ProductServiceImpl implements IProductService {
                             productDTOList.get(i1).setAncestors(productDTO2.getAncestors() + "," + productDTO2.getProductId());
                         }
                         productDTOList.get(i1).setLevel(productDTO2.getLevel() + 1);
+                        if (null != product.getListingFlag() && product.getListingFlag() == 0) {
+                            productDTOList.get(i1).setListingFlag(product.getListingFlag());
+                        }
                         productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                         productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                         productDTOList.get(i1).setParentProductId(productDTO2.getProductId());
@@ -711,6 +730,9 @@ public class ProductServiceImpl implements IProductService {
                             productDTOList.get(i1).setAncestors(productDTO2.getAncestors() + "," + productDTO2.getProductId());
                         }
                         productDTOList.get(i1).setLevel(productDTO2.getLevel() + 1);
+                        if (null != product.getListingFlag() && product.getListingFlag() == 0) {
+                            productDTOList.get(i1).setListingFlag(product.getListingFlag());
+                        }
                         productDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                         productDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                         productDTOList.get(i1).setParentProductId(productDTO2.getProductId());

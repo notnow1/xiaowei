@@ -143,8 +143,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         if (replace == null) {
             return null;
         }
-        if (str.toString().contains("\\-") && !str.toString().contains("日") && str.toString().contains("月")) {
+        if (str.toString().contains("-") && str.toString().contains("月") && !str.toString().contains("年")) {
             replace = ExcelUtils.parseExcelTime(str.toString());
+        } else if (str.toString().contains("年") && str.toString().contains("月") && !str.toString().contains("日")) {
+            replace = str.toString().replace("年", "/").replace("月", "");
         } else if (str.toString().contains("年") && str.toString().contains("月") && str.toString().contains("日")) {
             replace = str.toString().replace("年", "/").replace("月", "/").replace("日", "");
         }

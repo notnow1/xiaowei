@@ -556,6 +556,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
 
         //员工发放对象
         if (StringUtils.isNotEmpty(bonusPayObjectsEmployeeDTOs)) {
+            //检验数据
+            this.checkoutEmployeeList(bonusPayObjectsEmployeeDTOs);
             for (BonusPayObjectsDTO bonusPayObjectsEmployeeDTO : bonusPayObjectsEmployeeDTOs) {
                 BonusPayObjects bonusPayObjects = new BonusPayObjects();
                 BeanUtils.copyProperties(bonusPayObjectsEmployeeDTO, bonusPayObjects);
@@ -574,6 +576,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
 
         //部门发放对象
         if (StringUtils.isNotEmpty(bonusPayObjectsDeptDTOs)) {
+            //检验部门数据
+            this.checkoutDeptList(bonusPayObjectsDeptDTOs);
             for (BonusPayObjectsDTO bonusPayObjectsDeptDTO : bonusPayObjectsDeptDTOs) {
                 BonusPayObjects bonusPayObjects = new BonusPayObjects();
                 BeanUtils.copyProperties(bonusPayObjectsDeptDTO, bonusPayObjects);
@@ -598,6 +602,58 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
         }
         bonusPayApplicationDTO.setBonusPayApplicationId(bonusPayApplication.getBonusPayApplicationId());
         return bonusPayApplicationDTO;
+    }
+
+    /**
+     * 检验部门数据
+     * @param bonusPayObjectsDeptDTOs
+     */
+    private void checkoutDeptList(List<BonusPayObjectsDTO> bonusPayObjectsDeptDTOs) {
+        List<BonusPayObjectsDTO> AllDeptList = new ArrayList<>();
+        AllDeptList.addAll(bonusPayObjectsDeptDTOs);
+        //根据属性去重
+        ArrayList<BonusPayObjectsDTO> bonusPayObjectsDeptDistinct = bonusPayObjectsDeptDTOs.stream().collect(Collectors.collectingAndThen(
+                Collectors.toCollection(() -> new TreeSet<>(
+                        Comparator.comparing(
+                                BonusPayObjectsDTO::getDepartmentCode))), ArrayList::new));
+        AllDeptList.removeAll(bonusPayObjectsDeptDistinct);
+        if (StringUtils.isNotEmpty(AllDeptList)){
+            List<String> departmentCodes = AllDeptList.stream().map(BonusPayObjectsDTO::getDepartmentCode).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(departmentCodes)){
+                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectCodeList(departmentCodes, SecurityConstants.INNER);
+                List<DepartmentDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    throw new ServiceException("请删除重复部门"+String.join(";",data.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList())));
+                }
+            }
+
+        }
+    }
+
+    /**
+     * 检验员工数据
+     * @param bonusPayObjectsEmployeeDTOs
+     */
+    private void checkoutEmployeeList(List<BonusPayObjectsDTO> bonusPayObjectsEmployeeDTOs) {
+        List<BonusPayObjectsDTO> AllEmployeeList = new ArrayList<>();
+        AllEmployeeList.addAll(bonusPayObjectsEmployeeDTOs);
+        //根据属性去重
+        ArrayList<BonusPayObjectsDTO> bonusPayObjectsEmployeeDistinct = bonusPayObjectsEmployeeDTOs.stream().collect(Collectors.collectingAndThen(
+                Collectors.toCollection(() -> new TreeSet<>(
+                        Comparator.comparing(
+                                BonusPayObjectsDTO::getEmployeeCode))), ArrayList::new));
+        AllEmployeeList.removeAll(bonusPayObjectsEmployeeDistinct);
+        if (StringUtils.isNotEmpty(AllEmployeeList)){
+            List<String> employeeCodes = AllEmployeeList.stream().map(BonusPayObjectsDTO::getEmployeeCode).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(employeeCodes)){
+                R<List<EmployeeDTO>> listR = remoteEmployeeService.selectCodeList(employeeCodes, SecurityConstants.INNER);
+                List<EmployeeDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    throw new ServiceException("请删除重复员工"+String.join(";",data.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList())));
+                }
+            }
+
+        }
     }
 
     /**
@@ -700,6 +756,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
 
         //员工发放对象
         if (StringUtils.isNotEmpty(bonusPayObjectsEmployeeDTOs)) {
+            this.checkoutEmployeeList(bonusPayObjectsEmployeeDTOs);
             List<BonusPayObjectsDTO> bonusPayObjectsEmployeeDTOList = bonusPayObjectsMapper.selectBonusPayEmployeeObjectsByBonusPayApplicationId(bonusPayApplication.getBonusPayApplicationId());
             if (StringUtils.isNotEmpty(bonusPayObjectsEmployeeDTOList) && StringUtils.isNotEmpty(bonusPayObjectsEmployeeDTOs)) {
                 //sterm流求差集
@@ -739,6 +796,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
 
         //部门发放对象
         if (StringUtils.isNotEmpty(bonusPayObjectsDeptDTOs)) {
+            this.checkoutDeptList(bonusPayObjectsDeptDTOs);
             List<BonusPayObjectsDTO> bonusPayObjectsEmployeeDTOList = bonusPayObjectsMapper.selectBonusPayDeptObjectsByBonusPayApplicationId(bonusPayApplication.getBonusPayApplicationId());
             if (StringUtils.isNotEmpty(bonusPayObjectsEmployeeDTOList) && StringUtils.isNotEmpty(bonusPayObjectsEmployeeDTOs)) {
                 //sterm流求差集

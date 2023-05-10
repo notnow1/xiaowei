@@ -851,11 +851,13 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                     List<EmployeeDTO> employeeList= employeeListData.getData();
                     if (StringUtils.isNotEmpty(employeeList)){
                         for (EmployeeDTO employeeDTO : employeeList) {
-                            //根据人员查询工资表
-                            List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(employeeDTO.getEmployeeId(), budgetYear, DateUtils.getYear(), SecurityUtils.getTenantId());
-                            if (StringUtils.isNotEmpty(salaryPayDTOS)){
-                                //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
-                                paymentBonus = paymentBonus.add(salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
+                            if (StringUtils.isNotNull(employeeDTO.getEmployeePostId()) && StringUtils.isNotNull(employeeDTO.getEmployeeRank())){
+                                //根据人员查询工资表
+                                List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(employeeDTO.getEmployeeId(), budgetYear, DateUtils.getYear(), SecurityUtils.getTenantId());
+                                if (StringUtils.isNotEmpty(salaryPayDTOS)){
+                                    //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
+                                    paymentBonus = paymentBonus.add(salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
+                                }
                             }
                         }
 

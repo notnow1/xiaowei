@@ -111,7 +111,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         //封装总奖金包预算生成
         this.packPaymentBonusBudget(bonusBudgetDTO.getBudgetYear(), bonusBudgetDTO);
         BigDecimal basicWageBonusBudget = bonusBudgetDTO.getBasicWageBonusBudget();
-        log.info("再次打印总工资预算==============================" + JSONUtil.toJsonStr(basicWageBonusBudget));
+        //log.info("再次打印总工资预算==============================" + JSONUtil.toJsonStr(basicWageBonusBudget));
         //未来三年奖金趋势集合
         List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS = new ArrayList<>();
         //查询详情未来三年奖金趋势集合
@@ -120,7 +120,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         bonusBudgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS);
         bonusBudgetDTO.setBonusBudgetLaddertersDTOS(bonusBudgetLaddertersDTOS);
         bonusBudgetDTO.setFutureBonusBudgetLaddertersDTOS(futureBonusBudgetLaddertersDTOS);
-        log.info("再次打印所有数据=======================" + JSONUtil.toJsonStr(bonusBudgetDTO));
+        //log.info("再次打印所有数据=======================" + JSONUtil.toJsonStr(bonusBudgetDTO));
         return bonusBudgetDTO;
     }
 
@@ -248,6 +248,10 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         BeanUtils.copyProperties(bonusBudgetDTO, bonusBudget);
         //总奖金包预算参数集合
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudgetDTO.getBonusBudgetParametersDTOS();
+        //检验指标重复数据
+        this.checkoutIndicatorList(bonusBudgetParametersDTOS);
+
+
         //未来三年奖金趋势
         List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS = bonusBudgetDTO.getFutureBonusBudgetLaddertersDTOS();
         if (StringUtils.isNotEmpty(futureBonusBudgetLaddertersDTOS)) {
@@ -267,6 +271,33 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         insertParametersDTOS(bonusBudget, bonusBudgetParametersList, bonusBudgetParametersDTOS);
         bonusBudgetDTO.setBonusBudgetId(bonusBudget.getBonusBudgetId());
         return bonusBudgetDTO;
+    }
+
+    /**
+     * 检验指标重复数据
+     * @param bonusBudgetParametersDTOS
+     */
+    private void checkoutIndicatorList(List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS) {
+        if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)){
+            List<BonusBudgetParametersDTO> bonusBudgetParametersAllList =new ArrayList<>();
+            bonusBudgetParametersAllList.addAll(bonusBudgetParametersDTOS);
+            //根据属性去重
+            ArrayList<BonusBudgetParametersDTO> bonusBudgetParametersDistinct = bonusBudgetParametersDTOS.stream().collect(Collectors.collectingAndThen(
+                    Collectors.toCollection(() -> new TreeSet<>(
+                            Comparator.comparing(
+                                    BonusBudgetParametersDTO::getIndicatorId))), ArrayList::new));
+            bonusBudgetParametersAllList.removeAll(bonusBudgetParametersDistinct);
+            if (StringUtils.isNotEmpty(bonusBudgetParametersAllList)){
+                List<Long> indicatorIds = bonusBudgetParametersAllList.stream().map(BonusBudgetParametersDTO::getIndicatorId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(indicatorIds)){
+                    R<List<IndicatorDTO>> IndicatorList = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+                    List<IndicatorDTO> data = IndicatorList.getData();
+                    if (StringUtils.isNotEmpty(data)){
+                        throw new ServiceException("请删除重复指标"+String.join(";",data.stream().map(IndicatorDTO::getIndicatorName).collect(Collectors.toList())));
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -318,6 +349,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         BeanUtils.copyProperties(bonusBudgetDTO, bonusBudget);
         //总奖金包预算参数集合
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudgetDTO.getBonusBudgetParametersDTOS();
+        //检验指标重复数据
+        this.checkoutIndicatorList(bonusBudgetParametersDTOS);
         //未来三年奖金趋势
         List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS = bonusBudgetDTO.getFutureBonusBudgetLaddertersDTOS();
         if (StringUtils.isNotEmpty(futureBonusBudgetLaddertersDTOS)) {
@@ -602,7 +635,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         EmployeeBudgetDTO employeeBudgetDTO = new EmployeeBudgetDTO();
         employeeBudgetDTO.setBudgetYear(budgetYear);
         BigDecimal increaseAndDecreasePaySum = this.salaryPackageList(employeeBudgetDTO);
-        log.info("增人/减人工资包值====================================" + JSONUtil.toJsonStr(increaseAndDecreasePaySum));
+       // log.info("增人/减人工资包值====================================" + JSONUtil.toJsonStr(increaseAndDecreasePaySum));
         if (null != increaseAndDecreasePaySum) {
             basicWageBonusBudget = increaseAndDecreasePaySum;
         }
@@ -618,7 +651,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             //总工资包预算
             bonusBudgetDTO.setBasicWageBonusBudget(bonusBudgetDTO.getBasicWageBonusBudget());
         }
-        log.info("总工资包预算====================================" + JSONUtil.toJsonStr(basicWageBonusBudget.divide(new BigDecimal("10000"), 10, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP)));
+        //log.info("总工资包预算====================================" + JSONUtil.toJsonStr(basicWageBonusBudget.divide(new BigDecimal("10000"), 10, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP)));
         if (null != emolumentPackage) {
             elasticityBonusBudget = emolumentPackage.subtract(bonusBudgetDTO.getBasicWageBonusBudget());
             //弹性薪酬包  公式=总薪酬包预算-总工资包预算
@@ -758,18 +791,50 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
     @Override
     public BonusBudgetParametersDTO addBonusBudgetIndicatorTamount(BonusBudgetDTO bonusBudgetDTO) {
         BonusBudgetParametersDTO bonusBudgetParametersDTO = new BonusBudgetParametersDTO();
-
-
+        BigDecimal bonusActualSum = new BigDecimal("0");
         //获取当前年
         int year = DateUtils.getYear();
         //当前月份
         int month = DateUtils.getMonth();
         if (bonusBudgetDTO.getBudgetYear() < year) {
             year = bonusBudgetDTO.getBudgetYear();
-            month = 13;
+            //对于历史年份，取历史年份对应整年的奖金数据
+            bonusActualSum = salaryPayMapper.selectAfterYearBonusActualNum(year);
+        }else {
+            //当前月份倒推12个月的“奖金”部分合计
+            List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectBonusActualNum(year);
+            if (StringUtils.isNotEmpty(salaryPayDTOS)) {
+                List<SalaryPayDTO> salaryPayList = new ArrayList<>();
+                int count = 12;
+                Map<Integer, List<SalaryPayDTO>> salaryPayYearMap = salaryPayDTOS.stream().collect(Collectors.groupingBy(SalaryPayDTO::getPayYear, LinkedHashMap::new, Collectors.toList()));
+                for (Integer key : salaryPayYearMap.keySet()) {
+                    List<SalaryPayDTO> salaryPayDTOS1 = salaryPayYearMap.get(key);
+                    LinkedHashMap<Integer, List<SalaryPayDTO>> salaryPayMonthMap = salaryPayDTOS1.stream().collect(Collectors.groupingBy(SalaryPayDTO::getPayMonth, LinkedHashMap::new, Collectors.toList()));
+                    if (StringUtils.isNotEmpty(salaryPayMonthMap)) {
+                        count = count - salaryPayMonthMap.size();
+                        int count2 = 0;
+                        if (count<0){
+                            count2 = count + salaryPayMonthMap.size();
+                        }
+
+                        for (Integer key2 : salaryPayMonthMap.keySet()) {
+                            if (count == 0) {
+                                salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                            } else if (count > 0) {
+                                salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                            } else {
+                                if (count2 > 0) {
+                                    salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                                }
+                                count2--;
+                            }
+                        }
+                    }
+
+                }
+                bonusActualSum = salaryPayList.stream().map(SalaryPayDTO::getBonusAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+            }
         }
-        //当前月份倒推12个月的“奖金”部分合计
-        BigDecimal bonusActualSum = salaryPayMapper.selectBonusActualNum(year, month);
         //指标id
         bonusBudgetParametersDTO.setIndicatorId(bonusBudgetDTO.getIndicatorId());
         //奖金占比基准值(%)
@@ -830,7 +895,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         //奖金占比基准值 公式=奖金包实际数÷奖金驱动因素实际数
         if (null != bonusProportionDrivingFactor && bonusProportionDrivingFactor.compareTo(new BigDecimal("0")) != 0 &&
                 null != bonusActualSum && bonusActualSum.compareTo(new BigDecimal("0")) != 0) {
-            bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor, 10, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP);
+            bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor.multiply(new BigDecimal("10000")), 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
             //奖金占比基准值(%)
             bonusBudgetParametersDTO.setBonusProportionStandard(bonusProportionStandard);
         }
@@ -1211,18 +1276,50 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
      * @param bonusBudgetParametersDTOS
      */
     private void packBounParamIndicatorIds(int budgetYear, List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS) {
+        BigDecimal bonusActualSum = new BigDecimal("0");
         //获取当前年
         int year = DateUtils.getYear();
         //当前月份
         int month = DateUtils.getMonth();
         if (budgetYear < year) {
             year = budgetYear;
-            month = 12;
+            //对于历史年份，取历史年份对应整年的奖金数据
+            bonusActualSum = salaryPayMapper.selectAfterYearBonusActualNum(year);
+        }else {
+            //当前月份倒推12个月的“奖金”部分合计
+            List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectBonusActualNum(year);
+            if (StringUtils.isNotEmpty(salaryPayDTOS)) {
+                List<SalaryPayDTO> salaryPayList = new ArrayList<>();
+                int count = 12;
+                Map<Integer, List<SalaryPayDTO>> salaryPayYearMap = salaryPayDTOS.stream().collect(Collectors.groupingBy(SalaryPayDTO::getPayYear, LinkedHashMap::new, Collectors.toList()));
+                for (Integer key : salaryPayYearMap.keySet()) {
+                    List<SalaryPayDTO> salaryPayDTOS1 = salaryPayYearMap.get(key);
+                    LinkedHashMap<Integer, List<SalaryPayDTO>> salaryPayMonthMap = salaryPayDTOS1.stream().collect(Collectors.groupingBy(SalaryPayDTO::getPayMonth, LinkedHashMap::new, Collectors.toList()));
+                    if (StringUtils.isNotEmpty(salaryPayMonthMap)) {
+                        count = count - salaryPayMonthMap.size();
+                        int count2 = 0;
+                        if (count<0){
+                            count2 = count + salaryPayMonthMap.size();
+                        }
+
+                        for (Integer key2 : salaryPayMonthMap.keySet()) {
+                            if (count == 0) {
+                                salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                            } else if (count > 0) {
+                                salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                            } else {
+                                if (count2 > 0) {
+                                    salaryPayList.addAll(salaryPayMonthMap.get(key2));
+                                }
+                                count2--;
+                            }
+                        }
+                    }
+
+                }
+                bonusActualSum = salaryPayList.stream().map(SalaryPayDTO::getBonusAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+            }
         }
-        //当前月份倒推12个月的“奖金”部分合计
-        BigDecimal bonusActualSum = salaryPayMapper.selectBonusActualNum(year, month);
-
-
         //远程调用指标是否驱动因素为“是”列表
         R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIsDriverList(SecurityConstants.INNER);
         //封装奖金驱动因素实际数
@@ -1295,7 +1392,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     //奖金占比基准值 公式=奖金包实际数÷奖金驱动因素实际数
                     if (null != bonusProportionDrivingFactor && bonusProportionDrivingFactor.compareTo(new BigDecimal("0")) != 0 &&
                             null != bonusActualSum && bonusActualSum.compareTo(new BigDecimal("0")) != 0) {
-                        bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor, 10, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP);
+                        bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor.multiply(new BigDecimal("10000")), 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                         //奖金占比基准值(%)
                         bonusBudgetParametersDTO.setBonusProportionStandard(bonusProportionStandard);
                     }
@@ -1370,7 +1467,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                                         bonusProportionDrivingFactor = bonusProportionDrivingFactor.add(listMap.get(i).get(key));
                                     }
                                 } else if (i == 1) {
-                                    if (key > month) {
+                                    if (key >= month) {
                                         bonusProportionDrivingFactor = bonusProportionDrivingFactor.add(listMap.get(i).get(key));
                                     }
                                 }

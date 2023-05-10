@@ -3,8 +3,8 @@ package net.qixiaowei.system.manage.remote.basic;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
-import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,6 +120,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
      * @return
      */
     @Override
+    @InnerAuth
     @GetMapping("/selectByLevel")
     public R<List<DepartmentDTO>> selectDepartmentByLevel(@RequestParam("level") Integer level, String inner) {
         return R.ok(departmentService.selectDepartmentByLevel(level));
@@ -132,6 +133,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
      * @return R
      */
     @Override
+    @InnerAuth
     @PostMapping("/selectByLevel")
     public R<List<DepartmentDTO>> depAdvancedSearch(@RequestBody Map<String, Object> params, String inner) {
         DepartmentDTO departmentDTO = new DepartmentDTO();
@@ -139,5 +141,18 @@ public class RemoteDepartment implements RemoteDepartmentService {
             departmentDTO.setParams(params);
         }
         return R.ok(departmentService.selectDepartmentList(departmentDTO));
+    }
+
+    /**
+     * 组织远程Excel下拉框
+     * @param department
+     * @param inner
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/selectExcelList")
+    public R<List<DepartmentDTO>> selectDepartmentExcelAllListName(@RequestBody Department department, String inner) {
+        return R.ok(departmentService.selectDepartmentExcelListName(department));
     }
 }

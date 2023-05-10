@@ -2,6 +2,8 @@ package net.qixiaowei.system.manage.service.impl.user;
 
 import java.util.*;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.file.api.RemoteFileService;
 import net.qixiaowei.file.api.dto.FileDTO;
@@ -21,6 +23,7 @@ import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
+import net.qixiaowei.system.manage.api.domain.basic.Employee;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
@@ -113,7 +116,7 @@ public class UserServiceImpl implements IUserService {
     public LoginUserVO getUserByUserAccount(String userAccount, String domain) {
         Long tenantId = 0L;
         if (StringUtils.isEmpty(domain)) {
-            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+            throw new ServiceException("账号或密码有误，请重新输入");
         }
         if (StringUtils.isNotEmpty(domain)) {
             domain = domain.replace("." + tenantConfig.getMainDomain(), "");
@@ -128,16 +131,16 @@ public class UserServiceImpl implements IUserService {
                             throw new ServiceException("您的账号状态为异常状态，请联系客服查询。");
                         }
                     } else {
-                        throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+                        throw new ServiceException("账号或密码有误，请重新输入");
                     }
                 }
             } else {
-                throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+                throw new ServiceException("账号或密码有误，请重新输入");
             }
         }
         UserDTO userDTO = userMapper.selectUserByUserAccountAndTenantId(userAccount, tenantId);
         if (StringUtils.isNull(userDTO)) {
-            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
+            throw new ServiceException("账号或密码有误，请重新输入");
         }
         userDTO.setAvatar(this.convertToFullFilePath(userDTO.getAvatar()));
         userDTO.setTenantLogo(this.convertToFullFilePath(userDTO.getTenantLogo()));
@@ -293,16 +296,12 @@ public class UserServiceImpl implements IUserService {
         userDTO.setUserId(userId);
         userLogic.checkUserUnique(userDTO);
         Date nowDate = DateUtils.getNowDate();
-        String userName = userDTO.getUserName();
-        String mobilePhone = userDTO.getMobilePhone();
         String email = userDTO.getEmail();
         String avatar = userDTO.getAvatar();
         User user = new User();
         user.setUserId(userId);
         user.setAvatar(fileConfig.getPathOfRemoveDomain(avatar));
         user.setEmail(email);
-        user.setMobilePhone(mobilePhone);
-        user.setUserName(userName);
         user.setUpdateBy(userId);
         user.setUpdateTime(nowDate);
         int i = userMapper.updateUser(user);
@@ -311,11 +310,9 @@ public class UserServiceImpl implements IUserService {
             //同步销售云
             userLogic.syncSaleEditUser(userDTO);
             LoginUserVO loginUser = SecurityUtils.getLoginUser();
-            loginUser.getUserDTO().setUserName(userName);
             if (StringUtils.isNotEmpty(avatar)) {
                 loginUser.getUserDTO().setAvatar(avatar);
             }
-            loginUser.getUserDTO().setMobilePhone(mobilePhone);
             loginUser.getUserDTO().setEmail(email);
             tokenService.setLoginUser(loginUser);
             return i;
@@ -338,6 +335,18 @@ public class UserServiceImpl implements IUserService {
         }
         List<RoleDTO> roleList = roleMapper.selectRolesByUserId(userId);
         userDTO.setRoles(roleList);
+        if (StringUtils.isNotEmpty(roleList)) {
+            Set<Long> roleIds = new HashSet<>();
+            List<String> roleNames = new ArrayList<>();
+            for (RoleDTO roleDTO : roleList) {
+                Long roleId = roleDTO.getRoleId();
+                String roleName = roleDTO.getRoleName();
+                roleIds.add(roleId);
+                roleNames.add(roleName);
+            }
+            userDTO.setRoleIds(roleIds);
+            userDTO.setRoleNames(CollUtil.join(roleNames, StrUtil.COMMA));
+        }
         return userDTO;
     }
 
@@ -430,7 +439,12 @@ public class UserServiceImpl implements IUserService {
     @Transactional
     @Override
     public UserDTO insertUser(UserDTO userDTO) {
-        return userLogic.insertUser(userDTO);
+        //新增人员
+        Employee employee = userLogic.insertEmployee(userDTO);
+        //新增帐号
+        UserDTO userResult = userLogic.insertUser(userDTO);
+        userLogic.syncSalesAddUser(userResult.getUserId(), userDTO.getUserAccount(), BusinessConstants.NORMAL, userDTO.getPassword(), employee);
+        return userResult;
     }
 
     /**
@@ -594,18 +608,17 @@ public class UserServiceImpl implements IUserService {
         }
         boolean disable = BusinessConstants.DISABLE.equals(status);
         Long userId = SecurityUtils.getUserId();
-        String userAccount = SecurityUtils.getUserAccount();
         if (disable && userIds.contains(userId)) {
-            throw new ServiceException("当前用户【" + userAccount + "】不能停用");
+            throw new ServiceException("当前用户不可停用");
         }
         List<UserDTO> userDTOS = userMapper.selectUserListByUserIds(userIds);
         if (StringUtils.isEmpty(userDTOS)) {
-            throw new ServiceException("用户状态修改失败，用户不存在");
+            throw new ServiceException("用户不存在");
         }
         if (disable) {
             userDTOS.forEach(userDTO -> {
                 if (userDTO.isAdmin()) {
-                    throw new ServiceException("系统管理员帐号不可停用，请重新勾选。");
+                    throw new ServiceException("系统管理员不可停用");
                 }
             });
         }

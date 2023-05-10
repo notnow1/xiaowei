@@ -357,6 +357,7 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
             //从第几行开始
             if (i >= row) {
                 Map<Integer, String> map = maps.get(i);
+
                 map.forEach((key, value) -> {
                     //从第几列开始
                     if (key >= line && key < 7) {

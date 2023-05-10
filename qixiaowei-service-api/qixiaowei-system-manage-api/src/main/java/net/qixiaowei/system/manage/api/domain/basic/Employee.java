@@ -70,6 +70,8 @@ public class Employee extends TenantEntity {
      * 员工岗位ID
      */
     private Long employeePostId;
+    private Long employeePostIdNull;
+    private Long employeePostIdNotNull;
     /**
      * 员工职级
      */

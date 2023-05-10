@@ -584,6 +584,12 @@
             OR p.post_id IS NULL
             )
         </if>
+        <if test="employee.params.employeePostIdNull != null">
+            AND p.post_id IS NULL
+        </if>
+        <if test="employee.params.employeePostIdNotNull != null">
+            AND p.post_id IS NOT NULL
+        </if>
         <!-- 员工职级体系名称过滤  -->
         <if test="employee.params.officialRankSystemIdEqual != null and employee.params.officialRankSystemIdEqual.size() > 0">
             AND ors.official_rank_system_id IN
@@ -686,6 +692,12 @@
                 when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end NOT LIKE
                 concat('%', #{item}, '%')
             </foreach>
+        </if>
+        <if test="employee.params.employeeRankNameNull != null">
+            AND  e.employee_rank IS NULL
+        </if>
+        <if test="employee.params.employeeRankNameNotNull != null">
+            AND e.employee_rank IS NOT NULL
         </if>
         <!-- 基本工资过滤  -->
         <if test="employee.params.employeeBasicWageEqual != null and employee.params.employeeBasicWageEqual.size() > 0">
@@ -1364,6 +1376,12 @@
         <if test="employee.employeePostId != null">
             and e.employee_post_id =#{employee.employeePostId}
         </if>
+        <if test="employee.employeePostIdNull != null">
+            and e.employee_post_id is null
+        </if>
+        <if test="employee.employeePostIdNotNull != null">
+            and e.employee_post_id is not null
+        </if>
         <if test="employee.employeeRankName != null and employee.employeeRankName != ''">
             and case when ors.rank_prefix_code is null then e.employee_rank
             when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end
@@ -1381,7 +1399,7 @@
                    when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 0 and
                         date_format(now(), '%m') &lt; 7 then
                        ifnull(sum(case
-                                      when date_format(employment_date, '%Y') = (#{employee.planYear} - 1)
+                                      when date_format(employment_date, '%Y') &lt;= (#{employee.planYear} - 1)
                                           then employment_status = 1 end), 0)
                    when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 6 and
                         date_format(now(), '%m') &lt; 13 then ifnull(sum(employment_status = 1), 0)
@@ -1397,6 +1415,7 @@
         where e.employee_department_id = #{employee.employeeDepartmentId}
           and p.official_rank_system_id = #{employee.officialRankSystemId}
           and e.delete_flag = 0
+          and e.status =1
         group by employeeRankName
     </select>
     <!--    根据部门 职级 获取人员信息集合-->
@@ -2401,6 +2420,35 @@
                update_time
         FROM employee
         WHERE  employee_email = #{employeeEmail}
+          and delete_flag = 0
+    </select>
+<!--    根据身份证号查询员工表-->
+    <select id="selectEmployeeByIdentityCard"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT employee_id,
+               employee_code,
+               employee_name,
+               employee_gender,
+               identity_type,
+               identity_card,
+               employee_birthday,
+               employee_mobile,
+               employee_email,
+               employee_department_id,
+               employee_post_id,
+               employee_rank,
+               employee_basic_wage,
+               employment_date,
+               departure_date,
+               employment_status,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM employee
+        WHERE  identity_card = #{identityCard}
           and delete_flag = 0
     </select>
     <!--新增员工表-->

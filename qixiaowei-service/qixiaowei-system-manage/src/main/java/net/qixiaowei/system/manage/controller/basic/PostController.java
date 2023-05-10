@@ -1,12 +1,5 @@
 package net.qixiaowei.system.manage.controller.basic;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.DataFormatData;
@@ -23,45 +16,42 @@ import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
-import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.integration.common.utils.excel.CustomVerticalCellStyleStrategy;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
+import net.qixiaowei.integration.common.web.controller.BaseController;
+import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
-import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
-import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.excel.post.PostExcel;
 import net.qixiaowei.system.manage.excel.post.PostImportListener;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankSystemService;
+import net.qixiaowei.system.manage.service.basic.IPostService;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
-import net.qixiaowei.system.manage.service.basic.IPostService;
-import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -180,12 +170,14 @@ public class PostController extends BaseController {
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName(departmentDTO);
-        if (StringUtils.isNull(parentDepartmentExcelNames)){
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
+        if (StringUtils.isNull(parentDepartmentExcelNames)) {
             throw new ServiceException("请先创建部门数据！");
         }
+        OfficialRankSystemDTO officialRankSystemDTO= new OfficialRankSystemDTO();
+        officialRankSystemDTO.setStatus(1);
         //职级体系集合
-        List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(new OfficialRankSystemDTO());
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(officialRankSystemDTO);
         //职级体系名称
         List<String> officialRankSystemNames = new ArrayList<>();
         if (StringUtils.isNotEmpty(officialRankSystemDTOS)){
@@ -207,7 +199,7 @@ public class PostController extends BaseController {
 
         EasyExcel.write(response.getOutputStream())
                 .excelType(ExcelTypeEnum.XLSX)
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap,1,65533))
                 .head(head)
                 .inMemory(true)
                 .useDefaultStyle(false)
@@ -349,10 +341,14 @@ public class PostController extends BaseController {
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         ExcelReaderSheetBuilder sheet = read.sheet(0);
         List<Map<Integer, String>> listMap = sheet.doReadSync();
-        if (listMap.size()>1000){
-            throw new RuntimeException("数据量过大(峰值1000) 请重新导入");
+        if (listMap.size()>10000){
+            throw new ServiceException("数据量过大(峰值10000) 请重新导入");
         }
-
+        if (StringUtils.isNotEmpty(listMap)){
+            if (listMap.get(0).size() != 7){
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            }
+        }
 
         PostExcel postExcel = new PostExcel();
         ExcelUtils.mapToListModel(1, 0, listMap, postExcel, list);

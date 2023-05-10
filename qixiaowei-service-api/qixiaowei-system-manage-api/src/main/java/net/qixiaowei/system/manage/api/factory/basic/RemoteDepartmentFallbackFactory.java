@@ -1,10 +1,9 @@
 package net.qixiaowei.system.manage.api.factory.basic;
 
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
-import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
-import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -68,6 +67,11 @@ public class RemoteDepartmentFallbackFactory implements FallbackFactory<RemoteDe
             @Override
             public R<List<DepartmentDTO>> depAdvancedSearch(Map<String, Object> params, String inner) {
                 return R.fail("组织远程高级搜索失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<DepartmentDTO>> selectDepartmentExcelAllListName(Department department, String inner) {
+                return R.fail("组织远程Excel下拉框失败:" + throwable.getMessage());
             }
         };
     }

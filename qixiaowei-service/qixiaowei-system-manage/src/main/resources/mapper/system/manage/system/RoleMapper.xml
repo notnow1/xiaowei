@@ -13,7 +13,7 @@
 
     <select id="selectRoleIdOfAdmin"
             resultType="java.lang.Long">
-        SELECT role_id FROM role WHERE role_type = 0 AND delete_flag=0 ORDER BY  create_time ASC LIMIT 1
+        SELECT role_id FROM role WHERE role_type = 0 AND remark = 'admin' AND delete_flag=0 ORDER BY  create_time ASC LIMIT 1
     </select>
 
     <select id="selectRoleByRoleCode"
@@ -90,7 +90,7 @@
         </if>
         <!-- 数据范围过滤 -->
         ${role.params.dataScope}
-        ORDER BY r.create_time DESC
+        ORDER BY r.sort ASC,r.create_time DESC
     </select>
 
 
@@ -192,7 +192,7 @@
     </update>
 
     <!--批量新增角色表-->
-    <insert id="batchRole">
+    <insert id="batchRole" useGeneratedKeys="true" keyProperty="roleId">
         INSERT INTO role
         (role_type,role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES

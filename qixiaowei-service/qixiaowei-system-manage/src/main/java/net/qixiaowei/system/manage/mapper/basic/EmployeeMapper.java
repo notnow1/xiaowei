@@ -54,6 +54,13 @@ public interface EmployeeMapper {
      * @return 员工表
      */
     List<EmployeeDTO> selectEmployeeByEmployeeMobile(@Param("employeeMobile") String employeeMobile);
+    /**
+     * 根据身份证号查询员工表
+     *
+     * @param identityCard 员工身份证号 注:后面新加需求因有脏数据 防止报错用list接收
+     * @return 员工表
+     */
+    List<EmployeeDTO> selectEmployeeByIdentityCard(@Param("identityCard") String identityCard);
 
     /**
      * 根据邮箱号查询员工表

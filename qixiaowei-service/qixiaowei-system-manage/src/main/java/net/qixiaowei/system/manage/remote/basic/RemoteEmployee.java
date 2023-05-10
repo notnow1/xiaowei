@@ -50,6 +50,19 @@ public class RemoteEmployee implements RemoteEmployeeService {
     }
 
     /**
+     * 远程查询人员Excel下拉框数据
+     * @param employeeDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/dropEmployeeList")
+    public R<List<EmployeeDTO>> selectDropEmployeeList(@RequestBody EmployeeDTO employeeDTO, String source) {
+        return R.ok(employeeService.selectDropEmployeeList(employeeDTO));
+    }
+
+    /**
      * 远程查询用户数据
      *
      * @param employeeDTO 员工DTO
@@ -188,7 +201,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
     }
 
     /**
-     * 查询所有人员
+     * 查询生效所有人员
      *
      * @param source
      * @return

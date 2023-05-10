@@ -252,7 +252,7 @@ public class PerformanceAppraisalController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgArchive:import")
     @GetMapping("export-org-template")
-    public void exportOrgTemplate(@RequestParam Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
+    public void exportOrgTemplate(@RequestParam(required = false) Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
 //        if (StringUtils.isNull(importType)) {
 //            throw new ServiceException("请选择考核流程");
 //        }
@@ -278,7 +278,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("组织绩效归档导入")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -398,7 +398,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("组织绩效归档导入")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -628,7 +628,7 @@ public class PerformanceAppraisalController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("operate:cloud:performanceAppraisal:perArchive:import")
     @GetMapping("export-per-template")
-    public void exportPerTemplate(@RequestParam Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
+    public void exportPerTemplate(@RequestParam(required = false) Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
 //        if (StringUtils.isNull(importType)) {
 //            throw new ServiceException("请选择考核流程");
 //        }
@@ -652,7 +652,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("个人绩效归档导入")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -778,7 +778,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .useDefaultStyle(false)
                 .head(head)
                 .sheet("个人绩效归档导出")// 设置 sheet 的名字
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap, 1, 65533))
                 .registerWriteHandler(new SheetWriteHandler() {
                     @Override
                     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -875,7 +875,7 @@ public class PerformanceAppraisalController extends BaseController {
                 .doWrite(list);
     }
 
-    //==============================组织绩效管理-个人绩效管理-归档、撤回==================================//
+    //==============================组织绩效管理-个人绩效管理-归档、撤回、同步数据==================================//
 
     /**
      * 归档
@@ -893,6 +893,24 @@ public class PerformanceAppraisalController extends BaseController {
     @GetMapping("/withdraw/{performAppraisalObjectsId}")
     public AjaxResult withdraw(@PathVariable Long performAppraisalObjectsId) {
         return AjaxResult.success("撤回成功", performanceAppraisalService.withdraw(performAppraisalObjectsId));
+    }
+
+    /**
+     * 同步数据-制定
+     */
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:perDevelop:edit", "operate:cloud:performanceAppraisal:orgDevelop:edit"}, logical = Logical.OR)
+    @GetMapping("/migrationDevelopData")
+    public AjaxResult migrationDevelopData(@RequestParam("performAppraisalObjectsId") Long performAppraisalObjectsId, @RequestParam("appraisalObject") Integer appraisalObject) {
+        return AjaxResult.success("同步成功", performanceAppraisalService.migrationDevelopData(performAppraisalObjectsId, appraisalObject));
+    }
+
+    /**
+     * 同步数据-评议
+     */
+    @RequiresPermissions(value = {"operate:cloud:performanceAppraisal:perDevelop:edit", "operate:cloud:performanceAppraisal:perDevelop:edit"}, logical = Logical.OR)
+    @GetMapping("/migrationReviewData")
+    public AjaxResult migrationReviewData(@RequestParam("performAppraisalObjectsId") Long performAppraisalObjectsId, @RequestParam("appraisalObject") Integer appraisalObject) {
+        return AjaxResult.success("同步成功", performanceAppraisalService.migrationReviewData(performAppraisalObjectsId, appraisalObject));
     }
 
     //==============================其他==================================//

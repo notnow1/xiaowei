@@ -151,7 +151,9 @@ public class SalaryPayController extends BaseController {
             inputStream = new BufferedInputStream(file.getInputStream());
             ExcelReaderBuilder builder = EasyExcel.read(inputStream, salaryPayImportListener).headRowNumber(1);
             builder.sheet().doRead();
-        } catch (IOException e) {
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
             throw new ServiceException("导入人员信息配置Excel失败");
         }
         return AjaxResult.success("操作成功");
@@ -257,8 +259,7 @@ public class SalaryPayController extends BaseController {
             String fileName = URLEncoder.encode("月度工资数据导出" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                     , CharsetKit.UTF_8);
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-            List<SalaryItemDTO> salaryItemDTOS1 = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
-            List<SalaryItemDTO> salaryItemDTOS = salaryItemDTOS1.stream().sorted(Comparator.comparing(SalaryItemDTO::getSort)).collect(Collectors.toList());
+            List<SalaryItemDTO> salaryItemDTOS = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
             List<List<String>> head = SalaryPayImportListener.head(salaryItemDTOS);
             EasyExcel.write(response.getOutputStream())
                     .inMemory(true)
@@ -363,32 +364,108 @@ public class SalaryPayController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("operate:cloud:salaryPay:import")
     @GetMapping("/export-template")
-    public void exportTemplate(@RequestParam Map<String, Object> salaryPay, SalaryPayExcel
-            salaryPayExcel, HttpServletResponse response) {
+    public void exportTemplate(SalaryPayExcel salaryPayExcel, HttpServletResponse response) {
         try {
-            List<SalaryItemDTO> salaryItemDTOS = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
-            List<List<String>> headTemplate = SalaryPayImportListener.headTemplate(salaryItemDTOS);
+            List<SalaryItemDTO> salaryItemDTOS1 = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
+            List<List<String>> headTemplate = SalaryPayImportListener.headTemplate(salaryItemDTOS1);
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding(CharsetKit.UTF_8);
             String fileName = URLEncoder.encode("经营云-月度工资数据管理导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                     , CharsetKit.UTF_8);
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
-            WriteSheet sheet = EasyExcel
-                    .writerSheet(0, "Sheet1")
+            EasyExcel.write(response.getOutputStream())
+                    .inMemory(true)
+                    .sheet(0, "月度工资条导入")
+                    .useDefaultStyle(false)
                     .head(headTemplate)
-                    .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    .registerWriteHandler(new SheetWriteHandler() {
                         @Override
-                        protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head,
-                                                      Integer relativeRowIndex, Boolean isHead) {
-                            Sheet sheet = writeSheetHolder.getSheet();
-                            sheet.setColumnWidth(cell.getColumnIndex(), 6000);
-                            cell.setCellType(CellType.STRING);
+                        public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
+                            for (int i = 0; i < salaryItemDTOS1.size() + 3; i++) {
+                                // 设置为文本格式
+                                Sheet sheet = writeSheetHolder.getSheet();
+                                CellStyle cellStyle = writeWorkbookHolder.getCachedWorkbook().createCellStyle();
+                                // 49为文本格式
+                                cellStyle.setDataFormat((short) 49);
+                                // i为列，一整列设置为文本格式
+                                sheet.setDefaultColumnStyle(i, cellStyle);
+                            }
                         }
                     })
-                    .build();
-            excelWriter.write(new ArrayList<>(), sheet);
-            excelWriter.finish();
+                    .registerWriteHandler(new CellWriteHandler() {
+                        @Override
+                        public void afterCellDispose(CellWriteHandlerContext context) {
+                            Cell cell = context.getCell();
+                            // 3.0 设置单元格为文本
+                            WriteCellData<?> cellData = context.getFirstCellData();
+                            WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                            //设置文本
+                            DataFormatData dataFormatData = new DataFormatData();
+                            dataFormatData.setIndex((short) 49);
+                            writeCellStyle.setDataFormatData(dataFormatData);
+                            // 设置字体
+                            WriteFont headWriteFont = new WriteFont();
+                            // 拿到poi的workbook
+                            // 这里千万记住 想办法能复用的地方把他缓存起来 一个表格最多创建6W个样式
+                            // 不同单元格尽量传同一个 cellStyle
+                            Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                            CellStyle cellStyle = workbook.createCellStyle();
+                            if (context.getRowIndex() < 1) {
+                                headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                headWriteFont.setFontHeightInPoints((short) 11);
+                                //加粗
+                                headWriteFont.setBold(true);
+                                if (context.getColumnIndex() == 2) {
+                                    headWriteFont.setColor(IndexedColors.RED.getIndex());
+                                }
+                                headWriteFont.setFontName("微软雅黑");
+                                writeCellStyle.setWriteFont(headWriteFont);
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                cellData.setWriteCellStyle(writeCellStyle);
+                            } else {
+                                //居左
+                                writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                //设置 自动换行
+                                writeCellStyle.setWrapped(true);
+                                headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                                headWriteFont.setFontHeightInPoints((short) 11);
+                                headWriteFont.setFontName("微软雅黑");
+                                writeCellStyle.setWriteFont(headWriteFont);
+                                cellData.setWriteCellStyle(writeCellStyle);
+                                if (context.getColumnIndex() == 0) {
+                                    //设置rgb颜色
+                                    byte[] rgb = new byte[]{(byte) 217, (byte) 217, (byte) 217};
+                                    XSSFCellStyle xssfCellColorStyle = (XSSFCellStyle) cellStyle;
+                                    xssfCellColorStyle.setFillForegroundColor(new XSSFColor(rgb, null));
+                                    // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND
+                                    cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                                    cellData.setOriginCellStyle(xssfCellColorStyle);
+                                }
+                                cell.setCellStyle(cellStyle);
+                            }
+                            //垂直居中
+                            writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            //设置边框
+                            writeCellStyle.setBorderLeft(BorderStyle.THIN);
+                            writeCellStyle.setBorderTop(BorderStyle.THIN);
+                            writeCellStyle.setBorderRight(BorderStyle.THIN);
+                            writeCellStyle.setBorderBottom(BorderStyle.THIN);
+                        }
+                    })
+                    .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                        @Override
+                        protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                            Sheet sheet = writeSheetHolder.getSheet();
+                            int columnIndex = cell.getColumnIndex();
+                            // 列宽16
+                            sheet.setColumnWidth(columnIndex, (270 * 16));
+                            // 行高16
+                            sheet.setDefaultRowHeight((short) (20 * 16));
+                        }
+                    })
+                    .doWrite(new ArrayList<>());
         } catch (IOException e) {
             throw new ServiceException("导出失败");
         }

@@ -142,4 +142,11 @@ public interface IRegionService {
      * @return
      */
     List<RegionDTO> selectCodeList(List<String> regionNames);
+
+    /**
+     * 远程查询excel省份下拉框
+     * @param regionDTO
+     * @return
+     */
+    List<RegionDTO> getDropList(RegionDTO regionDTO);
 }

@@ -41,6 +41,15 @@ public interface RemoteEmployeeService {
     R<List<EmployeeDTO>> selectRemoteList(@RequestBody EmployeeDTO employeeDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
+     * 远程查询人员Excel下拉框数据
+     *
+     * @param employeeDTO
+     * @param source
+     * @return
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/dropEmployeeList")
+    R<List<EmployeeDTO>> selectDropEmployeeList(@RequestBody EmployeeDTO employeeDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    /**
      * 远程查询用户数据
      *
      * @param employeeDTO
@@ -134,7 +143,7 @@ public interface RemoteEmployeeService {
     R<List<EmployeeDTO>> selectParentDepartmentIdAndOfficialRankSystem(@RequestBody List<Long> departmentIdAll, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
-     * 查询在职所有人员
+     * 查询生效所有人员
      *
      * @param source
      * @return

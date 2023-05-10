@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 import net.qixiaowei.integration.common.domain.dto.BaseDTO;
+import net.qixiaowei.integration.common.enums.system.RoleCode;
 import net.qixiaowei.integration.common.enums.system.RoleType;
 
 /**
@@ -100,11 +101,11 @@ public class RoleDTO extends BaseDTO {
     private Set<String> permissions;
 
     public boolean isAdmin() {
-        return isAdmin(this.roleType);
+        return isAdmin(this.roleType, this.remark);
     }
 
-    public static boolean isAdmin(Integer roleType) {
-        return RoleType.BUILT_IN.getCode().equals(roleType);
+    public static boolean isAdmin(Integer roleType, String remark) {
+        return RoleType.BUILT_IN.getCode().equals(roleType) && RoleCode.TENANT_ADMIN.getRemark().equals(remark);
     }
 
 }

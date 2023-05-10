@@ -72,6 +72,7 @@ public class UserDTO extends BaseDTO {
     /**
      * 员工姓名
      */
+    @NotBlank(message = "姓名不能为空", groups = {UserDTO.AddUserDTO.class})
     private String employeeName;
     /**
      * 员工工号
@@ -116,7 +117,6 @@ public class UserDTO extends BaseDTO {
     /**
      * 手机号码
      */
-    @NotBlank(message = "请输入正确的手机号码", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
     @Size(min = 0, max = 30, message = "手机号码长度不能超过30个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
     private String mobilePhone;
     /**
@@ -135,13 +135,17 @@ public class UserDTO extends BaseDTO {
      */
     private String remark;
     /**
-     * 状态:0失效;1生效
+     * 状态:0失效;1生效;2未激活
      */
     private Integer status;
     /**
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
+    /**
+     * 拥有的角色名称集合
+     */
+    private String roleNames;
     /**
      * 拥有的角色对象
      */

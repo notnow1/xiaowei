@@ -34,10 +34,13 @@ import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
-import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.*;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
-import net.qixiaowei.system.manage.api.dto.basic.*;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
@@ -53,8 +56,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -84,10 +87,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Autowired
     private TargetDecomposeDimensionMapper targetDecomposeDimensionMapper;
 
-    @Autowired
-    private ProductMapper productMapper;
-    @Autowired
-    private AreaMapper areaMapper;
+
     @Autowired
     private RemoteEmployeeService remoteEmployeeService;
     @Autowired
@@ -109,10 +109,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * 查询经营结果分析报表详情
      *
      * @param targetDecomposeId 目标分解表主键
+     * @param flag
      * @return
      */
     @Override
-    public TargetDecomposeDTO selectResultTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
+    public TargetDecomposeDTO selectResultTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, boolean flag) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNull(targetDecomposeDTO)) {
@@ -127,7 +128,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
-        this.packRemote(targetDecomposeDetailsDTOList);
+        this.packRemote(targetDecomposeDetailsDTOList, flag);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //年度预测值
@@ -273,7 +274,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //根据目标分解主表id分组
         Map<Long, List<TargetDecomposeDetailsDTO>> targetDecomposeDetailsMapList = targetDecomposeDetailsDTOList.stream().collect(Collectors.groupingBy(TargetDecomposeDetailsDTO::getTargetDecomposeId));
 
-        this.packRemote(targetDecomposeDetailsDTOList);
+        this.packRemote(targetDecomposeDetailsDTOList, false);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsIds(targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getTargetDecomposeDetailsId).collect(Collectors.toList()));
             for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOList) {
@@ -420,10 +421,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      *
      * @param targetDecomposeId 目标分解表主键
      * @param backlogId
+     * @param flag
      * @return
      */
     @Override
-    public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, Long backlogId) {
+    public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, Long backlogId, boolean flag) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNull(targetDecomposeDTO)) {
@@ -448,7 +450,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByPowerTargetDecomposeId(targetDecomposeId, SecurityUtils.getEmployeeId());
         }
 
-        this.packRemote(targetDecomposeDetailsDTOList);
+        this.packRemote(targetDecomposeDetailsDTOList, flag);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //年度预测值
@@ -819,7 +821,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             if (StringUtils.isNotEmpty(targetDecomposeDTOList)) {
                 for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOList) {
                     for (TargetDecomposeDTO dto : targetDecomposeDTOS) {
-                        if (dto.getTargetDecomposeId().equals(decomposeDTO.getTargetDecomposeId())){
+                        if (dto.getTargetDecomposeId().equals(decomposeDTO.getTargetDecomposeId())) {
                             dto.setTargetDecomposeDetailsDTOS(decomposeDTO.getTargetDecomposeDetailsDTOS());
                             BigDecimal targetPercentageCompleteSum = new BigDecimal("0");
                             BigDecimal targetPercentageCompleteAve = new BigDecimal("0");
@@ -886,7 +888,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         this.packDecompositionDimension(targetDecomposeDTO);
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
-        this.packRemote(targetDecomposeDetailsDTOList);
+        this.packRemote(targetDecomposeDetailsDTOList, false);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //目标分解周欺数据集合
@@ -1590,56 +1592,92 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         List<DecomposeDetailCycles> decomposeDetailCyclesList = new ArrayList<>();
 
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
-        //插入目标分解详情表
-        for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
-            //目标分解详情表
-            TargetDecomposeDetails targetDecomposeDetails = new TargetDecomposeDetails();
-            BeanUtils.copyProperties(targetDecomposeDetailsDTOS.get(i), targetDecomposeDetails);
-            //目标分解id
-            targetDecomposeDetails.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
-            targetDecomposeDetails.setCreateBy(SecurityUtils.getUserId());
-            targetDecomposeDetails.setCreateTime(DateUtils.getNowDate());
-            targetDecomposeDetails.setUpdateTime(DateUtils.getNowDate());
-            targetDecomposeDetails.setUpdateBy(SecurityUtils.getUserId());
-            targetDecomposeDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            //目标分解详情表集合
-            targetDecomposeDetailsList.add(targetDecomposeDetails);
-        }
-        try {
-            if (StringUtils.isNotEmpty(targetDecomposeDetailsList)) {
-                targetDecomposeDetailsMapper.batchTargetDecomposeDetails(targetDecomposeDetailsList);
-            }
-        } catch (Exception e) {
-            throw new ServiceException("插入目标分解详情表失败");
-        }
-        //插入目标分解详细信息周期表
-        for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
-            int cycleNumber = 1;
-            //目标分解详细信息周期
-            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = targetDecomposeDetailsDTOS.get(i).getDecomposeDetailCyclesDTOS();
-            for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
-                //目标分解详细信息周期表
-                DecomposeDetailCycles decomposeDetailCycles = new DecomposeDetailCycles();
-                BeanUtils.copyProperties(decomposeDetailCyclesDTO, decomposeDetailCycles);
-                decomposeDetailCycles.setCycleNumber(cycleNumber);
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
+            //校检分解维度是否重复
+            this.validDecompositionDimension(targetDecomposeDTO, targetDecomposeDetailsDTOS);
+            //插入目标分解详情表
+            for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+                //目标分解详情表
+                TargetDecomposeDetails targetDecomposeDetails = new TargetDecomposeDetails();
+                BeanUtils.copyProperties(targetDecomposeDetailsDTOS.get(i), targetDecomposeDetails);
                 //目标分解id
-                decomposeDetailCycles.setTargetDecomposeDetailsId(targetDecomposeDetailsList.get(i).getTargetDecomposeDetailsId());
-                decomposeDetailCycles.setCreateBy(SecurityUtils.getUserId());
-                decomposeDetailCycles.setCreateTime(DateUtils.getNowDate());
-                decomposeDetailCycles.setUpdateTime(DateUtils.getNowDate());
-                decomposeDetailCycles.setUpdateBy(SecurityUtils.getUserId());
-                decomposeDetailCycles.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                cycleNumber++;
-                //目标分解详细信息周期表集合
-                decomposeDetailCyclesList.add(decomposeDetailCycles);
+                targetDecomposeDetails.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
+                targetDecomposeDetails.setCreateBy(SecurityUtils.getUserId());
+                targetDecomposeDetails.setCreateTime(DateUtils.getNowDate());
+                targetDecomposeDetails.setUpdateTime(DateUtils.getNowDate());
+                targetDecomposeDetails.setUpdateBy(SecurityUtils.getUserId());
+                targetDecomposeDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                //目标分解详情表集合
+                targetDecomposeDetailsList.add(targetDecomposeDetails);
+            }
+            try {
+                if (StringUtils.isNotEmpty(targetDecomposeDetailsList)) {
+                    targetDecomposeDetailsMapper.batchTargetDecomposeDetails(targetDecomposeDetailsList);
+                }
+            } catch (Exception e) {
+                throw new ServiceException("插入目标分解详情表失败");
+            }
+            //插入目标分解详细信息周期表
+            for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+                int cycleNumber = 1;
+                //目标分解详细信息周期
+                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = targetDecomposeDetailsDTOS.get(i).getDecomposeDetailCyclesDTOS();
+                for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
+                    //目标分解详细信息周期表
+                    DecomposeDetailCycles decomposeDetailCycles = new DecomposeDetailCycles();
+                    BeanUtils.copyProperties(decomposeDetailCyclesDTO, decomposeDetailCycles);
+                    decomposeDetailCycles.setCycleNumber(cycleNumber);
+                    //目标分解id
+                    decomposeDetailCycles.setTargetDecomposeDetailsId(targetDecomposeDetailsList.get(i).getTargetDecomposeDetailsId());
+                    decomposeDetailCycles.setCreateBy(SecurityUtils.getUserId());
+                    decomposeDetailCycles.setCreateTime(DateUtils.getNowDate());
+                    decomposeDetailCycles.setUpdateTime(DateUtils.getNowDate());
+                    decomposeDetailCycles.setUpdateBy(SecurityUtils.getUserId());
+                    decomposeDetailCycles.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    cycleNumber++;
+                    //目标分解详细信息周期表集合
+                    decomposeDetailCyclesList.add(decomposeDetailCycles);
+                }
+            }
+            try {
+                if (StringUtils.isNotEmpty(decomposeDetailCyclesList)) {
+                    decomposeDetailCyclesMapper.batchDecomposeDetailCycles(decomposeDetailCyclesList);
+                }
+            } catch (Exception e) {
+                throw new ServiceException("插入目标分解详细信息周期表失败");
             }
         }
-        try {
-            if (StringUtils.isNotEmpty(decomposeDetailCyclesList)) {
-                decomposeDetailCyclesMapper.batchDecomposeDetailCycles(decomposeDetailCyclesList);
+
+    }
+
+    /**
+     * 校检分解维度是否重复
+     *
+     * @param targetDecomposeDTO
+     * @param targetDecomposeDetailsDTOS
+     */
+    private void validDecompositionDimension(TargetDecomposeDTO targetDecomposeDTO, List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS) {
+        StringBuffer errorData = new StringBuffer();
+        //分解维度集合
+        List<String> decompositionDimensionAllData = new ArrayList<>();
+        for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+            StringBuffer decompositionDimensionAll = new StringBuffer();
+            decompositionDimensionAll.append(targetDecomposeDetailsDTOS.get(i).getProductId())
+                    .append(targetDecomposeDetailsDTOS.get(i).getDepartmentId())
+                    .append(targetDecomposeDetailsDTOS.get(i).getIndustryId())
+                    .append(targetDecomposeDetailsDTOS.get(i).getEmployeeId())
+                    .append(targetDecomposeDetailsDTOS.get(i).getAreaId())
+                    .append(targetDecomposeDetailsDTOS.get(i).getRegionId());
+            if (StringUtils.isNotBlank(decompositionDimensionAll.toString())) {
+                if (decompositionDimensionAllData.contains(decompositionDimensionAll.toString())) {
+                    errorData.append((i + 1) + "行" + targetDecomposeDTO.getDecompositionDimension() + "已存在");
+
+                }
+                decompositionDimensionAllData.add(decompositionDimensionAll.toString());
             }
-        } catch (Exception e) {
-            throw new ServiceException("插入目标分解详细信息周期表失败");
+        }
+        if (StringUtils.isNotBlank(errorData.toString())) {
+            throw new ServiceException(errorData.toString());
         }
     }
 
@@ -2232,11 +2270,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     /**
      * 解析Excel
      *
+     * @param targetDecomposeDTO
      * @param file
+     * @param productDTOList
+     * @param areaDTOList
      * @return
      */
     @Override
-    public TargetDecomposeDTO excelParseObject(TargetDecomposeDTO targetDecomposeDTO, MultipartFile file) {
+    public TargetDecomposeDTO excelParseObject(TargetDecomposeDTO targetDecomposeDTO, MultipartFile file, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList) {
 
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = new ArrayList<>();
@@ -2245,122 +2286,198 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //Excel目标分解周期数据
         List<List<String>> cyclesExcelData = new ArrayList<>();
         try {
+            List<String> businessUnitDecomposeList = new ArrayList<>();
+            int num = 0;
+            if (StringUtils.isNotNull(targetDecomposeDTO)) {
+                Integer timeDimension = targetDecomposeDTO.getTimeDimension();
+
+
+                String decompositionDimension = targetDecomposeDTO.getDecompositionDimension();
+                businessUnitDecomposeList = Arrays.asList(decompositionDimension.split("\\+"));
+                if (timeDimension == 1) {
+                    num = 1;
+                } else if (timeDimension == 2) {
+                    num = 2;
+                } else if (timeDimension == 3) {
+                    num = 4;
+                } else if (timeDimension == 4) {
+                    num = 12;
+                } else if (timeDimension == 5) {
+                    num = 52;
+                }
+            }
+
+            int headArrange = businessUnitDecomposeList.size() + 1 + num;
+
             //构建读取器
             ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-            List<Map<Integer, String>> listMap = read.doReadAllSync();
+            List<Map<Integer, String>> listMap = new ArrayList<>();
+
+            listMap = read.sheet(0).doReadSync();
+            if (listMap.size() < 10){
+                throw new ServiceException("模板数据不能为空，至少有1条数据");
+            }
+            int maxListMap = 0;
+            for (int i = 0; i < listMap.size(); i++) {
+                if (i == 8) {
+                    int size = 0;
+                    for (Integer key : listMap.get(i).keySet()) {
+                        if (StringUtils.isNotBlank(listMap.get(i).get(key))) {
+                            size = size + 1;
+                        }
+                    }
+                    maxListMap = size;
+                }
+            }
+            for (Map<Integer, String> map : listMap) {
+                if (map.size() < maxListMap) {
+                    int size = map.size();
+                    for (int i = 0; i < maxListMap - size; i++) {
+                        map.put(size + i, "");
+                    }
+                }
+
+            }
+            if (maxListMap != headArrange) {
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入！");
+            }
             //人员列下标
-            AtomicReference<Integer> employeeNameKey = new AtomicReference<>(0);
+            String employeeNameKey = null;
             //人员code集合
             List<String> employeeCodes = new ArrayList<>();
+
+            //滚动预测负责人下标
+            String principalEmployeeKey = null;
+            //滚动预测负责人集合
+            List<String> principalEmployeeNames = new ArrayList<>();
             //区域下标
-            AtomicReference<Integer> areaCodesKey = new AtomicReference<>(0);
+            String areaCodesKey = null;
             //区域code集合
             List<String> areaCodes = new ArrayList<>();
             //部门下标
-            AtomicReference<Integer> departmentCodeKey = new AtomicReference<>(0);
+            String departmentCodeKey = null;
             //部门code集合
             List<String> departmentCodes = new ArrayList<>();
 
             //行业下标
-            AtomicReference<Integer> industryCodeKey = new AtomicReference<>(0);
+            String industryCodeKey = null;
             //行业code集合
             List<String> industryCodes = new ArrayList<>();
 
             //省份下标
-            AtomicReference<Integer> provinceNameKey = new AtomicReference<>(0);
+            String provinceNameKey = null;
             //省份名称集合
             List<String> provinceNames = new ArrayList<>();
 
             //产品下标
-            AtomicReference<Integer> productCodeKey = new AtomicReference<>(0);
+            String productCodeKey = null;
             //产品code集合
             List<String> productCodes = new ArrayList<>();
 
             //时间维度下标
-            AtomicReference<Integer> timeDimensionKey = new AtomicReference<>(0);
+            String timeDimensionKey = null;
             try {
                 for (int i = 0; i < listMap.size(); i++) {
                     Map<Integer, String> map = listMap.get(i);
-                    map.forEach((key, value) -> {
-                        if (StringUtils.equals(map.get(key), DecompositionDimension.EMPLOYEE.getInfo())) {
+                    if (i == 8) {
+                        for (Integer key : map.keySet()) {
+                            if (StringUtils.isBlank(map.get(key))) {
+                                continue;
+                            }
+                            if (StringUtils.equals(DecompositionDimension.EMPLOYEE.getInfo(), map.get(key).replace("*", ""))) {
+                                employeeNameKey = String.valueOf(key.intValue());
 
-                            employeeNameKey.set(key);
-                        } else if (StringUtils.equals(map.get(key), DecompositionDimension.AREA.getInfo())) {
-                            areaCodesKey.set(key);
-                        } else if (StringUtils.equals(map.get(key), DecompositionDimension.DEPARTMENT.getInfo())) {
-                            departmentCodeKey.set(key);
-                        } else if (StringUtils.equals(map.get(key), DecompositionDimension.INDUSTRY.getInfo())) {
-                            industryCodeKey.set(key);
-                        } else if (StringUtils.equals(map.get(key), DecompositionDimension.REGION.getInfo())) {
-                            provinceNameKey.set(key);
-                        } else if (StringUtils.equals(map.get(key), DecompositionDimension.PRODUCT.getInfo())) {
-                            productCodeKey.set(key);
-                        } else if (StringUtils.equals(map.get(key), "分解维度")) {
-                            timeDimensionKey.set(key + 1);
+                            } else if (StringUtils.equals(DecompositionDimension.AREA.getInfo(), map.get(key).replace("*", ""))) {
+                                areaCodesKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.DEPARTMENT.getInfo(), map.get(key).replace("*", ""))) {
+                                departmentCodeKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.INDUSTRY.getInfo(), map.get(key).replace("*", ""))) {
+                                industryCodeKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.REGION.getInfo(), map.get(key).replace("*", ""))) {
+                                provinceNameKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.PRODUCT.getInfo(), map.get(key).replace("*", ""))) {
+                                productCodeKey = String.valueOf(key.intValue());
+                            } else if (StringUtils.equals(DecompositionDimension.PRINCIPALEMPLOYEE.getInfo(), map.get(key).replace("*", ""))) {
+                                principalEmployeeKey = String.valueOf(key.intValue());
+                                timeDimensionKey = String.valueOf((key.intValue() + 1));
+                            }
                         }
-                    });
+                    }
 
-                    if (i > 1) {
+                    if (i > 8) {
                         List<String> list = new ArrayList<>();
-                        map.forEach((key, value) -> {
-                            if (0 != employeeNameKey.get()) {
-                                if (key.equals(employeeNameKey.get())) {
-                                    employeeCodes.add(map.get(employeeNameKey.get()));
+                        for (Integer key : map.keySet()) {
+                            if (null != employeeNameKey) {
+                                if (key.equals(Integer.parseInt(employeeNameKey))) {
+                                    employeeCodes.add(map.get(Integer.parseInt(employeeNameKey)));
                                     mapAllData.put(DecompositionDimension.EMPLOYEE.getInfo(), employeeCodes);
                                 }
 
                             }
-                            if (0 != areaCodesKey.get()) {
-                                if (key.equals(areaCodesKey.get())) {
-                                    areaCodes.add(map.get(areaCodesKey.get()));
+                            if (null != principalEmployeeKey) {
+                                if (key.equals(Integer.parseInt(principalEmployeeKey))) {
+                                    principalEmployeeNames.add(map.get(Integer.parseInt(principalEmployeeKey)));
+                                    mapAllData.put(DecompositionDimension.PRINCIPALEMPLOYEE.getInfo(), principalEmployeeNames);
+                                }
+
+                            }
+                            if (null != areaCodesKey) {
+                                if (key.equals(Integer.parseInt(areaCodesKey))) {
+                                    areaCodes.add(map.get(Integer.parseInt(areaCodesKey)));
                                     mapAllData.put(DecompositionDimension.AREA.getInfo(), areaCodes);
                                 }
 
                             }
-                            if (0 != departmentCodeKey.get()) {
-                                if (key.equals(departmentCodeKey.get())) {
-                                    departmentCodes.add(map.get(departmentCodeKey.get()));
+                            if (null != departmentCodeKey) {
+                                if (key.equals(Integer.parseInt(departmentCodeKey))) {
+                                    departmentCodes.add(map.get(Integer.parseInt(departmentCodeKey)));
                                     mapAllData.put(DecompositionDimension.DEPARTMENT.getInfo(), departmentCodes);
                                 }
 
                             }
-                            if (0 != industryCodeKey.get()) {
-                                if (key.equals(industryCodeKey.get())) {
-                                    industryCodes.add(map.get(industryCodeKey.get()));
+                            if (null != industryCodeKey) {
+                                if (key.equals(Integer.parseInt(industryCodeKey))) {
+                                    industryCodes.add(map.get(Integer.parseInt(industryCodeKey)));
                                     mapAllData.put(DecompositionDimension.INDUSTRY.getInfo(), industryCodes);
                                 }
 
                             }
-                            if (0 != provinceNameKey.get()) {
-                                if (key.equals(provinceNameKey.get())) {
-                                    provinceNames.add(map.get(provinceNameKey.get()));
+                            if (null != provinceNameKey) {
+                                if (key.equals(Integer.parseInt(provinceNameKey))) {
+                                    provinceNames.add(map.get(Integer.parseInt(provinceNameKey)));
                                     mapAllData.put(DecompositionDimension.REGION.getInfo(), provinceNames);
                                 }
 
                             }
-                            if (0 != productCodeKey.get()) {
-                                if (key.equals(productCodeKey.get())) {
-                                    productCodes.add(map.get(productCodeKey.get()));
+                            if (null != productCodeKey) {
+                                if (key.equals(Integer.parseInt(productCodeKey))) {
+                                    productCodes.add(map.get(Integer.parseInt(productCodeKey)));
                                     mapAllData.put(DecompositionDimension.PRODUCT.getInfo(), productCodes);
                                 }
 
                             }
-                            if (key >= timeDimensionKey.get()) {
-                                list.add(map.get(key));
+
+                            if (key >= Integer.parseInt(timeDimensionKey)) {
+                                String s = map.get(key);
+                                if (StringUtils.isBlank(s)) {
+                                    s = "0";
+                                }
+                                list.add(s);
                             }
-                        });
+                        }
                         cyclesExcelData.add(list);
                     }
+
 
                 }
             } catch (Exception e) {
                 throw new ServiceException("模板格式不正确！");
             }
-            return this.packExcelData(targetDecomposeDTO, mapAllData, targetDecomposeDetailsDTOS, cyclesExcelData);
+            return this.packExcelData(targetDecomposeDTO, mapAllData, targetDecomposeDetailsDTOS, cyclesExcelData, productDTOList, areaDTOList);
 
 
         } catch (IOException e) {
-            throw new ServiceException("导入人员信息配置Excel失败");
+            throw new ServiceException("解析Excel失败");
         }
     }
 
@@ -2527,7 +2644,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Override
     public List<TargetDecomposeDetailsDTO> selectTargetDecomposeDetailsByTargetDecomposeId(Long targetDecomposeId) {
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
-        this.packRemote(targetDecomposeDetailsDTOList);
+        this.packRemote(targetDecomposeDetailsDTOList, false);
         return targetDecomposeDetailsDTOList;
     }
 
@@ -2637,7 +2754,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //详情表
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
-            this.packRemote(targetDecomposeDetailsDTOList);
+            this.packRemote(targetDecomposeDetailsDTOList, true);
             List<Long> targetDecomposeDetailsIds = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getTargetDecomposeDetailsId).collect(Collectors.toList());
             //周期表
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsIds(targetDecomposeDetailsIds);
@@ -2690,7 +2807,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 //分解维度数据集合
                 targetDecomposeDetailsExcel.setDecompositionDimensions(decompositionDimensions);
                 //汇总金额
-                targetDecomposeDetailsExcel.setAmountTarget(targetDecomposeDetailsDTO.getAmountTarget().toString());
+                targetDecomposeDetailsExcel.setAmountTarget(targetDecomposeDetailsDTO.getAmountTarget().setScale(2, RoundingMode.HALF_UP).toString());
                 //负责人名称
                 targetDecomposeDetailsExcel.setPrincipalEmployeeName(targetDecomposeDetailsDTO.getPrincipalEmployeeName());
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesMap)) {
@@ -2703,16 +2820,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList1) {
                             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList2 = cycleNumberMap.get(decomposeDetailCyclesDTO.getCycleNumber());
                             if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList2)) {
-                                cycleTargetSum.add(decomposeDetailCyclesDTOList2.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
+                                cycleTargetSum.add(decomposeDetailCyclesDTOList2.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toString());
                             }
-                            cycleTargets.add(decomposeDetailCyclesDTO.getCycleTarget().toString());
+                            cycleTargets.add(decomposeDetailCyclesDTO.getCycleTarget().setScale(2, RoundingMode.HALF_UP).toString());
                         }
                         targetDecomposeDetailsExcel.setCycleTargets(cycleTargets);
                         targetDecomposeDetailsExcel.setCycleTargetSum(cycleTargetSum);
                     }
                 }
                 //汇总金额合计
-                targetDecomposeDetailsExcel.setAmountTargetSum(targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getAmountTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
+                targetDecomposeDetailsExcel.setAmountTargetSum(targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getAmountTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP).toString());
                 targetDecomposeDetailsExcelList.add(targetDecomposeDetailsExcel);
             }
 
@@ -2860,7 +2977,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      *
      * @param targetDecomposeDetailsDTOList 目标分解详情DTO列表
      */
-    public void packRemote(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList) {
+    public void packRemote(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList, boolean excelFlag) {
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             //人员id集合
             List<Long> employeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
@@ -2887,7 +3004,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             for (EmployeeDTO datum : data) {
                                 if (targetDecomposeDetailsDTO.getEmployeeId().equals(datum.getEmployeeId())) {
                                     targetDecomposeDetailsDTO.setEmployeeId(datum.getEmployeeId());
-                                    targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName());
+                                    if (excelFlag) {
+                                        targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName() + "(" + datum.getEmployeeCode() + ")");
+                                    } else {
+                                        targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName());
+                                    }
+
                                     break;
                                 }
                             }
@@ -2907,7 +3029,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             for (EmployeeDTO datum : data) {
                                 if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(datum.getEmployeeId())) {
                                     targetDecomposeDetailsDTO.setPrincipalEmployeeId(datum.getEmployeeId());
-                                    targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName());
+                                    if (excelFlag) {
+                                        targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName() + "(" + datum.getEmployeeCode() + ")");
+                                    } else {
+                                        targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName());
+                                    }
                                     break;
                                 }
                             }
@@ -3032,14 +3158,40 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param mapAllData
      * @param targetDecomposeDetailsDTOS
      * @param cyclesExcelData
+     * @param productDTOList
+     * @param areaDTOList
      * @return
      */
-    public TargetDecomposeDTO packExcelData(TargetDecomposeDTO targetDecomposeDTO, Map<String, List<String>> mapAllData, List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS, List<List<String>> cyclesExcelData) {
+    public TargetDecomposeDTO packExcelData(TargetDecomposeDTO targetDecomposeDTO, Map<String, List<String>> mapAllData, List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS, List<List<String>> cyclesExcelData, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList) {
+        Department departmentDTO = new Department();
+        departmentDTO.setStatus(1);
+        R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(departmentDTO, SecurityConstants.INNER);
+        //部门名称集合
+        List<DepartmentDTO> parentDepartmentExcelNamesData = departmentExcelList.getData();
+
+        //销售员下拉框
+        R<List<EmployeeDTO>> employeeExcelList = remoteEmployeeService.selectDropEmployeeList(new EmployeeDTO(), SecurityConstants.INNER);
+        List<EmployeeDTO> employeeExcelListData = employeeExcelList.getData();
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setEmployeeFlag("user");
+        //滚动预测负责人下拉框
+        R<List<EmployeeDTO>> principalEmployeeExcelList = remoteEmployeeService.selectDropEmployeeList(employeeDTO, SecurityConstants.INNER);
+        List<EmployeeDTO> principalEmployeeListData = principalEmployeeExcelList.getData();
+        IndustryDTO industryDTO1 = new IndustryDTO();
+        industryDTO1.setStatus(1);
+        //行业下拉框
+        R<List<IndustryDTO>> industryExcelList = remoteIndustryService.selectListByIndustry(industryDTO1, SecurityConstants.INNER);
+        List<IndustryDTO> industryExcelListData = industryExcelList.getData();
+
+        //省份下拉框
+        R<List<RegionDTO>> regionExcelList = remoteRegionService.getDropList(new RegionDTO(), SecurityConstants.INNER);
+        List<RegionDTO> regionExcelListData = regionExcelList.getData();
 
         //对下标进行排序
         int maxSize = this.packExcelListData(mapAllData);
 
-        Map<String, List<Object>> mapAllEndData = this.packExcelDecompositionDimensionData(mapAllData);
+        Map<String, List<Object>> mapAllEndData = this.packExcelDecompositionDimensionData(mapAllData, parentDepartmentExcelNamesData, employeeExcelListData, principalEmployeeListData, industryExcelListData, productDTOList, areaDTOList, regionExcelListData);
 
         mapAllEndData.forEach((key, value) -> {
             List<Object> list = mapAllEndData.get(key);
@@ -3059,15 +3211,45 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         } else {
-                            EmployeeDTO employeeDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(employeeCount - 1))), EmployeeDTO.class);
+                            EmployeeDTO employeeDTO1 = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(employeeCount - 1))), EmployeeDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
-                                targetDecomposeDetailsDTOS.get(i).setEmployeeName(employeeDTO.getEmployeeName());
-                                targetDecomposeDetailsDTOS.get(i).setEmployeeId(employeeDTO.getEmployeeId());
+                                targetDecomposeDetailsDTOS.get(i).setEmployeeName(employeeDTO1.getEmployeeName());
+                                targetDecomposeDetailsDTOS.get(i).setEmployeeId(employeeDTO1.getEmployeeId());
                             } else {
                                 //人员名称
-                                targetDecomposeDetailsDTO.setEmployeeName(employeeDTO.getEmployeeName());
+                                targetDecomposeDetailsDTO.setEmployeeName(employeeDTO1.getEmployeeName());
                                 //人员id
-                                targetDecomposeDetailsDTO.setEmployeeId(employeeDTO.getEmployeeId());
+                                targetDecomposeDetailsDTO.setEmployeeId(employeeDTO1.getEmployeeId());
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
+                        }
+                        employeeCount--;
+                    }
+                }
+
+            } else if (StringUtils.equals(key, DecompositionDimension.PRINCIPALEMPLOYEE.getInfo())) {
+                if (StringUtils.isNotEmpty(list)) {
+                    int employeeCount = list.size();
+                    for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
+                        TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
+                        if (list.size() - 1 < i) {
+                            if (targetDecomposeDetailsDTOS.size() == maxSize) {
+                                targetDecomposeDetailsDTOS.get(i).setPrincipalEmployeeName("");
+                            } else {
+                                targetDecomposeDetailsDTO.setPrincipalEmployeeName("");
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
+
+                        } else {
+                            EmployeeDTO employeeDTO1 = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(employeeCount - 1))), EmployeeDTO.class);
+                            if (targetDecomposeDetailsDTOS.size() == maxSize) {
+                                targetDecomposeDetailsDTOS.get(i).setPrincipalEmployeeName(employeeDTO1.getEmployeeName());
+                                targetDecomposeDetailsDTOS.get(i).setPrincipalEmployeeId(employeeDTO1.getEmployeeId());
+                            } else {
+                                //人员名称
+                                targetDecomposeDetailsDTO.setPrincipalEmployeeName(employeeDTO1.getEmployeeName());
+                                //人员id
+                                targetDecomposeDetailsDTO.setPrincipalEmployeeId(employeeDTO1.getEmployeeId());
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
                         }
@@ -3077,11 +3259,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             } else if (StringUtils.equals(key, DecompositionDimension.AREA.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
-                    List<AreaDTO> list2 = (List<AreaDTO>) list.get(0);
-                    int areaCount = list2.size();
-                    for (int i = 0; i < Math.max(list2.size(), maxSize); i++) {
+                    int areaCount = list.size();
+                    for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-                        if (list2.size() - 1 < i) {
+                        if (list.size() - 1 < i) {
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setAreaName("");
                             } else {
@@ -3090,7 +3271,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             }
 
                         } else {
-                            AreaDTO areaDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list2.get(areaCount - 1))), AreaDTO.class);
+                            AreaDTO areaDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(areaCount - 1))), AreaDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
                                 targetDecomposeDetailsDTOS.get(i).setAreaName(areaDTO.getAreaName());
                                 targetDecomposeDetailsDTOS.get(i).setAreaId(areaDTO.getAreaId());
@@ -3119,15 +3300,15 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
                         } else {
-                            DepartmentDTO departmentDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(departmentCount - 1))), DepartmentDTO.class);
+                            DepartmentDTO departmentDTO1 = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(departmentCount - 1))), DepartmentDTO.class);
                             if (targetDecomposeDetailsDTOS.size() == maxSize) {
-                                targetDecomposeDetailsDTOS.get(i).setDepartmentName(departmentDTO.getDepartmentName());
-                                targetDecomposeDetailsDTOS.get(i).setDepartmentId(departmentDTO.getDepartmentId());
+                                targetDecomposeDetailsDTOS.get(i).setDepartmentName(departmentDTO1.getDepartmentName());
+                                targetDecomposeDetailsDTOS.get(i).setDepartmentId(departmentDTO1.getDepartmentId());
                             } else {
                                 //部门名称
-                                targetDecomposeDetailsDTO.setDepartmentName(departmentDTO.getDepartmentName());
+                                targetDecomposeDetailsDTO.setDepartmentName(departmentDTO1.getDepartmentName());
                                 //部门id
-                                targetDecomposeDetailsDTO.setDepartmentId(departmentDTO.getDepartmentId());
+                                targetDecomposeDetailsDTO.setDepartmentId(departmentDTO1.getDepartmentId());
                                 targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                             }
 
@@ -3237,34 +3418,24 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             }
         }
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
+            //校检分解维度是否重复
+            this.validDecompositionDimension(targetDecomposeDTO, targetDecomposeDetailsDTOS);
+
+
             //详情周期数据
             for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
-/*                int dime = 0;
-                if (targetDecomposeDTO.getTargetYear() <= DateUtils.getYear()) {
-                    dime = this.packDecomposeDetailCycles(targetDecomposeDTO);
-                }*/
+
                 List<String> list = cyclesExcelData.get(i);
                 for (int i1 = 0; i1 < list.size(); i1++) {
- /*                   if (i1 >= dime - 1) {
-                    } else {
-                        DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
-                        //周期
-                        decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
-                        if (StringUtils.isNotBlank(list.get(i1))) {
-                            //周期目标值
-                            decomposeDetailCyclesDTO.setCycleTarget(new BigDecimal("0"));
-                        }
-                        decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
-                    }*/
-                        DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
-                        //周期
-                        decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
-                        if (StringUtils.isNotBlank(list.get(i1))) {
-                            //周期目标值
-                            decomposeDetailCyclesDTO.setCycleTarget(new BigDecimal(list.get(i1)));
-                        }
-                        decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
+                    DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
+                    //周期
+                    decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
+                    if (StringUtils.isNotBlank(list.get(i1))) {
+                        //周期目标值
+                        decomposeDetailCyclesDTO.setCycleTarget(new BigDecimal(list.get(i1)));
+                    }
+                    decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
 
                 }
                 targetDecomposeDetailsDTOS.get(i).setDecomposeDetailCyclesDTOS(decomposeDetailCyclesDTOS);
@@ -3350,10 +3521,17 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     /**
      * 封装分解维度数据
      *
-     * @param mapAllData
+     * @param mapAllData                     excel数据
+     * @param parentDepartmentExcelNamesData 组织数据
+     * @param employeeExcelListData          人员数据
+     * @param principalEmployeeListData      滚动预测负责人数据
+     * @param industryExcelListData          行业数据
+     * @param productDTOList                 产品数据
+     * @param areaDTOList                    区域数据
+     * @param regionExcelListData            省份数据
      * @return
      */
-    public Map<String, List<Object>> packExcelDecompositionDimensionData(Map<String, List<String>> mapAllData) {
+    public Map<String, List<Object>> packExcelDecompositionDimensionData(Map<String, List<String>> mapAllData, List<DepartmentDTO> parentDepartmentExcelNamesData, List<EmployeeDTO> employeeExcelListData, List<EmployeeDTO> principalEmployeeListData, List<IndustryDTO> industryExcelListData, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList, List<RegionDTO> regionExcelListData) {
         Map<String, List<Object>> mapAllEndData = new LinkedHashMap<>();
         StringBuffer codeErreo = new StringBuffer();
         try {
@@ -3361,351 +3539,248 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 mapAllData.forEach((key, value) -> {
                     if (StringUtils.equals(key, DecompositionDimension.EMPLOYEE.getInfo())) {
                         List<String> list = mapAllData.get(key);
-
-                        //远程调用查询是否存在
-                        R<List<EmployeeDTO>> listR = remoteEmployeeService.selectCodeList(mapAllData.get(key), SecurityConstants.INNER);
-                        List<EmployeeDTO> employeeDTOS = listR.getData();
-                        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
                         if (StringUtils.isNotEmpty(list)) {
-                            if (StringUtils.isNotEmpty(employeeDTOS)) {
-                                for (String s : list) {
-                                    EmployeeDTO employeeDTO = new EmployeeDTO();
-                                    employeeDTO.setEmployeeCode(s);
-                                    employeeDTOList.add(employeeDTO);
+                            for (int i = 0; i < list.size(); i++) {
+                                String s = list.get(i);
+                                if (StringUtils.isBlank(s)) {
+                                    codeErreo.append("第" + (i + 1) + "行销售员为必填项！");
+                                    continue;
                                 }
-                                int i = 1;
-                                for (EmployeeDTO employeeDTO : employeeDTOList) {
-                                    String employeeCode = employeeDTO.getEmployeeCode();
-                                    if (StringUtils.isBlank(employeeCode)) {
-                                        codeErreo.append("第" + i + "行员工为必填项！");
-                                        i++;
-                                        continue;
-                                    }
-                                    for (EmployeeDTO dto : employeeDTOS) {
-                                        if (StringUtils.isNotBlank(employeeCode)) {
-                                            List<String> employeeCodes = employeeDTOS.stream().filter(f -> (null != f.getEmploymentStatus() && null != f.getStatus())
-                                                    && (1 == f.getEmploymentStatus() && 1 == f.getStatus())).map(EmployeeDTO::getEmployeeCode).collect(Collectors.toList());
-                                            if (!employeeCodes.contains(employeeDTO.getEmployeeCode())) {
-                                                codeErreo.append("第" + i + "行" + employeeDTO.getEmployeeCode() + "该员工不存在！");
-                                                break;
-                                            } else {
-                                                if (employeeDTO.getEmployeeCode().equals(dto.getEmployeeCode())) {
-                                                    BeanUtils.copyProperties(dto, employeeDTO);
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    i++;
-                                }
-                            } else {
-                                codeErreo.append("请填入正确的员工编码！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
-                            }
-                        }
-                        if (StringUtils.isNotEmpty(employeeDTOList)) {
-                            //最终人员数据
-                            List<Object> EmployeeData = new ArrayList<>();
-                            for (String s : list) {
-                                for (EmployeeDTO employeeDTO : employeeDTOList) {
-                                    if (StringUtils.equals(s, employeeDTO.getEmployeeCode())) {
-                                        EmployeeData.add(JSONObject.parseObject(JSONObject.toJSONString(employeeDTO)));
+                                List<EmployeeDTO> employeeExistList = new ArrayList<>();
+                                for (EmployeeDTO employeeExcelListDatum : employeeExcelListData) {
+                                    String excelExistName = employeeExcelListDatum.getEmployeeName() + "（" + employeeExcelListDatum.getEmployeeCode() + "）";
+                                    if (StringUtils.equals(excelExistName, s)) {
+                                        employeeExistList.add(employeeExcelListDatum);
                                         break;
                                     }
                                 }
+                                if (StringUtils.isEmpty(employeeExistList)) {
+                                    codeErreo.append("第" + (i + 1) + "行" + list.get(i) + "该销售员不存在！");
+                                }
+
                             }
-                            mapAllEndData.put(key, EmployeeData);
+                            if (StringUtils.isNotEmpty(employeeExcelListData)) {
+                                //最终人员数据
+                                List<Object> employeeData = new ArrayList<>();
+                                for (String s : list) {
+                                    for (EmployeeDTO employeeDTO : employeeExcelListData) {
+                                        if (StringUtils.equals(s, employeeDTO.getEmployeeName() + "（" + employeeDTO.getEmployeeCode() + "）")) {
+                                            employeeData.add(JSONObject.parseObject(JSONObject.toJSONString(employeeDTO)));
+                                            break;
+                                        }
+                                    }
+                                }
+                                mapAllEndData.put(key, employeeData);
+                            }
+
                         }
+
+                    } else if (StringUtils.equals(key, DecompositionDimension.PRINCIPALEMPLOYEE.getInfo())) {
+                        List<String> list = mapAllData.get(key);
+                        if (StringUtils.isNotEmpty(list)) {
+                            for (int i = 0; i < list.size(); i++) {
+                                String s = list.get(i);
+                                if (StringUtils.isBlank(s)) {
+                                    codeErreo.append("第" + (i + 1) + "行滚动预测负责人为必填项！");
+                                    continue;
+                                }
+                                List<EmployeeDTO> principalEmployeeExistList = new ArrayList<>();
+                                for (EmployeeDTO principalEmployeeListDatum : principalEmployeeListData) {
+                                    String excelExistName = principalEmployeeListDatum.getEmployeeName() + "（" + principalEmployeeListDatum.getEmployeeCode() + "）";
+                                    if (StringUtils.equals(excelExistName, s)) {
+                                        principalEmployeeExistList.add(principalEmployeeListDatum);
+                                        break;
+                                    }
+                                }
+
+                                if (StringUtils.isEmpty(principalEmployeeExistList)) {
+                                    codeErreo.append("第" + (i + 1) + "行" + list.get(i) + "该滚动预测负责人不存在！");
+                                }
+
+                            }
+                            if (StringUtils.isNotEmpty(principalEmployeeListData)) {
+                                //最终滚动预测负责人数据
+                                List<Object> principalEmployeeData = new ArrayList<>();
+                                for (String s : list) {
+                                    for (EmployeeDTO principalEmployeeListDatum : principalEmployeeListData) {
+                                        if (StringUtils.equals(s, principalEmployeeListDatum.getEmployeeName() + "（" + principalEmployeeListDatum.getEmployeeCode() + "）")) {
+                                            principalEmployeeData.add(JSONObject.parseObject(JSONObject.toJSONString(principalEmployeeListDatum)));
+                                            break;
+                                        }
+                                    }
+                                }
+                                mapAllEndData.put(key, principalEmployeeData);
+                            }
+
+                        }
+
                     } else if (StringUtils.equals(key, DecompositionDimension.AREA.getInfo())) {
                         //excel数据
                         List<String> list = mapAllData.get(key);
-                        //数据库数据
-                        List<AreaDTO> areaDTOS = areaMapper.selectAreaListByAreaCodes(list);
-                        List<AreaDTO> areaDTOList = new ArrayList<>();
                         if (StringUtils.isNotEmpty(list)) {
-                            if (StringUtils.isNotEmpty(areaDTOS)) {
+                            for (int i = 0; i < list.size(); i++) {
+                                String s = list.get(i);
+                                if (StringUtils.isBlank(s)) {
+                                    codeErreo.append("第" + (i + 1) + "行区域为必填项！");
+                                    continue;
+                                }
+                                List<AreaDTO> areaExistList = areaDTOList.stream().filter(f -> StringUtils.equals(f.getAreaName(), s)).collect(Collectors.toList());
+                                if (StringUtils.isEmpty(areaExistList)) {
+                                    codeErreo.append("第" + (i + 1) + "行" + list.get(i) + "区域不存在！");
+                                }
+
+                            }
+                            if (StringUtils.isNotEmpty(areaDTOList)) {
+                                //最终区域数据
+                                List<Object> areaData = new ArrayList<>();
                                 for (String s : list) {
-                                    AreaDTO areaDTO = new AreaDTO();
-                                    areaDTO.setAreaCode(s);
-                                    areaDTOList.add(areaDTO);
-                                }
-                                int i = 1;
-                                for (AreaDTO areaDTO : areaDTOList) {
-                                    String areaCode = areaDTO.getAreaCode();
-                                    if (StringUtils.isBlank(areaCode)) {
-                                        codeErreo.append("第" + i + "区域为必填项！");
-                                        i++;
-                                        continue;
-                                    }
-                                    for (AreaDTO dto : areaDTOS) {
-                                        if (StringUtils.isNotBlank(areaCode)) {
-                                            List<String> areaCodes = areaDTOS.stream().map(AreaDTO::getAreaCode).collect(Collectors.toList());
-                                            if (!areaCodes.contains(areaDTO.getAreaCode())) {
-                                                codeErreo.append("第" + i + "行" + areaDTO.getAreaCode() + "该区域不存在！");
-                                                break;
-                                            } else {
-                                                if (areaDTO.getAreaCode().equals(dto.getAreaCode())) {
-                                                    BeanUtils.copyProperties(dto, areaDTO);
-                                                    break;
-                                                }
-                                            }
+                                    for (AreaDTO areaDTO : areaDTOList) {
+                                        if (StringUtils.equals(s, areaDTO.getAreaName())) {
+                                            areaData.add(JSONObject.parseObject(JSONObject.toJSONString(areaDTO)));
+                                            break;
                                         }
-
-                                    }
-                                    i++;
-                                }
-                            } else {
-                                codeErreo.append("请填入正确的区域编码！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
-                            }
-                        }
-                        if (StringUtils.isNotEmpty(areaDTOList)) {
-                            //最终区域数据
-                            List<Object> areaData = new ArrayList<>();
-                            for (String s : list) {
-                                for (AreaDTO areaDTO : areaDTOList) {
-                                    if (StringUtils.equals(s, areaDTO.getAreaCode())) {
-                                        areaData.add(JSONObject.parseObject(JSONObject.toJSONString(areaDTO)));
-                                        break;
                                     }
                                 }
+                                mapAllEndData.put(key, areaData);
                             }
 
-                            mapAllEndData.put(key, Collections.singletonList(areaData));
                         }
                     } else if (StringUtils.equals(key, DecompositionDimension.DEPARTMENT.getInfo())) {
                         //excel数据
                         List<String> list = mapAllData.get(key);
-
-                        //远程调用查询是否存在
-                        R<List<DepartmentDTO>> listR = remoteDepartmentService.selectCodeList(list, SecurityConstants.INNER);
-                        List<DepartmentDTO> departmentDTOS = listR.getData();
-                        List<DepartmentDTO> departmentDTOList = new ArrayList<>();
                         if (StringUtils.isNotEmpty(list)) {
-                            if (StringUtils.isNotEmpty(departmentDTOS)) {
-                                for (String s : list) {
-                                    DepartmentDTO departmentDTO = new DepartmentDTO();
-                                    departmentDTO.setDepartmentCode(s);
-                                    departmentDTOList.add(departmentDTO);
+                            for (int i = 0; i < list.size(); i++) {
+                                String s = list.get(i);
+                                if (StringUtils.isBlank(s)) {
+                                    codeErreo.append("第" + (i + 1) + "行部门为必填项！");
+                                    continue;
                                 }
-                                int i = 1;
-                                for (DepartmentDTO departmentDTO : departmentDTOList) {
-                                    String departmentCode = departmentDTO.getDepartmentCode();
-                                    if (StringUtils.isBlank(departmentCode)) {
-                                        codeErreo.append("第" + i + "行" + "部门为必填项！");
-                                        i++;
-                                        continue;
-                                    }
-                                    for (DepartmentDTO dto : departmentDTOS) {
-                                        if (StringUtils.isNotBlank(departmentCode)) {
-                                            List<String> departmentCodes = departmentDTOS.stream().filter(f -> (null != f.getStatus() && f.getStatus() == 1)).map(DepartmentDTO::getDepartmentCode).collect(Collectors.toList());
-                                            if (!departmentCodes.contains(departmentDTO.getDepartmentCode())) {
-                                                codeErreo.append("第" + i + "行" + departmentCode + "该部门为不存在！");
-                                                break;
-                                            } else {
-                                                if (departmentDTO.getDepartmentCode().equals(dto.getDepartmentCode())) {
-                                                    BeanUtils.copyProperties(dto, departmentDTO);
-                                                    break;
-                                                }
-                                            }
+                                List<DepartmentDTO> departmentExistList = parentDepartmentExcelNamesData.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), s)).collect(Collectors.toList());
+                                if (StringUtils.isEmpty(departmentExistList)) {
+                                    codeErreo.append("第" + (i + 1) + "行" + list.get(i) + "部门不存在！");
+                                }
+
+                            }
+                            if (StringUtils.isNotEmpty(parentDepartmentExcelNamesData)) {
+                                //最终部门数据
+                                List<Object> departmentData = new ArrayList<>();
+                                for (String s : list) {
+                                    for (DepartmentDTO parentDepartmentExcelNamesDatum : parentDepartmentExcelNamesData) {
+                                        if (StringUtils.equals(s, parentDepartmentExcelNamesDatum.getParentDepartmentExcelName())) {
+                                            departmentData.add(JSONObject.parseObject(JSONObject.toJSONString(parentDepartmentExcelNamesDatum)));
+                                            break;
                                         }
                                     }
-                                    i++;
                                 }
-                            } else {
-                                codeErreo.append("请填入正确的部门编码！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
-                            }
-                        }
-                        if (StringUtils.isNotEmpty(departmentDTOList)) {
-                            //最终部门数据
-                            List<Object> DepartmentData = new ArrayList<>();
-                            for (String s : list) {
-                                for (DepartmentDTO departmentDTO : departmentDTOList) {
-                                    if (StringUtils.equals(s, departmentDTO.getDepartmentCode())) {
-                                        DepartmentData.add(JSONObject.parseObject(JSONObject.toJSONString(departmentDTO)));
-                                        break;
-                                    }
-                                }
+                                mapAllEndData.put(key, departmentData);
                             }
 
-                            mapAllEndData.put(key, DepartmentData);
                         }
                     } else if (StringUtils.equals(key, DecompositionDimension.INDUSTRY.getInfo())) {
                         //excel数据
                         List<String> list = mapAllData.get(key);
-
-                        //远程调用查询是否存在
-                        R<List<IndustryDTO>> listR = remoteIndustryService.selectCodeList(list, SecurityConstants.INNER);
-                        List<IndustryDTO> industryDTOS = listR.getData();
-                        List<IndustryDTO> industryDTOList = new ArrayList<>();
                         if (StringUtils.isNotEmpty(list)) {
-                            if (StringUtils.isNotEmpty(industryDTOS)) {
+                            for (int i = 0; i < list.size(); i++) {
+                                String s = list.get(i);
+                                if (StringUtils.isBlank(s)) {
+                                    codeErreo.append("第" + (i + 1) + "行(行业)为必填项！");
+                                    continue;
+                                }
+                                List<IndustryDTO> industryExistList = industryExcelListData.stream().filter(f -> StringUtils.equals(f.getParentIndustryExcelName(), s)).collect(Collectors.toList());
+                                if (StringUtils.isEmpty(industryExistList)) {
+                                    codeErreo.append("第" + (i + 1) + "行" + list.get(i) + "(行业)不存在！");
+                                }
+
+                            }
+                            if (StringUtils.isNotEmpty(industryExcelListData)) {
+                                //最终行业数据
+                                List<Object> industryData = new ArrayList<>();
                                 for (String s : list) {
-                                    IndustryDTO industryDTO = new IndustryDTO();
-                                    industryDTO.setIndustryCode(s);
-                                    industryDTOList.add(industryDTO);
-                                }
-                                int i = 0;
-                                for (IndustryDTO industryDTO : industryDTOList) {
-                                    String industryCode = industryDTO.getIndustryCode();
-                                    if (StringUtils.isBlank(industryCode)) {
-                                        codeErreo.append("第" + i + "行" + "行业为必填项！");
-                                        i++;
-                                        continue;
-                                    }
-                                    for (IndustryDTO dto : industryDTOS) {
-                                        if (StringUtils.isNotBlank(industryCode)) {
-                                            List<String> industryCodes = industryDTOS.stream().filter(f -> (null != f.getStatus() && 1 == f.getStatus())).map(IndustryDTO::getIndustryCode).collect(Collectors.toList());
-                                            if (!industryCodes.contains(industryCode)) {
-                                                codeErreo.append("第" + i + "行" + industryCode + "该行业不存在！");
-                                                break;
-                                            } else {
-                                                if (industryDTO.getIndustryCode().equals(dto.getIndustryCode())) {
-                                                    BeanUtils.copyProperties(dto, industryDTO);
-                                                    break;
-                                                }
-                                            }
+                                    for (IndustryDTO industryExcelListDatum : industryExcelListData) {
+                                        if (StringUtils.equals(s, industryExcelListDatum.getParentIndustryExcelName())) {
+                                            industryData.add(JSONObject.parseObject(JSONObject.toJSONString(industryExcelListDatum)));
+                                            break;
                                         }
-
-                                    }
-                                    i++;
-                                }
-                            } else {
-                                codeErreo.append("请填入正确的行业编码！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
-                            }
-                        }
-                        if (StringUtils.isNotEmpty(industryDTOList)) {
-                            //最终行业数据
-                            List<Object> industryData = new ArrayList<>();
-                            for (String s : list) {
-                                for (IndustryDTO industryDTO : industryDTOList) {
-                                    if (StringUtils.equals(s, industryDTO.getIndustryCode())) {
-                                        industryData.add(JSONObject.parseObject(JSONObject.toJSONString(industryDTO)));
-                                        break;
                                     }
                                 }
+                                mapAllEndData.put(key, industryData);
                             }
 
-                            mapAllEndData.put(key, industryData);
                         }
                     } else if (StringUtils.equals(key, DecompositionDimension.REGION.getInfo())) {
                         //excel数据
                         List<String> list = mapAllData.get(key);
-
-                        //远程调用查询是否存在
-                        R<List<RegionDTO>> listR = remoteRegionService.selectCodeList(list, SecurityConstants.INNER);
-                        List<RegionDTO> regionDTOS = listR.getData();
-                        List<RegionDTO> regionDTOList = new ArrayList<>();
                         if (StringUtils.isNotEmpty(list)) {
-                            if (StringUtils.isNotEmpty(regionDTOS)) {
-                                for (String s : list) {
-                                    RegionDTO regionDTO = new RegionDTO();
-                                    regionDTO.setProvinceName(s);
-                                    regionDTOList.add(regionDTO);
+                            for (int i = 0; i < list.size(); i++) {
+                                String s = list.get(i);
+                                if (StringUtils.isBlank(s)) {
+                                    codeErreo.append("第" + (i + 1) + "行省份为必填项！");
+                                    continue;
                                 }
-                                int i = 0;
-                                for (RegionDTO regionDTO : regionDTOList) {
-                                    String provinceName = regionDTO.getProvinceName();
-                                    if (StringUtils.isBlank(provinceName)) {
-                                        codeErreo.append("第" + i + "行" + "省份为必填项！");
-                                        i++;
-                                        continue;
-                                    }
-                                    for (RegionDTO dto : regionDTOS) {
-                                        if (StringUtils.isNotBlank(provinceName)) {
-                                            List<String> provinceNames = regionDTOS.stream().filter(f -> StringUtils.isNotBlank(f.getProvinceName())).map(RegionDTO::getProvinceName).collect(Collectors.toList());
-                                            if (!provinceNames.contains(provinceName)) {
-                                                codeErreo.append("第" + i + "行" + dto.getProvinceName() + "该省份不存在！");
-                                                break;
-                                            } else {
-                                                if (StringUtils.equals(dto.getProvinceName(), regionDTO.getProvinceName())) {
-                                                    BeanUtils.copyProperties(dto, regionDTO);
-                                                    break;
-                                                }
-                                            }
+                                List<RegionDTO> regionExistList = regionExcelListData.stream().filter(f -> StringUtils.equals(f.getRegionName(), s)).collect(Collectors.toList());
+
+                                if (StringUtils.isEmpty(regionExistList)) {
+                                    codeErreo.append("第" + (i + 1) + "行" + list.get(i) + "省份不存在！");
+                                }
+
+                            }
+                            if (StringUtils.isNotEmpty(regionExcelListData)) {
+                                //最终省份数据
+                                List<Object> regionData = new ArrayList<>();
+                                for (String s : list) {
+                                    for (RegionDTO regionExcelListDatum : regionExcelListData) {
+                                        if (StringUtils.equals(s, regionExcelListDatum.getRegionName())) {
+                                            regionData.add(JSONObject.parseObject(JSONObject.toJSONString(regionExcelListDatum)));
+                                            break;
                                         }
                                     }
-                                    i++;
                                 }
-                            } else {
-                                codeErreo.append("请填入正确的省份名称！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
+                                mapAllEndData.put(key, regionData);
                             }
-                        }
-                        if (StringUtils.isNotEmpty(regionDTOList)) {
-                            //最终省份数据
-                            List<Object> regionData = new ArrayList<>();
-                            for (String s : list) {
-                                for (RegionDTO regionDTO : regionDTOList) {
-                                    if (StringUtils.equals(s, regionDTO.getProvinceName())) {
-                                        regionData.add(JSONObject.parseObject(JSONObject.toJSONString(regionDTO)));
-                                        break;
-                                    }
-                                }
-                            }
-                            mapAllEndData.put(key, regionData);
+
                         }
                     } else if (StringUtils.equals(key, DecompositionDimension.PRODUCT.getInfo())) {
                         //excel数据
                         List<String> list = mapAllData.get(key);
-
-                        //数据库数据
-                        List<ProductDTO> productDTOS = productMapper.selectProductByProductCodes(list);
-                        List<ProductDTO> productDTOList = new ArrayList<>();
                         if (StringUtils.isNotEmpty(list)) {
-                            if (StringUtils.isNotEmpty(productDTOS)) {
-                                for (String s : list) {
-                                    ProductDTO productDTO = new ProductDTO();
-                                    productDTO.setProductCode(s);
-                                    productDTOList.add(productDTO);
+                            for (int i = 0; i < list.size(); i++) {
+                                String s = list.get(i);
+                                if (StringUtils.isBlank(s)) {
+                                    codeErreo.append("第" + (i + 1) + "行产品为必填项！");
+                                    continue;
                                 }
-                                int i = 1;
-                                for (ProductDTO productDTO : productDTOList) {
-                                    String productCode = productDTO.getProductCode();
-                                    if (StringUtils.isBlank(productCode)) {
-                                        codeErreo.append("第" + i + "行" + "产品为必填项！");
-                                        i++;
-                                        continue;
-                                    }
-                                    for (ProductDTO dto : productDTOS) {
-                                        if (StringUtils.isNotBlank(productCode)) {
-                                            List<String> productCodes = productDTOS.stream().map(ProductDTO::getProductCode).collect(Collectors.toList());
-                                            if (!productCodes.contains(productCode)) {
-                                                codeErreo.append("第" + i + "行" + dto.getProductCode() + "该产品不存在！");
-                                                break;
-                                            } else {
-                                                if (dto.getProductCode().equals(productDTO.getProductCode())) {
-                                                    BeanUtils.copyProperties(dto, productDTO);
-                                                    break;
-                                                }
-                                            }
+                                List<ProductDTO> productExistList = productDTOList.stream().filter(f -> StringUtils.equals(f.getParentProductExcelName(), s)).collect(Collectors.toList());
+
+
+                                if (StringUtils.isEmpty(productExistList)) {
+                                    codeErreo.append("第" + (i + 1) + "行" + list.get(i) + "产品不存在！");
+                                }
+
+                            }
+                            if (StringUtils.isNotEmpty(productDTOList)) {
+                                //最终产品数据
+                                List<Object> productData = new ArrayList<>();
+                                for (String s : list) {
+                                    for (ProductDTO productDTO : productDTOList) {
+                                        if (StringUtils.equals(s, productDTO.getParentProductExcelName())) {
+                                            productData.add(JSONObject.parseObject(JSONObject.toJSONString(productDTO)));
+                                            break;
                                         }
                                     }
-                                    i++;
                                 }
-                            } else {
-                                codeErreo.append("请填入正确的产品编码！" + String.join(";", list.stream().filter(Objects::nonNull).collect(Collectors.toList())));
+                                mapAllEndData.put(key, productData);
                             }
-                        }
-                        if (StringUtils.isNotEmpty(productDTOList)) {
-                            //最终产品数据
-                            List<Object> productData = new ArrayList<>();
-                            for (String s : list) {
-                                for (ProductDTO productDTO : productDTOList) {
-                                    if (StringUtils.equals(s, productDTO.getProductCode())) {
-                                        productData.add(JSONObject.parseObject(JSONObject.toJSONString(productDTO)));
-                                        break;
-                                    }
-                                }
-                            }
-                            mapAllEndData.put(key, productData);
+
                         }
                     }
                 });
             }
-/*            if (codeErreo.length() > 1) {
+            if (codeErreo.length() > 1) {
                 throw new ServiceException(codeErreo.toString());
-            }*/
-        } /*catch (ServiceException e) {
+            }
+        } catch (ServiceException e) {
             throw e;
-        }*/ catch (Exception e) {
+        } catch (Exception e) {
             throw new ServiceException("模板格式不正确！");
         }
         return mapAllEndData;

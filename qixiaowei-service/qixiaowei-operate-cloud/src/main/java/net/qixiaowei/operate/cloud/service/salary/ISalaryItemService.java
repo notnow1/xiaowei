@@ -30,6 +30,15 @@ public interface ISalaryItemService {
      * @return 工资项集合
      */
     List<SalaryItemDTO> selectSalaryItemList(SalaryItemDTO salaryItemDTO);
+
+    /**
+     * 查询工资项分页列表
+     *
+     * @param salaryItemDTO 工资项
+     * @return 工资项集合
+     */
+    List<SalaryItemDTO> selectSalaryItemPageList(SalaryItemDTO salaryItemDTO);
+
     /**
      * 处理返回
      *
@@ -37,6 +46,7 @@ public interface ISalaryItemService {
      * @return 返回集合
      */
     void handleResult(List<SalaryItemDTO> result);
+
     /**
      * 为一级工资二级工资附名称
      *
@@ -158,7 +168,16 @@ public interface ISalaryItemService {
 
     /**
      * 查找二级为奖金的三级工资条
+     *
      * @return
      */
     List<SalaryItemDTO> applyBonusList();
+
+    /**
+     * 批量修改工资项
+     *
+     * @param salaryItemDTOS 项目dto列表
+     * @return 结果
+     */
+    int editSalaryItems(List<SalaryItemDTO> salaryItemDTOS);
 }

@@ -178,6 +178,18 @@ public class RegionServiceImpl implements IRegionService {
     }
 
     /**
+     * 远程查询excel省份下拉框
+     * @param regionDTO
+     * @return
+     */
+    @Override
+    public List<RegionDTO> getDropList(RegionDTO regionDTO) {
+        Region region = new Region();
+        BeanUtils.copyProperties(regionDTO,region);
+        return regionMapper.getDropList(region);
+    }
+
+    /**
      * 逻辑删除区域表信息
      *
      * @param regionDTO 区域表

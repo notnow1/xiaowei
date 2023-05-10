@@ -214,6 +214,19 @@
             concat(province_code,',',city_code,',',district_code)  as provinceAndCityAndDistrictCode
         from region  where  city_name !='' and district_name !='' and town_name ='' and delete_flag=0
     </select>
+<!--    远程查询excel省份下拉框-->
+    <select id="getDropList" resultType="net.qixiaowei.system.manage.api.dto.system.RegionDTO">
+        select
+        region_id, parent_region_id, ancestors, region_name, province_code, province_name, city_code, city_name,
+        district_code, district_name, town_code, town_name, village_code, village_name, `level`, sort, delete_flag,
+        create_by, create_time, update_by, update_time
+        from
+        region
+        where
+         CONVERT(province_code,SIGNED) &gt;10 and CONVERT(province_code,SIGNED) &lt; 83
+        and city_code =""
+        and delete_flag = 0
+    </select>
     <!--新增区域表-->
     <insert id="insertRegion" useGeneratedKeys="true" keyProperty="regionId">
         INSERT INTO region
