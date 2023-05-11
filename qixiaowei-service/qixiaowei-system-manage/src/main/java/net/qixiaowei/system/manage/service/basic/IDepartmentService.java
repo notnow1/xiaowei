@@ -231,6 +231,7 @@ public interface IDepartmentService {
      */
     List<DepartmentDTO> selectDepartmentByLevel(Integer level);
 
+    void initSalesDepartment();
     /**
      *初始化修复部门
      * @return
