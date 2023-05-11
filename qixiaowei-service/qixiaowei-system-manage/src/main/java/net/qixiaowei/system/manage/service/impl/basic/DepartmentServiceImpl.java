@@ -14,6 +14,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
+import net.qixiaowei.integration.tenant.utils.TenantUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
@@ -43,6 +44,7 @@ import net.qixiaowei.strategy.cloud.api.remote.strategyDecode.RemoteStrategyMetr
 import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
+import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
@@ -60,6 +62,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -121,6 +125,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     private UserMapper userMapper;
     @Autowired
     private TenantMapper tenantMapper;
+
 
     /**
      * 查询部门表
@@ -1047,12 +1052,36 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public String initRepairDepartment() {
-        String data = "操作成功";
+        AtomicReference<String> data = new AtomicReference<>("操作成功");
+        List<TenantDTO> tenantDTOList = tenantMapper.selectTenantList(new Tenant());
+        // 获得正常的租户列表
+        List<Long> tenantIds = tenantDTOList.stream().map(TenantDTO::getTenantId).collect(Collectors.toList());
+        if (StringUtils.isEmpty(tenantIds)) {
+            tenantIds = new ArrayList<>();
+        }
+        //加入租户管理平台
+        tenantIds.add(0L);
+        tenantIds.forEach(tenantId -> {
+            TenantUtils.execute(tenantId, () -> {
+                try {
+                    this.packInitRepairDepartment(tenantId);
+                } catch (Exception e) {
+                    data.set("操作失败");
+                }
+            });
+        });
+
+
+        return data.get();
+    }
+
+    private void packInitRepairDepartment(Long tenantId) {
+        //查询历史一级部门 修改一级部门到公司级部门下
+        List<DepartmentDTO> departmentDTOList = departmentMapper.queryHistoryTopDepartment();
         //查询是否已经创建公司级部门
         DepartmentDTO departmentDTO = departmentMapper.queryCompanyTopDepartment();
         if (StringUtils.isNotNull(departmentDTO)) {
-            //查询历史一级部门 修改一级部门到公司级部门下
-            List<DepartmentDTO> departmentDTOList = departmentMapper.queryHistoryTopDepartment();
+
             //循环调用修改接口
             for (DepartmentDTO dto : departmentDTOList) {
                 dto.setParentDepartmentId(departmentDTO.getDepartmentId());
@@ -1068,7 +1097,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             String departmentCode = generateDepartmentCode();
 
             //获取租户名称
-            TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(SecurityUtils.getTenantId());
+            TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
             if (StringUtils.isNotNull(tenantDTO)) {
                 tenantName = tenantDTO.getTenantName();
             }
@@ -1081,7 +1110,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             department.setDepartmentName(tenantName);
             //层级
             department.setLevel(0);
-            //层级
+            //状态
             department.setStatus(1);
             department.setCreateBy(SecurityUtils.getUserId());
             department.setCreateTime(DateUtils.getNowDate());
@@ -1091,10 +1120,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
             try {
                 departmentMapper.insertDepartment(department);
             } catch (Exception e) {
-                data = "操作失败";
+               throw new ServiceException("插入公司级部门失败");
             }
-            //查询历史一级部门 修改一级部门到公司级部门下
-            List<DepartmentDTO> departmentDTOList = departmentMapper.queryHistoryTopDepartment();
             //循环调用修改接口
             for (DepartmentDTO dto : departmentDTOList) {
                 dto.setParentDepartmentId(department.getDepartmentId());
@@ -1103,7 +1130,6 @@ public class DepartmentServiceImpl implements IDepartmentService {
             }
         }
 
-        return data;
     }
 
     /**
