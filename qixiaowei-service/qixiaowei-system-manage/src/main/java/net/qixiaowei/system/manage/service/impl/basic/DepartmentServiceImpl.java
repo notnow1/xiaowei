@@ -282,6 +282,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
         for (DepartmentDTO catelog : lists) {
             if (companyFlag) {
                 if (catelog.getParentDepartmentId() == pid) {
+                    catelog.setStatusFlag(catelog.getStatus() == 0);
+                    catelog.setParentDepartmentExcelName(catelog.getDepartmentName());
                     List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                         catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
@@ -292,6 +294,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 }
             } else {
                 if (catelog.getParentDepartmentId() == pid2) {
+                    catelog.setStatusFlag(catelog.getStatus() == 0);
+                    catelog.setParentDepartmentExcelName(catelog.getDepartmentName());
                     List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                         catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
