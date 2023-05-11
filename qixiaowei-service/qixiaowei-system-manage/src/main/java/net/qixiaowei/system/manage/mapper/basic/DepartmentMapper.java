@@ -211,4 +211,16 @@ public interface DepartmentMapper{
      * @return
      */
     List<DepartmentDTO> getAll();
+
+    /**
+     * 查询历史一级部门
+     * @return
+     */
+    List<DepartmentDTO> queryHistoryTopDepartment();
+
+    /**
+     * 查询公司级部门
+     * @return
+     */
+    DepartmentDTO queryCompanyTopDepartment();
 }

@@ -1052,6 +1052,64 @@
         and e.employment_status =1
         and e.status =1
     </select>
+<!--    查询历史一级部门-->
+    <select id="queryHistoryTopDepartment"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+        select
+            department_id,
+            parent_department_id,
+            ancestors,
+            department_code,
+            department_name,
+            `level`,
+            department_leader_id,
+            department_leader_post_id,
+            examination_leader_id,
+            department_importance_factor,
+            department_description,
+            sort,
+            status,
+            delete_flag,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            tenant_id
+        from
+            department
+        where delete_flag =0
+          and `level` =1
+          and parent_department_id =0
+    </select>
+<!--    查询公司级部门-->
+    <select id="queryCompanyTopDepartment"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+        select
+            department_id,
+            parent_department_id,
+            ancestors,
+            department_code,
+            department_name,
+            `level`,
+            department_leader_id,
+            department_leader_post_id,
+            examination_leader_id,
+            department_importance_factor,
+            department_description,
+            sort,
+            status,
+            delete_flag,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            tenant_id
+        from
+            department
+        where delete_flag =0
+          and `level` =0
+          and parent_department_id =0
+    </select>
 
     <!--新增部门表-->
     <insert id="insertDepartment" useGeneratedKeys="true" keyProperty="departmentId">

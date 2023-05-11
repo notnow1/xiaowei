@@ -118,7 +118,10 @@ public interface Constants {
      * 顶层父级ID
      */
     Long TOP_PARENT_ID = 0L;
-
+    /**
+     * 顶层部门父级ID
+     */
+    Long TOP_DEPT_PARENT_ID = 1L;
     /**
      * 标记：是
      */

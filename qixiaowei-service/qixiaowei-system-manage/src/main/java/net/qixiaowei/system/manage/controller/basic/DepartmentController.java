@@ -140,5 +140,11 @@ public class DepartmentController extends BaseController {
         return AjaxResult.success(list);
     }
 
-
+    /**
+     * 初始化修复部门
+     */
+    @GetMapping("/initRepairDepartment")
+    public AjaxResult initRepairDepartment() {
+        return AjaxResult.success(departmentService.initRepairDepartment());
+    }
 }
