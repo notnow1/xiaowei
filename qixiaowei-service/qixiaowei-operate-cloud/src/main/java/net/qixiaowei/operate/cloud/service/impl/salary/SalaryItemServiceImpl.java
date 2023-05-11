@@ -88,8 +88,22 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         salaryItem.setParams(params);
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);
         List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemList(salaryItem);
-        this.handleResult(salaryItemDTOS);
-        return salaryItemDTOS;
+        List<SalaryItemDTO> salaryItemDTOList = salaryItemDTOS.stream().sorted(Comparator.comparing(SalaryItemDTO::getFirstLevelItem)
+                .thenComparing(SalaryItemDTO::getSecondLevelItem)
+                .thenComparing(SalaryItemDTO::getSort)).collect(Collectors.toList());
+        for (SalaryItemDTO itemDTO : salaryItemDTOList) {
+            if (StringUtils.isNull(itemDTO.getScope())) {
+                itemDTO.setScopeName("-");
+            } else {
+                if (itemDTO.getScope() == 1) {
+                    itemDTO.setScopeName("部门级");
+                } else {
+                    itemDTO.setScopeName("公司级");
+                }
+            }
+        }
+        this.handleResult(salaryItemDTOList);
+        return salaryItemDTOList;
     }
 
     /**
@@ -113,12 +127,20 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
                 .thenComparing(SalaryItemDTO::getSecondLevelItem)
                 .thenComparing(SalaryItemDTO::getSort)).collect(Collectors.toList());
         for (SalaryItemDTO itemDTO : salaryItemDTOList) {
-            if (itemDTO.getScope() == 1) {
-                itemDTO.setScopeName("部门级");
+            if (ThirdLevelSalaryCode.containThirdItems(itemDTO.getThirdLevelItem())) {
+                itemDTO.setIsPreset(1);
+            }
+            if (StringUtils.isNull(itemDTO.getScope())) {
+                itemDTO.setScopeName("-");
             } else {
-                itemDTO.setScopeName("公司级");
+                if (itemDTO.getScope() == 1) {
+                    itemDTO.setScopeName("部门级");
+                } else {
+                    itemDTO.setScopeName("公司级");
+                }
             }
         }
+        this.handleResult(salaryItemDTOList);
         return salaryItemDTOList;
     }
 
@@ -460,6 +482,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         SalaryItem salaryItem = new SalaryItem();
         salaryItem.setSalaryItemId(salaryItemId);
         salaryItem.setThirdLevelItem(thirdLevelItem);
+        salaryItem.setScope(salaryItemDTO.getScope());
         salaryItem.setUpdateTime(DateUtils.getNowDate());
         salaryItem.setUpdateBy(SecurityUtils.getUserId());
         return salaryItemMapper.updateSalaryItem(salaryItem);
