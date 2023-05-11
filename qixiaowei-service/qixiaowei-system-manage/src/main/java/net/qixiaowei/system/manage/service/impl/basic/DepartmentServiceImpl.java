@@ -1118,6 +1118,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     @Transactional
     public int logicDeleteDepartmentByDepartmentIds(DepartmentDTO departmentDTO) {
+        if (StringUtils.isNotNull(departmentDTO)){
+           if ( departmentDTO.getParentDepartmentId() == 0){
+               return 1;
+           }
+        }
         StringBuffer posterreo = new StringBuffer();
         StringBuffer officialRankDecomposeerreo = new StringBuffer();
         StringBuffer emplerreo = new StringBuffer();
