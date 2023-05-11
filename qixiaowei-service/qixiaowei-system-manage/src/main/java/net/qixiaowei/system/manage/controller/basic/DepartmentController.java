@@ -98,9 +98,9 @@ public class DepartmentController extends BaseController {
      */
     @RequiresPermissions("system:manage:department:pageList")
     @GetMapping("/pageList")
-    public TableDataInfo pageList(DepartmentDTO departmentDTO) {
+    public TableDataInfo pageList(DepartmentDTO departmentDTO,@RequestParam(required = false) boolean companyFlag) {
         startPage();
-        List<DepartmentDTO> list = departmentService.selectDepartmentList(departmentDTO);
+        List<DepartmentDTO> list = departmentService.selectDepartmentList(departmentDTO,companyFlag);
         return getDataTable(list);
     }
 
@@ -108,8 +108,8 @@ public class DepartmentController extends BaseController {
      * 查询部门表列表
      */
     @GetMapping("/list")
-    public AjaxResult list(DepartmentDTO departmentDTO) {
-        List<DepartmentDTO> list = departmentService.selectDepartmentList(departmentDTO);
+    public AjaxResult list(DepartmentDTO departmentDTO,@RequestParam(required = false) boolean companyFlag) {
+        List<DepartmentDTO> list = departmentService.selectDepartmentList(departmentDTO,companyFlag);
         return AjaxResult.success(list);
     }
 

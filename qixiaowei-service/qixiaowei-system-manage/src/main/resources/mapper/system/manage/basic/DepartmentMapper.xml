@@ -895,7 +895,7 @@
         FROM department
         where delete_flag = 0
           and status = 1
-          and parent_department_id = 0
+          and level = 1
     </select>
     <!--    远程查询一级部门及子级部门-->
     <select id="selectParentDepartment" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">

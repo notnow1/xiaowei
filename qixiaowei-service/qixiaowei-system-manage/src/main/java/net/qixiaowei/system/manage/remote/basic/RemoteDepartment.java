@@ -140,7 +140,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
         if (StringUtils.isNotNull(params)) {
             departmentDTO.setParams(params);
         }
-        return R.ok(departmentService.selectDepartmentList(departmentDTO));
+        return R.ok(departmentService.selectDepartmentList(departmentDTO,false));
     }
 
     /**

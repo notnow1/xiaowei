@@ -134,19 +134,18 @@ public class DepartmentServiceImpl implements IDepartmentService {
     }
 
     /**
-     * 查询部门表列表
      *
      * @param departmentDTO 部门表
-     * @return 部门表
+     * @param companyFlag
+     * @return
      */
     @DataScope(deptAlias = "dm")
     @Override
-    public List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO) {
+    public List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO,boolean companyFlag) {
         Department department = new Department();
         BeanUtils.copyProperties(departmentDTO, department);
         //查询公司部门
         DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
-
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
         this.handleResult(departmentDTOList);
@@ -159,7 +158,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             if (StringUtils.isEmpty(departmentDTOList)) {
                 return departmentDTOList;
             } else {
-                List<DepartmentDTO> departmentDTOS = this.createTree(departmentDTOList, departmentDTO1.getDepartmentId(),true);
+                List<DepartmentDTO> departmentDTOS = this.createTree(departmentDTOList, 0L, companyFlag,departmentDTO1.getDepartmentId());
                 return this.getEmployeeByDepartmentId(departmentDTOS);
             }
         }
@@ -187,12 +186,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public List<String> selectDepartmentExcelListName(DepartmentDTO departmentDTO) {
         List<String> parentDepartmentExcelNames = new ArrayList<>();
         Department department = new Department();
-        BeanUtils.copyProperties(departmentDTO,department);
+        BeanUtils.copyProperties(departmentDTO, department);
         //查询公司部门
         DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
-        List<DepartmentDTO> tree = this.createTree(departmentDTOList, departmentDTO1.getDepartmentId(),true);
+        List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0L, true,departmentDTO1.getDepartmentId());
         List<DepartmentDTO> natureGroups = treeToList(tree);
         if (StringUtils.isNotEmpty(natureGroups)) {
             parentDepartmentExcelNames = natureGroups.stream().map(DepartmentDTO::getParentDepartmentExcelName).collect(Collectors.toList());
@@ -212,7 +211,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
-        List<DepartmentDTO> tree = this.createTree(departmentDTOList, departmentDTO1.getDepartmentId(),true);
+        List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0L, true,departmentDTO1.getDepartmentId());
         List<DepartmentDTO> natureGroups = treeToList(tree);
         return natureGroups;
     }
@@ -277,24 +276,30 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @param pid
      * @return
      */
-    private List<DepartmentDTO> createTree(List<DepartmentDTO> lists, Long pid,boolean companyFlag) {
+    private List<DepartmentDTO> createTree(List<DepartmentDTO> lists, Long pid, boolean companyFlag,Long pid2) {
         List<DepartmentDTO> tree = new ArrayList<>();
 
         for (DepartmentDTO catelog : lists) {
-            if (catelog.getParentDepartmentId() == 0L){
-                if (companyFlag){
-                    tree.add(catelog);
-                }
-                continue;
-            }
-            if (catelog.getParentDepartmentId() == pid) {
+            if (companyFlag) {
+                if (catelog.getParentDepartmentId() == pid) {
                     List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                         catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
                         catelog.setStatusFlag(catelog.getStatus() == 0);
                     }
-                catelog.setChildren(createTree(lists, catelog.getDepartmentId(),false));
-                tree.add(catelog);
+                    catelog.setChildren(createTree(lists, catelog.getDepartmentId(), companyFlag,null));
+                    tree.add(catelog);
+                }
+            } else {
+                if (catelog.getParentDepartmentId() == pid2) {
+                    List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(departmentDTOList)) {
+                        catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
+                        catelog.setStatusFlag(catelog.getStatus() == 0);
+                    }
+                    catelog.setChildren(createTree(lists, null, companyFlag,catelog.getDepartmentId()));
+                    tree.add(catelog);
+                }
             }
         }
         return tree;
@@ -367,19 +372,19 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //如果父级部门ID为空 直接插入数据库
         department = this.packDepartment(department);
 
-            //根据父级id查询 获取父级id的祖级列表ID
-            departmentDTO2 = departmentMapper.selectParentDepartmentId(parentDepartmentId);
-            Long departmentId = departmentDTO2.getDepartmentId();
-            department.setSort(departmentDTO2.getSort() + 1);
-            department.setParentDepartmentId(departmentId);
-            //祖级id
-            if (StringUtils.isNotBlank(departmentDTO2.getAncestors())) {
-                ancestors = departmentDTO2.getAncestors().trim() + "," + department.getParentDepartmentId();
-            } else {
-                ancestors = departmentDTO2.getParentDepartmentId() + "," + departmentDTO2.getDepartmentId();
-            }
-            //祖级id
-            department.setAncestors(ancestors);
+        //根据父级id查询 获取父级id的祖级列表ID
+        departmentDTO2 = departmentMapper.selectParentDepartmentId(parentDepartmentId);
+        Long departmentId = departmentDTO2.getDepartmentId();
+        department.setSort(departmentDTO2.getSort() + 1);
+        department.setParentDepartmentId(departmentId);
+        //祖级id
+        if (StringUtils.isNotBlank(departmentDTO2.getAncestors())) {
+            ancestors = departmentDTO2.getAncestors().trim() + "," + department.getParentDepartmentId();
+        } else {
+            ancestors = departmentDTO2.getParentDepartmentId() + "," + departmentDTO2.getDepartmentId();
+        }
+        //祖级id
+        department.setAncestors(ancestors);
 
         departmentMapper.insertDepartment(department);
         departmentDTO.setDepartmentId(department.getDepartmentId());
@@ -449,15 +454,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //排序
         int i = 1;
 
-            DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getParentDepartmentId());
-            BeanUtils.copyProperties(departmentDTO, department);
-            department.setUpdateTime(DateUtils.getNowDate());
-            department.setUpdateBy(SecurityUtils.getUserId());
-            if (StringUtils.isBlank(departmentDTO1.getAncestors())) {
-                department.setAncestors(departmentDTO1.getParentDepartmentId() + "," + departmentDTO1.getDepartmentId());
-            } else {
-                department.setAncestors(departmentDTO1.getAncestors() + "," + departmentDTO1.getDepartmentId());
-            }
+        DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getParentDepartmentId());
+        BeanUtils.copyProperties(departmentDTO, department);
+        department.setUpdateTime(DateUtils.getNowDate());
+        department.setUpdateBy(SecurityUtils.getUserId());
+        if (StringUtils.isBlank(departmentDTO1.getAncestors())) {
+            department.setAncestors(departmentDTO1.getParentDepartmentId() + "," + departmentDTO1.getDepartmentId());
+        } else {
+            department.setAncestors(departmentDTO1.getAncestors() + "," + departmentDTO1.getDepartmentId());
+        }
 
         Map<Long, Integer> map = new HashMap<>();
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectAncestors(department.getDepartmentId());
@@ -530,68 +535,71 @@ public class DepartmentServiceImpl implements IDepartmentService {
         List<DepartmentPostDTO> departmentPostDTOList2 = departmentPostMapper.selectDepartmentId(departmentDTO.getDepartmentId());
         //部门ID
         List<Long> departmentPostIds = new ArrayList<>();
-        //sterm流求差集
-        departmentPostIds = departmentPostDTOList2.stream().filter(a -> !departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()).contains(a.getDepartmentPostId())).collect(Collectors.toList()).stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList());
-        if (!StringUtils.isEmpty(departmentPostIds)) {
-            try {
-                departmentPostMapper.logicDeleteDepartmentPostByDepartmentPostIds(departmentPostIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
-            } catch (Exception e) {
-                throw new ServiceException("删除组织岗位关联失败");
-            }
-        }
-        if (!StringUtils.isEmpty(departmentPostIds)) {
-            //去除已经删除的id
-            for (int i1 = 0; i1 < departmentPostDTOList.size(); i1++) {
-                if (departmentPostIds.contains(departmentPostDTOList.get(i1).getDepartmentPostId())) {
-                    departmentPostDTOList.remove(i1);
-                }
-            }
-        }
-
-        if (!StringUtils.isEmpty(departmentPostDTOList)) {
-            //组织中间表 新增
-            List<DepartmentPost> departmentPostAddList = new ArrayList<>();
-            //组织中间表 修改
-            List<DepartmentPost> departmentPostUpdateList = new ArrayList<>();
-            for (DepartmentPostDTO departmentPostDTO : departmentPostDTOList) {
-                //部门岗位关联表
-                DepartmentPost departmentPost = new DepartmentPost();
-                BeanUtils.copyProperties(departmentPostDTO, departmentPost);
-                //部门id(组织)
-                departmentPost.setDepartmentId(departmentDTO.getDepartmentId());
-                //岗位排序
-                departmentPost.setPostSort(i);
-                departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                if (null == departmentPostDTO.getDepartmentPostId()) {
-
-                    departmentPost.setCreateBy(SecurityUtils.getUserId());
-                    departmentPost.setCreateTime(DateUtils.getNowDate());
-                    departmentPost.setUpdateBy(SecurityUtils.getUserId());
-                    departmentPost.setUpdateTime(DateUtils.getNowDate());
-                    departmentPostAddList.add(departmentPost);
-                } else {
-                    departmentPost.setUpdateBy(SecurityUtils.getUserId());
-                    departmentPost.setUpdateTime(DateUtils.getNowDate());
-                    departmentPostUpdateList.add(departmentPost);
-                }
-
-                i++;
-            }
-            if (!StringUtils.isEmpty(departmentPostAddList)) {
+        if (StringUtils.isNotEmpty(departmentPostDTOList)){
+            //sterm流求差集
+            departmentPostIds = departmentPostDTOList2.stream().filter(a -> !departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()).contains(a.getDepartmentPostId())).collect(Collectors.toList()).stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList());
+            if (!StringUtils.isEmpty(departmentPostIds)) {
                 try {
-                    departmentPostMapper.batchDepartmentPost(departmentPostAddList);
+                    departmentPostMapper.logicDeleteDepartmentPostByDepartmentPostIds(departmentPostIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
                 } catch (Exception e) {
-                    throw new ServiceException("新增组织岗位信息失败");
+                    throw new ServiceException("删除组织岗位关联失败");
                 }
             }
-            if (!StringUtils.isEmpty(departmentPostUpdateList)) {
-                try {
-                    departmentPostMapper.updateDepartmentPosts(departmentPostUpdateList);
-                } catch (Exception e) {
-                    throw new ServiceException("修改组织岗位信息失败");
+            if (!StringUtils.isEmpty(departmentPostIds)) {
+                //去除已经删除的id
+                for (int i1 = 0; i1 < departmentPostDTOList.size(); i1++) {
+                    if (departmentPostIds.contains(departmentPostDTOList.get(i1).getDepartmentPostId())) {
+                        departmentPostDTOList.remove(i1);
+                    }
+                }
+            }
+
+            if (!StringUtils.isEmpty(departmentPostDTOList)) {
+                //组织中间表 新增
+                List<DepartmentPost> departmentPostAddList = new ArrayList<>();
+                //组织中间表 修改
+                List<DepartmentPost> departmentPostUpdateList = new ArrayList<>();
+                for (DepartmentPostDTO departmentPostDTO : departmentPostDTOList) {
+                    //部门岗位关联表
+                    DepartmentPost departmentPost = new DepartmentPost();
+                    BeanUtils.copyProperties(departmentPostDTO, departmentPost);
+                    //部门id(组织)
+                    departmentPost.setDepartmentId(departmentDTO.getDepartmentId());
+                    //岗位排序
+                    departmentPost.setPostSort(i);
+                    departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    if (null == departmentPostDTO.getDepartmentPostId()) {
+
+                        departmentPost.setCreateBy(SecurityUtils.getUserId());
+                        departmentPost.setCreateTime(DateUtils.getNowDate());
+                        departmentPost.setUpdateBy(SecurityUtils.getUserId());
+                        departmentPost.setUpdateTime(DateUtils.getNowDate());
+                        departmentPostAddList.add(departmentPost);
+                    } else {
+                        departmentPost.setUpdateBy(SecurityUtils.getUserId());
+                        departmentPost.setUpdateTime(DateUtils.getNowDate());
+                        departmentPostUpdateList.add(departmentPost);
+                    }
+
+                    i++;
+                }
+                if (!StringUtils.isEmpty(departmentPostAddList)) {
+                    try {
+                        departmentPostMapper.batchDepartmentPost(departmentPostAddList);
+                    } catch (Exception e) {
+                        throw new ServiceException("新增组织岗位信息失败");
+                    }
+                }
+                if (!StringUtils.isEmpty(departmentPostUpdateList)) {
+                    try {
+                        departmentPostMapper.updateDepartmentPosts(departmentPostUpdateList);
+                    } catch (Exception e) {
+                        throw new ServiceException("修改组织岗位信息失败");
+                    }
                 }
             }
         }
+
         try {
             num = departmentMapper.updateDepartment(department);
             //同步销售云
@@ -844,6 +852,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
 
     /**
+     * 组织下拉框可过滤自身和下级
      * @param departmentId
      * @param status
      * @param companyFlag
@@ -854,7 +863,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //查询公司部门
         DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
         List<DepartmentDTO> queryparent = departmentMapper.queryparent(status);
-        List<DepartmentDTO> tree = this.createTree(queryparent, departmentDTO1.getDepartmentId(),companyFlag);
+        List<DepartmentDTO> tree = this.createTree(queryparent, 0L, companyFlag,departmentDTO1.getDepartmentId());
         //为空默认赋值生效
         if (StringUtils.isNotNull(departmentId)) {
             if (StringUtils.isNotEmpty(tree)) {
@@ -1024,6 +1033,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * 2,有就直接修改数据 没有就创建公司级部门数据
      * 3,查询所有一级部门的历史数据
      * 4,修改一级部门到公司级部门下
+     *
      * @return
      */
     @Override
@@ -1031,31 +1041,27 @@ public class DepartmentServiceImpl implements IDepartmentService {
         String data = "操作成功";
         //查询是否已经创建公司级部门
         DepartmentDTO departmentDTO = departmentMapper.queryCompanyTopDepartment();
-        if (StringUtils.isNotNull(departmentDTO)){
+        if (StringUtils.isNotNull(departmentDTO)) {
             //查询历史一级部门 修改一级部门到公司级部门下
             List<DepartmentDTO> departmentDTOList = departmentMapper.queryHistoryTopDepartment();
             //循环调用修改接口
             for (DepartmentDTO dto : departmentDTOList) {
                 dto.setParentDepartmentId(departmentDTO.getDepartmentId());
-                try {
-                    updateDepartment(dto);
-                } catch (Exception e) {
-                    data = "操作失败";
-                }
+                updateDepartment(dto);
             }
-        }else {
+        } else {
 
             //部门实体
             Department department = new Department();
             //公司部门名称
-            String tenantName = null;
+            String tenantName = "租户管理平台";
             //部门编码
             String departmentCode = generateDepartmentCode();
 
             //获取租户名称
             TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(SecurityUtils.getTenantId());
-            if (StringUtils.isNotNull(tenantDTO)){
-                 tenantName = tenantDTO.getTenantName();
+            if (StringUtils.isNotNull(tenantDTO)) {
+                tenantName = tenantDTO.getTenantName();
             }
             //父级id
             department.setParentDepartmentId(Constants.TOP_PARENT_ID);
@@ -1068,6 +1074,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
             department.setLevel(0);
             //层级
             department.setStatus(1);
+            department.setCreateBy(SecurityUtils.getUserId());
+            department.setCreateTime(DateUtils.getNowDate());
+            department.setUpdateBy(SecurityUtils.getUserId());
+            department.setUpdateTime(DateUtils.getNowDate());
+            department.setDeleteFlag(0);
             try {
                 departmentMapper.insertDepartment(department);
             } catch (Exception e) {
@@ -1078,11 +1089,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
             //循环调用修改接口
             for (DepartmentDTO dto : departmentDTOList) {
                 dto.setParentDepartmentId(department.getDepartmentId());
-                try {
-                    updateDepartment(dto);
-                } catch (Exception e) {
-                    data = "操作失败";
-                }
+                updateDepartment(dto);
+
             }
         }
 

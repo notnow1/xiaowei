@@ -28,7 +28,7 @@ public interface IDepartmentService {
      * @param departmentDTO 部门表
      * @return 部门表集合
      */
-    List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO);
+    List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO,boolean companyFlag);
 
     /**
      * 处理返回
