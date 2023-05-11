@@ -449,6 +449,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Transactional
     @Override
     public int updateDepartment(DepartmentDTO departmentDTO) {
+        if (StringUtils.isNotNull(departmentDTO)){
+            if ( departmentDTO.getParentDepartmentId() == 0){
+                return 1;
+            }
+        }
         int num = 0;
         //部门表(组织)
         Department department = new Department();
