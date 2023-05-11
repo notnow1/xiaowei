@@ -135,8 +135,8 @@ public class DepartmentController extends BaseController {
      * 查询上级组织
      */
     @GetMapping("/queryparent")
-    public AjaxResult queryparent(@RequestParam(required = false) Long departmentId,@RequestParam(required = false) Integer status) {
-        List<DepartmentDTO> list = departmentService.queryparent(departmentId,status);
+    public AjaxResult queryparent(@RequestParam(required = false) Long departmentId,@RequestParam(required = false) Integer status,@RequestParam(required = false) boolean companyFlag) {
+        List<DepartmentDTO> list = departmentService.queryparent(departmentId,status,companyFlag);
         return AjaxResult.success(list);
     }
 

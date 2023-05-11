@@ -152,9 +152,10 @@ public interface IDepartmentService {
      * 查询上级组织
      * @param departmentId
      * @param status
+     * @param companyFlag
      * @return
      */
-    List<DepartmentDTO> queryparent(Long departmentId,Integer status);
+    List<DepartmentDTO> queryparent(Long departmentId, Integer status, boolean companyFlag);
 
     /**
      * 部门岗位详情

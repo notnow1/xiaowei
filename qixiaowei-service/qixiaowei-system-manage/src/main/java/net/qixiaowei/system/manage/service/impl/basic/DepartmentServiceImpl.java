@@ -46,7 +46,6 @@ import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
@@ -145,6 +144,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO) {
         Department department = new Department();
         BeanUtils.copyProperties(departmentDTO, department);
+        //查询公司部门
+        DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
 
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
@@ -158,7 +159,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             if (StringUtils.isEmpty(departmentDTOList)) {
                 return departmentDTOList;
             } else {
-                List<DepartmentDTO> departmentDTOS = this.createTree(departmentDTOList, 0);
+                List<DepartmentDTO> departmentDTOS = this.createTree(departmentDTOList, departmentDTO1.getDepartmentId(),true);
                 return this.getEmployeeByDepartmentId(departmentDTOS);
             }
         }
@@ -187,9 +188,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
         List<String> parentDepartmentExcelNames = new ArrayList<>();
         Department department = new Department();
         BeanUtils.copyProperties(departmentDTO,department);
+        //查询公司部门
+        DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
-        List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0);
+        List<DepartmentDTO> tree = this.createTree(departmentDTOList, departmentDTO1.getDepartmentId(),true);
         List<DepartmentDTO> natureGroups = treeToList(tree);
         if (StringUtils.isNotEmpty(natureGroups)) {
             parentDepartmentExcelNames = natureGroups.stream().map(DepartmentDTO::getParentDepartmentExcelName).collect(Collectors.toList());
@@ -205,9 +208,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<DepartmentDTO> selectDepartmentExcelListName(Department department) {
+        //查询公司部门
+        DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
-        List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0);
+        List<DepartmentDTO> tree = this.createTree(departmentDTOList, departmentDTO1.getDepartmentId(),true);
         List<DepartmentDTO> natureGroups = treeToList(tree);
         return natureGroups;
     }
@@ -272,22 +277,23 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @param pid
      * @return
      */
-    private List<DepartmentDTO> createTree(List<DepartmentDTO> lists, int pid) {
+    private List<DepartmentDTO> createTree(List<DepartmentDTO> lists, Long pid,boolean companyFlag) {
         List<DepartmentDTO> tree = new ArrayList<>();
 
         for (DepartmentDTO catelog : lists) {
+            if (catelog.getParentDepartmentId() == 0L){
+                if (companyFlag){
+                    tree.add(catelog);
+                }
+                continue;
+            }
             if (catelog.getParentDepartmentId() == pid) {
-                if (pid == 0) {
-                    catelog.setStatusFlag(catelog.getStatus() == 0);
-                    catelog.setParentDepartmentExcelName(catelog.getDepartmentName());
-                } else {
                     List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                         catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
                         catelog.setStatusFlag(catelog.getStatus() == 0);
                     }
-                }
-                catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getDepartmentId().toString())));
+                catelog.setChildren(createTree(lists, catelog.getDepartmentId(),false));
                 tree.add(catelog);
             }
         }
@@ -840,12 +846,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
     /**
      * @param departmentId
      * @param status
+     * @param companyFlag
      * @return
      */
     @Override
-    public List<DepartmentDTO> queryparent(Long departmentId, Integer status) {
+    public List<DepartmentDTO> queryparent(Long departmentId, Integer status, boolean companyFlag) {
+        //查询公司部门
+        DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
         List<DepartmentDTO> queryparent = departmentMapper.queryparent(status);
-        List<DepartmentDTO> tree = this.createTree(queryparent, 0);
+        List<DepartmentDTO> tree = this.createTree(queryparent, departmentDTO1.getDepartmentId(),companyFlag);
         //为空默认赋值生效
         if (StringUtils.isNotNull(departmentId)) {
             if (StringUtils.isNotEmpty(tree)) {
