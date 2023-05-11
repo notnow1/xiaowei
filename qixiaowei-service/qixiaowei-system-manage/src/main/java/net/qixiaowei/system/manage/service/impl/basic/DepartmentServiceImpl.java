@@ -1064,6 +1064,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         tenantIds.forEach(tenantId -> {
             TenantUtils.execute(tenantId, () -> {
                 try {
+                    //根据租户id修改每个租户的历史部门数据
                     this.packInitRepairDepartment(tenantId);
                 } catch (Exception e) {
                     data.set("操作失败");
@@ -1075,6 +1076,10 @@ public class DepartmentServiceImpl implements IDepartmentService {
         return data.get();
     }
 
+    /**
+     * 根据租户id修改每个租户的历史部门数据
+     * @param tenantId
+     */
     private void packInitRepairDepartment(Long tenantId) {
         //查询历史一级部门 修改一级部门到公司级部门下
         List<DepartmentDTO> departmentDTOList = departmentMapper.queryHistoryTopDepartment();
