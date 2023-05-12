@@ -19,10 +19,12 @@ import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.integration.tenant.utils.TenantUtils;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantDomainApproval;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
@@ -36,6 +38,7 @@ import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
 import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
 import net.qixiaowei.system.manage.logic.tenant.TenantLogic;
+import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
 import net.qixiaowei.system.manage.mapper.productPackage.ProductPackageMapper;
@@ -102,6 +105,8 @@ public class TenantServiceImpl implements ITenantService {
 
     @Autowired
     private IMenuService menuService;
+    @Autowired
+    private DepartmentMapper departmentMapper;
 
     /**
      * 查询租户表
@@ -253,8 +258,12 @@ public class TenantServiceImpl implements ITenantService {
         if (!initSuccess) {
             throw new ServiceException("初始化数据异常，请联系管理员");
         }
-        tenant.setTenantStatus(BusinessConstants.NORMAL);
-        tenantMapper.updateTenant(tenant);
+        Tenant updateTenant = new Tenant();
+        updateTenant.setTenantId(tenantId);
+        updateTenant.setTenantStatus(BusinessConstants.NORMAL);
+        updateTenant.setUpdateBy(userId);
+        updateTenant.setUpdateTime(nowDate);
+        tenantMapper.updateTenant(updateTenant);
         this.setTenantIdsCache();
         //返回数据
         tenantDTO.setTenantId(tenantId);
@@ -717,6 +726,7 @@ public class TenantServiceImpl implements ITenantService {
      *
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateMyTenant(TenantDTO tenantDTO) {
         Long tenantId = SecurityUtils.getTenantId();
@@ -728,7 +738,6 @@ public class TenantServiceImpl implements ITenantService {
             throw new ServiceException("修改企业信息失败:企业状态异常");
         }
         String domain = getDomain(tenantDTO);
-        ;
         Long userId = SecurityUtils.getUserId();
         String userAccount = SecurityUtils.getUserAccount();
         Date nowDate = DateUtils.getNowDate();
@@ -757,10 +766,10 @@ public class TenantServiceImpl implements ITenantService {
             tenantDomainApproval.setCreateTime(nowDate);
             tenantDomainApproval.setUpdateTime(nowDate);
             tenantDomainApprovalMapper.insertTenantDomainApproval(tenantDomainApproval);
-            // todo 开启工作流
             tenantLogic.sendBacklog(tenantDomainApproval.getTenantDomainApprovalId(), tenantByDB);
         }
         //可修改的租户信息
+        String tenantName = tenantDTO.getTenantName();
         Tenant tenant = new Tenant();
         tenant.setTenantId(tenantId);
         tenant.setTenantName(tenantDTO.getTenantName());
@@ -772,6 +781,21 @@ public class TenantServiceImpl implements ITenantService {
         tenant.setTenantLogo(fileConfig.getPathOfRemoveDomain(tenantDTO.getTenantLogo()));
         tenant.setUpdateBy(userId);
         tenant.setUpdateTime(nowDate);
+        //同步修改部门名称
+        if (StringUtils.isNotEmpty(tenantName) && !tenantName.equals(tenantByDB.getTenantName())) {
+            DepartmentDTO departmentDTO = departmentMapper.queryCompanyTopDepartment();
+            if (StringUtils.isNull(departmentDTO)) {
+                throw new ServiceException("数据异常，请联系管理员");
+            }
+            Department department = new Department();
+            department.setDepartmentId(departmentDTO.getDepartmentId());
+            department.setDepartmentName(tenantName);
+            department.setUpdateBy(userId);
+            department.setUpdateTime(nowDate);
+            departmentMapper.updateDepartment(department);
+            //同步销售云
+            tenantLogic.syncSalesCompanyInfo(tenant);
+        }
         return tenantMapper.updateTenant(tenant);
     }
 

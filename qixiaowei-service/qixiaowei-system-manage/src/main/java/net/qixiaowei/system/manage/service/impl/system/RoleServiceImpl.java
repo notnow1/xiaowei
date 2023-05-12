@@ -3,6 +3,8 @@ package net.qixiaowei.system.manage.service.impl.system;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.domain.R;
@@ -14,19 +16,24 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.UserUtils;
+import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
+import net.qixiaowei.integration.tenant.utils.TenantUtils;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncRoleDTO;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncRoleUserDTO;
 import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
+import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.domain.user.User;
 import net.qixiaowei.system.manage.api.dto.system.RoleAuthUsersDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleMenuDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.logic.tenant.TenantLogic;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
+import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.system.IMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,23 +57,28 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 @Service
 @Slf4j
 public class RoleServiceImpl implements IRoleService {
+    private static final ArrayList<Long> salaryItems = CollUtil.newArrayList(347L, 348L, 349L);
+    private static final Map<Long, Long> departmentEmployeeMap = MapUtil.builder(new HashMap<Long, Long>())
+            .put(10L, 12L)
+            .put(28L, 40L)
+            .put(29L, 47L)
+            .put(199L, 36L)
+            .put(202L, 206L).build();
+
     @Autowired
     private RoleMapper roleMapper;
-
     @Autowired
     private RoleMenuMapper roleMenuMapper;
-
     @Autowired
     private IMenuService menuService;
-
     @Autowired
     private UserMapper userMapper;
-
     @Autowired
     private UserRoleMapper userRoleMapper;
-
     @Autowired
     private RemoteSyncAdminService remoteSyncAdminService;
+    @Autowired
+    private TenantMapper tenantMapper;
 
     /**
      * 根据用户ID查询角色列表
@@ -172,6 +184,7 @@ public class RoleServiceImpl implements IRoleService {
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
         role.setRoleType(RoleType.CUSTOM.getCode());
+        role.setProductPackage(menuService.getProductPackageNames(menuIds));
         role.setCreateBy(SecurityUtils.getUserId());
         role.setCreateTime(DateUtils.getNowDate());
         role.setUpdateTime(DateUtils.getNowDate());
@@ -225,6 +238,7 @@ public class RoleServiceImpl implements IRoleService {
         }
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
+        role.setProductPackage(menuService.getProductPackageNames(menuIds));
         role.setUpdateTime(DateUtils.getNowDate());
         role.setUpdateBy(SecurityUtils.getUserId());
         //同步编辑销售云角色
@@ -563,6 +577,7 @@ public class RoleServiceImpl implements IRoleService {
      * @param: [userRoles]
      * @return: void
      **/
+    @Override
     public void handleSalesRoleUser(List<UserRole> userRoles) {
         Set<Long> userIdList = new HashSet<>();
         Set<Long> roleIdList = new HashSet<>();
@@ -571,6 +586,28 @@ public class RoleServiceImpl implements IRoleService {
             roleIdList.add(userRole.getRoleId());
         }
         this.syncSalesRoleRelatedUser(userIdList, roleIdList);
+    }
+
+    @IgnoreTenant
+    @Override
+    public void changeMenu() {
+        List<TenantDTO> tenantDTOList = tenantMapper.selectTenantList(new Tenant());
+        // 获得正常的租户列表
+        List<Long> tenantIds = tenantDTOList.stream().map(TenantDTO::getTenantId).collect(Collectors.toList());
+        if (StringUtils.isEmpty(tenantIds)) {
+            tenantIds = new ArrayList<>();
+        }
+        //加入租户管理平台
+        tenantIds.add(0L);
+        tenantIds.forEach(tenantId -> {
+            TenantUtils.execute(tenantId, () -> {
+                try {
+                    this.changeRoleMenu();
+                } catch (Exception e) {
+                    throw new ServiceException("角色菜单更新异常");
+                }
+            });
+        });
     }
 
     /**
@@ -611,6 +648,31 @@ public class RoleServiceImpl implements IRoleService {
                 }
             });
         }
+    }
+
+    private void changeRoleMenu() {
+        //找到所有角色
+        List<RoleDTO> roleDTOS = roleMapper.selectRoleList(new Role());
+        //处理角色菜单
+        if (StringUtils.isNotEmpty(roleDTOS)) {
+            for (RoleDTO roleDTO : roleDTOS) {
+                Long roleId = roleDTO.getRoleId();
+                List<RoleMenuDTO> roleMenuDTOS = roleMenuMapper.selectRoleMenuListByRoleId(roleId);
+                if (StringUtils.isNotEmpty(roleMenuDTOS)) {
+                    Set<Long> menuIds = new HashSet<>();
+                    for (RoleMenuDTO roleMenuDTO : roleMenuDTOS) {
+                        Long menuId = roleMenuDTO.getMenuId();
+                        if (salaryItems.contains(menuId)) {
+                            menuIds.add(346L);
+                        } else menuIds.add(departmentEmployeeMap.getOrDefault(menuId, menuId));
+                    }
+                    Map<Long, Long> roleMenuMap = new HashMap<>();
+                    roleMenuDTOS.forEach(roleMenuDTO -> roleMenuMap.put(roleMenuDTO.getMenuId(), roleMenuDTO.getRoleMenuId()));
+                    this.updateRoleMenu(roleId, menuIds, roleMenuMap);
+                }
+            }
+        }
+
     }
 
 }

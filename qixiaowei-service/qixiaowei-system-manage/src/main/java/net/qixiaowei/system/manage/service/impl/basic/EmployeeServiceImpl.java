@@ -190,7 +190,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @param employeeDTO 员工表
      * @return 员工表
      */
-    @DataScope(deptAlias = "d")
+    @DataScope(businessAlias = "e")
     @Override
     public List<EmployeeDTO> selectEmployeeList(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();

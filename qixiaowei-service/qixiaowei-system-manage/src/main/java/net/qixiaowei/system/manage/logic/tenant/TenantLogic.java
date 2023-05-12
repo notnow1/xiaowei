@@ -26,6 +26,7 @@ import net.qixiaowei.integration.tenant.utils.TenantUtils;
 import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.operate.cloud.api.remote.RemoteOperateCloudInitDataService;
+import net.qixiaowei.sales.cloud.api.dto.sync.AdminCompanyDTO;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncResisterDTO;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncRoleDTO;
 import net.qixiaowei.sales.cloud.api.dto.sync.SyncTenantUpdateDTO;
@@ -33,6 +34,7 @@ import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
 import net.qixiaowei.sales.cloud.api.vo.sync.SalesLoginVO;
 import net.qixiaowei.strategy.cloud.api.remote.RemoteStrategyCloudInitDataService;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.Employee;
 import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
 import net.qixiaowei.system.manage.api.domain.system.Role;
@@ -47,6 +49,7 @@ import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.mapper.basic.ConfigMapper;
+import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeInfoMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMapper;
@@ -57,6 +60,7 @@ import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IDictionaryTypeService;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.system.manage.service.basic.IIndicatorService;
+import net.qixiaowei.system.manage.service.system.IMenuService;
 import net.qixiaowei.system.manage.service.user.IUserConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -73,6 +77,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class TenantLogic {
 
+    private static final String DEPARTMENT_CODE_FIRST = "ZZ001";
     private static final String EMPLOYEE_CODE_FIRST = "YG000001";
 
     public static final List<Long> SALES_MENUS = Arrays.asList(55L,
@@ -333,6 +338,10 @@ public class TenantLogic {
     private EmployeeMapper employeeMapper;
     @Autowired
     private EmployeeInfoMapper employeeInfoMapper;
+    @Autowired
+    private DepartmentMapper departmentMapper;
+    @Autowired
+    private IMenuService menuService;
 
     /**
      * @description: 初始化租户数据
@@ -433,7 +442,7 @@ public class TenantLogic {
             UserDTO userDTO = userMapper.selectUserOfAdmin();
             if (StringUtils.isNotNull(userDTO)) {
                 Long roleIdOfAdmin = roleMapper.selectRoleIdOfAdmin();
-                this.syncSales(tenant, userDTO.getUserId(), roleIdOfAdmin, endTime, null, null);
+                this.syncSales(tenant, userDTO.getUserId(), roleIdOfAdmin, endTime, null, null, userDTO.getDepartmentId());
             }
         });
 
@@ -513,7 +522,10 @@ public class TenantLogic {
             throw new ServiceException("用户初始化异常，请联系管理员");
         }
         Long userIdOfInit = user.getUserId();
-        this.saveEmployee(tenant, nowDate, userIdOfInit);
+        //新增组织
+        Long departmentId = this.saveDepartmentId(tenant, nowDate, userIdOfInit);
+        //新增人员
+        this.saveEmployee(tenant, nowDate, userIdOfInit, departmentId);
         //新增用户配置
         userConfigService.initUserConfig(userIdOfInit);
         //新增租户角色
@@ -524,6 +536,7 @@ public class TenantLogic {
         adminRole.setRoleName(RoleCode.TENANT_ADMIN.getInfo());
         adminRole.setSort(1);
         adminRole.setStatus(BusinessConstants.NORMAL);
+        adminRole.setProductPackage(menuService.getProductPackageNames(initMenuIds));
         adminRole.setRemark(RoleCode.TENANT_ADMIN.getRemark());
         adminRole.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         adminRole.setCreateBy(userIdOfInit);
@@ -531,6 +544,13 @@ public class TenantLogic {
         adminRole.setCreateTime(nowDate);
         adminRole.setUpdateTime(nowDate);
         boolean adminRoleSuccess = roleMapper.insertRole(adminRole) > 0;
+        Set<Long> configManageMenuIds = tenantConfig.getConfigManageMenuIds();
+        Set<Long> initDefaultMenuIds = new HashSet<>();
+        for (Long initMenuId : initMenuIds) {
+            if (!configManageMenuIds.contains(initMenuId)) {
+                initDefaultMenuIds.add(initMenuId);
+            }
+        }
         //默认租户默认角色
         Role defaultRole = new Role();
         defaultRole.setRoleType(RoleType.BUILT_IN.getCode());
@@ -538,6 +558,7 @@ public class TenantLogic {
         defaultRole.setRoleCode(RoleCode.TENANT_DEFAULT.getCode());
         defaultRole.setRoleName(RoleCode.TENANT_DEFAULT.getInfo());
         defaultRole.setStatus(BusinessConstants.NORMAL);
+        defaultRole.setProductPackage(menuService.getProductPackageNames(initDefaultMenuIds));
         defaultRole.setSort(0);
         defaultRole.setRemark(RoleCode.TENANT_DEFAULT.getRemark());
         defaultRole.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
@@ -549,13 +570,6 @@ public class TenantLogic {
         //角色赋权
         Long adminRoleId = adminRole.getRoleId();
         Long defaultRoleId = defaultRole.getRoleId();
-        Set<Long> configManageMenuIds = tenantConfig.getConfigManageMenuIds();
-        Set<Long> initDefaultMenuIds = new HashSet<>();
-        for (Long initMenuId : initMenuIds) {
-            if (!configManageMenuIds.contains(initMenuId)) {
-                initDefaultMenuIds.add(initMenuId);
-            }
-        }
         List<RoleDTO> roles = new ArrayList<>();
         RoleDTO roleDTO = new RoleDTO();
         BeanUtils.copyProperties(defaultRole, roleDTO);
@@ -567,7 +581,7 @@ public class TenantLogic {
         boolean userRoleSuccess = this.initUserRole(userIdOfInit, nowDate, userIdOfInit, adminRoleId);
         //初始化销售云-企业信息、用户、角色菜单
         Set<Long> salesInitMenuIds = this.getSalesInitMenuIds(initMenuIds);
-        this.syncSales(tenant, userIdOfInit, adminRoleId, endTime, salesInitMenuIds, roles);
+        this.syncSales(tenant, userIdOfInit, adminRoleId, endTime, salesInitMenuIds, roles, departmentId);
         if (!adminRoleSuccess || !defaultRoleSuccess || !initRoleMenuSuccess || !userRoleSuccess) {
             throw new ServiceException("用户角色初始化异常，请联系管理员");
         }
@@ -793,12 +807,15 @@ public class TenantLogic {
      * @param: [tenant, userId, roleId, endTime, salesInitMenuIds]
      * @return: void
      **/
-    private void syncSales(Tenant tenant, Long userId, Long roleId, Date endTime, Set<Long> salesInitMenuIds, List<RoleDTO> roles) {
+    private void syncSales(Tenant tenant, Long userId, Long roleId, Date endTime, Set<Long> salesInitMenuIds, List<RoleDTO> roles, Long departmentId) {
         String adminAccount = tenant.getAdminAccount();
+        String adminName = tenant.getAdminName();
         String adminPassword = tenant.getAdminPassword();
         SyncResisterDTO syncResisterDTO = new SyncResisterDTO();
         syncResisterDTO.setCompanyName(tenant.getTenantName());
         syncResisterDTO.setCompanyId(tenant.getTenantId());
+        syncResisterDTO.setDeptId(departmentId);
+        syncResisterDTO.setAdminName(adminName);
         syncResisterDTO.setEndTime(endTime);
         syncResisterDTO.setPhone(adminAccount);
         syncResisterDTO.setPassword(adminPassword);
@@ -879,16 +896,17 @@ public class TenantLogic {
      * @description: 保存人员
      * @Author: hzk
      * @date: 2023/5/5 20:11
-     * @param: [tenant, nowDate, userIdOfInit]
+     * @param: [tenant, nowDate, userIdOfInit,departmentId]
      * @return: void
      **/
-    private void saveEmployee(Tenant tenant, Date nowDate, Long userIdOfInit) {
+    private void saveEmployee(Tenant tenant, Date nowDate, Long userIdOfInit, Long departmentId) {
         //人员
         String employeeName = tenant.getAdminName();
         String userAccount = tenant.getAdminAccount();
         //员工表
         Employee employee = new Employee();
         employee.setEmployeeCode(EMPLOYEE_CODE_FIRST);
+        employee.setEmployeeDepartmentId(departmentId);
         employee.setEmployeeName(employeeName);
         employee.setEmployeeMobile(userAccount);
         employee.setEmploymentStatus(1);
@@ -915,6 +933,50 @@ public class TenantLogic {
         employeeInfo.setUpdateBy(userIdOfInit);
         employeeInfo.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         employeeInfoMapper.insertEmployeeInfo(employeeInfo);
+        tenant.setAdminName(employeeName + "（" + employee.getEmployeeCode() + "）");
+    }
+
+    /**
+     * @description: 保存组织
+     * @Author: hzk
+     * @date: 2023/5/9 15:23
+     * @param: [tenant, nowDate, userIdOfInit]
+     * @return: java.lang.Long
+     **/
+    private Long saveDepartmentId(Tenant tenant, Date nowDate, Long userIdOfInit) {
+        Department department = new Department();
+        department.setParentDepartmentId(0L);
+        department.setDepartmentCode(DEPARTMENT_CODE_FIRST);
+        department.setDepartmentName(tenant.getTenantName());
+        department.setLevel(0);
+        department.setSort(0);
+        department.setCreateBy(userIdOfInit);
+        department.setCreateTime(nowDate);
+        department.setUpdateBy(userIdOfInit);
+        department.setUpdateTime(nowDate);
+        department.setStatus(BusinessConstants.NORMAL);
+        department.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        departmentMapper.insertDepartment(department);
+        return department.getDepartmentId();
+    }
+
+    /**
+     * @description: 同步销售云企业信息
+     * @Author: hzk
+     * @date: 2023/5/11 15:47
+     * @param: [tenant]
+     * @return: void
+     **/
+    public void syncSalesCompanyInfo(Tenant tenant) {
+        String tenantName = tenant.getTenantName();
+        AdminCompanyDTO adminCompanyDTO = new AdminCompanyDTO();
+        adminCompanyDTO.setCompanyName(tenantName);
+        String salesToken = SecurityUtils.getSalesToken();
+        R<?> r = remoteSyncAdminService.syncSetAdminConfig(adminCompanyDTO, salesToken);
+        if (0 != r.getCode()) {
+            log.error("同步销售云企业信息失败:{}", r.getMsg());
+            throw new ServiceException("系统异常");
+        }
     }
 
 }

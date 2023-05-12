@@ -22,6 +22,10 @@ public class RemoteSyncAdminFallbackFactory implements FallbackFactory<RemoteSyn
     public RemoteSyncAdminService create(Throwable throwable) {
         log.error("悟空admin服务调用失败:{}", throwable.getMessage());
         return new RemoteSyncAdminService() {
+            @Override
+            public R<?> syncSetAdminConfig(AdminCompanyDTO adminCompanyDTO, String salesToken) {
+                return R.fail("远程同步企业用户失败:" + throwable.getMessage());
+            }
 
             @Override
             public R<?> syncUserAdd(SyncUserDTO syncUserDTO, String salesToken) {
@@ -41,6 +45,16 @@ public class RemoteSyncAdminFallbackFactory implements FallbackFactory<RemoteSyn
             @Override
             public R<?> syncResetPassword(SyncUserStatusDTO syncUserStatusDTO, String salesToken) {
                 return R.fail("远程同步用户修改密码失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<?> syncUsernameEdit(Long id, String username, String password, String salesToken) {
+                return R.fail("远程同步用户重置帐号失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<?> syncResetManagerUser(SyncManagerUserResetDTO syncManagerUserResetDTO, String salesToken) {
+                return R.fail("远程同步管理员用户重置帐号失败:" + throwable.getMessage());
             }
 
             @Override

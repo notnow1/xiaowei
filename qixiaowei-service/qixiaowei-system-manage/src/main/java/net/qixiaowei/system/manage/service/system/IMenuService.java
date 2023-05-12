@@ -121,5 +121,7 @@ public interface IMenuService {
      */
     int updateMenu(MenuDTO menuDTO);
 
+    String getProductPackageNames(Set<Long> menuIds);
+
 
 }

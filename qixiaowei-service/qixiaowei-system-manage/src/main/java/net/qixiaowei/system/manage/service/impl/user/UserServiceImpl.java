@@ -13,6 +13,7 @@ import net.qixiaowei.integration.common.constant.*;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.system.RoleDataScope;
 import net.qixiaowei.integration.common.enums.tenant.TenantStatus;
+import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -295,11 +296,8 @@ public class UserServiceImpl implements IUserService {
         userLogic.checkUserUnique(userDTO);
         Date nowDate = DateUtils.getNowDate();
         String email = userDTO.getEmail();
-        String avatar = userDTO.getAvatar();
-        String pathOfRemoveDomain = fileConfig.getPathOfRemoveDomain(avatar);
         User user = new User();
         user.setUserId(userId);
-        user.setAvatar(pathOfRemoveDomain);
         user.setEmail(email);
         user.setUpdateBy(userId);
         user.setUpdateTime(nowDate);
@@ -309,9 +307,6 @@ public class UserServiceImpl implements IUserService {
             //同步销售云
             userLogic.syncSaleEditUser(userDTO);
             LoginUserVO loginUser = SecurityUtils.getLoginUser();
-            if (StringUtils.isNotEmpty(avatar)) {
-                loginUser.getUserDTO().setAvatar(avatar);
-            }
             loginUser.getUserDTO().setEmail(email);
             tokenService.setLoginUser(loginUser);
             return i;
@@ -460,6 +455,7 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isNull(userByUserId)) {
             throw new ServiceException("修改失败，当前用户不存在");
         }
+        userDTO.setEmployeeId(userByUserId.getEmployeeId());
         userLogic.checkUserUnique(userDTO);
         //数据权限 todo
         //查找当前用户角色
@@ -478,6 +474,7 @@ public class UserServiceImpl implements IUserService {
         user.setUpdateTime(DateUtils.getNowDate());
         user.setUpdateBy(SecurityUtils.getUserId());
         int row = userMapper.updateUser(user);
+        userLogic.updateEmployee(userDTO);
         if (row > 0) {
             //同步销售云
             userLogic.syncSaleEditUser(userDTO);
@@ -589,6 +586,50 @@ public class UserServiceImpl implements IUserService {
         user.setUpdateBy(operateUserId);
         //同步销售云
         userLogic.syncSaleResetUserPassword(userId, password);
+        return userMapper.updateUser(user);
+    }
+
+    /**
+     * 重置帐号
+     *
+     * @param userDTO
+     * @return 结果
+     */
+    @Override
+    public int resetUserAccount(UserDTO userDTO) {
+        Long userId = userDTO.getUserId();
+        String userAccount = userDTO.getUserAccount();
+        String password = userDTO.getPassword();
+        Date nowDate = DateUtils.getNowDate();
+        Long operateUserId = SecurityUtils.getUserId();
+        //校验用户
+        UserDTO userByUserId = userMapper.selectUserByUserId(userId);
+        if (StringUtils.isNull(userByUserId)) {
+            throw new ServiceException("当前用户不存在");
+        }
+        boolean isAdmin = UserType.SYSTEM.getCode().equals(userByUserId.getUserType());
+        if (isAdmin && !userId.equals(operateUserId)) {
+            throw new ServiceException("不允许非系统管理员重置系统管理员帐号");
+        }
+        String oldUserAccount = userByUserId.getUserAccount();
+        if (userAccount.equals(oldUserAccount)) {
+            throw new ServiceException("帐号不能和原帐号相同");
+        }
+        UserDTO selectUserByUserAccount = userMapper.selectUserByUserAccount(userAccount);
+        if (StringUtils.isNotNull(selectUserByUserAccount)) {
+            throw new ServiceException("帐号已存在");
+        }
+        User user = new User();
+        user.setUserId(userId);
+        user.setUserAccount(userAccount);
+        user.setPassword(SecurityUtils.encryptPassword(password));
+        user.setUpdateTime(nowDate);
+        user.setUpdateBy(operateUserId);
+        //同步人员手机号更新
+        userDTO.setEmployeeId(userByUserId.getEmployeeId());
+        userLogic.updateEmployee(userDTO);
+        //同步销售云
+        userLogic.syncSaleResetUserAccount(userId, oldUserAccount, userAccount, password, isAdmin);
         return userMapper.updateUser(user);
     }
 

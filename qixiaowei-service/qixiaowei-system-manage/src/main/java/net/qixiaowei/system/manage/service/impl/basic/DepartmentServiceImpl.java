@@ -14,6 +14,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
+import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.integration.tenant.utils.TenantUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
@@ -1050,6 +1051,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      *
      * @return
      */
+    @IgnoreTenant
     @Override
     public String initRepairDepartment() {
         AtomicReference<String> data = new AtomicReference<>("操作成功");

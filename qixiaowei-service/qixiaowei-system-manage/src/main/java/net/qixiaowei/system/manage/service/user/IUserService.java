@@ -155,6 +155,14 @@ public interface IUserService {
      * @return 结果
      */
     int resetPwd(UserDTO userDTO);
+
+    /**
+     * 重置帐号
+     *
+     * @param userDTO
+     * @return 结果
+     */
+    int resetUserAccount(UserDTO userDTO);
     /**
      * 编辑用户状态
      *

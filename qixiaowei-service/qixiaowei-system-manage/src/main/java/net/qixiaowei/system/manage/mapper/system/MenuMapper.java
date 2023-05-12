@@ -56,6 +56,13 @@ public interface MenuMapper {
     Set<Long> selectMenuIdsAll();
 
     /**
+     * 查询所有菜单集合
+     *
+     * @return 菜单表集合
+     */
+    List<MenuDTO> selectMenuAll();
+
+    /**
      * 查询用户菜单路由列表
      *
      * @return 菜单表集合

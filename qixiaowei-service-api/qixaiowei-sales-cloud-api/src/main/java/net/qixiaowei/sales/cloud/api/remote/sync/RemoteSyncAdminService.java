@@ -16,6 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @FeignClient(contextId = "remoteSyncAdminService", value = "wk-admin", fallbackFactory = RemoteSyncAdminFallbackFactory.class)
 public interface RemoteSyncAdminService {
+    /**
+     * 企业-名称设置等
+     */
+    @PostMapping("/adminConfig/sync/setAdminConfig")
+    R<?> syncSetAdminConfig(@RequestBody AdminCompanyDTO adminCompanyDTO, @RequestHeader(SecurityConstants.SALES_TOKEN_NAME) String salesToken);
 
     /**
      * 用户-新增
@@ -40,6 +45,18 @@ public interface RemoteSyncAdminService {
      */
     @PostMapping("/adminUser/sync/resetPassword")
     R<?> syncResetPassword(@RequestBody SyncUserStatusDTO syncUserStatusDTO, @RequestHeader(SecurityConstants.SALES_TOKEN_NAME) String salesToken);
+
+    /**
+     * 用户-重置帐号
+     */
+    @PostMapping("/adminUser/sync/usernameEdit")
+    R<?> syncUsernameEdit(@RequestParam("id") Long id, @RequestParam("username") String username, @RequestParam("password") String password, @RequestHeader(SecurityConstants.SALES_TOKEN_NAME) String salesToken);
+
+    /**
+     * 用户-重置主帐号
+     */
+    @PostMapping("/adminCompanyManager/sync/resetManagerUser")
+    R<?> syncResetManagerUser(@RequestBody SyncManagerUserResetDTO syncManagerUserResetDTO, @RequestHeader(SecurityConstants.SALES_TOKEN_NAME) String salesToken);
 
     /**
      * 用户-修改头像

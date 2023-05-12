@@ -47,7 +47,12 @@ public class UserDTO extends BaseDTO {
     }
 
     //重置密码校验
-    public interface ResetPwdRUserDTO extends Default {
+    public interface ResetPwdUserDTO extends Default {
+
+    }
+
+    //重置帐号校验
+    public interface ResetUserAccountUserDTO extends Default {
 
     }
 
@@ -59,7 +64,7 @@ public class UserDTO extends BaseDTO {
     /**
      * ID
      */
-    @NotNull(message = "用户ID不能为空", groups = {UserDTO.UpdateUserDTO.class, UserDTO.DeleteUserDTO.class, UserDTO.ResetPwdRUserDTO.class})
+    @NotNull(message = "用户ID不能为空", groups = {UserDTO.UpdateUserDTO.class, UserDTO.DeleteUserDTO.class, UserDTO.ResetPwdUserDTO.class, UserDTO.ResetUserAccountUserDTO.class})
     private Long userId;
     /**
      * 用户类型:0其他;1系统管理员
@@ -81,6 +86,7 @@ public class UserDTO extends BaseDTO {
     /**
      * 部门ID
      */
+    @NotNull(message = "部门不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
     private Long departmentId;
     /**
      * 部门名称
@@ -99,14 +105,14 @@ public class UserDTO extends BaseDTO {
      * 用户帐号
      */
     @Xss(message = "用户账号不能包含脚本字符")
-    @NotBlank(message = "用户账号不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
-    @Size(min = 0, max = 120, message = "用户账号长度不能超过120个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
+    @NotBlank(message = "用户账号不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class, UserDTO.ResetUserAccountUserDTO.class})
+    @Size(min = 0, max = 120, message = "用户账号长度不能超过120个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class, UserDTO.ResetUserAccountUserDTO.class})
     private String userAccount;
     /**
      * 密码
      */
-    @NotBlank(message = "密码由6-20位字母、数字组成", groups = {UserDTO.AddUserDTO.class, UserDTO.ResetPwdRUserDTO.class})
-    @Size(min = 6, max = 120, message = "密码长度最低6位，且不能超过120个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
+    @NotBlank(message = "密码由6-20位字母、数字组成", groups = {UserDTO.AddUserDTO.class, UserDTO.ResetPwdUserDTO.class, UserDTO.ResetUserAccountUserDTO.class})
+    @Size(min = 6, max = 120, message = "密码长度最低6位，且不能超过120个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class, UserDTO.ResetUserAccountUserDTO.class})
     private String password;
     /**
      * 用户名称

@@ -103,6 +103,17 @@
         SELECT m.menu_id FROM menu m WHERE m.delete_flag = 0 AND m.status = 1 ORDER BY m.parent_menu_id, m.sort
     </select>
 
+    <select id="selectMenuAll" resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
+        SELECT distinct
+        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component,
+        m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag,
+        m.create_by, m.create_time, m.update_by, m.update_time,pp.product_package_name
+        FROM menu m
+        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id AND pp.delete_flag = 0
+        WHERE m.delete_flag = 0 AND m.status = 1
+        ORDER BY m.parent_menu_id, m.sort
+    </select>
+
     <select id="selectMenuRouterByUserId" resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
         SELECT distinct
         m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component,

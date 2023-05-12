@@ -103,8 +103,18 @@ public class UserController extends BaseController {
     @Log(title = "重置密码", businessType = BusinessType.USER, businessId = "userId", operationType = OperationType.UPDATE)
     @RequiresPermissions("system:manage:user:resetPwd")
     @PostMapping("/resetPwd")
-    public AjaxResult resetPwd(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
+    public AjaxResult resetPwd(@Validated(UserDTO.ResetPwdUserDTO.class) @RequestBody UserDTO userDTO) {
         return toAjax(userService.resetPwd(userDTO));
+    }
+
+    /**
+     * 重置帐号
+     */
+    @Log(title = "重置帐号", businessType = BusinessType.USER, businessId = "userId", operationType = OperationType.UPDATE)
+    @RequiresPermissions("system:manage:user:resetUserAccount")
+    @PostMapping("/resetUserAccount")
+    public AjaxResult resetUserAccount(@Validated(UserDTO.ResetUserAccountUserDTO.class) @RequestBody UserDTO userDTO) {
+        return toAjax(userService.resetUserAccount(userDTO));
     }
 
     /**

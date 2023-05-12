@@ -56,7 +56,7 @@ public class RoleController extends BaseController {
     @RequiresPermissions(value = {"system:manage:role:add", "system:manage:role:edit"}, logical = Logical.OR)
     @GetMapping("/generate/roleCode")
     public AjaxResult generateRoleCode() {
-        return AjaxResult.success("操作成功",roleService.generateRoleCode());
+        return AjaxResult.success("操作成功", roleService.generateRoleCode());
     }
 
     /**
@@ -138,4 +138,11 @@ public class RoleController extends BaseController {
         list = SecurityUtils.isAdmin() ? list.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()) : list;
         return AjaxResult.success(list);
     }
+
+    @PostMapping("/changeMenu")
+    public AjaxResult changeMenu() {
+        roleService.changeMenu();
+        return success();
+    }
+
 }

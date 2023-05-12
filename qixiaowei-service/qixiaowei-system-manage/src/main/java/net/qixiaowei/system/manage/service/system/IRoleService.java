@@ -126,4 +126,9 @@ public interface IRoleService {
     int deleteRoleByRoleId(Long roleId);
 
     void handleSalesRoleUser(List<UserRole> userRoles);
+    /**
+     * 改变菜单
+     *
+     */
+    void changeMenu();
 }

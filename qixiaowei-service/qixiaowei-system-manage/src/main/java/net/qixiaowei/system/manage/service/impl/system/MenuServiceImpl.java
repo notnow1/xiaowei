@@ -1,8 +1,10 @@
 package net.qixiaowei.system.manage.service.impl.system;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
+import cn.hutool.core.util.StrUtil;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.UserConstants;
@@ -503,6 +505,35 @@ public class MenuServiceImpl implements IMenuService {
      */
     public boolean isParentView(MenuDTO menu) {
         return menu.getParentMenuId().intValue() != 0 && UserConstants.TYPE_DIR.equals(menu.getMenuType());
+    }
+
+    /**
+     * @description: 根据菜单ID集合获取产品包集合名称
+     * @Author: hzk
+     * @date: 2023/5/11 13:50
+     * @param: [menuIds]
+     * @return: java.lang.String
+     **/
+    @Override
+    public String getProductPackageNames(Set<Long> menuIds) {
+        if (StringUtils.isEmpty(menuIds)) {
+            return "";
+        }
+        List<MenuDTO> menuDTOS = menuMapper.selectMenuAll();
+        Set<String> productPackages = new HashSet<>();
+        if (StringUtils.isNotEmpty(menuDTOS)) {
+            for (MenuDTO menuDTO : menuDTOS) {
+                Long menuId = menuDTO.getMenuId();
+                String productPackageName = menuDTO.getProductPackageName();
+                if (StringUtils.isNotEmpty(productPackageName) && menuIds.contains(menuId)) {
+                    productPackages.add(productPackageName);
+                }
+            }
+        }
+        if (StringUtils.isEmpty(productPackages)) {
+            return "";
+        }
+        return CollUtil.join(productPackages, ";");
     }
 
 }

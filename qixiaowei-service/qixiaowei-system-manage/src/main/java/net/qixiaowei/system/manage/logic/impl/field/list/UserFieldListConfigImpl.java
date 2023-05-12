@@ -30,9 +30,10 @@ public class UserFieldListConfigImpl implements IFieldListConfigStrategy {
     static {
         INIT_USER.put(UserField.EMPLOYEE_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_USER.put(UserField.USER_ACCOUNT.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_USER.put(UserField.STATUS.getCode(), FieldListConfig.builder().fieldWidth(100).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_USER.put(UserField.ROLES.getCode(), FieldListConfig.builder().fieldWidth(125).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_USER.put(UserField.EMAIL.getCode(), FieldListConfig.builder().fieldWidth(150).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_USER.put(UserField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_USER.put(UserField.STATUS.getCode(), FieldListConfig.builder().fieldWidth(100).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_USER.put(UserField.ROLES.getCode(), FieldListConfig.builder().fieldWidth(125).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_USER.put(UserField.EMAIL.getCode(), FieldListConfig.builder().fieldWidth(150).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 

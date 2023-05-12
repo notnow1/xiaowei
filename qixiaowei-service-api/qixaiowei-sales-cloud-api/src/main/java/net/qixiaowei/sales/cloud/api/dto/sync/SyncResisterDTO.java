@@ -25,6 +25,14 @@ public class SyncResisterDTO {
     @NotNull(message = "企业ID不能为空！")
     private Long companyId;
     /**
+     * 管理员姓名
+     */
+    private String adminName;
+    /**
+     * 顶级部门ID
+     */
+    private Long deptId;
+    /**
      * 服务截止时间
      */
     @NotNull(message = "服务截止时间不能为空！")
