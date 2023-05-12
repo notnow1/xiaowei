@@ -78,7 +78,7 @@ public class EmployeeController extends BaseController {
     /**
      * 分页查询员工表列表
      */
-    @RequiresPermissions("system:manage:employee:pageList")
+    @RequiresPermissions("system:manage:department:employee:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(EmployeeDTO employeeDTO) {
         startPage();
@@ -91,7 +91,7 @@ public class EmployeeController extends BaseController {
      *
      * @return 员工编码
      */
-    @RequiresPermissions(value = {"system:manage:employee:add", "system:manage:employee:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"system:manage:department:employee:add", "system:manage:department:employee:edit"}, logical = Logical.OR)
     @GetMapping("/generate/employeeCode")
     public AjaxResult generateEmployeeCode() {
         return AjaxResult.success("操作成功", employeeService.generateEmployeeCode());
@@ -101,7 +101,7 @@ public class EmployeeController extends BaseController {
      * 新增员工表
      */
     @Log(title = "新增员工", businessType = BusinessType.EMPLOYEE, businessId = "employeeId", operationType = OperationType.INSERT)
-    @RequiresPermissions("system:manage:employee:add")
+    @RequiresPermissions("system:manage:department:employee:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(EmployeeDTO.AddEmployeeDTO.class) EmployeeDTO employeeDTO) {
         return AjaxResult.success(employeeService.insertEmployee(employeeDTO));
@@ -111,7 +111,7 @@ public class EmployeeController extends BaseController {
      * 修改员工表
      */
     @Log(title = "编辑员工", businessType = BusinessType.EMPLOYEE, businessId = "employeeId", operationType = OperationType.UPDATE)
-    @RequiresPermissions("system:manage:employee:edit")
+    @RequiresPermissions("system:manage:department:employee:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(EmployeeDTO.UpdateEmployeeDTO.class) EmployeeDTO employeeDTO) {
         return toAjax(employeeService.updateEmployee(employeeDTO));
@@ -120,7 +120,7 @@ public class EmployeeController extends BaseController {
     /**
      * 查询员工单条信息
      */
-    @RequiresPermissions(value = {"system:manage:employee:info", "system:manage:employee:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"system:manage:department:employee:info", "system:manage:department:employee:edit"}, logical = Logical.OR)
     @GetMapping("/info/{employeeId}")
     public AjaxResult info(@PathVariable Long employeeId) {
         EmployeeDTO employeeDTO = employeeService.selectEmployeeByEmployeeId(employeeId);
@@ -130,7 +130,7 @@ public class EmployeeController extends BaseController {
     /**
      * 逻辑删除员工表
      */
-    @RequiresPermissions("system:manage:employee:remove")
+    @RequiresPermissions("system:manage:department:employee:remove")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody @Validated(EmployeeDTO.DeleteEmployeeDTO.class) EmployeeDTO employeeDTO) {
         return toAjax(employeeService.logicDeleteEmployeeByEmployeeId(employeeDTO));
@@ -139,7 +139,7 @@ public class EmployeeController extends BaseController {
     /**
      * 逻辑批量删除员工表
      */
-    @RequiresPermissions("system:manage:employee:remove")
+    @RequiresPermissions("system:manage:department:employee:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> employeeIds) {
         return toAjax(employeeService.logicDeleteEmployeeByEmployeeIds(employeeIds));
@@ -149,7 +149,7 @@ public class EmployeeController extends BaseController {
      * 导入人员
      */
     @SneakyThrows
-    @RequiresPermissions("system:manage:employee:import")
+    @RequiresPermissions("system:manage:department:employee:import")
     @PostMapping("import")
     public AjaxResult importEmployee(MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
@@ -202,7 +202,7 @@ public class EmployeeController extends BaseController {
      * 导出人员
      */
     @SneakyThrows
-    @RequiresPermissions("system:manage:employee:export")
+    @RequiresPermissions("system:manage:department:employee:export")
     @GetMapping("export")
     public void exportEmployee(@RequestParam Map<String, Object> employee, EmployeeDTO employeeDTO, HttpServletResponse response) {
         DepartmentDTO departmentDTO = new DepartmentDTO();
@@ -329,7 +329,7 @@ public class EmployeeController extends BaseController {
      * 导出模板
      */
     @SneakyThrows
-    @RequiresPermissions("system:manage:employee:import")
+    @RequiresPermissions("system:manage:department:employee:import")
     @GetMapping("/export-template")
     public void exportEmployeeTemplate(HttpServletResponse response, @RequestParam(required = false) String errorExcelId) {
         String sheetName = null;

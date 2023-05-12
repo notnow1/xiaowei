@@ -38,7 +38,7 @@ public class DepartmentController extends BaseController {
      *
      * @return 部门编码
      */
-    @RequiresPermissions(value = {"system:manage:department:add", "system:manage:department:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"system:manage:department:employee:add", "system:manage:department:employee:edit"}, logical = Logical.OR)
     @GetMapping("/generate/departmentCode")
     public AjaxResult generateDepartmentCode() {
         return AjaxResult.success("操作成功",departmentService.generateDepartmentCode());
@@ -49,7 +49,7 @@ public class DepartmentController extends BaseController {
      * 新增部门表
      */
     @Log(title = "新增组织", businessType = BusinessType.DEPARTMENT, businessId = "departmentId", operationType = OperationType.INSERT)
-    @RequiresPermissions("system:manage:department:add")
+    @RequiresPermissions("system:manage:department:employee:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(DepartmentDTO.AddDepartmentDTO.class) DepartmentDTO departmentDTO) {
         return AjaxResult.success(departmentService.insertDepartment(departmentDTO));
@@ -59,7 +59,7 @@ public class DepartmentController extends BaseController {
      * 修改部门表
      */
     @Log(title = "编辑组织", businessType = BusinessType.DEPARTMENT, businessId = "departmentId", operationType = OperationType.UPDATE)
-    @RequiresPermissions("system:manage:department:edit")
+    @RequiresPermissions("system:manage:department:employee:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(DepartmentDTO.UpdateDepartmentDTO.class) DepartmentDTO departmentDTO) {
         return toAjax(departmentService.updateDepartment(departmentDTO));
@@ -68,7 +68,7 @@ public class DepartmentController extends BaseController {
     /**
      * 部门岗位详情
      */
-    @RequiresPermissions(value = {"system:manage:department:info","system:manage:department:edit"},logical = Logical.OR)
+    @RequiresPermissions(value = {"system:manage:department:employee:info","system:manage:department:employee:edit"},logical = Logical.OR)
     @GetMapping("/deptParticulars/{departmentId}")
     public AjaxResult deptParticulars(@PathVariable Long departmentId) {
         DepartmentDTO departmentDTO1 = departmentService.deptParticulars(departmentId);
@@ -78,7 +78,7 @@ public class DepartmentController extends BaseController {
     /**
      * 逻辑删除部门表
      */
-    @RequiresPermissions("system:manage:department:remove")
+    @RequiresPermissions("system:manage:department:employee:remove")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody @Validated(DepartmentDTO.DeleteDepartmentDTO.class) DepartmentDTO departmentDTO) {
         return toAjax(departmentService.logicDeleteDepartmentByDepartmentIds(departmentDTO));
@@ -87,7 +87,7 @@ public class DepartmentController extends BaseController {
     /**
      * 逻辑批量删除部门表
      */
-    @RequiresPermissions("system:manage:department:remove")
+    @RequiresPermissions("system:manage:department:employee:remove")
     @PostMapping("/removesList")
     public AjaxResult removesList(@RequestBody List<Long> departmentIds) {
         return toAjax(departmentService.logicDeleteDepartmentByDepartmentIds(departmentIds));
@@ -96,7 +96,7 @@ public class DepartmentController extends BaseController {
     /**
      * 分页查询部门表列表
      */
-    @RequiresPermissions("system:manage:department:pageList")
+    @RequiresPermissions("system:manage:department:employee:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(DepartmentDTO departmentDTO,@RequestParam(required = false) boolean companyFlag) {
         startPage();
