@@ -455,14 +455,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Transactional
     @Override
     public int updateDepartment(DepartmentDTO departmentDTO) {
-        if (StringUtils.isNotNull(departmentDTO)){
+        // todo 因处理历史数据不能开放
+/*        if (StringUtils.isNotNull(departmentDTO)){
             DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getDepartmentId());
             if (StringUtils.isNotNull(departmentDTO1)){
                 if ( departmentDTO1.getParentDepartmentId() == 0){
                     return 1;
                 }
             }
-        }
+        }*/
         int num = 0;
         //部门表(组织)
         Department department = new Department();

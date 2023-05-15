@@ -1077,8 +1077,7 @@
             tenant_id
         from
             department
-        where delete_flag =0
-          and `level` =1
+        where   `level` =1
           and parent_department_id =0
     </select>
 <!--    查询公司级部门-->
