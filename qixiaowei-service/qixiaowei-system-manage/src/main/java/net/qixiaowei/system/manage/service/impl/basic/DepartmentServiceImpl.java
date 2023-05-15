@@ -456,8 +456,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public int updateDepartment(DepartmentDTO departmentDTO) {
         if (StringUtils.isNotNull(departmentDTO)){
-            if ( departmentDTO.getParentDepartmentId() == 0){
-                return 1;
+            DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getDepartmentId());
+            if (StringUtils.isNotNull(departmentDTO1)){
+                if ( departmentDTO1.getParentDepartmentId() == 0){
+                    return 1;
+                }
             }
         }
         int num = 0;
@@ -1161,9 +1164,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Transactional
     public int logicDeleteDepartmentByDepartmentIds(DepartmentDTO departmentDTO) {
         if (StringUtils.isNotNull(departmentDTO)){
-           if ( departmentDTO.getParentDepartmentId() == 0){
-               return 1;
-           }
+            DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getDepartmentId());
+            if (StringUtils.isNotNull(departmentDTO1)){
+                if ( departmentDTO1.getParentDepartmentId() == 0){
+                    return 1;
+                }
+            }
         }
         StringBuffer posterreo = new StringBuffer();
         StringBuffer officialRankDecomposeerreo = new StringBuffer();

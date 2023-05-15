@@ -139,6 +139,8 @@ public class UserLogic {
         Long userId = SecurityUtils.getUserId();
         //员工表
         Employee employee = new Employee();
+        employee.setEmployeeName(userDTO.getEmployeeName());
+        employee.setEmployeeDepartmentId(userDTO.getDepartmentId());
         employee.setEmployeeId(employeeId);
         employee.setEmployeeMobile(userAccount);
         employee.setUpdateTime(nowDate);
