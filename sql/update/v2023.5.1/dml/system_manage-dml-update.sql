@@ -14,7 +14,7 @@ UPDATE menu SET menu_name='枚举值选项新增', sort=2, update_time=sysdate()
 UPDATE menu SET menu_name='枚举值选项编辑', sort=3, update_time=sysdate() WHERE menu_id=220;
 UPDATE menu SET menu_name='枚举值选项删除', sort=4, update_time=sysdate() WHERE menu_id=221;
 UPDATE menu SET delete_flag=1, update_time=sysdate() WHERE menu_id IN (10,28,29,199,202,347,348,349);
-UPDATE menu SET menu_name='组织与人员', sort=1, update_time=sysdate() WHERE menu_id=12;
+UPDATE menu SET menu_name='组织与人员', permission_code='system:manage:department:employee:pageList', sort=1, update_time=sysdate() WHERE menu_id=12;
 UPDATE menu SET menu_name='启用', update_time=sysdate() WHERE menu_id=27;
 UPDATE menu SET menu_name='组织与人员新增', permission_code='system:manage:department:employee:add', update_time=sysdate() WHERE menu_id=36;
 UPDATE menu SET menu_name='组织与人员编辑', permission_code='system:manage:department:employee:edit', update_time=sysdate() WHERE menu_id=40;
