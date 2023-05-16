@@ -911,6 +911,8 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         if (StringUtils.isNull(bonusBudgetDTO)) {
             deptBonusBudgetDTO.setDeptBonusAddFlag(false);
         } else {
+            BigDecimal strategyAwardPercentage = deptBonusBudgetDTO.getStrategyAwardPercentage();
+
             //总奖金包预算
             BigDecimal amountBonusBudget = bonusBudgetDTO.getAmountBonusBudget();
             if (null != amountBonusBudget) {
@@ -918,11 +920,18 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                 deptBonusBudgetDTO.setAmountBonusBudget(amountBonusBudget);
             }
             deptBonusBudgetDTO.setStrategyAwardPercentage(new BigDecimal("0"));
+            if (null != strategyAwardPercentage){
+                deptBonusBudgetDTO.setStrategyAwardPercentage(strategyAwardPercentage);
+            }
             //年份
             deptBonusBudgetDTO.setBudgetYear(budgetYear);
             //公式=总奖金包预算×战略奖比例
             if (null != amountBonusBudget) {
                 BigDecimal strategyAwardAmount = new BigDecimal("0");
+                if (null != strategyAwardPercentage && strategyAwardPercentage.compareTo(new BigDecimal("0")) != 0
+                &&amountBonusBudget.compareTo(new BigDecimal("0")) != 0){
+                    strategyAwardAmount = amountBonusBudget.multiply(strategyAwardPercentage.divide(new BigDecimal("100"), 10, BigDecimal.ROUND_HALF_UP)).setScale(10, BigDecimal.ROUND_HALF_UP);
+                }
                 ////战略奖金额
                 deptBonusBudgetDTO.setStrategyAwardAmount(strategyAwardAmount);
                 // 部门总奖金包 公式=总奖金包预算-战略奖金额
