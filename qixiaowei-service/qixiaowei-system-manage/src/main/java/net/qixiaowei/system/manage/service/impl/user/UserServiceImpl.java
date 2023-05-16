@@ -467,6 +467,7 @@ public class UserServiceImpl implements IUserService {
             userRoleDTOS.forEach(userRoleDTO -> userRoleMap.put(userRoleDTO.getRoleId(), userRoleDTO.getUserRoleId()));
             this.updateUserRole(userDTO, userRoleMap);
         }
+        userLogic.updateEmployee(userDTO);
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
         //头像修改放到用户自己编辑
@@ -474,7 +475,6 @@ public class UserServiceImpl implements IUserService {
         user.setUpdateTime(DateUtils.getNowDate());
         user.setUpdateBy(SecurityUtils.getUserId());
         int row = userMapper.updateUser(user);
-        userLogic.updateEmployee(userDTO);
         if (row > 0) {
             //同步销售云
             userLogic.syncSaleEditUser(userDTO);
