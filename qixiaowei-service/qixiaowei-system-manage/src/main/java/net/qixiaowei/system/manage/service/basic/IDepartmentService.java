@@ -79,9 +79,10 @@ public interface IDepartmentService {
      * 修改部门表
      *
      * @param departmentDTO 部门表
+     * @param flag
      * @return 结果
      */
-    int updateDepartment(DepartmentDTO departmentDTO);
+    int updateDepartment(DepartmentDTO departmentDTO, boolean flag);
 
     /**
      * 批量修改部门表

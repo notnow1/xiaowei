@@ -63,7 +63,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -450,11 +449,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * 修改部门表
      *
      * @param departmentDTO 部门表
+     * @param flag
      * @return 结果
      */
     @Transactional
     @Override
-    public int updateDepartment(DepartmentDTO departmentDTO) {
+    public int updateDepartment(DepartmentDTO departmentDTO, boolean flag) {
         // todo 因处理历史数据不能开放
 /*        if (StringUtils.isNotNull(departmentDTO)){
             DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getDepartmentId());
@@ -621,8 +621,10 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
         try {
             num = departmentMapper.updateDepartment(department);
-            //同步销售云
-            this.syncSalesEditDepartment(department);
+            if (flag){
+                //同步销售云
+                this.syncSalesEditDepartment(department);
+            }
         } catch (Exception e) {
             throw new ServiceException("修改组织信息失败");
         }
@@ -1096,7 +1098,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             //循环调用修改接口
             for (DepartmentDTO dto : departmentDTOList) {
                 dto.setParentDepartmentId(departmentDTO.getDepartmentId());
-                updateDepartment(dto);
+                updateDepartment(dto, true);
             }
         } else {
 
@@ -1136,7 +1138,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             //循环调用修改接口
             for (DepartmentDTO dto : departmentDTOList) {
                 dto.setParentDepartmentId(department.getDepartmentId());
-                updateDepartment(dto);
+                updateDepartment(dto, true);
 
             }
         }
