@@ -534,6 +534,10 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                 deptBonusBudgetItems.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                 deptBonusBudgetItemsAddList.add(deptBonusBudgetItems);
             }else {
+
+                deptBonusBudgetItems.setDeptBonusBudgetItemsId(deptBonusCompanyDTOS.get(i1).getDeptBonusBudgetItemsId());
+                deptBonusBudgetItems.setDeptBonusBudgetId(deptBonusCompanyDTOS.get(i1).getDeptBonusBudgetId());
+                deptBonusBudgetItems.setDeptBonusBudgetDetailsId(deptBonusCompanyDTOS.get(i1).getDeptBonusBudgetDetailsId());
                 //公司奖金占比
                 deptBonusBudgetItems.setBonusPercentage(deptBonusCompanyDTOS.get(i1).getBonusCompanyPercentage());
                 deptBonusBudgetItems.setSalaryItemId(deptBonusCompanyDTOS.get(i1).getSalaryItemId());
