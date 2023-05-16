@@ -337,6 +337,8 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         if (StringUtils.isNotEmpty(deptBonusCompanyDTOS)){
             for (int i = 0; i < deptBonusCompanyDTOS.size(); i++) {
                 DeptBonusBudgetItems deptBonusBudgetItems = new DeptBonusBudgetItems();
+                //部门奖金包预算主表id
+                deptBonusBudgetItems.setSalaryItemId(deptBonusCompanyDTOS.get(i).getSalaryItemId());
                 //公司奖金占比
                 deptBonusBudgetItems.setBonusPercentage(deptBonusCompanyDTOS.get(i).getBonusCompanyPercentage());
                 deptBonusBudgetItems.setSort(i+1);
@@ -519,6 +521,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             if (null == deptBonusBudgetItemsId){
                 //公司奖金占比
                 deptBonusBudgetItems.setBonusPercentage(deptBonusCompanyDTOS.get(i1).getBonusCompanyPercentage());
+                deptBonusBudgetItems.setSalaryItemId(deptBonusCompanyDTOS.get(i1).getSalaryItemId());
                 deptBonusBudgetItems.setSort(i1 +1);
                 //部门奖金包预算主表id
                 deptBonusBudgetItems.setDeptBonusBudgetId(deptBonusBudget.getDeptBonusBudgetId());
@@ -533,6 +536,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             }else {
                 //公司奖金占比
                 deptBonusBudgetItems.setBonusPercentage(deptBonusCompanyDTOS.get(i1).getBonusCompanyPercentage());
+                deptBonusBudgetItems.setSalaryItemId(deptBonusCompanyDTOS.get(i1).getSalaryItemId());
                 deptBonusBudgetItems.setUpdateTime(DateUtils.getNowDate());
                 deptBonusBudgetItems.setUpdateBy(SecurityUtils.getUserId());
                 deptBonusBudgetItemsUpdateList.add(deptBonusBudgetItems);
@@ -673,16 +677,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         DeptBonusBudgetDTO deptBonusBudgetDTO = new DeptBonusBudgetDTO();
         //公司级奖金预算明细表集合
         List<DeptBonusCompanyDTO> deptBonusCompanyDTOList = new ArrayList<>();
-        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectCompanyBonusList();
-        if (StringUtils.isNotEmpty(salaryItemDTOS)){
-            for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
-                DeptBonusCompanyDTO deptBonusCompanyDTO = new DeptBonusCompanyDTO();
-                BeanUtils.copyProperties(salaryItemDTO,deptBonusCompanyDTO);
-                deptBonusCompanyDTO.setBonusCompanyAmount(new BigDecimal("0"));
-                deptBonusCompanyDTO.setBonusCompanyPercentage(new BigDecimal("0"));
-                deptBonusCompanyDTOList.add(deptBonusCompanyDTO);
-            }
-        }
+
 
         //查询部门
         List<DepartmentDTO> departmentAll = this.getDepartmentAll();
