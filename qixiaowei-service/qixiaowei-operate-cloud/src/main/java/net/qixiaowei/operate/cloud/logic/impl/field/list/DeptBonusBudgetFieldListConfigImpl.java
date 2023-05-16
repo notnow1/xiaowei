@@ -29,9 +29,9 @@ public class DeptBonusBudgetFieldListConfigImpl implements IFieldListConfigStrat
 
     static {
         INIT_MAP.put(DeptBonusBudgetField.BUDGET_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(DeptBonusBudgetField.AMOUNT_BONUS_BUDGET.getCode(), FieldListConfig.builder().fieldWidth(140).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(DeptBonusBudgetField.AMOUNT_BONUS_BUDGET.getCode(), FieldListConfig.builder().fieldWidth(150).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(DeptBonusBudgetField.STRATEGY_AWARD_AMOUNT.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(DeptBonusBudgetField.STRATEGY_AWARD_PERCENTAGE.getCode(), FieldListConfig.builder().fieldWidth(150).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(DeptBonusBudgetField.STRATEGY_AWARD_PERCENTAGE.getCode(), FieldListConfig.builder().fieldWidth(170).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(DeptBonusBudgetField.DEPT_AMOUNT_BONUS.getCode(), FieldListConfig.builder().fieldWidth(130).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
