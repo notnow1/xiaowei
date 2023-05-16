@@ -62,7 +62,7 @@ public class DepartmentController extends BaseController {
     @RequiresPermissions("system:manage:department:employee:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(DepartmentDTO.UpdateDepartmentDTO.class) DepartmentDTO departmentDTO) {
-        return toAjax(departmentService.updateDepartment(departmentDTO,false));
+        return toAjax(departmentService.updateDepartment(departmentDTO,true));
     }
 
     /**

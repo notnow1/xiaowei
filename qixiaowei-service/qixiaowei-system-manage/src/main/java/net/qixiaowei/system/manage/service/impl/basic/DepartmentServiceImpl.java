@@ -1098,7 +1098,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             //循环调用修改接口
             for (DepartmentDTO dto : departmentDTOList) {
                 dto.setParentDepartmentId(departmentDTO.getDepartmentId());
-                updateDepartment(dto, true);
+                updateDepartment(dto, false);
             }
         } else {
 
@@ -1138,7 +1138,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             //循环调用修改接口
             for (DepartmentDTO dto : departmentDTOList) {
                 dto.setParentDepartmentId(department.getDepartmentId());
-                updateDepartment(dto, true);
+                updateDepartment(dto, false);
 
             }
         }
