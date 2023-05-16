@@ -542,6 +542,12 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                 deptBonusBudgetItemsUpdateList.add(deptBonusBudgetItems);
             }
         }
+        if (StringUtils.isNotEmpty(deptBonusBudgetItemsAddList)){
+            deptBonusBudgetItemsMapper.batchDeptBonusBudgetItems(deptBonusBudgetItemsAddList);
+        }
+        if (StringUtils.isNotEmpty(deptBonusBudgetItemsUpdateList)){
+            deptBonusBudgetItemsMapper.updateDeptBonusBudgetItemss(deptBonusBudgetItemsUpdateList);
+        }
     }
 
     /**

@@ -105,7 +105,7 @@
             dbbi.dept_bonus_budget_id,
             dbbi.dept_bonus_budget_details_id,
             dbbi.salary_item_id,
-            dbbi.bonus_percentage,
+            dbbi.bonus_percentage as bonusCompanyPercentage,
             dbbi.sort,
             dbbi.delete_flag,
             dbbi.create_by,
