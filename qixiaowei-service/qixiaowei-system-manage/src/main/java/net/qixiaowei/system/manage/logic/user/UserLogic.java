@@ -365,10 +365,12 @@ public class UserLogic {
      * @description: 同步销售云用户
      * @Author: hzk
      * @date: 2023/4/12 18:13
-     * @param: [userId, userAccount, status , password, employee]
+     * @param: [userDTO, userId, status , employee]
      * @return: void
      **/
-    public void syncSalesAddUser(Long userId, String userAccount, Integer status, String password, Employee employee) {
+    public void syncSalesAddUser(UserDTO userDTO, Long userId, Integer status, Employee employee) {
+        String userAccount = userDTO.getUserAccount();
+        String password = userDTO.getPassword();
         String salesToken = SecurityUtils.getSalesToken();
         if (StringUtils.isNotEmpty(salesToken)) {
             SyncUserDTO syncUserDTO = new SyncUserDTO();
@@ -383,6 +385,12 @@ public class UserLogic {
             syncUserDTO.setDeptId(employee.getEmployeeDepartmentId());
             syncUserDTO.setStatus(status);
             syncUserDTO.setNum(employee.getEmployeeCode());
+            //处理角色
+            Set<Long> roleIds = userDTO.getRoleIds();
+            if (StringUtils.isNotEmpty(roleIds)) {
+                String join = CollUtil.join(roleIds, StrUtil.COMMA);
+                syncUserDTO.setRoleId(join);
+            }
             Long employeePostId = employee.getEmployeePostId();
             //处理岗位
             if (StringUtils.isNotNull(employeePostId)) {

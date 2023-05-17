@@ -437,7 +437,7 @@ public class UserServiceImpl implements IUserService {
         Employee employee = userLogic.insertEmployee(userDTO);
         //新增帐号
         UserDTO userResult = userLogic.insertUser(userDTO);
-        userLogic.syncSalesAddUser(userResult.getUserId(), userDTO.getUserAccount(), BusinessConstants.NORMAL, userDTO.getPassword(), employee);
+        userLogic.syncSalesAddUser(userDTO, userResult.getUserId(), BusinessConstants.NORMAL, employee);
         return userResult;
     }
 
