@@ -46,6 +46,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1393,7 +1394,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     //奖金占比基准值 公式=奖金包实际数÷奖金驱动因素实际数
                     if (null != bonusProportionDrivingFactor && bonusProportionDrivingFactor.compareTo(new BigDecimal("0")) != 0 &&
                             null != bonusActualSum && bonusActualSum.compareTo(new BigDecimal("0")) != 0) {
-                        bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor.multiply(new BigDecimal("10000")), 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        bonusProportionStandard = bonusActualSum.divide(new BigDecimal("10000"),10, RoundingMode.HALF_UP).divide(bonusProportionDrivingFactor, 10, RoundingMode.HALF_UP).multiply(new BigDecimal("100"));
                         //奖金占比基准值(%)
                         bonusBudgetParametersDTO.setBonusProportionStandard(bonusProportionStandard);
                     }
