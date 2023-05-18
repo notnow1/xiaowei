@@ -1069,7 +1069,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             //奖项类别,工资条ID
             bonusPayStandingDTO2.setSalaryItemId(salaryItemDTO.getSalaryItemId());
             //三级项目(奖项名称)
-            bonusPayStandingDTO2.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
+            bonusPayStandingDTO2.setThirdLevelItem(salaryItemDTO.getSalaryItemName());
             if (StringUtils.isNotEmpty(deptBonusCompanyDTOS)){
                 for (DeptBonusCompanyDTO deptBonusCompanyDTO : deptBonusCompanyDTOS) {
                     if (deptBonusCompanyDTO.getSalaryItemId().equals(salaryItemDTO.getSalaryItemId())){
@@ -1088,7 +1088,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 //奖项类别,工资条ID
                 bonusPayStandingDTO2.setSalaryItemId(salaryItemDTO.getSalaryItemId());
                 //三级项目(奖项名称)
-                bonusPayStandingDTO2.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
+                bonusPayStandingDTO2.setThirdLevelItem(salaryItemDTO.getSalaryItemName());
                 if (StringUtils.isNotEmpty(deptBonusCompanyDTOS)){
                     for (DeptBonusCompanyDTO deptBonusCompanyDTO : deptBonusCompanyDTOS) {
                         if (deptBonusCompanyDTO.getSalaryItemId().equals(salaryItemDTO.getSalaryItemId())){
@@ -1201,7 +1201,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             //奖项类别,工资条ID
             bonusPayStandingDTO.setSalaryItemId(salaryItemDTO.getSalaryItemId());
             //三级项目(奖项名称)
-            bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
+            bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getSalaryItemName());
             //封装年初预算
             this.packBeYearAmountBonusBudget(datum, salaryItemDTO, deptBonusBudgetDetailsDTOS, deptBonusCompanyDTOS, bonusPayStandingDTO);
             bonusPayStandingDTOList.add(bonusPayStandingDTO);
@@ -1215,7 +1215,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 //奖项类别,工资条ID
                 bonusPayStandingDTO.setSalaryItemId(salaryItemDTO.getSalaryItemId());
                 //三级项目(奖项名称)
-                bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
+                bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getSalaryItemName());
                 //封装年初预算
                 this.packBeYearAmountBonusBudget(datum, salaryItemDTO, deptBonusBudgetDetailsDTOS, deptBonusCompanyDTOS, bonusPayStandingDTO);
                 bonusPayStandingDTOList.add(bonusPayStandingDTO);

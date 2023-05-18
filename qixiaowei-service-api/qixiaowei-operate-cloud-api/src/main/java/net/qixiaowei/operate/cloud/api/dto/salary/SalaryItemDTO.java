@@ -68,6 +68,11 @@ public class SalaryItemDTO extends BaseDTO {
      * 三级项目
      */
     private String thirdLevelItem;
+
+    /**
+     * 三级项目名称
+     */
+    private String salaryItemName;
     /**
      * 状态:0失效;1生效
      */

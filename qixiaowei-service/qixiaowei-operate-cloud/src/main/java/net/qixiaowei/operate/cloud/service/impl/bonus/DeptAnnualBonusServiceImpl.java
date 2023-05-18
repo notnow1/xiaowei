@@ -1085,6 +1085,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         //查询战略奖的工资项id
         BonusPayApplicationDTO bonusPayApplicationDTO = new BonusPayApplicationDTO();
         bonusPayApplicationDTO.setAwardYear(annualBonusYear);
+        bonusPayApplicationDTO.setDeptBonusBudgetDetailsId(0L);
         List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.applyByYear(bonusPayApplicationDTO);
         BigDecimal strategyDeveAward = bonusPayApplicationMapper.selectBonusPayApplicationAddDeptAnnual(annualBonusYear, salaryItemDTOS.stream().map(SalaryItemDTO::getSalaryItemId).collect(Collectors.toList()));
         if (strategyDeveAward.compareTo(new BigDecimal("0")) != 0) {

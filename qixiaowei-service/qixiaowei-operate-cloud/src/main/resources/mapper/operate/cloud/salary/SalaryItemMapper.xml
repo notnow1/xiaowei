@@ -300,12 +300,15 @@
         and si.delete_flag =0
         and first_level_item=2
         and second_level_item=4
-        WHERE dbbi.dept_bonus_budget_details_id =0
-        and dbbi.delete_flag=0
+        WHERE dbbi.delete_flag=0
+        <if test="bonusPayApplicationDTO.deptBonusBudgetDetailsId != null">
+            and dbbi.dept_bonus_budget_details_id =#{bonusPayApplicationDTO.deptBonusBudgetDetailsId}
+        </if>
         and dbb.budget_year =#{bonusPayApplicationDTO.awardYear}
         <if test="bonusPayApplicationDTO.salaryItemId != null">
             and dbbi.salary_item_id=#{bonusPayApplicationDTO.salaryItemId}
         </if>
+        group by dbbi.salary_item_id
         order by dbbi.sort
     </select>
     <!--    根据id查询所有二级工资项目为奖金且级别为公司级的三级工资项目-->

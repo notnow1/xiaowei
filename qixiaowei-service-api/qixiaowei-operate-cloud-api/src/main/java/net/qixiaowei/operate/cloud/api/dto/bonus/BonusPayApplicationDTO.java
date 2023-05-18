@@ -45,7 +45,10 @@ public class BonusPayApplicationDTO extends BaseDTO {
     * 奖项类别,工资条ID
     */
     private  Long salaryItemId;
-
+    /**
+     * 部门奖金预算详情id
+     */
+    private Long deptBonusBudgetDetailsId;
     /**
      * 部门类型 0 申请部门 1 预算部门 2 获奖部门
      */
