@@ -237,12 +237,13 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
     @DataScope(businessAlias = "bpa")
     @Override
     public List<BonusPayApplicationDTO> selectBonusPayApplicationList(BonusPayApplicationDTO bonusPayApplicationDTO) {
+        String name = "公司";
         BonusPayApplication bonusPayApplication = new BonusPayApplication();
         this.getDepartmentIdAndofficialRankSystemId(bonusPayApplicationDTO.getParams());
         //部门默认查询
         DepartmentDTO departmentDTO = new DepartmentDTO();
-        if (StringUtils.isNotBlank(bonusPayApplicationDTO.getBudgetDepartmentNames())) {
-            departmentDTO.setDepartmentName(bonusPayApplicationDTO.getBudgetDepartmentNames());
+        if (StringUtils.isNotBlank(bonusPayApplicationDTO.getDepartmentName())) {
+            departmentDTO.setDepartmentName(bonusPayApplicationDTO.getDepartmentName());
             //远程查找部门列表
             R<List<DepartmentDTO>> departmentListData = remoteDepartmentService.selectDepartment(departmentDTO, SecurityConstants.INNER);
             if (departmentListData.getCode() != 200) {
@@ -250,24 +251,13 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             }
             List<DepartmentDTO> departmentDataList = departmentListData.getData();
             List<Long> departmentIds = new ArrayList<>();
-            if (StringUtils.isNotEmpty(departmentDataList)) {
-                departmentIds = departmentDataList.stream().map(DepartmentDTO::getDepartmentId).distinct().collect(Collectors.toList());
+            if (name.contains(bonusPayApplicationDTO.getDepartmentName())){
+                departmentIds.add(0L);
                 bonusPayApplicationDTO.setBudgetDepartmentIds(departmentIds);
             }
-        }
-
-        if (StringUtils.isNotEmpty(bonusPayApplicationDTO.getParams())) {
-            for (String key : bonusPayApplicationDTO.getParams().keySet()) {
-                switch (key) {
-                    case "budgetDepartmentIdEqual":
-                        bonusPayApplication.setBudgetDepartmentIdsEqual(bonusPayApplicationDTO.getParams().get("budgetDepartmentIdEqual").toString().replace("[", "").replace("]", "").replace(";", ",").replaceAll(" ", ""));
-                        break;
-                    case "budgetDepartmentIdNotEqual":
-                        bonusPayApplication.setBudgetDepartmentIdsNotEqual(bonusPayApplicationDTO.getParams().get("budgetDepartmentIdNotEqual").toString().replace("[", "").replace("]", "").replace(";", ",").replaceAll(" ", ""));
-                        break;
-                    default:
-                        break;
-                }
+            if (StringUtils.isNotEmpty(departmentDataList)) {
+                departmentIds.addAll(departmentDataList.stream().map(DepartmentDTO::getDepartmentId).distinct().collect(Collectors.toList()));
+                bonusPayApplicationDTO.setBudgetDepartmentIds(departmentIds);
             }
         }
         BeanUtils.copyProperties(bonusPayApplicationDTO, bonusPayApplication);

@@ -84,10 +84,10 @@
         on si.salary_item_id = bpa.salary_item_id
         and si.delete_flag =0
         WHERE bpbd.delete_flag=0
+
         <!-- 预算部门默认过滤  -->
-        <if test="bonusPayApplication.budgetDepartmentIds != null and bonusPayApplication.budgetDepartmentIds.size() > 0 ">
-            AND  (select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id)
-            in
+        <if test="bonusPayApplication.departmentName != null and bonusPayApplication.departmentName != '' and bonusPayApplication.budgetDepartmentIds != null and bonusPayApplication.budgetDepartmentIds.size() > 0">
+            AND  bpbd.department_id  in
             <foreach item="item"
                      collection="bonusPayApplication.budgetDepartmentIds"
                      index="index" open="(" separator="," close=")">
@@ -95,8 +95,8 @@
             </foreach>
         </if>
         <!-- 预算部门默认过滤  -->
-        <if test="bonusPayApplication.budgetDepartmentNames != null and bonusPayApplication.budgetDepartmentIds == null">
-            AND  (select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id) is null
+        <if test="bonusPayApplication.departmentName != null and bonusPayApplication.departmentName != '' and bonusPayApplication.params.salaryItemIdEqual == null and bonusPayApplication.budgetDepartmentIds.size() == 0">
+            AND  bpbd.department_id  is null
         </if>
         <!-- 奖金类别过滤  -->
         <if test="bonusPayApplication.params.salaryItemIdEqual != null and bonusPayApplication.params.salaryItemIdEqual.size() > 0">
@@ -205,33 +205,28 @@
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-                or (bpa.apply_department_id ='' or bpa.apply_department_id is null))
+                or  bpa.apply_department_id is null)
             </if>
 
         <!-- 预算部门高级过滤  -->
-        <if test="bonusPayApplication.params.budgetDepartmentIdEqual != null and bonusPayApplication.params.budgetDepartmentIdEqual.size() > 0">
-            AND (select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id) ='${bonusPayApplication.budgetDepartmentIdsEqual}'
-
+        <if test="bonusPayApplication.params.departmentIdEqual != null and bonusPayApplication.params.departmentIdEqual.size() > 0">
+            AND bpbd.department_id IN
+            <foreach item="item"
+                     collection="bonusPayApplication.params.departmentIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
-
         <!-- 预算部门高级过滤  -->
-        <if test="bonusPayApplication.params.budgetDepartmentIdNotEqual != null and bonusPayApplication.params.budgetDepartmentIdNotEqual.size() > 0">
-            AND ((select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id) !=
-           '${bonusPayApplication.budgetDepartmentIdsNotEqual}'
-            or bpa.apply_department_id is null)
+        <if test="bonusPayApplication.params.departmentIdNotEqual != null and bonusPayApplication.params.departmentIdNotEqual.size() > 0">
+            AND (bpbd.department_id NOT IN
+            <foreach item="item"
+                     collection="bonusPayApplication.params.departmentIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            or  bpbd.department_id is null)
         </if>
-<!--        &lt;!&ndash; 预算部门高级过滤  &ndash;&gt;
-        <if test="bonusPayApplication.params.budgetDepartmentIdLike != null and bonusPayApplication.params.budgetDepartmentIdLike.size() > 0">
-            AND (select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id) like
-            '${bonusPayApplication.budgetDepartmentIdsLike}'
-        </if>
-        &lt;!&ndash; 预算部门高级过滤  &ndash;&gt;
-        <if test="bonusPayApplication.params.budgetDepartmentIdNotLike != null and bonusPayApplication.params.budgetDepartmentIdNotLike.size() > 0">
-        AND ((select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id) NOT like
-        '${bonusPayApplication.budgetDepartmentIdsNotLike}'
-        or bpa.apply_department_id is null)
-        </if>-->
-
         <!-- 预算部门高级过滤  -->
         <if test="bonusPayApplication.params.budgetDepartmentIdLike != null and bonusPayApplication.params.budgetDepartmentIdLike.size() > 0">
             AND
@@ -239,7 +234,7 @@
                      collection="bonusPayApplication.params.budgetDepartmentIdLike"
                      index="index" open="(" separator="AND" close=")">
                 find_in_set(#{item},
-                (select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id))
+                bpbd.department_id)
             </foreach>
         </if>
         <!-- 预算部门高级过滤  -->
@@ -248,8 +243,7 @@
             <foreach item="item"
                      collection="bonusPayApplication.params.budgetDepartmentIdNotLike"
                      index="index" open="(" separator="AND" close=")">
-                (!find_in_set(#{item},
-                (select group_concat(bpbd.department_id)  from bonus_pay_budget_dept bpbd where bpbd.delete_flag=0 and bpbd.bonus_pay_application_id = bpa.bonus_pay_application_id))
+                (!find_in_set(#{item},bpbd.department_id)
                 or bpa.apply_department_id is null)
             </foreach>
         </if>

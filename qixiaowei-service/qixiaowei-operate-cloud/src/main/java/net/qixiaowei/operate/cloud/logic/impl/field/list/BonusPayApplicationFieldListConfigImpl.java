@@ -29,14 +29,15 @@ public class BonusPayApplicationFieldListConfigImpl implements IFieldListConfigS
     private static final Map<String, FieldListConfig> INIT_MAP = new HashMap<>();
 
     static {
-        INIT_MAP.put(BonusPayApplicationField.SALARY_ITEM_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.AWARD_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.AWARD_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.APPLY_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(200).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.AWARD_YEAR_MONTH.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.BONUS_PAY_OBJECT.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.AWARD_TOTAL_AMOUNT.getCode(), FieldListConfig.builder().fieldWidth(130).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.AWARD_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(1).showForce(1).fixationForce(1).build());
+        INIT_MAP.put(BonusPayApplicationField.AWARD_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(1).showForce(1).fixationForce(1).build());
+        INIT_MAP.put(BonusPayApplicationField.AWARD_YEAR_MONTH.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(1).showForce(1).fixationForce(1).build());
+        INIT_MAP.put(BonusPayApplicationField.SALARY_ITEM_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(1).showForce(1).fixationForce(1).build());
+        INIT_MAP.put(BonusPayApplicationField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.AWARD_TOTAL_AMOUNT.getCode(), FieldListConfig.builder().fieldWidth(130).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.APPLY_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(0).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.BONUS_PAY_OBJECT.getCode(), FieldListConfig.builder().fieldWidth(120).sort(8).showFlag(0).fixationFlag(0).showForce(0).fixationForce(0).build());
+
     }
 
 
