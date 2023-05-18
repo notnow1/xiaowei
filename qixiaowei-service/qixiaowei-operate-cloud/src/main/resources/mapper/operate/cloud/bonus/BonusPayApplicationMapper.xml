@@ -67,7 +67,13 @@
         bpa.award_name,
         bpa.award_year,
         bpa.award_month,
-        bpa.bonus_pay_object
+        bpa.bonus_pay_object,
+        bpa.apply_department_id,
+        bpa.delete_flag,
+        bpa.create_by,
+        bpa.create_time,
+        bpa.update_by,
+        bpa.update_time
         from
         bonus_pay_budget_dept bpbd
         left join

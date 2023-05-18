@@ -19,6 +19,7 @@ import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.mapper.bonus.*;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusPayApplicationService;
+import net.qixiaowei.operate.cloud.service.bonus.IDeptBonusBudgetService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
@@ -58,6 +59,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
     private RemoteUserService remoteUserService;
     @Autowired
     private SalaryItemMapper salaryItemMapper;
+    @Autowired
+    private IDeptBonusBudgetService deptBonusBudgetService;
     @Autowired
     private DeptBonusBudgetMapper deptBonusBudgetMapper;
 
@@ -927,16 +930,20 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      */
     @Override
     public List<BonusPayStandingDTO> bonusGrantStandingList(BonusPayApplicationDTO bonusPayApplicationDTO) {
-        DeptBonusBudgetDTO deptBonusBudgetDTO = deptBonusBudgetMapper.selectDeptBonusBudgetBybudgetYear(bonusPayApplicationDTO.getAwardYear());
+        List<BonusPayStandingDTO> bonusPayStandingDTOList = new ArrayList<>();
+        DeptBonusBudgetDTO deptBonusBudgetDTO1 = deptBonusBudgetMapper.selectDeptBonusBudgetBybudgetYear(bonusPayApplicationDTO.getAwardYear());
+        if (StringUtils.isNull(deptBonusBudgetDTO1)) {
+            return bonusPayStandingDTOList;
+        }
+
+        DeptBonusBudgetDTO deptBonusBudgetDTO = deptBonusBudgetService.selectDeptBonusBudgetByDeptBonusBudgetId(deptBonusBudgetDTO1.getDeptBonusBudgetId());
         //部门级奖项类别年初预算
         List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS = deptBonusBudgetDTO.getDeptBonusBudgetDetailsDTOS();
         //公司级奖项类别年初预算
         List<DeptBonusCompanyDTO> deptBonusCompanyDTOS = deptBonusBudgetDTO.getDeptBonusCompanyDTOS();
 
-        List<BonusPayStandingDTO> bonusPayStandingDTOList = new ArrayList<>();
-        if (StringUtils.isNull(deptBonusBudgetDTO)) {
-            return bonusPayStandingDTOList;
-        }
+
+
         //查看所有一级部门
         R<List<DepartmentDTO>> parentAll = remoteDepartmentService.getParentAll(SecurityConstants.INNER);
         List<DepartmentDTO> data = parentAll.getData();
