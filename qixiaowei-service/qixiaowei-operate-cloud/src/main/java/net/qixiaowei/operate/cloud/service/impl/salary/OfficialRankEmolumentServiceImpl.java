@@ -122,8 +122,12 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                     BeanUtils.copyProperties(rankEmolumentDTO, rankEmolument);
                     rankEmolument.setOfficialRank(rankEmolumentDTO.getOfficialRank());
                     rankEmolument.setOfficialRankName(rankPrefixCode + rankEmolumentDTO.getOfficialRank());
+                    BigDecimal salaryCap = Optional.ofNullable(rankEmolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO);
+                    BigDecimal salaryFloor = Optional.ofNullable(rankEmolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO);
+                    BigDecimal salaryMedian = Optional.ofNullable(rankEmolumentDTO.getSalaryMedian()).orElse(BigDecimal.ZERO);
                     // 宽幅
-                    BigDecimal wide = rankEmolumentDTO.getSalaryCap().subtract(rankEmolumentDTO.getSalaryFloor());
+                    BigDecimal wide = salaryCap.subtract(salaryFloor);
+                    rankEmolument.setSalaryMedian(salaryMedian);
                     rankEmolument.setSalaryWide(wide);
                     // 递增率
                     if (i == officialRankEmolumentDTOS.size() - 1) {
@@ -266,6 +270,14 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = officialRankEmolumentDTO.getOfficialRankEmolumentDTOList();
         if (StringUtils.isEmpty(officialRankEmolumentDTOList)) {
             throw new ServiceException("当前的职级薪酬表为空 请先配置");
+        }
+        for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
+            if (StringUtils.isNull(emolumentDTO.getSalaryCap())) {
+                emolumentDTO.setSalaryCap(BigDecimal.ZERO);
+            }
+            if (StringUtils.isNull(emolumentDTO.getSalaryFloor())) {
+                emolumentDTO.setSalaryFloor(BigDecimal.ZERO);
+            }
         }
         for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
             if (Optional.ofNullable(emolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO)
@@ -632,12 +644,10 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             }
             return officialRankDecomposeDTOS;
         }
-        BigDecimal salaryCap = officialRankEmolumentDTO.getSalaryCap();
-        BigDecimal salaryFloor = officialRankEmolumentDTO.getSalaryFloor();
-        BigDecimal salaryMedian = officialRankEmolumentDTO.getSalaryMedian();
-        BigDecimal salaryWide = officialRankEmolumentDTO.getSalaryCap().subtract(officialRankEmolumentDTO.getSalaryFloor());
-        // 宽幅
-        BigDecimal wide = officialRankEmolumentDTO.getSalaryCap().subtract(officialRankEmolumentDTO.getSalaryFloor());
+        BigDecimal salaryCap = Optional.ofNullable(officialRankEmolumentDTO.getSalaryCap()).orElse(BigDecimal.ZERO);
+        BigDecimal salaryFloor = Optional.ofNullable(officialRankEmolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO);
+        BigDecimal salaryMedian = Optional.ofNullable(officialRankEmolumentDTO.getSalaryMedian()).orElse(BigDecimal.ZERO);
+        BigDecimal salaryWide = salaryCap.subtract(salaryFloor);
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
             BigDecimal salaryFactor = officialRankDecomposeDTO.getSalaryFactor();
             officialRankDecomposeDTO.setSalaryCap(salaryCap.multiply(salaryFactor));

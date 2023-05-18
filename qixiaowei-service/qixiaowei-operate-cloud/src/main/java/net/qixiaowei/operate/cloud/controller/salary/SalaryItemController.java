@@ -69,7 +69,7 @@ public class SalaryItemController extends BaseController {
     /**
      * 新增工资项
      */
-    @RequiresPermissions("operate:cloud:salaryItem:add")
+    @RequiresPermissions("operate:cloud:salaryItem:edit")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody SalaryItemDTO salaryItemDTO) {
         return AjaxResult.success(salaryItemService.insertSalaryItem(salaryItemDTO));
@@ -96,7 +96,7 @@ public class SalaryItemController extends BaseController {
     /**
      * 工资项详情
      */
-    @RequiresPermissions(value = {"operate:cloud:salaryItem:info", "operate:cloud:salaryItem:edit"}, logical = Logical.OR)
+    @RequiresPermissions("operate:cloud:salaryItem:edit")
     @GetMapping("/info/{salaryItemId}")
     public AjaxResult info(@PathVariable Long salaryItemId) {
         SalaryItemDTO salaryItemDTO = salaryItemService.detailSalaryItemBySalaryId(salaryItemId);
@@ -106,7 +106,7 @@ public class SalaryItemController extends BaseController {
     /**
      * 逻辑删除工资项
      */
-    @RequiresPermissions("operate:cloud:salaryItem:remove")
+    @RequiresPermissions("operate:cloud:salaryItem:edit")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody SalaryItemDTO salaryItemDTO) {
         Long salaryItemId = salaryItemDTO.getSalaryItemId();
@@ -119,7 +119,7 @@ public class SalaryItemController extends BaseController {
     /**
      * 逻辑批量删除工资项
      */
-    @RequiresPermissions("operate:cloud:salaryItem:remove")
+    @RequiresPermissions("operate:cloud:salaryItem:edit")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> salaryItemIds) {
         return toAjax(salaryItemService.logicDeleteSalaryItemBySalaryItemIds(salaryItemIds));
@@ -129,7 +129,7 @@ public class SalaryItemController extends BaseController {
      * 导出用户
      */
     @SneakyThrows
-    @RequiresPermissions("operate:cloud:salaryItem:export")
+    @RequiresPermissions("operate:cloud:salaryItem:edit")
     @PostMapping("/export")
     public void export(@RequestBody SalaryItemDTO salaryItemDTO, HttpServletResponse response) {
         List<SalaryItemExcel> salaryItemExcels = salaryItemService.exportSalaryExcel(salaryItemDTO);
