@@ -23,4 +23,4 @@ UPDATE menu SET menu_name='停用', update_time=sysdate() WHERE menu_id=183;
 UPDATE menu SET permission_code='system:manage:department:employee:remove', update_time=sysdate() WHERE menu_id=206;
 UPDATE menu SET permission_code='system:manage:department:employee:import', update_time=sysdate() WHERE menu_id=207;
 UPDATE menu SET permission_code='system:manage:department:employee:export', update_time=sysdate() WHERE menu_id=208;
-UPDATE menu SET permission_code='operate:cloud:salaryItem:edit', update_time=sysdate() WHERE menu_id=346;
+UPDATE menu SET `path`='ArticleWageEdit',permission_code='operate:cloud:salaryItem:edit', update_time=sysdate() WHERE menu_id=346;
