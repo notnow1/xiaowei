@@ -154,6 +154,9 @@
         <if test="salaryItem.params.scopeNull != null">
             AND  si.scope IS NULL
         </if>
+        <if test="salaryItem.params.scopeNotNull != null">
+            AND  si.scope IS NOT NULL
+        </if>
         <!-- 数据范围过滤 -->
         ${salaryItem.params.dataScope}
     </select>
