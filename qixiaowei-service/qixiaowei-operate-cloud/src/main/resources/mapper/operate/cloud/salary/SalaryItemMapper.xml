@@ -281,7 +281,7 @@
         si.salary_item_id,
         si.first_level_item,
         si.second_level_item,
-        si.scope,
+        case when dbbi.dept_bonus_budget_details_id = 0 then 2 else 1 end as scope,
         si.sort,
         si.status,
         si.third_level_item as salaryItemName,
