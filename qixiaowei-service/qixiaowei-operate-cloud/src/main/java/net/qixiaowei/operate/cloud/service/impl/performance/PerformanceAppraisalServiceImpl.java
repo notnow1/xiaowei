@@ -1749,6 +1749,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 }
                 List<String> performanceRankNames = performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList());
                 performanceRankNames.add("不考核");
+                if (StringUtils.isNull(map.get(2))) {
+                    errorNote.append("考核结果不可以为空；");
+                }
                 if (StringUtils.isNotNull(map.get(2)) && !performanceRankNames.contains(map.get(2))) {
                     errorNote.append("考核结果不存在；");
                 }
@@ -1963,6 +1966,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 }
                 List<String> performanceRankNames = performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList());
                 performanceRankNames.add("不考核");
+                if (StringUtils.isNotNull(map.get(6))) {
+                    errorNote.append("考核结果不可以为空");
+                }
                 if (StringUtils.isNotNull(map.get(6)) && !performanceRankNames.contains(map.get(6))) {
                     errorNote.append("考核结果不存在；");
                 }

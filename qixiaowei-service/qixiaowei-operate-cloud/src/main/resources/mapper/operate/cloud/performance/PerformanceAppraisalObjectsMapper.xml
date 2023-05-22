@@ -531,18 +531,14 @@
             </trim>
             <trim prefix="appraisal_principal_id=case" suffix="end,">
                 <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                    <if test="item.appraisalPrincipalId != null">
-                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
-                        #{item.appraisalPrincipalId}
-                    </if>
+                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                    #{item.appraisalPrincipalId}
                 </foreach>
             </trim>
             <trim prefix="appraisal_principal_name=case" suffix="end,">
                 <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                    <if test="item.appraisalPrincipalName != null and item.appraisalPrincipalName != ''">
-                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
-                        #{item.appraisalPrincipalName}
-                    </if>
+                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                    #{item.appraisalPrincipalName}
                 </foreach>
             </trim>
             <trim prefix="evaluation_score=case" suffix="end,">
