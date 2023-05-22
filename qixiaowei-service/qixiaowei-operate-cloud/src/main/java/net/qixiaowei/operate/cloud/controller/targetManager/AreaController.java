@@ -41,7 +41,6 @@ public class AreaController extends BaseController {
     /**
      * 查询区域表列表
      */
-    @RequiresPermissions(value = {"operate:cloud:area:list", "operate:cloud:area:pageList"}, logical = Logical.OR)
     @GetMapping("/list")
     public AjaxResult list(AreaDTO areaDTO) {
         List<AreaDTO> list = areaService.selectAreaList(areaDTO);

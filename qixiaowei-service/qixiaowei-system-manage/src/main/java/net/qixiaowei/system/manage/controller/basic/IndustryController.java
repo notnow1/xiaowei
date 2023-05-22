@@ -71,7 +71,6 @@ public class IndustryController extends BaseController {
     /**
      * 获取启用行业列表
      */
-    @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
     @GetMapping("/enableList")
     public AjaxResult enableList(IndustryDTO industryDTO) {
         return AjaxResult.success(industryService.getEnableList(industryDTO));
