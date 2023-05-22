@@ -1148,28 +1148,31 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
             if (StringUtils.isBlank(employeeExcel.getIdentityCard())) {
                 validEmployeeError.append("证件号码为必填项"+Constants.China_Colon);
-            }
-            Pattern pt = Pattern.compile("(^[1-9]\\d{5}(19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{2}[0-9Xx]$)");
-            Matcher matcher = pt.matcher(employeeExcel.getIdentityCard());
-            if (!matcher.find()) {
-                validEmployeeError.append("身份证号格式不对"+Constants.China_Colon);
-            }
-            if (flag) {
-                if (StringUtils.isNotEmpty(identityCards) && employeeMobiles.contains(employeeExcel.getIdentityCard())) {
-                    validEmployeeError.append("身份证号已存在");
+            }else {
+                Pattern pt = Pattern.compile("(^[1-9]\\d{5}(19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{2}[0-9Xx]$)");
+                Matcher matcher = pt.matcher(employeeExcel.getIdentityCard());
+                if (!matcher.find()) {
+                    validEmployeeError.append("身份证号格式不对"+Constants.China_Colon);
                 }
-            } else {
-                List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getIdentityCard().equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
-                if (StringUtils.isNotEmpty(collect)) {
-                    if (StringUtils.isNotBlank(collect.get(0).getIdentityCard())){
-                        if (!collect.get(0).getIdentityCard().equals(employeeExcel.getIdentityCard())) {
-                            if (identityCards.contains(employeeExcel.getIdentityCard())) {
-                                validEmployeeError.append("身份证号已存在");
+                if (flag) {
+                    if (StringUtils.isNotEmpty(identityCards) && employeeMobiles.contains(employeeExcel.getIdentityCard())) {
+                        validEmployeeError.append("身份证号已存在");
+                    }
+                } else {
+                    List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getIdentityCard().equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(collect)) {
+                        if (StringUtils.isNotBlank(collect.get(0).getIdentityCard())){
+                            if (!collect.get(0).getIdentityCard().equals(employeeExcel.getIdentityCard())) {
+                                if (identityCards.contains(employeeExcel.getIdentityCard())) {
+                                    validEmployeeError.append("身份证号已存在");
+                                }
                             }
                         }
                     }
                 }
             }
+
+
             if (StringUtils.isBlank(employeeExcel.getEmploymentStatus())) {
                 validEmployeeError.append("用工关系状态为必填项"+Constants.China_Colon);
             } else {
