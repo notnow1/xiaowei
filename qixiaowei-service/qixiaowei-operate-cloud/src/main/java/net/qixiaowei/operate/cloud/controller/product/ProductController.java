@@ -120,7 +120,7 @@ public class ProductController extends BaseController {
     /**
      * 查询产品表列表
      */
-    @RequiresPermissions(value = {"operate:cloud:product:list", "operate:cloud:product:pageList"}, logical = Logical.OR)
+//    @RequiresPermissions(value = {"operate:cloud:product:list", "operate:cloud:product:pageList"}, logical = Logical.OR)
     @GetMapping("/list")
     public AjaxResult list(ProductDTO productDTO) {
         List<ProductDTO> list = productService.selectProductList(productDTO);
