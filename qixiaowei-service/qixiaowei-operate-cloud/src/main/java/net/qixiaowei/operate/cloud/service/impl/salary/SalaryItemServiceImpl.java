@@ -153,11 +153,11 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Override
     public List<SalaryItemVO> selectSalaryItemEditList(SalaryItemDTO salaryItemDTO) {
         SalaryItem salaryItem = new SalaryItem();
-        salaryItem.setStatus(0);
         List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemEditList(salaryItem);
         for (SalaryItemDTO itemDTO : salaryItemDTOS) {
             if (ThirdLevelSalaryCode.containThirdItems(itemDTO.getThirdLevelItem())) {
                 itemDTO.setIsPreset(1);
+                itemDTO.setStatus(1);
             }
         }
         List<SalaryItemDTO> sortSalaryItemDTOS = salaryItemDTOS.stream().sorted(Comparator
@@ -170,6 +170,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
 
     /**
      * 查找公司级奖项类别
+     *
      * @return
      */
     @Override
@@ -269,11 +270,6 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         for (SalaryItemDTO salaryItemDTO : salaryItemDTOSAfter) {
             if (StringUtils.isNull(salaryItemDTO.getThirdLevelItem())) {
                 throw new ServiceException("请录入三级薪酬项目");
-            }
-            if (salaryItemDTO.getSecondLevelItem() == 4) {
-                salaryItemDTO.setScope(1);
-            } else {
-                salaryItemDTO.setScope(null);
             }
         }
         List<SalaryItemDTO> salaryItemDTOSBefore = salaryItemMapper.selectSalaryItemEditList(new SalaryItem());
@@ -397,19 +393,44 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Override
     public SalaryItemDTO insertSalaryItem(SalaryItemDTO salaryItemDTO) {
         String thirdLevelItem = salaryItemDTO.getThirdLevelItem();
+        SalaryItemDTO salaryItemByThirdLevelItem = salaryItemMapper.getSalaryItemByThirdLevelItem(thirdLevelItem);
         if (StringUtils.isEmpty(thirdLevelItem)) {
             throw new ServiceException("三级工资项目不可为空");
         }
-        if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
-            throw new ServiceException("新增三级项目不能为预置三级项目");
-        }
-        SalaryItemDTO salaryItemByThirdLevelItem = salaryItemMapper.getSalaryItemByThirdLevelItem(thirdLevelItem);
+
         if (StringUtils.isNotNull(salaryItemByThirdLevelItem)) {
-            throw new ServiceException("三级项目名称不能重复");
+            if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
+                throw new ServiceException("新增三级项目不能为预置三级项目");
+            }
+            if (salaryItemByThirdLevelItem.getThirdLevelItem().equals(thirdLevelItem)) {
+                throw new ServiceException("三级项目名称不能重复");
+            }
         }
         Integer maxSort = salaryItemMapper.selectMaxSort();
         if (StringUtils.isNull(salaryItemDTO.getScope())) {
-            salaryItemDTO.setScope(1);
+            if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
+                if (ThirdLevelSalaryCode.STRATEGIC.getCode().equals(thirdLevelItem)){
+                    salaryItemDTO.setScope(2);
+                }else if (ThirdLevelSalaryCode.PROJECT.getCode().equals(thirdLevelItem) || ThirdLevelSalaryCode.PERFORMANCE.getCode().equals(thirdLevelItem)){
+                    salaryItemDTO.setScope(1);
+                }else if (ThirdLevelSalaryCode.BASIC.getCode().equals(thirdLevelItem)){
+                    salaryItemDTO.setScope(null);
+                }
+            }else {
+                salaryItemDTO.setScope(1);
+            }
+        }else {
+            if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
+                if (ThirdLevelSalaryCode.STRATEGIC.getCode().equals(thirdLevelItem)){
+                    salaryItemDTO.setScope(2);
+                }else if (ThirdLevelSalaryCode.PROJECT.getCode().equals(thirdLevelItem) || ThirdLevelSalaryCode.PERFORMANCE.getCode().equals(thirdLevelItem)){
+                    salaryItemDTO.setScope(1);
+                }else if (ThirdLevelSalaryCode.BASIC.getCode().equals(thirdLevelItem)){
+                    salaryItemDTO.setScope(null);
+                }
+            }else {
+                salaryItemDTO.setScope(salaryItemDTO.getScope());
+            }
         }
         salaryItemDTO.setStatus(0);
         salaryItemDTO.setSort(maxSort + 1);
@@ -463,6 +484,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Override
     public int updateSalaryItem(SalaryItemDTO salaryItemDTO) {
         String thirdLevelItem = salaryItemDTO.getThirdLevelItem();
+        SalaryItemDTO salaryItemByThirdLevelItem = salaryItemMapper.getSalaryItemByThirdLevelItem(thirdLevelItem);
         Long salaryItemId = salaryItemDTO.getSalaryItemId();
         if (StringUtils.isNull(salaryItemId)) {
             throw new ServiceException("工资条配置id不能为空！");
@@ -470,19 +492,28 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         if (StringUtils.isEmpty(thirdLevelItem)) {
             throw new ServiceException("三级工资项目不可为空！");
         }
-        if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
-            throw new ServiceException("新增三级项目不能为预置三级项目");
-        }
-        SalaryItemDTO salaryItemByThirdLevelItem = salaryItemMapper.getSalaryItemByThirdLevelItem(thirdLevelItem);
         if (StringUtils.isNotNull(salaryItemByThirdLevelItem)) {
-            if (!salaryItemByThirdLevelItem.getSalaryItemId().equals(salaryItemId)) {
+            if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
+                throw new ServiceException("新增三级项目不能为预置三级项目");
+            }
+            if (salaryItemByThirdLevelItem.getThirdLevelItem().equals(thirdLevelItem)) {
                 throw new ServiceException("三级项目名称不能重复");
             }
         }
         SalaryItem salaryItem = new SalaryItem();
         salaryItem.setSalaryItemId(salaryItemId);
         salaryItem.setThirdLevelItem(thirdLevelItem);
-        salaryItem.setScope(salaryItemDTO.getScope());
+        if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
+            if (ThirdLevelSalaryCode.STRATEGIC.getCode().equals(thirdLevelItem)){
+                salaryItem.setScope(2);
+            }else if (ThirdLevelSalaryCode.PROJECT.getCode().equals(thirdLevelItem) || ThirdLevelSalaryCode.PERFORMANCE.getCode().equals(thirdLevelItem)){
+                salaryItem.setScope(1);
+            }else if (ThirdLevelSalaryCode.BASIC.getCode().equals(thirdLevelItem)){
+                salaryItem.setScope(null);
+            }
+        }else {
+            salaryItem.setScope(salaryItemDTO.getScope());
+        }
         salaryItem.setUpdateTime(DateUtils.getNowDate());
         salaryItem.setUpdateBy(SecurityUtils.getUserId());
         return salaryItemMapper.updateSalaryItem(salaryItem);
