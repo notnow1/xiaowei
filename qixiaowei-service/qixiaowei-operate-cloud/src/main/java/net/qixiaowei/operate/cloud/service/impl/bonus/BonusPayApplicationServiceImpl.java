@@ -1090,7 +1090,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 for (DeptBonusCompanyDTO deptBonusCompanyDTO : deptBonusCompanyDTOS) {
                     if (deptBonusCompanyDTO.getSalaryItemId().equals(salaryItemDTO.getSalaryItemId())) {
                         //年初预算
-                        bonusPayStandingDTO2.setBeYearAmountBonusBudget(deptBonusCompanyDTO.getBonusCompanyAmount());
+                        bonusPayStandingDTO2.setBeYearAmountBonusBudget(deptBonusCompanyDTO.getBonusCompanyAmount()==null?new BigDecimal("0"):deptBonusCompanyDTO.getBonusCompanyAmount().multiply(new BigDecimal("10000")));
                     }
                 }
             }
@@ -1109,7 +1109,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     for (DeptBonusCompanyDTO deptBonusCompanyDTO : deptBonusCompanyDTOS) {
                         if (deptBonusCompanyDTO.getSalaryItemId().equals(salaryItemDTO.getSalaryItemId())) {
                             //年初预算
-                            bonusPayStandingDTO2.setBeYearAmountBonusBudget(deptBonusCompanyDTO.getBonusCompanyAmount());
+                            bonusPayStandingDTO2.setBeYearAmountBonusBudget(deptBonusCompanyDTO.getBonusCompanyAmount()==null?new BigDecimal("0"):deptBonusCompanyDTO.getBonusCompanyAmount().multiply(new BigDecimal("10000")));
                         }
                     }
                 }
@@ -1258,7 +1258,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     for (DeptBonusBudgetItemsDTO deptBonusBudgetItemsDTO : deptBonusBudgetItemsDTOS) {
                         if (deptBonusBudgetItemsDTO.getSalaryItemId().equals(salaryItemDTO.getSalaryItemId())) {
                             //年初预算
-                            bonusPayStandingDTO.setBeYearAmountBonusBudget(deptBonusBudgetItemsDTO.getBonusAmount());
+                            bonusPayStandingDTO.setBeYearAmountBonusBudget(deptBonusBudgetItemsDTO.getBonusAmount()==null?new BigDecimal("0"):deptBonusBudgetItemsDTO.getBonusAmount().multiply(new BigDecimal("10000")));
                         }
                     }
 
@@ -1269,7 +1269,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             for (DeptBonusCompanyDTO deptBonusCompanyDTO : deptBonusCompanyDTOS) {
                 if (deptBonusCompanyDTO.getSalaryItemId().equals(salaryItemDTO.getSalaryItemId())) {
                     //年初预算
-                    bonusPayStandingDTO.setBeYearAmountBonusBudget(deptBonusCompanyDTO.getBonusCompanyAmount());
+                    bonusPayStandingDTO.setBeYearAmountBonusBudget(deptBonusCompanyDTO.getBonusCompanyAmount()==null?new BigDecimal("0"):deptBonusCompanyDTO.getBonusCompanyAmount().multiply(new BigDecimal("10000")));
                 }
             }
         }
