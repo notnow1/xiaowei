@@ -313,6 +313,29 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
     }
 
     /**
+     * 系统批量更改字段列表配置表信息
+     *
+     * @param fieldListConfigDtos 字段列表配置表对象
+     */
+    public void updateFieldListConfigsOfSystem(List<FieldListConfigDTO> fieldListConfigDtos) {
+        List<FieldListConfig> fieldListConfigList = new ArrayList<>();
+        for (FieldListConfigDTO fieldListConfigDTO : fieldListConfigDtos) {
+            FieldListConfig fieldListConfig = new FieldListConfig();
+            fieldListConfig.setFieldListConfigId(fieldListConfigDTO.getFieldListConfigId());
+            fieldListConfig.setFixationForce(fieldListConfigDTO.getFixationForce());
+            fieldListConfig.setFixationFlag(fieldListConfigDTO.getFixationFlag());
+            fieldListConfig.setShowForce(fieldListConfigDTO.getShowForce());
+            fieldListConfig.setShowFlag(fieldListConfigDTO.getShowFlag());
+            fieldListConfig.setCreateBy(SecurityUtils.getUserId());
+            fieldListConfig.setCreateTime(DateUtils.getNowDate());
+            fieldListConfig.setUpdateTime(DateUtils.getNowDate());
+            fieldListConfig.setUpdateBy(SecurityUtils.getUserId());
+            fieldListConfigList.add(fieldListConfig);
+        }
+        fieldListConfigMapper.updateFieldListConfigs(fieldListConfigList);
+    }
+
+    /**
      * @description: 格式化字段名称
      * @Author: hzk
      * @date: 2023/2/10 14:25
@@ -452,20 +475,25 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
     private void operateFieldListConfig(Integer businessType, List<FieldConfigDTO> fieldConfigDTOSAfter, List<FieldConfigDTO> fieldConfigDTOSBefore) {
         List<FieldListConfig> fieldListConfigsAfter = fieldListConfigManager.initUserFieldListConfig(businessType, fieldConfigDTOSAfter);
         List<FieldListConfigDTO> fieldListConfigsDTOSAfter = new ArrayList<>();
+        //转dto
         for (FieldListConfig fieldListConfig : fieldListConfigsAfter) {
             FieldListConfigDTO fieldListConfigDTO = new FieldListConfigDTO();
             BeanUtils.copyProperties(fieldListConfig, fieldListConfigDTO);
             fieldListConfigsDTOSAfter.add(fieldListConfigDTO);
         }
+        // 查询以前的用户行为信息
         List<Long> fieldConfigIds = fieldConfigDTOSBefore.stream().map(FieldConfigDTO::getFieldConfigId).collect(Collectors.toList());
         FieldListConfig fieldListConfig = new FieldListConfig();
         Map<String, Object> params = new HashMap<>();
         params.put("fieldConfigIds", fieldConfigIds);
         fieldListConfig.setParams(params);
         List<FieldListConfigDTO> fieldListConfigDTOSBeforeS = fieldListConfigMapper.selectFieldListConfigList(fieldListConfig);
+        // 分组
         Map<Long, List<FieldListConfigDTO>> groupFieldListConfigDTOSBeforeS = fieldListConfigDTOSBeforeS.stream().collect(Collectors.groupingBy(FieldListConfigDTO::getUserId));
         List<FieldListConfigDTO> addFieldListConfigDTOS = new ArrayList<>();
         List<FieldListConfigDTO> delFieldListConfigDTOS = new ArrayList<>();
+        List<FieldListConfigDTO> updFieldListConfigDTOS = new ArrayList<>();
+        // 对分组后的每个用户行为提取 新增，更新，删除
         for (Long userId : groupFieldListConfigDTOSBeforeS.keySet()) {
             List<FieldListConfigDTO> fieldListConfigDTOSBefore = groupFieldListConfigDTOSBeforeS.get(userId);
             delFieldListConfigDTOS.addAll(fieldListConfigDTOSBefore.stream().filter(f ->
@@ -481,6 +509,29 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
                     addFieldListConfigsDTOSAfter.add(fieldListConfigDTO1);
                 }
             }
+            // 提取更新的用户行为信息
+            for (FieldListConfigDTO fieldListConfigBefore : fieldListConfigDTOSBefore) {
+                for (FieldConfigDTO fieldConfigDTO : fieldConfigDTOSAfter) {
+                    if (fieldListConfigBefore.getFieldConfigId().equals(fieldConfigDTO.getFieldConfigId())) {
+                        FieldListConfig fieldListConfigAfter = fieldListConfigsAfter.stream()
+                                .filter(f -> f.getFieldConfigId().equals(fieldConfigDTO.getFieldConfigId())).collect(Collectors.toList()).get(0);
+                        if (!Objects.equals(fieldListConfigAfter.getFixationFlag(), fieldListConfigBefore.getFixationFlag())
+                                || !Objects.equals(fieldListConfigAfter.getShowForce(), fieldListConfigBefore.getShowForce())
+                                || !Objects.equals(fieldListConfigAfter.getFixationForce(), fieldListConfigBefore.getFixationForce())) {
+                            FieldListConfigDTO updFieldListConfig = new FieldListConfigDTO();
+                            updFieldListConfig.setFieldListConfigId(fieldListConfigBefore.getFieldListConfigId());
+                            updFieldListConfig.setShowForce(fieldListConfigAfter.getShowForce());
+                            if (fieldListConfigAfter.getShowForce() == 1) {
+                                updFieldListConfig.setShowFlag(1);
+                            }
+                            updFieldListConfig.setFixationForce(fieldListConfigAfter.getFixationForce());
+                            updFieldListConfig.setFixationFlag(fieldListConfigAfter.getFixationFlag());
+                            updFieldListConfigDTOS.add(updFieldListConfig);
+                        }
+                        break;
+                    }
+                }
+            }
 //            List<FieldListConfigDTO> addFieldListConfigsDTOSAfter = fieldListConfigsDTOSAfter.stream().filter(f ->
 //                    !fieldListConfigDTOSBefore.stream().map(FieldListConfigDTO::getFieldConfigId).collect(Collectors.toList()).contains(f.getFieldConfigId())).collect(Collectors.toList());
             addFieldListConfigDTOS.addAll(addFieldListConfigsDTOSAfter);
@@ -492,6 +543,9 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
         if (StringUtils.isNotEmpty(addFieldListConfigDTOS)) {
             addFieldListConfigDTOS.forEach(f -> f.setSort(0));
             this.insertFieldListConfigs(addFieldListConfigDTOS);
+        }
+        if (StringUtils.isNotEmpty(updFieldListConfigDTOS)) {
+            this.updateFieldListConfigsOfSystem(updFieldListConfigDTOS);
         }
     }
 
