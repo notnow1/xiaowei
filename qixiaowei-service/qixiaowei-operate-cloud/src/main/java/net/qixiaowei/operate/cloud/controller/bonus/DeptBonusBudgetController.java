@@ -38,7 +38,7 @@ public class DeptBonusBudgetController extends BaseController {
     /**
      * 分页查询部门奖金包预算表列表
      */
-    @RequiresPermissions("operate:cloud:deptBonusBudget:pageList")
+    @RequiresPermissions(value = {"operate:cloud:deptBonusBudget:pageList","operate:cloud:deptAnnualBonus:add","operate:cloud:deptAnnualBonus:edit",""},logical = Logical.OR)
     @GetMapping("/pageList")
     public TableDataInfo pageList(DeptBonusBudgetDTO deptBonusBudgetDTO) {
         startPage();

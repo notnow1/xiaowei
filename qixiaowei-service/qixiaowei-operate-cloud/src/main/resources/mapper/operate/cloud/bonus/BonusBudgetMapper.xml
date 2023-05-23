@@ -114,7 +114,7 @@
                         bbp.indicator_id,
                         bbp.bonus_weight,
                         ifnull(ts.target_value, 0)  as target_value,
-                        ifnull(toc.actual_total, 0) as actual_total
+                        ifnull(toc.actual_total, 0) as actualValue
         from bonus_budget bb
                  left join bonus_budget_parameters bbp
                            on bb.bonus_budget_id = bbp.bonus_budget_id

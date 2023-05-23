@@ -525,7 +525,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                             if (amountBonusBudget.compareTo(new BigDecimal("0")) != 0 && strategyAwardPercentage.compareTo(new BigDecimal("0")) != 0) {
                                 deptAmountBonus = amountBonusBudget.subtract(amountBonusBudget.multiply(strategyAwardPercentage.divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP);
                             }
-                            if (deptAmountBonus.compareTo(new BigDecimal("0")) != 0 && deptBonusPercentage.compareTo(new BigDecimal("0")) != 0) {
+                            if (deptAmountBonus.compareTo(new BigDecimal("0")) != 0  && deptBonusPercentage != null &&deptBonusPercentage.compareTo(new BigDecimal("0")) != 0 ) {
                                 beYearCanGrantBonusBudgetAmount = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
                             }
                         }

@@ -407,12 +407,14 @@
         SELECT ifnull(sum(award_total_amount), 0) as award_total_amount
         FROM bonus_pay_application
         where award_year = #{annualBonusYear}
-          and salary_item_id in
-        <foreach item="item"
-                 collection="salaryItemIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        <if test="salaryItemIds != null and salaryItemIds.size() > 0">
+            and salary_item_id in
+            <foreach item="item"
+                     collection="salaryItemIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
           and delete_flag = 0
     </select>
     <!--    查询奖金发放台账申请部门-->
