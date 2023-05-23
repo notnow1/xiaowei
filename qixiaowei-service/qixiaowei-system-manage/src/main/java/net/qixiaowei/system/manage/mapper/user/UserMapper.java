@@ -125,6 +125,13 @@ public interface UserMapper {
     List<UserDTO> selectUserList(@Param("user") User user);
 
     /**
+     * 获取用户总人数和未激活（1为总人数 2为未激活）
+     *
+     * @return 用户表集合
+     */
+    List<Integer> getStatuList();
+
+    /**
      * 新增用户表
      *
      * @param user 用户表
