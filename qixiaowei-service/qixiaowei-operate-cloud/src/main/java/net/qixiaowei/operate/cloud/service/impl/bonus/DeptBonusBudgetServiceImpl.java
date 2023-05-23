@@ -206,7 +206,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             BigDecimal deptBonusPercentage = deptBonusBudgetDetailsDTO.getDeptBonusPercentage();
             if (null != deptAmountBonus && deptAmountBonus.compareTo(new BigDecimal("0")) != 0 &&
                     null != deptBonusPercentage && deptBonusPercentage.compareTo(new BigDecimal("0")) != 0) {
-                deptBonusSum = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100"),10, BigDecimal.ROUND_HALF_UP)).setScale(2, RoundingMode.CEILING);
+                deptBonusSum = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100"),10, BigDecimal.ROUND_HALF_UP)).setScale(10, RoundingMode.CEILING);
             }
             deptBonusBudgetDetailsDTO.setDeptBonusSum(deptBonusSum);
         }
