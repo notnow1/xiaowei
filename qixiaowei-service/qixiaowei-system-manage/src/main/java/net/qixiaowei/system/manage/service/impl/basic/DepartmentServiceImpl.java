@@ -384,7 +384,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //根据父级id查询 获取父级id的祖级列表ID
         departmentDTO2 = departmentMapper.selectParentDepartmentId(parentDepartmentId);
         Long departmentId = departmentDTO2.getDepartmentId();
-        department.setSort(departmentDTO2.getSort() + 1);
+        if (StringUtils.isNull(departmentDTO2.getSort())){
+            department.setSort(1);
+        }else {
+            department.setSort(departmentDTO2.getSort() + 1);
+        }
         department.setParentDepartmentId(departmentId);
         //祖级id
         if (StringUtils.isNotBlank(departmentDTO2.getAncestors())) {
@@ -1123,6 +1127,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
             department.setDepartmentName(tenantName);
             //层级
             department.setLevel(0);
+            //状态
+            department.setSort(0);
             //状态
             department.setStatus(1);
             department.setCreateBy(SecurityUtils.getUserId());

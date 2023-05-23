@@ -116,7 +116,8 @@
 <!--    根据年份查询总奖金包-->
     <select id="selectBonusBudgetParametersByAnnualBonusYear"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO">
-        SELECT bb.bonus_budget_id,
+        SELECT distinct
+               bb.bonus_budget_id,
                IFNULL(bb.amount_bonus_budget,0) as amount_bonus_budget,
                ts.target_value,
                tod.actual_total,

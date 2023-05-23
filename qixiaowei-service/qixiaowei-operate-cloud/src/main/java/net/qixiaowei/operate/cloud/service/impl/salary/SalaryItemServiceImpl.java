@@ -484,7 +484,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Override
     public int updateSalaryItem(SalaryItemDTO salaryItemDTO) {
         String thirdLevelItem = salaryItemDTO.getThirdLevelItem();
-        SalaryItemDTO salaryItemByThirdLevelItem = salaryItemMapper.getSalaryItemByThirdLevelItem(thirdLevelItem);
+        SalaryItemDTO salaryItemByThirdLevelItem = salaryItemMapper.selectSalaryItemBySalaryItemId(salaryItemDTO.getSalaryItemId());
         Long salaryItemId = salaryItemDTO.getSalaryItemId();
         if (StringUtils.isNull(salaryItemId)) {
             throw new ServiceException("工资条配置id不能为空！");
@@ -496,8 +496,10 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
             if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
                 throw new ServiceException("新增三级项目不能为预置三级项目");
             }
-            if (salaryItemByThirdLevelItem.getThirdLevelItem().equals(thirdLevelItem)) {
-                throw new ServiceException("三级项目名称不能重复");
+            if (!salaryItemByThirdLevelItem.getThirdLevelItem().equals(thirdLevelItem)){
+                if (salaryItemByThirdLevelItem.getThirdLevelItem().equals(thirdLevelItem)) {
+                    throw new ServiceException("三级项目名称不能重复");
+                }
             }
         }
         SalaryItem salaryItem = new SalaryItem();
