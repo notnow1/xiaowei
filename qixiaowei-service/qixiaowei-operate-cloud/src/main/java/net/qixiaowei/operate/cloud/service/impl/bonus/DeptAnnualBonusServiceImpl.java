@@ -826,11 +826,11 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal bonusWeight = deptAnnualBonusOperateDTO.getBonusWeight();
                 if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
                         null != actualValue && actualValue.compareTo(new BigDecimal("0")) != 0) {
-                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(10, BigDecimal.ROUND_HALF_UP);
                 }
                 if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0 &&
                         targetExcessPerComp.compareTo(new BigDecimal("0")) != 0) {
-                    actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(10, BigDecimal.ROUND_HALF_UP);
                 }
                 deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
                 deptAnnualBonusOperateDTO.setActualPerformanceBonusFactor(actualPerformanceBonusFactor);
