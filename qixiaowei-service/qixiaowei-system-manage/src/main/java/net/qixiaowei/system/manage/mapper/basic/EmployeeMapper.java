@@ -347,4 +347,10 @@ public interface EmployeeMapper {
      * @return 结果
      */
     List<EmployeeDTO> selectByNames(@Param("employeeNames") List<String> employeeNames);
+
+    /**
+     * 获取人员总人数 待分配数量
+     * @return
+     */
+    List<Integer> getStatuList();
 }

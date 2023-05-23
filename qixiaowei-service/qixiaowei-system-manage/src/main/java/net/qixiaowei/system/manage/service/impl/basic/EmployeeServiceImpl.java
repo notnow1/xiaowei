@@ -193,6 +193,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @DataScope(businessAlias = "e")
     @Override
     public List<EmployeeDTO> selectEmployeeList(EmployeeDTO employeeDTO) {
+        Map<String,Integer> dataStatu = new HashMap<>();
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         Map<String, Object> params = employeeDTO.getParams();
@@ -280,6 +281,17 @@ public class EmployeeServiceImpl implements IEmployeeService {
                             }
                         }
                     }
+                }
+            }
+        }
+        //获取人员总人数 待分配数量
+        List<Integer> statuList = employeeMapper.getStatuList();
+        if (StringUtils.isNotEmpty(statuList)){
+            for (int i = 0; i < statuList.size(); i++) {
+                if (i == 0){
+                    dataStatu.put("总人数",statuList.get(i));
+                }else if (i == 1){
+                    dataStatu.put("待分配",statuList.get(i));
                 }
             }
         }

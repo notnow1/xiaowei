@@ -2451,6 +2451,20 @@
         WHERE  identity_card = #{identityCard}
           and delete_flag = 0
     </select>
+<!--    获取人员总人数 待分配数量-->
+    <select id="getStatuList" resultType="java.lang.Integer">
+        select sumConut from (
+                                 SELECT  ifnull(count(employee_id),0) as sumConut
+                                 FROM employee
+                                 WHERE  delete_flag = 0
+                                 union
+                                 SELECT  ifnull(case when  d.parent_department_id =0 then count(e.employee_id) end ,0) as sumConut
+                                 FROM employee e
+                                          left join department d
+                                                    on e.employee_department_id = d.department_id
+                                                        and d.delete_flag = 0
+                                 WHERE  e.delete_flag = 0 ) as employeecount
+    </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
         INSERT INTO employee (employee_code, employee_name, employee_gender, identity_type, identity_card,
