@@ -48,7 +48,7 @@ public class DeptAnnualBonusController extends BaseController {
      * 新增部门年终奖表
      */
     @Log(title = "新增部门年终奖生成", businessType = BusinessType.DEPT_ANNUAL_BONUS, businessId = "deptAnnualBonusId", operationType = OperationType.INSERT)
-    @RequiresPermissions(value = {"operate:cloud:deptAnnualBonus:add","operate:cloud:bonusPayApplication:pageList"},logical = Logical.OR)
+    @RequiresPermissions(value = {"operate:cloud:deptAnnualBonus:add","operate:cloud:deptBonusBudget:pageList"},logical = Logical.OR)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody DeptAnnualBonusDTO deptAnnualBonusDTO) {
         return AjaxResult.success(deptAnnualBonusService.insertDeptAnnualBonus(deptAnnualBonusDTO));
@@ -67,7 +67,7 @@ public class DeptAnnualBonusController extends BaseController {
     /**
      * 查询部门年终奖表详情
      */
-    @RequiresPermissions(value = {"operate:cloud:deptAnnualBonus:info","operate:cloud:deptAnnualBonus:edit","operate:cloud:bonusPayApplication:pageList"},logical = Logical.OR)
+    @RequiresPermissions(value = {"operate:cloud:deptAnnualBonus:info","operate:cloud:deptAnnualBonus:edit","operate:cloud:deptBonusBudget:pageList"},logical = Logical.OR)
     @GetMapping("/info/{deptAnnualBonusId}")
     public AjaxResult info(@PathVariable Long deptAnnualBonusId) {
         DeptAnnualBonusDTO deptAnnualBonusDTO = deptAnnualBonusService.selectDeptAnnualBonusByDeptAnnualBonusId(deptAnnualBonusId);
@@ -95,7 +95,7 @@ public class DeptAnnualBonusController extends BaseController {
     /**
      * 部门年终奖预制数据
      */
-   @RequiresPermissions(value = {"operate:cloud:deptAnnualBonus:add", "operate:cloud:deptAnnualBonus:edit","operate:cloud:bonusPayApplication:pageList"}, logical = Logical.OR)
+   @RequiresPermissions(value = {"operate:cloud:deptAnnualBonus:add", "operate:cloud:deptAnnualBonus:edit","operate:cloud:deptBonusBudget:pageList"}, logical = Logical.OR)
     @GetMapping("/addPrefabricate/{annualBonusYear}")
     public AjaxResult addPrefabricate(@PathVariable int annualBonusYear) {
         DeptAnnualBonusDTO deptAnnualBonusDTO = deptAnnualBonusService.addPrefabricate(annualBonusYear);
