@@ -1332,6 +1332,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 BonusBudgetParametersDTO bonusBudgetParametersDTO = new BonusBudgetParametersDTO();
                 //指标id
                 bonusBudgetParametersDTO.setIndicatorId(datum.getIndicatorId());
+                bonusBudgetParametersDTO.setIndicatorName(datum.getIndicatorName());
                 //奖金占比基准值(%)
                 bonusBudgetParametersDTO.setBonusProportionStandard(new BigDecimal("0"));
                 //预计目标达成率(%)

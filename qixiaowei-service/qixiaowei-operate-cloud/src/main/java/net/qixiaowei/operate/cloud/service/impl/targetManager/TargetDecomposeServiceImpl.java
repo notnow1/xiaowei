@@ -761,6 +761,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     @Override
+    @DataScope(businessAlias = "td")
     public List<TargetDecomposeDTO> resultList(TargetDecomposeDTO targetDecomposeDTO) {
         List<TargetDecomposeDTO> targetDecomposeDTOList = new ArrayList<>();
         TargetDecompose targetDecompose = new TargetDecompose();

@@ -771,6 +771,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      * @return
      */
     @Override
+    @DataScope(businessAlias = "ebd")
     public List<EmployeeBudgetDetailsDTO> salaryPackageList(EmployeeBudgetDTO employeeBudgetDTO) {
         List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.salaryPackageList(employeeBudgetDTO);
         if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {

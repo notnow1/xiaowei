@@ -45,6 +45,7 @@ import net.qixiaowei.system.manage.api.domain.basic.*;
 import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeePageCountVO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
@@ -281,17 +282,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
                             }
                         }
                     }
-                }
-            }
-        }
-        //获取人员总人数 待分配数量
-        List<Integer> statuList = employeeMapper.getStatuList();
-        if (StringUtils.isNotEmpty(statuList)){
-            for (int i = 0; i < statuList.size(); i++) {
-                if (i == 0){
-                    dataStatu.put("总人数",statuList.get(i));
-                }else if (i == 1){
-                    dataStatu.put("待分配",statuList.get(i));
                 }
             }
         }
@@ -2211,6 +2201,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 }
             }
         }
+    }
+
+    /**
+     * 获取人员总人数 待分配数量
+     * @return
+     */
+    @Override
+    public EmployeePageCountVO getStatuList() {
+        return employeeMapper.getStatuList();
     }
 
     /**

@@ -23,10 +23,19 @@ public class AuthUtil {
     /**
      * 会话注销，根据指定Token
      *
-     * @param tokenValue 指定token
+     * @param token 指定token
      */
     public static void logoutByToken(String token) {
         authLogic.logoutByToken(token);
+    }
+
+    /**
+     * 会话注销，根据指定userId
+     *
+     * @param userId 指定userId
+     */
+    public static void logoutByUserId(Long userId) {
+        authLogic.logoutByUserId(userId);
     }
 
     /**

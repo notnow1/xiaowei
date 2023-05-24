@@ -133,6 +133,19 @@ public class TokenService {
     }
 
     /**
+     * 删除用户缓存信息
+     */
+    public void delLoginUser(Long userId) {
+        String userNewToken = redisService.getCacheObject(getUserTokenKey(userId));
+        if (StringUtils.isNotEmpty(userNewToken)) {
+            String tokenKey = getTokenKey(userNewToken);
+            if (redisService.hasKey(tokenKey)) {
+                redisService.deleteObject(tokenKey);
+            }
+        }
+    }
+
+    /**
      * 验证令牌有效期，相差不足120分钟，自动刷新缓存
      *
      * @param loginUserVO

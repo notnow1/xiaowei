@@ -14,6 +14,7 @@ import net.qixiaowei.system.manage.api.dto.user.UserUpdatePasswordDTO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
+import net.qixiaowei.system.manage.api.vo.user.UserPageCountVO;
 import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -203,4 +204,10 @@ public interface IUserService {
      * @return
      */
     List<UserDTO> selectByemployeeIds(List<Long> employeeIds);
+
+    /**
+     *  获取用户页面统计数据
+     * @return 统计数据
+     */
+    UserPageCountVO getUserPageCount();
 }

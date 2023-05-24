@@ -129,7 +129,7 @@ public interface UserMapper {
      *
      * @return 用户表集合
      */
-    List<Integer> getStatuList();
+    List<Integer> getUserStatusList();
 
     /**
      * 新增用户表

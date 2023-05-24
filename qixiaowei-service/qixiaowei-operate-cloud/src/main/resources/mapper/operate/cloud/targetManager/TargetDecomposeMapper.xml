@@ -453,6 +453,8 @@
         <if test="targetDecompose.updateTime != null">
             and td.update_time=#{targetDecompose.updateTime}
         </if>
+        <!-- 数据范围过滤 -->
+        ${targetDecompose.params.dataScope}
         order by td.create_time desc
     </select>
     <!--    目标分解是否被引用-->

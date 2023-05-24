@@ -555,7 +555,6 @@ public class TargetSettingController extends BaseController {
     /**
      * 查询经营分析报表指标列表
      */
-    //@RequiresPermissions("operate:cloud:targetSetting:analyse")
     @GetMapping("/analyseIndicator/list")
     public AjaxResult analyseIndicator(TargetSettingDTO targetSettingDTO) {
         List<TargetSettingDTO> list = targetSettingService.analyseIndicator(targetSettingDTO);
