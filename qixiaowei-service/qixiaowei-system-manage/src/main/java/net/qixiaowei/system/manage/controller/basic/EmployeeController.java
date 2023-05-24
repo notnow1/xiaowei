@@ -33,6 +33,9 @@ import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeePageCountVO;
+import net.qixiaowei.system.manage.api.vo.user.UserPageCountVO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
@@ -83,7 +86,8 @@ public class EmployeeController extends BaseController {
     public TableDataInfo pageList(EmployeeDTO employeeDTO) {
         startPage();
         List<EmployeeDTO> list = employeeService.selectEmployeeList(employeeDTO);
-        return getDataTable(list);
+        EmployeePageCountVO employeePageCountVO = employeeService.getStatuList();
+        return getDataTable(list, employeePageCountVO);
     }
 
     /**

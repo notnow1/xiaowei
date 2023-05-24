@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeePageCountVO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
@@ -312,4 +313,10 @@ public interface IEmployeeService {
     List<EmployeeDTO> selectByNames(List<String> employeeNames);
 
     void initSalesEmployee();
+
+    /**
+     * 获取人员总人数 待分配数量
+     * @return
+     */
+    EmployeePageCountVO getStatuList();
 }

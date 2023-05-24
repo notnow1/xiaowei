@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.mapper.basic;
 
 import net.qixiaowei.system.manage.api.domain.basic.Employee;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeePageCountVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -352,5 +353,5 @@ public interface EmployeeMapper {
      * 获取人员总人数 待分配数量
      * @return
      */
-    List<Integer> getStatuList();
+    EmployeePageCountVO getStatuList();
 }
