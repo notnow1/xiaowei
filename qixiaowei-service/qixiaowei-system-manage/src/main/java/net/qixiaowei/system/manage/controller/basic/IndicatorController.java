@@ -49,7 +49,6 @@ public class IndicatorController extends BaseController {
     /**
      * 查询指标表树状图
      */
-    @RequiresPermissions(value = {"system:manage:indicator:pageList", "system:manage:indicator:treeList"}, logical = Logical.OR)
     @GetMapping("/treeList")
     public AjaxResult treeList(IndicatorDTO indicatorDTO) {
         Integer indicatorType = indicatorDTO.getIndicatorType();

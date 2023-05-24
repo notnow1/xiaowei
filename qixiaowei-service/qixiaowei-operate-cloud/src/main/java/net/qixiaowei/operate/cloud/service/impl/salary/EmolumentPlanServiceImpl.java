@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.EmolumentPlan;
@@ -140,6 +141,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
      * @return 薪酬规划表
      */
     @Override
+    @DataScope(businessAlias = "ep")
     public List<EmolumentPlanDTO> selectEmolumentPlanList(EmolumentPlanDTO emolumentPlanDTO) {
         List<String> createBys = new ArrayList<>();
         EmolumentPlan emolumentPlan = new EmolumentPlan();

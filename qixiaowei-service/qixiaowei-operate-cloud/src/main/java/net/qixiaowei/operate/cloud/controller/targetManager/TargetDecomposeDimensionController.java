@@ -37,7 +37,6 @@ public class TargetDecomposeDimensionController extends BaseController {
     /**
      * 查询目标分解维度配置列表
      */
-    @RequiresPermissions(value = {"operate:cloud:targetDecomposeDimension:list", "operate:cloud:targetDecomposeDimension:pageList"}, logical = Logical.OR)
     @GetMapping("/list")
     public AjaxResult list(TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
         List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTOS = targetDecomposeDimensionService.selectTargetDecomposeDimensionList(targetDecomposeDimensionDTO);
