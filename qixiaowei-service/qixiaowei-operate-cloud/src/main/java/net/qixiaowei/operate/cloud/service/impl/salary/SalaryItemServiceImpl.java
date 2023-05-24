@@ -112,7 +112,6 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @param salaryItemDTO 工资项
      * @return 工资项
      */
-    @DataScope(businessAlias = "si")
     @Override
     public List<SalaryItemDTO> selectSalaryItemList(SalaryItemDTO salaryItemDTO) {
         SalaryItem salaryItem = new SalaryItem();
@@ -150,7 +149,6 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @param salaryItemDTO 工资项dto
      * @return 结果
      */
-    @DataScope(businessAlias = "si")
     @Override
     public List<SalaryItemVO> selectSalaryItemEditList(SalaryItemDTO salaryItemDTO) {
         SalaryItem salaryItem = new SalaryItem();
