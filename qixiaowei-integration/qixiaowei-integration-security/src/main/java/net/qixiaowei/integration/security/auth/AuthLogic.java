@@ -54,6 +54,13 @@ public class AuthLogic {
     }
 
     /**
+     * 会话注销，根据指定userId
+     */
+    public void logoutByUserId(Long userId) {
+        tokenService.delLoginUser(userId);
+    }
+
+    /**
      * 检验用户是否已经登录，如未登录，则抛出异常
      */
     public void checkLogin() {

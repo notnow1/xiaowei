@@ -21,6 +21,7 @@ import net.qixiaowei.integration.common.utils.file.FileTypeUtils;
 import net.qixiaowei.integration.common.utils.file.MimeTypeUtils;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.redis.service.RedisService;
+import net.qixiaowei.integration.security.auth.AuthUtil;
 import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.security.utils.UserUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
@@ -631,6 +632,8 @@ public class UserServiceImpl implements IUserService {
         userLogic.updateEmployee(userDTO);
         //同步销售云
         userLogic.syncSaleResetUserAccount(userId, oldUserAccount, userAccount, password, isAdmin);
+        //重置帐号，失效登录
+        AuthUtil.logoutByUserId(userId);
         return userMapper.updateUser(user);
     }
 
