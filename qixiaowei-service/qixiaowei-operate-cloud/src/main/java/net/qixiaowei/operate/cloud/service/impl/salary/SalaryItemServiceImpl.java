@@ -150,6 +150,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @param salaryItemDTO 工资项dto
      * @return 结果
      */
+    @DataScope(businessAlias = "si")
     @Override
     public List<SalaryItemVO> selectSalaryItemEditList(SalaryItemDTO salaryItemDTO) {
         SalaryItem salaryItem = new SalaryItem();
@@ -262,6 +263,9 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Override
     @Transactional
     public int editSalaryItems(List<SalaryItemVO> salaryItemVOS) {
+        if (StringUtils.isEmpty(salaryItemVOS)) {
+            return 1;
+        }
         List<SalaryItemDTO> salaryItemDTOSAfter = new ArrayList<>();
         for (SalaryItemVO salaryItemVO : salaryItemVOS) {
             List<SalaryItemDTO> salaryItemDTOS = salaryItemVO.getSalaryItemDTOS();
@@ -275,10 +279,10 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         List<SalaryItemDTO> salaryItemDTOSBefore = salaryItemMapper.selectSalaryItemEditList(new SalaryItem());
         List<SalaryItemDTO> editSalaryItemDTOS = salaryItemDTOSAfter.stream().filter(s -> salaryItemDTOSBefore.stream().map(SalaryItemDTO::getSalaryItemId)
                 .collect(Collectors.toList()).contains(s.getSalaryItemId())).collect(Collectors.toList());
-        List<SalaryItemDTO> addSalaryItemDTOS = salaryItemDTOSAfter.stream().filter(s -> !salaryItemDTOSBefore.stream().map(SalaryItemDTO::getSalaryItemId)
-                .collect(Collectors.toList()).contains(s.getSalaryItemId())).collect(Collectors.toList());
-        List<SalaryItemDTO> delSalaryItemDTOS = salaryItemDTOSBefore.stream().filter(s -> !salaryItemDTOSAfter.stream().map(SalaryItemDTO::getSalaryItemId)
-                .collect(Collectors.toList()).contains(s.getSalaryItemId())).collect(Collectors.toList());
+//        List<SalaryItemDTO> addSalaryItemDTOS = salaryItemDTOSAfter.stream().filter(s -> !salaryItemDTOSBefore.stream().map(SalaryItemDTO::getSalaryItemId)
+//                .collect(Collectors.toList()).contains(s.getSalaryItemId())).collect(Collectors.toList());
+//        List<SalaryItemDTO> delSalaryItemDTOS = salaryItemDTOSBefore.stream().filter(s -> !salaryItemDTOSAfter.stream().map(SalaryItemDTO::getSalaryItemId)
+//                .collect(Collectors.toList()).contains(s.getSalaryItemId())).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(editSalaryItemDTOS)) {
             for (SalaryItemDTO salaryItemDTO : editSalaryItemDTOS) {
                 for (SalaryItemDTO itemDTO : salaryItemDTOSBefore) {
@@ -289,13 +293,6 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
                 }
             }
             this.updateSalaryItems(editSalaryItemDTOS);
-        }
-        if (StringUtils.isNotEmpty(addSalaryItemDTOS)) {
-            this.insertSalaryItems(addSalaryItemDTOS);
-        }
-        if (StringUtils.isNotEmpty(delSalaryItemDTOS)) {
-            List<Long> salaryItemIds = delSalaryItemDTOS.stream().map(SalaryItemDTO::getSalaryItemId).collect(Collectors.toList());
-            this.logicDeleteSalaryItemBySalaryItemIds(salaryItemIds);
         }
         return 1;
     }

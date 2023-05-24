@@ -168,6 +168,8 @@
         si.status, si.create_time, si.update_by, si.update_time
         FROM salary_item si
         WHERE si.delete_flag=0
+        <!-- 数据范围过滤 -->
+        ${salaryItem.params.dataScope}
     </select>
     <!--根据id集合获取数据-->
     <select id="getSalaryItemByIds" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
