@@ -146,7 +146,8 @@
         <if test="employeeBudgetDTO.budgetYear != null">
             and   eb.budget_year =#{employeeBudgetDTO.budgetYear}
         </if>
-
+        <!-- 数据范围过滤 -->
+        ${employeeBudgetDTO.params.dataScope}
     </select>
     <!--新增人力预算明细表-->
     <insert id="insertEmployeeBudgetDetails" useGeneratedKeys="true" keyProperty="employeeBudgetDetailsId">

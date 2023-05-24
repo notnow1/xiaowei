@@ -11,6 +11,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 /**
  * 人力预算明细表
@@ -19,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 @Data
 @Accessors(chain = true)
-public class EmployeeBudgetDetailsDTO {
+public class EmployeeBudgetDetailsDTO extends BaseDTO {
 
     //查询检验
     public interface QueryEmployeeBudgetDetailsDTO extends Default{
@@ -133,28 +134,7 @@ public class EmployeeBudgetDetailsDTO {
     @NotEmpty(message = "人力预算明细表集合不能为空",groups = {EmployeeBudgetDetailsDTO.AddEmployeeBudgetDetailsDTO.class, EmployeeBudgetDetailsDTO.UpdateEmployeeBudgetDetailsDTO.class})
     @Valid
     private List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private  Integer deleteFlag;
-    /**
-     * 创建人
-     */
-    private  Long createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
-    private  Date  createTime;
-    /**
-     * 更新人
-     */
-    private  Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
-    private  Date  updateTime;
+
 
 }
 
