@@ -417,7 +417,11 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
                     salaryItemDTO.setScope(null);
                 }
             }else {
-                salaryItemDTO.setScope(1);
+                if (salaryItemDTO.getSecondLevelItem() == 4 ){
+                    salaryItemDTO.setScope(1);
+                }else {
+                    salaryItemDTO.setScope(null);
+                }
             }
         }else {
             if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
