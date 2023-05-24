@@ -9,6 +9,7 @@ import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserStatusDTO;
+import net.qixiaowei.system.manage.api.vo.user.UserPageCountVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +46,8 @@ public class UserController extends BaseController {
         startPage();
         List<UserDTO> list = userService.selectUserList(userDTO);
         userService.handleResult(list);
-        return getDataTable(list);
+        UserPageCountVO userPageCount = userService.getUserPageCount();
+        return getDataTable(list, userPageCount);
     }
 
     /**

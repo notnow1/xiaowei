@@ -37,6 +37,7 @@ import net.qixiaowei.system.manage.api.dto.user.UserUpdatePasswordDTO;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
+import net.qixiaowei.system.manage.api.vo.user.UserPageCountVO;
 import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
 import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.logic.user.UserLogic;
@@ -384,7 +385,6 @@ public class UserServiceImpl implements IUserService {
     @Override
     @DataScope(userAlias = "u")
     public List<UserDTO> selectUserList(UserDTO userDTO) {
-        Map<String,Integer> dataStatu = new HashMap<>();
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
         String employeeName = userDTO.getEmployeeName();
@@ -393,19 +393,6 @@ public class UserServiceImpl implements IUserService {
             params.put("employeeName", employeeName);
         }
         user.setParams(params);
-        //获取用户总人数和未激活（1为总人数 2为未激活）
-        List<Integer> statuList = userMapper.getStatuList();
-        //todo 想用mao返回
-        if (StringUtils.isNotEmpty(statuList)){
-            for (int i = 0; i < statuList.size(); i++) {
-                if (i == 0){
-                    dataStatu.put("总人数",statuList.get(i));
-                }else if (i == 1){
-                    dataStatu.put("未激活",statuList.get(i));
-                }
-            }
-
-        }
         return userMapper.selectUserList(user);
     }
 
@@ -917,6 +904,28 @@ public class UserServiceImpl implements IUserService {
      **/
     private String convertToFullFilePath(String oldFilePath) {
         return fileConfig.getFullDomain(oldFilePath);
+    }
+
+    /**
+     * @description: 获取用户统计数据
+     * @Author: hzk
+     * @date: 2023/5/24 15:57
+     * @param: []
+     * @return: net.qixiaowei.system.manage.api.vo.user.UserPageCountVO
+     **/
+    @Override
+    public UserPageCountVO getUserPageCount() {
+        List<Integer> userStatusList = userMapper.getUserStatusList();
+        Integer total = 0;
+        Integer unactivated = 0;
+        if (StringUtils.isNotEmpty(userStatusList) && userStatusList.size() == 2) {
+            total = userStatusList.get(0);
+            unactivated = userStatusList.get(1);
+        }
+        UserPageCountVO userPageCountVO = new UserPageCountVO();
+        userPageCountVO.setTotal(total);
+        userPageCountVO.setUnactivated(unactivated);
+        return userPageCountVO;
     }
 }
 
