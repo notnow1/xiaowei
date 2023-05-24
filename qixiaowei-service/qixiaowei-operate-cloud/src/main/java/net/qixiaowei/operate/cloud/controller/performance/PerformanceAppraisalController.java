@@ -22,7 +22,6 @@ import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.redis.service.RedisService;
@@ -71,7 +70,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 分页查询绩效考核表列表
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:pageList")
-    @DataScope(businessAlias = "pa")
+
     @GetMapping("/pageList")
     public TableDataInfo pageList(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();
@@ -125,7 +124,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-组织-制定
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgDevelop:pageList")
-    @DataScope(businessAlias = "pa")
+
     @GetMapping("/orgDevelop/pageList")
     public TableDataInfo listOrgDevelop(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         return performanceAppraisalService.selectOrgAppraisalDevelopList(performanceAppraisalObjectsDTO);
@@ -156,7 +155,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-组织-评议
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgReview:pageList")
-    @DataScope(businessAlias = "pa")
+
     @GetMapping("/orgReview/pageList")
     public TableDataInfo listOrgReview(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         return performanceAppraisalService.selectOrgAppraisalReviewList(performanceAppraisalObjectsDTO);
@@ -187,7 +186,6 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-组织-排名
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgRanking:pageList")
-    @DataScope(businessAlias = "pa")
     @GetMapping("/orgRanking/pageList")
     public TableDataInfo listOrgRanking(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();
@@ -220,7 +218,6 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-组织-归档
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgArchive:pageList")
-    @DataScope(businessAlias = "pa")
     @GetMapping("/orgArchive/pageList")
     public TableDataInfo listOrgArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();
@@ -630,7 +627,6 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-个人-制定
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:perDevelop:pageList")
-    @DataScope(businessAlias = "pa")
     @GetMapping("/perDevelop/pageList")
     public TableDataInfo listPerDevelop(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         return performanceAppraisalService.selectPerAppraisalDevelopList(performanceAppraisalObjectsDTO);
@@ -660,7 +656,6 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-个人-评议
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:perReview:pageList")
-    @DataScope(businessAlias = "pa")
     @GetMapping("/perReview/pageList")
     public TableDataInfo listPerReview(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         return performanceAppraisalService.selectPerAppraisalReviewList(performanceAppraisalObjectsDTO);
@@ -691,7 +686,6 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-组织-排名
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:perRanking:pageList")
-    @DataScope(businessAlias = "pa")
     @GetMapping("/perRanking/pageList")
     public TableDataInfo listPerRanking(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();
@@ -724,7 +718,6 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表-个人-归档
      */
     @RequiresPermissions("operate:cloud:performanceAppraisal:perArchive:pageList")
-    @DataScope(businessAlias = "pa")
     @GetMapping("/perArchive/pageList")
     public TableDataInfo listPerArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();

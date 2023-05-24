@@ -20,6 +20,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.utils.uuid.IdUtils;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.security.utils.UserUtils;
@@ -413,6 +414,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalDTO 绩效考核表
      * @return 绩效考核表
      */
+    @DataScope(businessAlias = "pa")
     @Override
     public List<PerformanceAppraisalDTO> selectPerformanceAppraisalList(PerformanceAppraisalDTO performanceAppraisalDTO) {
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
@@ -592,6 +594,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalDTO 绩效考核表
      * @return 绩效考核表
      */
+    @DataScope(businessAlias = "pa")
     @Override
     public List<PerformanceAppraisalDTO> selectPerAppraisalArchiveList(PerformanceAppraisalDTO performanceAppraisalDTO) {
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
@@ -618,6 +621,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalDTO 查询条件
      * @return 绩效考核表
      */
+    @DataScope(businessAlias = "pa")
     @Override
     public List<PerformanceAppraisalDTO> selectOrgAppraisalArchiveList(PerformanceAppraisalDTO performanceAppraisalDTO) {
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
@@ -2783,6 +2787,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
      * @return List
      */
+    @DataScope(businessAlias = "pa")
     @Override
     public TableDataInfo selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         Integer pageNum = performanceAppraisalObjectsDTO.getPageNum();
@@ -2847,6 +2852,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
      * @return List
      */
+    @DataScope(businessAlias = "pa")
     @Override
     public TableDataInfo selectPerAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         Integer pageNum = performanceAppraisalObjectsDTO.getPageNum();
@@ -3158,6 +3164,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
      * @return List
      */
+    @DataScope(businessAlias = "pa")
     @Override
     public TableDataInfo selectOrgAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         Integer pageNum = performanceAppraisalObjectsDTO.getPageNum();
@@ -3227,6 +3234,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
      * @return List
      */
+    @DataScope(businessAlias = "pa")
     @Override
     public TableDataInfo selectPerAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         Integer pageNum = performanceAppraisalObjectsDTO.getPageNum();
@@ -3789,7 +3797,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *
      * @param performanceAppraisalDTO 考核对象
      * @return List
-     */
+     */@DataScope(businessAlias = "pa")
     @Override
     public List<PerformanceAppraisalDTO> selectOrgAppraisalRankingList(PerformanceAppraisalDTO
                                                                                performanceAppraisalDTO) {
@@ -3817,6 +3825,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalDTO 考核对象
      * @return
      */
+    @DataScope(businessAlias = "pa")
     @Override
     public List<PerformanceAppraisalDTO> selectPerAppraisalRankingList(PerformanceAppraisalDTO
                                                                                performanceAppraisalDTO) {

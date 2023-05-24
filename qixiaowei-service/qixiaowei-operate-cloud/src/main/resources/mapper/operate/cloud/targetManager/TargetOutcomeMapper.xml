@@ -54,8 +54,6 @@
             and tao.create_time &gt; #{targetOutcome.params.createTimeStart}
             and tao.create_time &lt; #{targetOutcome.params.createTimeEnd}
         </if>
-        <!-- 数据范围过滤 -->
-        ${targetOutcome.params.dataScope}
         ORDER BY tao.create_time DESC
     </select>
     <!--通过targetYear查找Target Outcome DTO-->

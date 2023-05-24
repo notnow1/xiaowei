@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
@@ -226,6 +227,7 @@ public class StrategyMetricsServiceImpl implements IStrategyMetricsService {
      * @param strategyMetricsDTO 战略衡量指标表
      * @return 战略衡量指标表
      */
+    @DataScope(businessAlias = "sm")
     @Override
     public List<StrategyMetricsDTO> selectStrategyMetricsList(StrategyMetricsDTO strategyMetricsDTO) {
         StrategyMetrics strategyMetrics = new StrategyMetrics();

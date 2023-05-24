@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
@@ -259,6 +260,7 @@ public class StrategyMeasureServiceImpl implements IStrategyMeasureService {
      * @param strategyMeasureDTO 战略举措清单表
      * @return 战略举措清单表
      */
+    @DataScope(businessAlias = "sm")
     @Override
     public List<StrategyMeasureDTO> selectStrategyMeasureList(StrategyMeasureDTO strategyMeasureDTO) {
         Map<String, Object> params = strategyMeasureDTO.getParams();

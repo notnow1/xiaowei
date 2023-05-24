@@ -62,7 +62,6 @@ public class GapAnalysisController extends BaseController {
      * 分页查询差距分析表列表
      */
     @RequiresPermissions("strategy:cloud:gapAnalysis:pageList")
-    @DataScope(businessAlias = "ga")
     @GetMapping("/pageList")
     public TableDataInfo pageList(GapAnalysisDTO gapAnalysisDTO) {
         startPage();

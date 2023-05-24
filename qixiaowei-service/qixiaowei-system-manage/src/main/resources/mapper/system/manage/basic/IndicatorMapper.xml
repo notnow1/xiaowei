@@ -402,7 +402,7 @@
             )
         </if>
         <!-- 数据范围过滤 -->
-        ${indicator.params.dataScope}
+--         ${indicator.params.dataScope}
         ORDER BY t1.create_time DESC
     </select>
     <!--    级联查询父菜单-->

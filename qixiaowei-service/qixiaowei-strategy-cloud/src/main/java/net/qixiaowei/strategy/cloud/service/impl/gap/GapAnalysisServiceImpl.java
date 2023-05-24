@@ -11,6 +11,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
@@ -239,6 +240,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
      * @param gapAnalysisDTO 差距分析表
      * @return 差距分析表
      */
+    @DataScope(businessAlias = "ga")
     @Override
     public List<GapAnalysisDTO> selectGapAnalysisList(GapAnalysisDTO gapAnalysisDTO) {
         GapAnalysis gapAnalysis = new GapAnalysis();

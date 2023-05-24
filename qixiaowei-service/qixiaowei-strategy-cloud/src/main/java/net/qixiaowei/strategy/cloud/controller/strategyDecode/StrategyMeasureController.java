@@ -45,7 +45,6 @@ public class StrategyMeasureController extends BaseController {
      */
     @RequiresPermissions("strategy:cloud:strategyMeasure:pageList")
     @GetMapping("/pageList")
-    @DataScope(businessAlias = "sm")
     public TableDataInfo pageList(StrategyMeasureDTO strategyMeasureDTO) {
         startPage();
         List<StrategyMeasureDTO> list = strategyMeasureService.selectStrategyMeasureList(strategyMeasureDTO);

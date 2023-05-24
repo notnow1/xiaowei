@@ -174,7 +174,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
      * @param indicatorDTO 指标表
      * @return 指标表
      */
-    @DataScope(businessAlias = "t1")
     @Override
     public List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO) {
         Indicator indicator = new Indicator();

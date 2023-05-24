@@ -45,7 +45,6 @@ public class AnnualKeyWorkController extends BaseController {
      */
     @RequiresPermissions("strategy:cloud:annualKeyWork:pageList")
     @GetMapping("/pageList")
-    @DataScope(businessAlias = "akw")
     public TableDataInfo pageList(AnnualKeyWorkDTO annualKeyWorkDTO) {
         startPage();
         List<AnnualKeyWorkDTO> list = annualKeyWorkService.selectAnnualKeyWorkList(annualKeyWorkDTO);

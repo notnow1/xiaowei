@@ -290,7 +290,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      * @param targetOutcomeDTO 目标结果表
      * @return 目标结果表
      */
-    @DataScope(businessAlias = "tao")
     @Override
     public List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO) {
         String createByName = targetOutcomeDTO.getCreateByName();

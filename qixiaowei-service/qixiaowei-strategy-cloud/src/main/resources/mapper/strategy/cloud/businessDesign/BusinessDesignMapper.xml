@@ -429,6 +429,8 @@
         <if test="businessDesign.params.createTimeEnd != null and businessDesign.params.createTimeEnd != ''"><!-- 结束时间检索 -->
             AND date_format(bd.create_time,'%Y/%m/%d') &lt;= #{businessDesign.params.createTimeEnd}
         </if>
+        <!-- 数据范围过滤 -->
+        ${targetOutcome.params.dataScope}
         GROUP BY bd.business_design_id
         ORDER BY bd.create_time DESC
     </select>

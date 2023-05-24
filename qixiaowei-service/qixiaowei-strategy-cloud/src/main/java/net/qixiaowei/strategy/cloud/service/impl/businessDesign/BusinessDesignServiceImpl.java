@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
@@ -201,6 +202,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
      * @param businessDesignDTO 业务设计表
      * @return 业务设计表
      */
+    @DataScope(businessAlias = "bd")
     @Override
     public List<BusinessDesignDTO> selectBusinessDesignList(BusinessDesignDTO businessDesignDTO) {
         BusinessDesign businessDesign = new BusinessDesign();
