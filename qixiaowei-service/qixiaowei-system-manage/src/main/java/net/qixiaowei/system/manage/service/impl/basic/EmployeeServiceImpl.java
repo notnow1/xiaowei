@@ -1094,7 +1094,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         validEmployeeError.append("邮箱已存在" + Constants.China_Colon);
                     }
                 } else {
-                    List<EmployeeDTO> collect = employeeDTOList.stream().filter(f->StringUtils.isNotNull(f.getEmployeeEmail())).filter(f -> f.getEmployeeEmail().equals(employeeEmail)).collect(Collectors.toList());
+                    List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> StringUtils.isNotBlank(f.getEmployeeEmail())).filter(f -> f.getEmployeeEmail().equals(employeeEmail)).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(collect)) {
                         if (StringUtils.isNotBlank(collect.get(0).getEmployeeEmail())) {
                             if (!collect.get(0).getEmployeeEmail().equals(employeeEmail)) {
@@ -1145,6 +1145,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     }
                 }
                 if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "离职")) {
+                    if (StringUtils.isBlank(employmentDate)) {
+                        validEmployeeError.append("入职日期为必填项" + Constants.China_Colon);
+                    }
                     if (StringUtils.isBlank(departureDate)) {
                         validEmployeeError.append("离职日期为必填项" + Constants.China_Colon);
                     }
@@ -1164,7 +1167,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         validEmployeeError.append("身份证号已存在");
                     }
                 } else {
-                    List<EmployeeDTO> collect = employeeDTOList.stream().filter(f->StringUtils.isNotNull(f.getIdentityCard())).filter(f -> f.getIdentityCard().equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
+                    List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> StringUtils.isNotBlank(f.getIdentityCard())).filter(f -> f.getIdentityCard().equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(collect)) {
                         if (StringUtils.isNotBlank(collect.get(0).getIdentityCard())) {
                             if (!collect.get(0).getIdentityCard().equals(employeeExcel.getIdentityCard())) {
@@ -1189,6 +1192,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     }
                 }
                 if (StringUtils.equals(employeeExcel.getEmploymentStatus(), "离职") && StringUtils.isNotBlank(departureDate)) {
+                    try {
+                        Date parse = DateUtils.parseAnalysisExcelDate(employmentDate);
+                    } catch (Exception e) {
+                        validEmployeeError.append("入职日期格式不正确" + Constants.China_Colon);
+                    }
                     try {
                         Date parse = DateUtils.parseAnalysisExcelDate(departureDate);
                     } catch (Exception e) {
@@ -1221,7 +1229,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     }
                 } else {
                     if (StringUtils.isNotEmpty(employeeMobiles)) {
-                        List<EmployeeDTO> collect = employeeDTOList.stream().filter(f->StringUtils.isNotNull(f.getEmployeeCode())).filter(f -> f.getEmployeeCode().equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
+                        List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> StringUtils.isNotBlank(f.getEmployeeCode())).filter(f -> f.getEmployeeCode().equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
                         if (StringUtils.isNotEmpty(collect)) {
                             if (StringUtils.isNotBlank(collect.get(0).getEmployeeMobile())) {
                                 if (!collect.get(0).getEmployeeMobile().equals(employeeExcel.getEmployeeMobile())) {
