@@ -1015,7 +1015,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<DepartmentDTO> getParentAll() {
-        return departmentMapper.getParentAll();
+        return departmentMapper.getStatuParentAll();
     }
 
     /**
@@ -1026,7 +1026,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<DepartmentDTO> selectParentDepartment(Long departmentId) {
-        return departmentMapper.selectParentDepartment(departmentId);
+        return departmentMapper.selectParentDepartment(departmentId,1);
     }
 
     /**

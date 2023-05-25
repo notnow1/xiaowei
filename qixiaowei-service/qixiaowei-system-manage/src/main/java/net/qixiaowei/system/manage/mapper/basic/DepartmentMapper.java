@@ -194,17 +194,23 @@ public interface DepartmentMapper{
 
 
     /**
-     * 远程查询所有一级部门
+     * 远程查询生效所有一级部门
      * @return
      */
-    List<DepartmentDTO> getParentAll();
+    List<DepartmentDTO> getStatuParentAll();
 
+
+    /**
+     * 查询所有一级部门
+     * @return
+     */
+    List<DepartmentDTO> getAllParentAll();
     /**
      * 远程查询一级部门及子级部门
      * @param departmentId
      * @return
      */
-    List<DepartmentDTO> selectParentDepartment(@Param("departmentId")Long departmentId);
+    List<DepartmentDTO> selectParentDepartment(@Param("departmentId")Long departmentId,@Param("status")Integer status);
 
     /**
      * 远程查询所有部门

@@ -4,7 +4,6 @@ import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.*;
 import net.qixiaowei.integration.common.domain.R;
-import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.enums.user.UserStatus;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -29,7 +28,6 @@ import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppra
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
-import net.qixiaowei.sales.cloud.api.dto.sync.SyncUserDTO;
 import net.qixiaowei.sales.cloud.api.remote.sync.RemoteSyncAdminService;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisPerformanceDTO;
@@ -155,11 +153,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //根据一级部门分组不同的树
         Map<Long, List<DepartmentDTO>> departmentDTOListMap = new HashMap<>();
         //查询所有一级部门
-        List<DepartmentDTO> parentDepartmentAllData = departmentMapper.getParentAll();
+        List<DepartmentDTO> parentDepartmentAllData = departmentMapper.getStatuParentAll();
         if (StringUtils.isNotEmpty(parentDepartmentAllData)) {
             for (DepartmentDTO departmentDTO : parentDepartmentAllData) {
                 //查询一级部门及子级部门
-                List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(departmentDTO.getDepartmentId());
+                List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(departmentDTO.getDepartmentId(),1);
                 if (StringUtils.isNotEmpty(departmentDTOList)) {
                     departmentDTOListMap.put(departmentDTO.getDepartmentId(), departmentDTOList);
                 }
@@ -215,7 +213,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                             }
                             if (StringUtils.isNotEmpty(departmentIdList)) {
                                 for (Long departmentId : departmentIdList) {
-                                    departmentDTOList.addAll(departmentMapper.selectParentDepartment(departmentId));
+                                    departmentDTOList.addAll(departmentMapper.selectParentDepartment(departmentId,null));
                                 }
                             }
                             if (StringUtils.isNotEmpty(departmentDTOList)) {
@@ -239,7 +237,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                             }
                             if (StringUtils.isNotEmpty(departmentIdList)) {
                                 for (Long departmentId : departmentIdList) {
-                                    departmentDTOList.addAll(departmentMapper.selectParentDepartment(departmentId));
+                                    departmentDTOList.addAll(departmentMapper.selectParentDepartment(departmentId,null));
                                 }
                             }
                             if (StringUtils.isNotEmpty(departmentDTOList)) {
@@ -256,13 +254,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
         employee.setParams(params);
         List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeeList(employee);
         //根据一级部门分组不同的树
-        Map<Long, List<DepartmentDTO>> departmentDTOListMap = new HashMap<>();
+        Map<Long, List<DepartmentDTO>> departmentDTOListMap = new LinkedHashMap<>(16);
         //查询所有一级部门
-        List<DepartmentDTO> parentDepartmentAllData = departmentMapper.getParentAll();
+        List<DepartmentDTO> parentDepartmentAllData = departmentMapper.getAllParentAll();
+        //公司级部门
+        DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
+        parentDepartmentAllData.add(departmentDTO1);
         if (StringUtils.isNotEmpty(parentDepartmentAllData)) {
             for (DepartmentDTO departmentDTO : parentDepartmentAllData) {
                 //查询一级部门及子级部门
-                List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(departmentDTO.getDepartmentId());
+                List<DepartmentDTO> departmentDTOList = departmentMapper.selectParentDepartment(departmentDTO.getDepartmentId(),null);
                 if (StringUtils.isNotEmpty(departmentDTOList)) {
                     departmentDTOListMap.put(departmentDTO.getDepartmentId(), departmentDTOList);
                 }
@@ -279,6 +280,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                             if (departmentDTOList.stream().filter(f -> f.getDepartmentId() != null).map(DepartmentDTO::getDepartmentId).collect(Collectors.toList()).contains(dto.getEmployeeDepartmentId())) {
                                 dto.setTopLevelDepartmentName(departmentDTOList.get(0).getDepartmentName());
                                 dto.setTopLevelDepartmentId(departmentDTOList.get(0).getDepartmentId());
+                                break;
                             }
                         }
                     }
