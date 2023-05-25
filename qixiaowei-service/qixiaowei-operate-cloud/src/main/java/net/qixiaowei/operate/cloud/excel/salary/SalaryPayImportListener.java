@@ -76,7 +76,7 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
             throw new ServiceException("当前工资项未进行任何配置，请联系管理员");
         }
         if (headMap.size() > (salaryItemDTOS.size() + 3)) {
-            throw new ServiceException("当前系统配置的薪酬类别与导入的薪酬类别不匹配，请检查.");
+            throw new ServiceException("模板被修改，请重新下载模板进行导入");
 //            throw new ServiceException("当前工资条模板不正确 请重新下载模板导入");
         }
         Map<String, SalaryItemDTO> salaryItemOfThirdLevelItemMap = new HashMap<>();
