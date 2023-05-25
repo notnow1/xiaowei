@@ -1050,7 +1050,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSetting.setTargetYear(targetYear);
         List<TargetSettingDTO> targetSettingDTOBefore = targetSettingMapper.selectTargetSettingList(targetSetting);
         if (targetSettingDTOBefore.size() != targetSettingExcelList.size()) {
-            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            throw new ServiceException("模板被修改，请重新下载模板进行导入!");
         }
         for (TargetSettingExcel targetSettingExcel : targetSettingExcelList) {
             String indicatorCode = targetSettingExcel.getIndicatorCode();

@@ -404,7 +404,7 @@ public class PostController extends BaseController {
                 listMap = read.sheet("岗位信息").doReadSync();
                 if (StringUtils.isNotEmpty(listMap)) {
                     if (listMap.get(0).size() != 7) {
-                        throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+                        throw new ServiceException("模板被修改，请重新下载模板进行导入!");
                     }
                 }
                 ExcelUtils.mapToListModel(1, 0, listMap, new PostExcel(), list, true);
@@ -422,7 +422,7 @@ public class PostController extends BaseController {
                 throw new ServiceException("模板被修改，请重新下载模板进行导入!");
             }
         } catch (IOException e) {
-            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            throw new ServiceException("模板被修改，请重新下载模板进行导入!");
         }
 
         if (listMap.size() > 10000) {

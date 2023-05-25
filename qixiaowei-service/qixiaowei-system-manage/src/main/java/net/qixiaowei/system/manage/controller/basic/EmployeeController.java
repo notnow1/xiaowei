@@ -175,7 +175,7 @@ public class EmployeeController extends BaseController {
                 listMap = read.sheet("人员信息配置").doReadSync();
                 if (StringUtils.isNotEmpty(listMap)) {
                     if (listMap.get(0).size() != 24) {
-                        throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+                        throw new ServiceException("模板被修改，请重新下载模板进行导入!");
                     }
                 }
                 ExcelUtils.mapToListModel(1, 0, listMap, new EmployeeExcel(), list, true);

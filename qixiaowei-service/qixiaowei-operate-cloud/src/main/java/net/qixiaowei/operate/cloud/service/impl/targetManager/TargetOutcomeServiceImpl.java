@@ -620,7 +620,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         }
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsBefore = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
         if (targetOutcomeDetailsBefore.size() != dataList.size()) {
-            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            throw new ServiceException("模板被修改，请重新下载模板进行导入!");
         }
         List<IndicatorDTO> indicatorDTOS = getIndicatorDTOS(dataList, indicatorNames);
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsAfter = new ArrayList<>();
@@ -642,7 +642,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         Set<Long> indicatorBefore = targetOutcomeDetailsBefore.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toSet());
         Set<Long> indicatorAfter = targetOutcomeDetailsAfter.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toSet());
         if (!indicatorBefore.containsAll(indicatorAfter)) {
-            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            throw new ServiceException("模板被修改，请重新下载模板进行导入!");
         }
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsBefore) {
             for (TargetOutcomeDetailsDTO outcomeDetailsDTO : targetOutcomeDetailsAfter) {
