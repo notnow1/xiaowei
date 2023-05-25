@@ -56,14 +56,11 @@
         left join employee ee
         on ee.employee_id = dm.department_leader_id
         and ee.delete_flag =0
-        left join post p2
-        on p2.post_id = ee.employee_post_id
-        and p2.delete_flag =0
         left join employee ee2
         on ee2.employee_id = dm.examination_leader_id
         and ee2.delete_flag =0
         left join post p
-        on p.post_id = dm.department_leader_post_id
+        on p.post_id = ee.employee_post_id
         and p.delete_flag =0
         left join department dm2
         on dm.parent_department_id = dm2.department_id
@@ -220,7 +217,7 @@
         </if>
         <!-- 组织负责人岗位过滤  -->
         <if test="department.params.departmentLeaderPostIdEqual != null and department.params.departmentLeaderPostIdEqual.size() > 0">
-            AND p2.post_id IN
+            AND p.post_id IN
             <foreach item="item"
                      collection="department.params.departmentLeaderPostIdEqual"
                      index="index" open="(" separator="," close=")">
@@ -228,20 +225,20 @@
             </foreach>
         </if>
         <if test="department.params.departmentLeaderPostIdNotEqual != null and department.params.departmentLeaderPostIdNotEqual.size() > 0">
-            AND (p2.post_id NOT IN
+            AND (p.post_id NOT IN
             <foreach item="item"
                      collection="department.params.departmentLeaderPostIdNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR p2.post_id IS NULL
+            OR p.post_id IS NULL
             )
         </if>
         <if test="department.params.departmentLeaderPostIdNull != null">
-            AND p2.post_id IS NULL
+            AND p.post_id IS NULL
         </if>
         <if test="department.params.departmentLeaderPostIdNotNull != null">
-            AND p2.post_id IS NOT NULL
+            AND p.post_id IS NOT NULL
         </if>
         <!-- 考核负责人过滤  -->
         <if test="department.params.examinationLeaderNameEqual != null and department.params.examinationLeaderNameEqual.size() > 0">
