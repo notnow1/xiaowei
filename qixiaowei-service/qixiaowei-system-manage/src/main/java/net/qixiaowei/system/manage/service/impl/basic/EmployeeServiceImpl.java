@@ -1094,7 +1094,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         validEmployeeError.append("邮箱已存在" + Constants.China_Colon);
                     }
                 } else {
-                    List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getEmployeeEmail().equals(employeeEmail)).collect(Collectors.toList());
+                    List<EmployeeDTO> collect = employeeDTOList.stream().filter(f->StringUtils.isNotNull(f.getEmployeeEmail())).filter(f -> f.getEmployeeEmail().equals(employeeEmail)).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(collect)) {
                         if (StringUtils.isNotBlank(collect.get(0).getEmployeeEmail())) {
                             if (!collect.get(0).getEmployeeEmail().equals(employeeEmail)) {
@@ -1164,7 +1164,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         validEmployeeError.append("身份证号已存在");
                     }
                 } else {
-                    List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getIdentityCard().equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
+                    List<EmployeeDTO> collect = employeeDTOList.stream().filter(f->StringUtils.isNotNull(f.getIdentityCard())).filter(f -> f.getIdentityCard().equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(collect)) {
                         if (StringUtils.isNotBlank(collect.get(0).getIdentityCard())) {
                             if (!collect.get(0).getIdentityCard().equals(employeeExcel.getIdentityCard())) {
@@ -1221,7 +1221,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     }
                 } else {
                     if (StringUtils.isNotEmpty(employeeMobiles)) {
-                        List<EmployeeDTO> collect = employeeDTOList.stream().filter(f -> f.getEmployeeCode().equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
+                        List<EmployeeDTO> collect = employeeDTOList.stream().filter(f->StringUtils.isNotNull(f.getEmployeeCode())).filter(f -> f.getEmployeeCode().equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
                         if (StringUtils.isNotEmpty(collect)) {
                             if (StringUtils.isNotBlank(collect.get(0).getEmployeeMobile())) {
                                 if (!collect.get(0).getEmployeeMobile().equals(employeeExcel.getEmployeeMobile())) {

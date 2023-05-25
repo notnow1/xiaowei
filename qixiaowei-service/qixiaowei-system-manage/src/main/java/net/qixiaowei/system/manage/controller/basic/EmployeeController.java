@@ -463,7 +463,7 @@ public class EmployeeController extends BaseController {
                             writeCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                             if (StringUtils.isNotBlank(errorExcelId)) {
                                 if (context.getRowIndex() == 1) {
-                                    if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 5 || columnIndex == 12 || columnIndex == 14 || columnIndex == 16 || columnIndex == 18 || columnIndex == 24) {
+                                    if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 5 || columnIndex == 12 || columnIndex == 14  || columnIndex == 18 || columnIndex == 24) {
                                         //设置 自动换行
                                         writeCellStyle.setWrapped(true);
                                         headWriteFont.setColor(IndexedColors.RED.getIndex());
@@ -496,7 +496,7 @@ public class EmployeeController extends BaseController {
                                     }
                                 }
                             } else {
-                                if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 4 || columnIndex == 11 ||columnIndex == 13 ||  columnIndex == 15 || columnIndex == 17 || columnIndex == 23) {
+                                if (columnIndex == 0 || columnIndex == 1 || columnIndex == 2 || columnIndex == 4 || columnIndex == 11 ||columnIndex == 13 ||   columnIndex == 17 || columnIndex == 23) {
                                     //设置 自动换行
                                     writeCellStyle.setWrapped(true);
                                     headWriteFont.setColor(IndexedColors.RED.getIndex());
