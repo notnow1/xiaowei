@@ -1876,7 +1876,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 throw new ServiceException((type == 1 ? "组织" : "个人") + "绩效归档模板不正确 请检查");
             }
         } else {
-            throw new ServiceException("模板错误");
+            throw new ServiceException("模板被修改，请重新下载模板进行导入");
         }
         return listMap;
     }

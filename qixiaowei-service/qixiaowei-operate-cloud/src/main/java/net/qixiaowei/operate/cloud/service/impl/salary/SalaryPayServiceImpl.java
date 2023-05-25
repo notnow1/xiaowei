@@ -708,7 +708,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     @Transactional
     public Map<Object, Object> importSalaryPay(SalaryPayImportTempDataVO salaryPayImportTempDataVO, List<Map<Integer, String>> list, String sheetName) {
         if (StringUtils.isEmpty(list)) {
-            throw new ServiceException("当前excel数据为空 请填充数据");
+            throw new ServiceException("模板数据不能为空，至少有1条数据!");
         }
         List<Map<Integer, String>> listMap = this.getMaps(sheetName, list);
         //以下三个值取初始化值即可

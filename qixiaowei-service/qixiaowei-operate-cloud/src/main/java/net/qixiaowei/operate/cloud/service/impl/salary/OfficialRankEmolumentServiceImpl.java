@@ -457,10 +457,14 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             throw new ServiceException("职级等级ID为空");
         }
         OfficialRankSystemDTO officialRankSystemById = getOfficialRankSystemById(officialRankSystemId);
+        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
         try {
             List<Object> errorExcelList = new ArrayList<>();
             List<Map<Integer, String>> successExcels = new ArrayList<>();
             List<Map<Integer, String>> listMap = getMaps(file);
+            if (officialRankEmolumentDTOS.size() != listMap.size()) {
+                throw new ServiceException("模板被修改 请重新下载模板进行导入");
+            }
             for (Map<Integer, String> map : listMap) {
                 StringBuilder errorNote = new StringBuilder();
                 // 判断小数点后2位的数字的正则表达式
@@ -512,7 +516,6 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                     officialRankEmolumentDTOList.add(emolumentDTO);
                     successExcelList.add(map);
                 }
-                List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
                 if (StringUtils.isEmpty(officialRankEmolumentDTOS)) {// 新增
                     this.insertOfficialRankEmoluments(officialRankEmolumentDTOList);
                 } else {
@@ -562,7 +565,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         if (StringUtils.equals(sheetName, "职级确定薪酬导入错误报告")) {
             Map<Integer, String> head = listMap.get(1);
             if (head.size() != 5) {
-                throw new ServiceException("职级确定薪酬模板不正确 请检查");
+                throw new ServiceException("模板被修改 请重新下载模板进行导入");
             }
             List<Map<Integer, String>> objects = new ArrayList<>();
             for (Map<Integer, String> map1 : listMap) {
@@ -576,10 +579,10 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         } else if (StringUtils.equals(sheetName, "职级确定薪酬导入")) {
             Map<Integer, String> head = listMap.get(1);
             if (head.size() != 4) {
-                throw new ServiceException("职级确定薪酬模板不正确 请检查");
+                throw new ServiceException("模板被修改 请重新下载模板进行导入");
             }
         } else {
-            throw new ServiceException("模板错误");
+            throw new ServiceException("模板被修改 请重新下载模板进行导入");
         }
         listMap.remove(1);
         listMap.remove(0);

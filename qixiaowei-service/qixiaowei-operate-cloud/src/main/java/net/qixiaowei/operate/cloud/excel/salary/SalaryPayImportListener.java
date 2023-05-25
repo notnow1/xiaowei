@@ -98,7 +98,7 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
             }
         }
         if (StringUtils.isNotEmpty(errorThirdLevelItemOfImport)) {
-            throw new ServiceException("当前系统配置的薪酬类别与导入的薪酬类别不匹配，请确认是否是最新的导入模版，有问题的列为:" + CollUtil.join(errorThirdLevelItemOfImport, StrUtil.COMMA));
+            throw new ServiceException("模板被修改，请重新下载模板进行导入");
         }
         salaryPayImportTempDataVO = new SalaryPayImportTempDataVO();
         salaryPayImportTempDataVO.setSalaryItemOfThirdLevelItemMap(salaryItemOfThirdLevelItemMap);
