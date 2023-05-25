@@ -41,7 +41,7 @@
         dm2.department_name as parentDepartmentName,
         dm.level,
         dm.department_leader_id,
-        dm.department_leader_post_id,
+        ee.employee_post_id as department_leader_post_id,
         dm.examination_leader_id,
         dm.department_importance_factor,
         dm.department_description,
@@ -57,7 +57,7 @@
         on ee.employee_id = dm.department_leader_id
         and ee.delete_flag =0
         left join post p2
-        on p2.post_id = dm.department_leader_post_id
+        on p2.post_id = ee.employee_post_id
         and p2.delete_flag =0
         left join employee ee2
         on ee2.employee_id = dm.examination_leader_id
