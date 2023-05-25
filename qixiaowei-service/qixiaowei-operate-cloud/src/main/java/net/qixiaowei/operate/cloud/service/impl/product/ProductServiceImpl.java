@@ -1606,7 +1606,7 @@ public class ProductServiceImpl implements IProductService {
                 throw new ServiceException("模板格式不正确！");
             }
         } else {
-            throw new ServiceException("请填写excel数据！");
+            throw new ServiceException("模板数据不能为空，至少有1条数据");
         }
 
     }

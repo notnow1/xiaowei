@@ -191,7 +191,7 @@ public class PostController extends BaseController {
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentStringExcelListName(departmentDTO,false);
         if (StringUtils.isNull(parentDepartmentExcelNames)) {
             throw new ServiceException("请先创建部门数据！");
         }
@@ -419,14 +419,16 @@ public class PostController extends BaseController {
                 }
                 ExcelUtils.mapToListModel(1, 0, listMap, new PostExcel(), list, false);
             } else {
-                throw new ServiceException("模板sheet名称不正确！");
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
             }
         } catch (IOException e) {
-            throw new ServiceException("模板sheet名称不正确！");
+            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
         }
 
         if (listMap.size() > 10000) {
             throw new RuntimeException("数据超过1万条 请减少数据后，重新上传");
+        }else if (listMap.size() < 1){
+            throw new RuntimeException("模板数据不能为空，至少有1条数据");
         }
         return AjaxResult.successExcel(postService.importPost(list), null);
     }

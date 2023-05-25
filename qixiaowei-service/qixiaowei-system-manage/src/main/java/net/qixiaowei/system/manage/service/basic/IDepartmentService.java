@@ -43,15 +43,16 @@ public interface IDepartmentService {
      *
      * @return 部门表集合
      */
-    List<String> selectDepartmentExcelListName(DepartmentDTO departmentDTO);
+    List<String> selectDepartmentStringExcelListName(DepartmentDTO departmentDTO,boolean companyFlag);
 
     /**
      * 查询部门名称附加父级名称
      *
      * @param department
+     * @param companyFlag
      * @return部门表集合
      */
-    List<DepartmentDTO> selectDepartmentExcelListName(Department department);
+    List<DepartmentDTO> selectDepartmentExcelListName(Department department, boolean companyFlag);
 
     /**
      * 返回组织层级

@@ -188,7 +188,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @return
      */
     @Override
-    public List<String> selectDepartmentExcelListName(DepartmentDTO departmentDTO) {
+    public List<String> selectDepartmentStringExcelListName(DepartmentDTO departmentDTO,boolean companyFlag) {
         List<String> parentDepartmentExcelNames = new ArrayList<>();
         Department department = new Department();
         BeanUtils.copyProperties(departmentDTO, department);
@@ -196,7 +196,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
-        List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0L, true,departmentDTO1.getDepartmentId());
+        List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0L, companyFlag,departmentDTO1.getDepartmentId());
         List<DepartmentDTO> natureGroups = treeToList(tree);
         if (StringUtils.isNotEmpty(natureGroups)) {
             parentDepartmentExcelNames = natureGroups.stream().map(DepartmentDTO::getParentDepartmentExcelName).collect(Collectors.toList());
@@ -208,10 +208,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * 查询部门名称附加父级名称
      *
      * @param department
+     * @param companyFlag
      * @return
      */
     @Override
-    public List<DepartmentDTO> selectDepartmentExcelListName(Department department) {
+    public List<DepartmentDTO> selectDepartmentExcelListName(Department department, boolean companyFlag) {
         //查询公司部门
         DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
         //查询数据

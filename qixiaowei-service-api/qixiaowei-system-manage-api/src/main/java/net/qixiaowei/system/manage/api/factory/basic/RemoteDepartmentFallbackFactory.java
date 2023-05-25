@@ -70,7 +70,7 @@ public class RemoteDepartmentFallbackFactory implements FallbackFactory<RemoteDe
             }
 
             @Override
-            public R<List<DepartmentDTO>> selectDepartmentExcelAllListName(Department department, String inner) {
+            public R<List<DepartmentDTO>> selectDepartmentExcelAllListName(Department department,boolean companyFlag, String inner) {
                 return R.fail("组织远程Excel下拉框失败:" + throwable.getMessage());
             }
         };

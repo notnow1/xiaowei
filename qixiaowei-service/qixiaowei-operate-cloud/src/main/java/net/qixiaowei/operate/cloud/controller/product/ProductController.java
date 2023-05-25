@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -350,6 +351,15 @@ public class ProductController extends BaseController {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
+        }else {
+            String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
+            if (StringUtils.isBlank(sheetName)){
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            }else {
+                if (!sheetName.equals("产品配置")){
+                    throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+                }
+            }
         }
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");

@@ -1110,10 +1110,20 @@ public class TargetDecomposeController extends BaseController {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
+        }else {
+            String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
+            if (StringUtils.isBlank(sheetName)){
+                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            }else {
+                if (!sheetName.equals("滚动预测详情")){
+                    throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+                }
+            }
         }
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
+
 
         List<DecomposeDetailCyclesDTO> list = new ArrayList<>();
 
@@ -1366,7 +1376,7 @@ public class TargetDecomposeController extends BaseController {
     public void exportTargetDecomposeTemplate(@RequestBody TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
         Department department = new Department();
         department.setStatus(1);
-        R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(department, SecurityConstants.INNER);
+        R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(department,false, SecurityConstants.INNER);
         //部门名称集合
         List<DepartmentDTO>  parentDepartmentExcelNamesData = departmentExcelList.getData();
         List<String>  parentDepartmentExcelNames = new ArrayList<>();

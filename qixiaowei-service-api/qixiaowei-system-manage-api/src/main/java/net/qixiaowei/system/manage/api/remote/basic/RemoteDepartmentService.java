@@ -110,6 +110,6 @@ public interface RemoteDepartmentService {
      * @return
      */
     @PostMapping(API_PREFIX_DEPARTMEN + "/selectExcelList")
-    R<List<DepartmentDTO>> selectDepartmentExcelAllListName(@RequestBody Department department, @RequestHeader(SecurityConstants.FROM_SOURCE) String inner);
+    R<List<DepartmentDTO>> selectDepartmentExcelAllListName(@RequestBody Department department,boolean companyFlag, @RequestHeader(SecurityConstants.FROM_SOURCE) String inner);
 
 }

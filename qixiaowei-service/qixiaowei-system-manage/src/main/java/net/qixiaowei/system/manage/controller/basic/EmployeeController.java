@@ -212,7 +212,7 @@ public class EmployeeController extends BaseController {
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentStringExcelListName(departmentDTO,true);
         //岗位名称
         List<String> postNames = new ArrayList<>();
         PostDTO postDTO = new PostDTO();
@@ -352,7 +352,7 @@ public class EmployeeController extends BaseController {
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setStatus(1);
         //部门名称集合
-        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentExcelListName(departmentDTO);
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentStringExcelListName(departmentDTO,true);
         //岗位名称
         List<String> postNames = new ArrayList<>();
         PostDTO postDTO = new PostDTO();
