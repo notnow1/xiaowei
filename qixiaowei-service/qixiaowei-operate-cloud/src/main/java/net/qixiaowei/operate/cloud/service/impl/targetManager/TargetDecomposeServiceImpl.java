@@ -3166,7 +3166,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeDetailsDTO> packExcelData(TargetDecomposeDTO targetDecomposeDTO, Map<String, List<String>> mapAllData, List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS, List<List<String>> cyclesExcelData, List<ProductDTO> productDTOList, List<AreaDTO> areaDTOList) {
         Department departmentDTO = new Department();
         departmentDTO.setStatus(1);
-        R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(departmentDTO,false, SecurityConstants.INNER);
+        departmentDTO.setCompanyFlag(false);
+        R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(departmentDTO, SecurityConstants.INNER);
         //部门名称集合
         List<DepartmentDTO> parentDepartmentExcelNamesData = departmentExcelList.getData();
 

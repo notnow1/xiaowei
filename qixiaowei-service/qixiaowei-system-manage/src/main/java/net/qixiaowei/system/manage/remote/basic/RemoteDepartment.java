@@ -152,7 +152,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
     @Override
     @InnerAuth
     @PostMapping("/selectExcelList")
-    public R<List<DepartmentDTO>> selectDepartmentExcelAllListName(@RequestBody Department department,boolean companyFlag,String inner) {
-        return R.ok(departmentService.selectDepartmentExcelListName(department,companyFlag));
+    public R<List<DepartmentDTO>> selectDepartmentExcelAllListName(@RequestBody Department department,String inner) {
+        return R.ok(departmentService.selectDepartmentExcelListName(department));
     }
 }

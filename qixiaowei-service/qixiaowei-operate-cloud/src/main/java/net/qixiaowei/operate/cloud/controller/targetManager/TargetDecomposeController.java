@@ -1376,7 +1376,8 @@ public class TargetDecomposeController extends BaseController {
     public void exportTargetDecomposeTemplate(@RequestBody TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
         Department department = new Department();
         department.setStatus(1);
-        R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(department,false, SecurityConstants.INNER);
+        department.setCompanyFlag(false);
+        R<List<DepartmentDTO>> departmentExcelList = remoteDepartmentService.selectDepartmentExcelAllListName(department, SecurityConstants.INNER);
         //部门名称集合
         List<DepartmentDTO>  parentDepartmentExcelNamesData = departmentExcelList.getData();
         List<String>  parentDepartmentExcelNames = new ArrayList<>();

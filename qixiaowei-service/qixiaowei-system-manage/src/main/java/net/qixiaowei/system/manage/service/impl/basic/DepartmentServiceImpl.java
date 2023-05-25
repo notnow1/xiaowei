@@ -208,16 +208,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * 查询部门名称附加父级名称
      *
      * @param department
-     * @param companyFlag
      * @return
      */
     @Override
-    public List<DepartmentDTO> selectDepartmentExcelListName(Department department, boolean companyFlag) {
+    public List<DepartmentDTO> selectDepartmentExcelListName(Department department) {
         //查询公司部门
         DepartmentDTO departmentDTO1 = departmentMapper.queryCompanyTopDepartment();
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
-        List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0L, true,departmentDTO1.getDepartmentId());
+        List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0L,department.getCompanyFlag(),departmentDTO1.getDepartmentId());
         List<DepartmentDTO> natureGroups = treeToList(tree);
         return natureGroups;
     }
@@ -290,7 +289,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 if (catelog.getParentDepartmentId().equals(pid) ) {
                     catelog.setStatusFlag(catelog.getStatus() == 0);
                     catelog.setParentDepartmentExcelName(catelog.getDepartmentName());
-                    List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
+                    List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() .equals(pid)).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(departmentDTOList)) {
                         catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
                         catelog.setStatusFlag(catelog.getStatus() == 0);
@@ -302,9 +301,13 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 if (catelog.getParentDepartmentId() .equals(pid2) ) {
                     catelog.setStatusFlag(catelog.getStatus() == 0);
                     catelog.setParentDepartmentExcelName(catelog.getDepartmentName());
-                    List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
+                    List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() .equals(pid2) ).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(departmentDTOList)) {
-                        catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
+                        if (StringUtils.isNotBlank(departmentDTOList.get(0).getParentDepartmentExcelName())){
+                            catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
+                        }else {
+                            catelog.setParentDepartmentExcelName(catelog.getDepartmentName());
+                        }
                         catelog.setStatusFlag(catelog.getStatus() == 0);
                     }
                     catelog.setChildren(createTree(lists, null, companyFlag,catelog.getDepartmentId()));

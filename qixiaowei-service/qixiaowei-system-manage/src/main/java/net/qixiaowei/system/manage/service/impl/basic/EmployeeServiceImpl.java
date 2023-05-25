@@ -624,8 +624,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<PostDTO> postDTOS = postMapper.selectPostList(new Post());
         Department departmentExcel = new Department();
         departmentExcel.setStatus(1);
+        departmentExcel.setCompanyFlag(true);
         //查询部门名称附加父级名称
-        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentExcelListName(departmentExcel, true);
+        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentExcelListName(departmentExcel);
         Map<String, Long> parentDepartmentNameMap = new HashMap<>();
         if (StringUtils.isNotEmpty(departmentDTOList)) {
             for (DepartmentDTO department : departmentDTOList) {
@@ -1368,8 +1369,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //所有岗位
         Post post = new Post();
         List<PostDTO> postDTOS = postMapper.selectPostList(post);
+        Department department = new Department();
+        department.setCompanyFlag(true);
         //查询部门名称附加父级名称
-        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentExcelListName(new Department(), true);
+        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentExcelListName(department);
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeList(employee);

@@ -87,6 +87,10 @@ public class Department extends TenantEntity {
      * 部门负责人岗位名称
      */
     private String departmentLeaderPostName;
+    /**
+     * 是否包含一级部门
+     */
+    private Boolean companyFlag;
 
 }
 

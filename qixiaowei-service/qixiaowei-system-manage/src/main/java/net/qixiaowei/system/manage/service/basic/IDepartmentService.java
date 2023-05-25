@@ -49,10 +49,9 @@ public interface IDepartmentService {
      * 查询部门名称附加父级名称
      *
      * @param department
-     * @param companyFlag
      * @return部门表集合
      */
-    List<DepartmentDTO> selectDepartmentExcelListName(Department department, boolean companyFlag);
+    List<DepartmentDTO> selectDepartmentExcelListName(Department department);
 
     /**
      * 返回组织层级
