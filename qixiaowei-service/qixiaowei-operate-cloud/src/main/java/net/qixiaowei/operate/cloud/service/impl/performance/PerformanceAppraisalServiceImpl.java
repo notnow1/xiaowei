@@ -1754,7 +1754,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 List<String> performanceRankNames = performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList());
                 performanceRankNames.add("不考核");
                 if (StringUtils.isNull(map.get(2))) {
-                    errorNote.append("考核结果不可以为空；");
+                    throw new ServiceException("考核结果不可以为空；");
                 }
                 if (StringUtils.isNotNull(map.get(2)) && !performanceRankNames.contains(map.get(2))) {
                     errorNote.append("考核结果不存在；");
@@ -1819,9 +1819,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 successExcelList.add(map);
             }
             try {
-                performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
+                if (StringUtils.isNotEmpty(performanceAppraisalObjectsDTOS)) {
+                    performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
+                }
             } catch (Exception e) {
                 throw new ServiceException("更新绩效考核表Excel失败");
+
             }
             String errorExcelId;
             String simpleUUID = IdUtils.simpleUUID();
@@ -1971,7 +1974,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 List<String> performanceRankNames = performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList());
                 performanceRankNames.add("不考核");
                 if (StringUtils.isNotNull(map.get(6))) {
-                    errorNote.append("考核结果不可以为空");
+                    throw new ServiceException("考核结果不可以为空；");
                 }
                 if (StringUtils.isNotNull(map.get(6)) && !performanceRankNames.contains(map.get(6))) {
                     errorNote.append("考核结果不存在；");
@@ -3797,7 +3800,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *
      * @param performanceAppraisalDTO 考核对象
      * @return List
-     */@DataScope(businessAlias = "pa")
+     */
+    @DataScope(businessAlias = "pa")
     @Override
     public List<PerformanceAppraisalDTO> selectOrgAppraisalRankingList(PerformanceAppraisalDTO
                                                                                performanceAppraisalDTO) {
