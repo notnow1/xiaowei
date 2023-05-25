@@ -424,7 +424,7 @@
             AND date_format(ga.create_time,'%Y/%m/%d') &lt;= #{gapAnalysis.params.createTimeEnd}
         </if>
          <!-- 数据范围过滤 -->
-        ${targetOutcome.params.dataScope}
+        ${gapAnalysis.params.dataScope}
         ORDER BY ga.create_time DESC
     </select>
     <!--新增差距分析表-->
