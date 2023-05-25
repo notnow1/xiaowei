@@ -1113,10 +1113,10 @@ public class TargetDecomposeController extends BaseController {
         }else {
             String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
             if (StringUtils.isBlank(sheetName)){
-                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+                throw new ServiceException("模板被修改，请重新下载模板进行导入!");
             }else {
                 if (!sheetName.equals("滚动预测详情")){
-                    throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+                    throw new ServiceException("模板被修改，请重新下载模板进行导入!");
                 }
             }
         }

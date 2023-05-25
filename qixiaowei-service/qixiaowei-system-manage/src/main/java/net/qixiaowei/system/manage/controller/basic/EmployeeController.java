@@ -185,15 +185,15 @@ public class EmployeeController extends BaseController {
                 listMap = read.sheet("人员信息错误报告").doReadSync();
                 if (StringUtils.isNotEmpty(listMap)) {
                     if (listMap.get(0).size() == 25 && !listMap.get(0).get(0).equals("错误信息")) {
-                        throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+                        throw new ServiceException("模板被修改，请重新下载模板进行导入!");
                     }
                 }
                 ExcelUtils.mapToListModel(1, 0, listMap, new EmployeeExcel(), list, false);
             } else {
-                throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+                throw new ServiceException("模板被修改，请重新下载模板进行导入!");
             }
         } catch (IOException e) {
-            throw new ServiceException("导入模板被修改，请重新下载模板进行导入!");
+            throw new ServiceException("模板被修改，请重新下载模板进行导入!");
         }
         if (listMap.size() > 10000) {
             throw new ServiceException("数据超过1万条,请减少数据后，重新上传");
