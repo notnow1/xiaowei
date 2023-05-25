@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.api.dto.strategyDecode;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 import net.qixiaowei.strategy.cloud.api.vo.strategyDecode.StrategyMeasureDetailVO;
 
 import javax.validation.groups.Default;
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-public class StrategyMeasureDTO {
+public class StrategyMeasureDTO extends BaseDTO {
 
     //查询检验
     public interface QueryStrategyMeasureDTO extends Default {
@@ -105,36 +106,9 @@ public class StrategyMeasureDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建人
-     */
-    private String createByName;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
      * 租户ID
      */
     private Long tenantId;
-
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
     /**
      * 战略举措清单详情表
      */

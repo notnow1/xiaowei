@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.api.dto.gap;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-public class GapAnalysisDTO {
+public class GapAnalysisDTO extends BaseDTO {
 
     //查询检验
     public interface QueryGapAnalysisDTO extends Default {
@@ -109,28 +110,6 @@ public class GapAnalysisDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建人
-     */
-    private String createByName;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
      * 租户ID
      */
     private Long tenantId;
@@ -138,10 +117,6 @@ public class GapAnalysisDTO {
      * 规划业务单元维度列表
      */
     List<Map<String, Object>> businessUnitDecomposes;
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
     /**
      * 差距分析经营情况表
      */

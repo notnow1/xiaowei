@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.api.dto.strategyDecode;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.dto.BaseDTO;
 
 import javax.validation.groups.Default;
 import java.util.Date;
@@ -17,7 +18,7 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-public class AnnualKeyWorkDTO {
+public class AnnualKeyWorkDTO extends BaseDTO {
 
     //查询检验
     public interface QueryAnnualKeyWorkDTO extends Default {
@@ -112,36 +113,9 @@ public class AnnualKeyWorkDTO {
      */
     private Integer deleteFlag;
     /**
-     * 创建人
-     */
-    private Long createBy;
-    /**
-     * 创建人名称
-     */
-    private String createByName;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    /**
-     * 更新人
-     */
-    private Long updateBy;
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
-    /**
      * 租户ID
      */
     private Long tenantId;
-
-    /**
-     * 请求参数
-     */
-    private Map<String, Object> params;
     /**
      * 年度重点工作详情表
      */

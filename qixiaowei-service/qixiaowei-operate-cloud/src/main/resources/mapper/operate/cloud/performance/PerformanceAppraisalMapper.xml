@@ -511,8 +511,8 @@
                 #{item}
             </foreach>
         </if>
-        GROUP BY pa.performance_appraisal_id
         ${performanceAppraisal.params.dataScope}
+        GROUP BY pa.performance_appraisal_id
         ORDER BY pa.create_time DESC
     </select>
     <select id="selectRankFactorByAppraisalId"
