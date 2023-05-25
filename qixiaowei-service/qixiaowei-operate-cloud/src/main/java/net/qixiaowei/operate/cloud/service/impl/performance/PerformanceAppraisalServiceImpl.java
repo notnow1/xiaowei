@@ -1853,13 +1853,15 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         listMap = read.sheet(0).doReadSync();
         if (StringUtils.isEmpty(listMap)) {
-            throw new ServiceException((type == 1 ? "组织" : "个人") + "绩效归档Excel没有数据 请检查");
+//            throw new ServiceException((type == 1 ? "组织" : "个人") + "绩效归档Excel没有数据 请检查");
+            throw new ServiceException("模板被修改，请重新下载模板进行导入");
         }
         String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
         if (StringUtils.equals(sheetName, "个人绩效归档导入错误报告")) {
             Map<Integer, String> head = listMap.get(0);
             if (head.size() != maxLength + 1) {
-                throw new ServiceException((type == 1 ? "组织" : "个人") + "绩效归档模板不正确 请检查");
+//                throw new ServiceException((type == 1 ? "组织" : "个人") + "绩效归档模板不正确 请检查");
+                throw new ServiceException("模板被修改，请重新下载模板进行导入");
             }
             List<Map<Integer, String>> objects = new ArrayList<>();
             for (Map<Integer, String> map1 : listMap) {
@@ -1873,7 +1875,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         } else if (StringUtils.equals(sheetName, (type == 1 ? "组织" : "个人") + "绩效归档导入")) {
             Map<Integer, String> head = listMap.get(0);
             if (head.size() != maxLength) {
-                throw new ServiceException((type == 1 ? "组织" : "个人") + "绩效归档模板不正确 请检查");
+//                throw new ServiceException((type == 1 ? "组织" : "个人") + "绩效归档模板不正确 请检查");
+                throw new ServiceException("模板被修改，请重新下载模板进行导入");
             }
         } else {
             throw new ServiceException("模板被修改，请重新下载模板进行导入");

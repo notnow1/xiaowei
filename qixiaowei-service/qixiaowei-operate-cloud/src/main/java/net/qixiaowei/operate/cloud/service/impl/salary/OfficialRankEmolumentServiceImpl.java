@@ -34,6 +34,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /**
@@ -462,9 +463,13 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             List<Object> errorExcelList = new ArrayList<>();
             List<Map<Integer, String>> successExcels = new ArrayList<>();
             List<Map<Integer, String>> listMap = getMaps(file);
-            if (officialRankEmolumentDTOS.size() != listMap.size()) {
-                throw new ServiceException("模板被修改 请重新下载模板进行导入");
+            // 判断
+            String rankPrefixCode = officialRankSystemById.getRankPrefixCode();
+            List<Integer> officialRanks = new ArrayList<>();
+            for (Integer i = officialRankSystemById.getRankStart(); i <= officialRankSystemById.getRankEnd(); i++) {
+                officialRanks.add(i);
             }
+
             for (Map<Integer, String> map : listMap) {
                 StringBuilder errorNote = new StringBuilder();
                 // 判断小数点后2位的数字的正则表达式
@@ -481,7 +486,6 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                     BigDecimal salaryCap = new BigDecimal(Optional.ofNullable(map.get(1)).orElse("0"));
                     BigDecimal salaryFloor = new BigDecimal(Optional.ofNullable(map.get(2)).orElse("0"));
                     BigDecimal salaryMedian = new BigDecimal(Optional.ofNullable(map.get(3)).orElse("0"));
-                    String rankPrefixCode = officialRankSystemById.getRankPrefixCode();
                     if (!map.get(0).contains(rankPrefixCode)) {
                         errorNote.append("职级前缀不正确；");
                     }
@@ -505,7 +509,6 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             if (StringUtils.isNotEmpty(successExcels)) {
                 List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
                 for (Map<Integer, String> map : successExcels) {
-                    String rankPrefixCode = officialRankSystemById.getRankPrefixCode();
                     Integer rank = Integer.valueOf(map.get(0).replace(rankPrefixCode, ""));
                     OfficialRankEmolumentDTO emolumentDTO = new OfficialRankEmolumentDTO();
                     emolumentDTO.setOfficialRank(rank);
