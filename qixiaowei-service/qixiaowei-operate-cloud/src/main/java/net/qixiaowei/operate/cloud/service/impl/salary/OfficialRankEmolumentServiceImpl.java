@@ -32,9 +32,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.rmi.ServerException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 
 /**
@@ -462,13 +462,9 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         try {
             List<Object> errorExcelList = new ArrayList<>();
             List<Map<Integer, String>> successExcels = new ArrayList<>();
-            List<Map<Integer, String>> listMap = getMaps(file);
             // 判断
             String rankPrefixCode = officialRankSystemById.getRankPrefixCode();
-            List<Integer> officialRanks = new ArrayList<>();
-            for (Integer i = officialRankSystemById.getRankStart(); i <= officialRankSystemById.getRankEnd(); i++) {
-                officialRanks.add(i);
-            }
+            List<Map<Integer, String>> listMap = getMaps(file, officialRankSystemById);
 
             for (Map<Integer, String> map : listMap) {
                 StringBuilder errorNote = new StringBuilder();
@@ -554,10 +550,11 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
     /**
      * 获取list
      *
-     * @param file 文件
+     * @param file                   文件
+     * @param officialRankSystemById
      * @return 结果
      */
-    private static List<Map<Integer, String>> getMaps(MultipartFile file) throws IOException {
+    private static List<Map<Integer, String>> getMaps(MultipartFile file, OfficialRankSystemDTO officialRankSystemById) throws IOException {
         List<Map<Integer, String>> listMap;
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         listMap = read.sheet(0).doReadSync();
@@ -565,6 +562,10 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             throw new ServiceException("职级确定薪酬Excel没有数据 请检查");
         }
         String sheetName = EasyExcel.read(file.getInputStream()).build().excelExecutor().sheetList().get(0).getSheetName();
+        List<Integer> officialRanks = new ArrayList<>();
+        for (Integer i = officialRankSystemById.getRankStart(); i <= officialRankSystemById.getRankEnd(); i++) {
+            officialRanks.add(i);
+        }
         if (StringUtils.equals(sheetName, "职级确定薪酬导入错误报告")) {
             Map<Integer, String> head = listMap.get(1);
             if (head.size() != 5) {
@@ -580,6 +581,9 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             }
             listMap = objects;
         } else if (StringUtils.equals(sheetName, "职级确定薪酬导入")) {
+            if (officialRanks.size() + 2 != listMap.size()) {
+                throw new ServerException("模板被修改 请重新下载模板进行导入");
+            }
             Map<Integer, String> head = listMap.get(1);
             if (head.size() != 4) {
                 throw new ServiceException("模板被修改 请重新下载模板进行导入");
