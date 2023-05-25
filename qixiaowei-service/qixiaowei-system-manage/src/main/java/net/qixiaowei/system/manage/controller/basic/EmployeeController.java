@@ -86,7 +86,7 @@ public class EmployeeController extends BaseController {
     public TableDataInfo pageList(EmployeeDTO employeeDTO) {
         startPage();
         List<EmployeeDTO> list = employeeService.selectEmployeeList(employeeDTO);
-        EmployeePageCountVO employeePageCountVO = employeeService.getStatuList();
+        EmployeePageCountVO employeePageCountVO = employeeService.getStatuList(employeeDTO);
         return getDataTable(list, employeePageCountVO);
     }
 
