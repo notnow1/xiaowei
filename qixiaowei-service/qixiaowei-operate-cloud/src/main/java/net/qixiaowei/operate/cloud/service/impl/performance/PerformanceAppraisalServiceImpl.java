@@ -2051,6 +2051,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 redisService.setCacheObject(errorExcelId, errorExcelList, CacheConstants.ERROR_EXCEL_LOCK_TIME, TimeUnit.HOURS);
             }
             return ExcelUtils.parseExcelResult(successExcelList, errorExcelList, false, simpleUUID);
+        } catch (ServiceException e) {
+            throw e;
         } catch (Exception e) {
             throw new ServiceException("导入绩效考核表Excel失败");
         }
