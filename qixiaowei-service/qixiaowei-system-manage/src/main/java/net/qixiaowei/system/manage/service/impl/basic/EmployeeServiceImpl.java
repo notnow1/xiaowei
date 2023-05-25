@@ -985,7 +985,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         if (StringUtils.isNotBlank(employeeRankName)) {
                             String rankPrefixCode = postNames.get(0).getRankPrefixCode();
                             if (StringUtils.isNotBlank(rankPrefixCode)) {
-                                employee2.setEmployeeRank(Integer.parseInt(employeeRankName.replace(rankPrefixCode, "")));
+                                try {
+                                    employee2.setEmployeeRank(Integer.parseInt(employeeRankName.replace(rankPrefixCode, "")));
+                                } catch (NumberFormatException e) {
+                                    employeeError.append("个人职级与岗位不匹配");
+                                }
                             } else {
                                 employee2.setEmployeeRank(Integer.parseInt(employeeRankName));
                             }
@@ -1286,61 +1290,39 @@ public class EmployeeServiceImpl implements IEmployeeService {
                             if (StringUtils.isNotEmpty(postDTOS)) {
                                 List<PostDTO> postNames = postDTOS.stream().filter(f -> StringUtils.equals(f.getPostName(), postName)).collect(Collectors.toList());
                                 Long postId = postNames.get(0).getPostId();
-                                List<DepartmentPostDTO> excelPostId = departmentPostDTOList.stream().filter(f -> postId.equals(f.getPostId())).collect(Collectors.toList());
-                                if (StringUtils.isEmpty(excelPostId)) {
-                                    validEmployeeError.append(StrUtil.BRACKET_START)
-                                            .append(postName)
-                                            .append("不属于")
-                                            .append(departmentName)
-                                            .append("部门")
-                                            .append(StrUtil.BRACKET_END)
-                                            .append(Constants.China_Colon);
-                                }
-
-                                //个人职级名称
-                                if (StringUtils.isNotBlank(employeeRankName)) {
-                                    List<PostDTO> postIds = postDTOS.stream().filter(f -> postId.equals(f.getPostId())).collect(Collectors.toList());
-                                    if (StringUtils.isNotEmpty(postIds)) {
-                                        PostDTO postDTO = postIds.get(0);
-                                        String rankPrefixCode = postDTO.getRankPrefixCode();
-                                        if (StringUtils.isNotBlank(rankPrefixCode)) {
-
-                                            //下限
-                                            Integer postRankLower = postDTO.getPostRankLower();
-                                            //上限
-                                            Integer postRankUpper = postDTO.getPostRankUpper();
-                                            String replace = employeeRankName.replace(rankPrefixCode, "");
-                                            int i = 0;
-                                            try {
-                                                i = Integer.parseInt(replace);
-                                                if (i > postRankUpper || i < postRankLower) {
-                                                    validEmployeeError.append("个人职级需在岗位职级上下限范围内" + Constants.China_Colon);
-                                                }
-                                            } catch (NumberFormatException e) {
-                                                validEmployeeError.append(StrUtil.BRACKET_START + "个人职级:")
-                                                        .append(employeeRankName)
-                                                        .append("与系统岗位职级:")
-                                                        .append(postDTO.getPostRankName())
-                                                        .append("不匹配")
-                                                        .append(StrUtil.BRACKET_END)
-                                                        .append(Constants.China_Colon);
-                                            }
-
-
-                                        } else {
-                                            //下限
-                                            Integer postRankLower = postIds.get(0).getPostRankLower();
-                                            //上限
-                                            Integer postRankUpper = postIds.get(0).getPostRankUpper();
-                                            int i = Integer.parseInt(employeeRankName);
-                                            if (i > postRankUpper || i < postRankLower) {
-                                                validEmployeeError.append("个人职级需在岗位职级上下限范围内" + Constants.China_Colon);
-                                            }
-                                        }
-
+                                if (StringUtils.isNotNull(postId)){
+                                    List<DepartmentPostDTO> excelPostId = departmentPostDTOList.stream().filter(f -> postId.equals(f.getPostId())).collect(Collectors.toList());
+                                    if (StringUtils.isEmpty(excelPostId)) {
+                                        validEmployeeError.append(StrUtil.BRACKET_START)
+                                                .append(postName)
+                                                .append("不属于")
+                                                .append(departmentName)
+                                                .append("部门")
+                                                .append(StrUtil.BRACKET_END)
+                                                .append(Constants.China_Colon);
                                     }
-
-
+                                    //封装检验个人职级
+                                    validPostRank(postDTOS, validEmployeeError, employeeRankName, postId);
+                                }else {
+                                    validEmployeeError.append("岗位不存在").append(Constants.China_Colon);
+                                }
+                            }
+                        }else {
+                            if (StringUtils.isNotBlank(postName)) {
+                                validEmployeeError.append(StrUtil.BRACKET_START)
+                                        .append(postName)
+                                        .append("不属于")
+                                        .append(departmentName)
+                                        .append("部门")
+                                        .append(StrUtil.BRACKET_END)
+                                        .append(Constants.China_Colon);
+                                List<PostDTO> postNames = postDTOS.stream().filter(f -> StringUtils.equals(f.getPostName(), postName)).collect(Collectors.toList());
+                                Long postId = postNames.get(0).getPostId();
+                                if (StringUtils.isNotNull(postId)){
+                                    //封装检验个人职级
+                                    validPostRank(postDTOS, validEmployeeError, employeeRankName, postId);
+                                }else {
+                                    validEmployeeError.append("岗位不存在").append(Constants.China_Colon);
                                 }
                             }
                         }
@@ -1354,6 +1336,61 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
         }
         return validEmployeeError;
+    }
+
+    /**
+     * 封装检验个人职级
+     * @param postDTOS
+     * @param validEmployeeError
+     * @param employeeRankName
+     * @param postId
+     */
+    private void validPostRank(List<PostDTO> postDTOS, StringBuffer validEmployeeError, String employeeRankName, Long postId) {
+        //个人职级名称
+        if (StringUtils.isNotBlank(employeeRankName)) {
+            List<PostDTO> postIds = postDTOS.stream().filter(f -> postId.equals(f.getPostId())).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(postIds)) {
+                PostDTO postDTO = postIds.get(0);
+                String rankPrefixCode = postDTO.getRankPrefixCode();
+                if (StringUtils.isNotBlank(rankPrefixCode)) {
+
+                    //下限
+                    Integer postRankLower = postDTO.getPostRankLower();
+                    //上限
+                    Integer postRankUpper = postDTO.getPostRankUpper();
+                    String replace = employeeRankName.replace(rankPrefixCode, "");
+                    int i = 0;
+                    try {
+                        i = Integer.parseInt(replace);
+                        if (i > postRankUpper || i < postRankLower) {
+                            validEmployeeError.append("个人职级需在岗位职级上下限范围内" + Constants.China_Colon);
+                        }
+                    } catch (NumberFormatException e) {
+                        validEmployeeError.append(StrUtil.BRACKET_START + "个人职级:")
+                                .append(employeeRankName)
+                                .append("与系统岗位职级:")
+                                .append(postDTO.getPostRankName())
+                                .append("不匹配")
+                                .append(StrUtil.BRACKET_END)
+                                .append(Constants.China_Colon);
+                    }
+
+
+                } else {
+                    //下限
+                    Integer postRankLower = postIds.get(0).getPostRankLower();
+                    //上限
+                    Integer postRankUpper = postIds.get(0).getPostRankUpper();
+                    int i = Integer.parseInt(employeeRankName);
+                    if (i > postRankUpper || i < postRankLower) {
+                        validEmployeeError.append("个人职级需在岗位职级上下限范围内" + Constants.China_Colon);
+                    }
+                }
+
+            }
+
+
+        }
     }
 
     /**
