@@ -318,5 +318,5 @@ public interface IEmployeeService {
      * 获取人员总人数 待分配数量
      * @return
      */
-    EmployeePageCountVO getStatuList();
+    EmployeePageCountVO getStatuList(EmployeeDTO employeeDTO);
 }

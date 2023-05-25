@@ -2259,8 +2259,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @return
      */
     @Override
-    public EmployeePageCountVO getStatuList() {
-        return employeeMapper.getStatuList();
+    public EmployeePageCountVO getStatuList(EmployeeDTO employeeDTO) {
+        Long tenantId = SecurityUtils.getTenantId();
+        employeeDTO.setTenantId(tenantId);
+        return employeeMapper.getStatuList(employeeDTO);
     }
 
     /**

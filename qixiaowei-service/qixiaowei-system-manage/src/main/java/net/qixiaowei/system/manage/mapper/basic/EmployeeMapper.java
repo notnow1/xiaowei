@@ -352,6 +352,7 @@ public interface EmployeeMapper {
     /**
      * 获取人员总人数 待分配数量
      * @return
+     * @param employeeDTO
      */
-    EmployeePageCountVO getStatuList();
+    EmployeePageCountVO getStatuList(@Param("employee")EmployeeDTO employeeDTO);
 }

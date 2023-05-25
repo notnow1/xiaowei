@@ -341,5 +341,9 @@ public class EmployeeDTO extends BaseDTO {
      * 状态:user:生效在职有账号的员工 userAll:生效包含在职离职有账号的员工 1:生效包含在职离职的员工 不传为生效在职员工
      */
     private String  employeeFlag;
+    /**
+     * 租户ID
+     */
+    private Long tenantId;
 }
 
