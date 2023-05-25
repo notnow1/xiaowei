@@ -582,7 +582,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             listMap = objects;
         } else if (StringUtils.equals(sheetName, "职级确定薪酬导入")) {
             if (officialRanks.size() + 2 != listMap.size()) {
-                throw new ServerException("模板被修改 请重新下载模板进行导入");
+                throw new ServiceException("模板被修改 请重新下载模板进行导入");
             }
             Map<Integer, String> head = listMap.get(1);
             if (head.size() != 4) {
