@@ -1754,7 +1754,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 List<String> performanceRankNames = performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList());
                 performanceRankNames.add("不考核");
                 if (StringUtils.isNull(map.get(2))) {
-                    throw new ServiceException("考核结果不可以为空；");
+                    errorNote.append("考核结果不可以为空；");
                 }
                 if (StringUtils.isNotNull(map.get(2)) && !performanceRankNames.contains(map.get(2))) {
                     errorNote.append("考核结果不存在；");
@@ -1973,8 +1973,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 }
                 List<String> performanceRankNames = performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList());
                 performanceRankNames.add("不考核");
-                if (StringUtils.isNotNull(map.get(6))) {
-                    throw new ServiceException("考核结果不可以为空；");
+                if (StringUtils.isNull(map.get(6))) {
+                    errorNote.append("考核结果不可以为空；");
                 }
                 if (StringUtils.isNotNull(map.get(6)) && !performanceRankNames.contains(map.get(6))) {
                     errorNote.append("考核结果不存在；");
@@ -2790,8 +2790,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
      * @return List
      */
-    @DataScope(businessAlias = "pa")
     @Override
+    @DataScope(businessAlias = "pa")
     public TableDataInfo selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         Integer pageNum = performanceAppraisalObjectsDTO.getPageNum();
         Integer pageSize = performanceAppraisalObjectsDTO.getPageSize();
